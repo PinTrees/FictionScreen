@@ -109,10 +109,11 @@ class _Macos27DockState extends State<Macos27Dock> {
                   _buildDockItem(19, '배달의민족 에디터', 'assets/images/baemin_icon.webp', templateId: 'delivery'),
                   _buildDockItem(20, '야놀자 에디터', 'assets/images/yanolja_icon.webp', templateId: 'yanolja'),
                   _buildDockItem(21, '업비트 에디터', 'assets/images/upbit_icon.webp', templateId: 'upbit'),
+                  _buildDockItem(22, '블라인드 에디터', 'assets/images/blind_icon.webp', templateId: 'blind'),
 
                   _buildDockDivider(),
 
-                  _buildDockItem(22, '랜딩 홈으로 이동', null, icon: CupertinoIcons.house_fill, isHome: true),
+                  _buildDockItem(23, '랜딩 홈으로 이동', null, icon: CupertinoIcons.house_fill, isHome: true),
                 ],
               ),
             ),

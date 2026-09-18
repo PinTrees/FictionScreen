@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
+import '../apps/blind/data/blind_model.dart';
 import '../apps/coupang/data/coupang_model.dart';
 import '../apps/daangn/data/daangn_model.dart';
 import '../apps/delivery/data/delivery_model.dart';
@@ -54,6 +55,7 @@ class _StudioPageState extends State<StudioPage> {
   late LotteryConfig _lotteryConfig;
   late YanoljaConfig _yanoljaConfig;
   late UpbitConfig _upbitConfig;
+  late BlindConfig _blindConfig;
 
   @override
   void initState() {
@@ -75,6 +77,7 @@ class _StudioPageState extends State<StudioPage> {
     _lotteryConfig = LotteryConfig.defaultPreset();
     _yanoljaConfig = YanoljaConfig.defaultPreset();
     _upbitConfig = UpbitConfig.defaultPreset();
+    _blindConfig = BlindConfig.defaultPreset();
   }
 
   Future<void> _exportScreen() async {
@@ -154,6 +157,7 @@ class _StudioPageState extends State<StudioPage> {
       lotteryConfig: _lotteryConfig,
       yanoljaConfig: _yanoljaConfig,
       upbitConfig: _upbitConfig,
+      blindConfig: _blindConfig,
       onKakaoBankChanged: (cfg) => setState(() => _kakaobankConfig = cfg),
       onDaangnChanged: (cfg) => setState(() => _daangnConfig = cfg),
       onYoutubeChanged: (cfg) => setState(() => _youtubeConfig = cfg),
@@ -162,6 +166,7 @@ class _StudioPageState extends State<StudioPage> {
       onLotteryChanged: (cfg) => setState(() => _lotteryConfig = cfg),
       onYanoljaChanged: (cfg) => setState(() => _yanoljaConfig = cfg),
       onUpbitChanged: (cfg) => setState(() => _upbitConfig = cfg),
+      onBlindChanged: (cfg) => setState(() => _blindConfig = cfg),
     );
   }
 }

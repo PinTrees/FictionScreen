@@ -192,5 +192,16 @@ class ScreenTemplate {
       badge: 'HOT',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'blind',
+      title: '블라인드 (Blind)',
+      description: '직장인 익명 커뮤니티, 회사 인증 뱃지, 실시간 찬반 투표(Poll), 핫이슈 & 댓글 연출',
+      category: TemplateCategory.sns,
+      icon: CupertinoIcons.building_2_fill,
+      imageAsset: 'assets/images/blind_icon.webp',
+      themeColor: Color(0xFFDA3238),
+      badge: '인기',
+      isDesktop: true,
+    ),
   ];
 }

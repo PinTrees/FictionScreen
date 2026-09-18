@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../apps/blind/blind_screen.dart';
+import '../../../apps/blind/data/blind_model.dart';
 import '../../../apps/coupang/coupang_screen.dart';
 import '../../../apps/coupang/data/coupang_model.dart';
 import '../../../apps/daangn/daangn_screen.dart';
@@ -51,6 +53,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final LotteryConfig lotteryConfig;
   final YanoljaConfig yanoljaConfig;
   final UpbitConfig upbitConfig;
+  final BlindConfig blindConfig;
   final ValueChanged<KakaoBankConfig>? onKakaoBankChanged;
   final ValueChanged<DaangnConfig>? onDaangnChanged;
   final ValueChanged<YoutubeConfig>? onYoutubeChanged;
@@ -59,6 +62,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final ValueChanged<LotteryConfig>? onLotteryChanged;
   final ValueChanged<YanoljaConfig>? onYanoljaChanged;
   final ValueChanged<UpbitConfig>? onUpbitChanged;
+  final ValueChanged<BlindConfig>? onBlindChanged;
 
   const StudioPreviewDispatcher({
     super.key,
@@ -79,6 +83,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
     required this.lotteryConfig,
     required this.yanoljaConfig,
     required this.upbitConfig,
+    required this.blindConfig,
     this.onKakaoBankChanged,
     this.onDaangnChanged,
     this.onYoutubeChanged,
@@ -87,6 +92,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
     this.onLotteryChanged,
     this.onYanoljaChanged,
     this.onUpbitChanged,
+    this.onBlindChanged,
   });
 
   @override
@@ -108,6 +114,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
       case 'lottery': return LotteryScreen(config: lotteryConfig, onConfigChanged: onLotteryChanged);
       case 'yanolja': return YanoljaScreen(config: yanoljaConfig, onConfigChanged: onYanoljaChanged);
       case 'upbit': return UpbitScreen(config: upbitConfig, onConfigChanged: onUpbitChanged);
+      case 'blind': return BlindScreen(config: blindConfig, onConfigChanged: onBlindChanged);
       default: return TossScreen(config: tossConfig);
     }
   }

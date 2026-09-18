@@ -22,6 +22,8 @@ import '../../../apps/x_twitter/data/x_twitter_model.dart';
 import '../../../apps/x_twitter/x_twitter_screen.dart';
 import '../../../apps/upbit/data/upbit_model.dart';
 import '../../../apps/upbit/upbit_screen.dart';
+import '../../../apps/blind/data/blind_model.dart';
+import '../../../apps/blind/blind_screen.dart';
 import '../../../apps/yanolja/data/yanolja_model.dart';
 import '../../../apps/yanolja/yanolja_screen.dart';
 import '../../../apps/coupang/data/coupang_model.dart';
@@ -88,6 +90,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   late LotteryConfig _lotteryConfig;
   late YanoljaConfig _yanoljaConfig;
   late UpbitConfig _upbitConfig;
+  late BlindConfig _blindConfig;
 
   @override
   void initState() {
@@ -107,6 +110,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     _lotteryConfig = LotteryConfig.defaultPreset();
     _yanoljaConfig = YanoljaConfig.defaultPreset();
     _upbitConfig = UpbitConfig.defaultPreset();
+    _blindConfig = BlindConfig.defaultPreset();
   }
 
   @override
@@ -356,6 +360,11 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
         return UpbitScreen(
           config: _upbitConfig,
           onConfigChanged: (cfg) => setState(() => _upbitConfig = cfg),
+        );
+      case 'blind':
+        return BlindScreen(
+          config: _blindConfig,
+          onConfigChanged: (cfg) => setState(() => _blindConfig = cfg),
         );
       case 'windows_bsod':
         return WindowsBsodScreen(config: _bsodConfig);

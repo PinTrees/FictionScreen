@@ -45,6 +45,7 @@ class _WindowsFileExplorerWindowState extends State<WindowsFileExplorerWindow> {
     {'title': '배달의민족_배송현황_템플릿', 'type': 'delivery', 'size': '84 MB', 'icon': CupertinoIcons.bag_fill, 'color': Color(0xFF2AC1BC)},
     {'title': '야놀자_숙소예약_템플릿', 'type': 'yanolja', 'size': '76 MB', 'icon': CupertinoIcons.bed_double_fill, 'color': Color(0xFFFF3478)},
     {'title': '업비트_가상자산_템플릿', 'type': 'upbit', 'size': '92 MB', 'icon': CupertinoIcons.chart_bar_alt_fill, 'color': Color(0xFF093687)},
+    {'title': '블라인드_익명커뮤니티_템플릿', 'type': 'blind', 'size': '64 MB', 'icon': CupertinoIcons.building_2_fill, 'color': Color(0xFFDA3238)},
   ];
 
   @override
