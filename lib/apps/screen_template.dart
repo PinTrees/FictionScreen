@@ -20,6 +20,7 @@ class ScreenTemplate {
   final Color themeColor;
   final String badge;
   final bool isDesktop;
+  final String? imageAsset;
 
   const ScreenTemplate({
     required this.id,
@@ -30,6 +31,7 @@ class ScreenTemplate {
     required this.themeColor,
     this.badge = '',
     this.isDesktop = false,
+    this.imageAsset,
   });
 
   static List<ScreenTemplate> get allTemplates => [
@@ -39,6 +41,7 @@ class ScreenTemplate {
       description: '1:1 대화 및 단톡방, 노란 말풍선, 1 안읽음 숫자, 상단바 커스텀',
       category: TemplateCategory.messenger,
       icon: CupertinoIcons.chat_bubble_2_fill,
+      imageAsset: 'assets/images/kakaotalk_icon.webp',
       themeColor: Color(0xFFFEE500),
       badge: '인기',
     ),
@@ -103,6 +106,7 @@ class ScreenTemplate {
       description: '인스타 피드 게시물, 프로필, 좋아요 수, 캡션 및 댓글',
       category: TemplateCategory.sns,
       icon: CupertinoIcons.camera_fill,
+      imageAsset: 'assets/images/instagram_icon.webp',
       themeColor: Color(0xFFE1306C),
     ),
     const ScreenTemplate(
@@ -119,6 +123,7 @@ class ScreenTemplate {
       description: '로켓배송, 로켓프레시, 골드박스, 데스크탑 와이드 몰 & 모바일 앱',
       category: TemplateCategory.lifestyle,
       icon: CupertinoIcons.cart_fill,
+      imageAsset: 'assets/images/coupang_icon.webp',
       themeColor: Color(0xFFC72424),
       badge: '인기',
       isDesktop: true,

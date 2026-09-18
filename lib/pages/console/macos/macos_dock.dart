@@ -160,6 +160,12 @@ class _MacosDockState extends State<MacosDock> {
                 ),
                 _buildDockApp(
                   index: 13,
+                  tooltip: '쿠팡 쇼핑몰 에디터',
+                  imageAsset: 'assets/images/coupang_icon.webp',
+                  onTap: () => widget.onOpenTemplate('coupang'),
+                ),
+                _buildDockApp(
+                  index: 14,
                   tooltip: '배달의민족 배송 에디터',
                   icon: CupertinoIcons.bag_fill,
                   gradient: const LinearGradient(
@@ -173,7 +179,7 @@ class _MacosDockState extends State<MacosDock> {
 
                 // 3. 홈 이동 & 휴지통
                 _buildDockApp(
-                  index: 14,
+                  index: 15,
                   tooltip: '랜딩 홈으로 이동',
                   icon: CupertinoIcons.house_fill,
                   gradient: const LinearGradient(
@@ -182,7 +188,7 @@ class _MacosDockState extends State<MacosDock> {
                   onTap: widget.onGoHome,
                 ),
                 _buildDockApp(
-                  index: 15,
+                  index: 16,
                   tooltip: '휴지통',
                   icon: CupertinoIcons.trash_fill,
                   iconColor: Colors.white70,

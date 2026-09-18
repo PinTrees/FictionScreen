@@ -234,6 +234,12 @@ class _GalaxyViewState extends State<GalaxyView> {
                         onTap: () => widget.onOpenTemplate('youtube'),
                       ),
                       OsAppItem(
+                        title: '쿠팡',
+                        imageAsset: 'assets/images/coupang_icon.webp',
+                        isDesktop: false,
+                        onTap: () => widget.onOpenTemplate('coupang'),
+                      ),
+                      OsAppItem(
                         title: '배달의민족',
                         icon: CupertinoIcons.bag_fill,
                         iconColor: Colors.white,

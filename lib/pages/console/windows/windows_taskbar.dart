@@ -87,6 +87,7 @@ class WindowsTaskbar extends StatelessWidget {
                     _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
                     _buildTaskbarIcon(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), 'YouTube', () => onOpenTemplate('youtube')),
                     _buildTaskbarIcon(null, const Color(0xFFE1306C), 'Instagram', () => onOpenTemplate('instagram'), imageAsset: 'assets/images/instagram_icon.webp'),
+                    _buildTaskbarIcon(null, const Color(0xFFC72424), '쿠팡', () => onOpenTemplate('coupang'), imageAsset: 'assets/images/coupang_icon.webp'),
                     _buildTaskbarIcon(CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), '배달의민족', () => onOpenTemplate('delivery')),
                     _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정 (OS 변경 / 배경화면)', onOpenSettings),
                   ],
@@ -141,6 +142,7 @@ class WindowsTaskbar extends StatelessWidget {
           _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
           _buildTaskbarIcon(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), 'YouTube', () => onOpenTemplate('youtube')),
           _buildTaskbarIcon(null, const Color(0xFFE1306C), 'Instagram', () => onOpenTemplate('instagram'), imageAsset: 'assets/images/instagram_icon.webp'),
+          _buildTaskbarIcon(null, const Color(0xFFC72424), '쿠팡', () => onOpenTemplate('coupang'), imageAsset: 'assets/images/coupang_icon.webp'),
           _buildTaskbarIcon(CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), '배달의민족', () => onOpenTemplate('delivery')),
           _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정', onOpenSettings),
           const Spacer(),
@@ -159,24 +161,29 @@ class WindowsTaskbar extends StatelessWidget {
         border: Border(
           top: BorderSide(color: const Color(0xFF67B5FA).withValues(alpha: 0.4), width: 1),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
       ),
-      child: ClipRect(
+      child: ClipRRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
           child: Row(
             children: [
+              // 시작 구슬(Orb)
               InkWell(
                 onTap: onToggleStartMenu,
                 child: Container(
-                  width: 44,
-                  height: 44,
-                  margin: const EdgeInsets.only(left: 4),
+                  width: 52,
+                  height: 42,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
                     gradient: const RadialGradient(
-                      colors: [Color(0xFF60A5FA), Color(0xFF1D4ED8), Color(0xFF0F172A)],
+                      colors: [Color(0xFF67B5FA), Color(0xFF1E528E)],
                     ),
-                    border: Border.all(color: Colors.white70, width: 1.5),
                     boxShadow: [
                       BoxShadow(
                         color: const Color(0xFF38BDF8).withValues(alpha: 0.6),
@@ -194,6 +201,7 @@ class WindowsTaskbar extends StatelessWidget {
               _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
               _buildTaskbarIcon(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), 'YouTube', () => onOpenTemplate('youtube')),
               _buildTaskbarIcon(null, const Color(0xFFE1306C), 'Instagram', () => onOpenTemplate('instagram'), imageAsset: 'assets/images/instagram_icon.webp'),
+              _buildTaskbarIcon(null, const Color(0xFFC72424), '쿠팡', () => onOpenTemplate('coupang'), imageAsset: 'assets/images/coupang_icon.webp'),
               _buildTaskbarIcon(CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), '배달의민족', () => onOpenTemplate('delivery')),
               _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정', onOpenSettings),
               const Spacer(),

@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../apps/coupang/data/coupang_model.dart';
+import '../apps/coupang/coupang_screen.dart';
 import '../apps/delivery/data/delivery_model.dart';
 import '../apps/delivery/delivery_screen.dart';
 import '../apps/instagram/data/instagram_model.dart';
@@ -514,6 +516,7 @@ class _HomePageState extends State<HomePage> {
                 _buildTabChip('windows_bsod', 'Windows BSOD', CupertinoIcons.device_desktop, const Color(0xFF0078D7)),
                 _buildTabChip('youtube', '유튜브', CupertinoIcons.play_circle_fill, const Color(0xFFFF0000)),
                 _buildTabChip('instagram', '인스타그램', CupertinoIcons.camera_fill, const Color(0xFFE1306C)),
+                _buildTabChip('coupang', '쿠팡', CupertinoIcons.cart_fill, const Color(0xFFC72424)),
                 _buildTabChip('delivery', '배달 플랫폼', CupertinoIcons.bag_fill, const Color(0xFF2AC1BC)),
               ],
             ),
@@ -525,7 +528,7 @@ class _HomePageState extends State<HomePage> {
             height: isMobile ? 480 : 540,
             child: Center(
               child: DeviceFramePreview(
-                isDesktop: _activeHeroTab == 'windows_bsod',
+                isDesktop: _activeHeroTab == 'windows_bsod' || _activeHeroTab == 'coupang',
                 child: _buildActivePreviewWidget(),
               ),
             ),
@@ -611,6 +614,8 @@ class _HomePageState extends State<HomePage> {
         return YoutubeScreen(config: YoutubeConfig.defaultPreset());
       case 'instagram':
         return InstagramScreen(config: InstagramConfig.defaultPreset());
+      case 'coupang':
+        return CoupangScreen(config: CoupangConfig.defaultPreset());
       case 'delivery':
         return DeliveryScreen(config: DeliveryConfig.defaultPreset());
       default:
