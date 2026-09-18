@@ -1,11 +1,27 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../apps/delivery/data/delivery_model.dart';
+import '../apps/delivery/delivery_screen.dart';
+import '../apps/instagram/data/instagram_model.dart';
+import '../apps/instagram/instagram_screen.dart';
+import '../apps/kakaotalk/data/kakaotalk_model.dart';
+import '../apps/kakaotalk/kakaotalk_screen.dart';
+import '../apps/pinterest/data/pinterest_model.dart';
+import '../apps/pinterest/pinterest_screen.dart';
 import '../apps/screen_template.dart';
+import '../apps/toss/data/toss_model.dart';
+import '../apps/toss/toss_screen.dart';
+import '../apps/x_twitter/data/x_twitter_model.dart';
+import '../apps/x_twitter/x_twitter_screen.dart';
+import '../apps/youtube/data/youtube_model.dart';
+import '../apps/youtube/youtube_screen.dart';
 import '../services/auth_service.dart';
 import '../services/user_settings_service.dart';
+import '../widgets/common/device_frame_preview.dart';
 import 'console/android/galaxy_view.dart';
 import 'console/common/floating_app_window.dart';
 import 'console/ios/ios_view.dart';
@@ -52,6 +68,9 @@ class _ConsolePageState extends State<ConsolePage> {
   bool _isStartMenuOpen = false;
   bool _isSettingsOpen = false;
   bool _isLoadingSettings = false;
+  String? _activeMobileTemplateId;
+  Offset _settingsPos = const Offset(120, 60);
+  Offset _settingsDragStart = Offset.zero;
 
   // MDI 열린 가상 창 관리
   final List<FloatingWindowData> _activeFloatingWindows = [];
@@ -167,7 +186,9 @@ class _ConsolePageState extends State<ConsolePage> {
         });
       }
     } else {
-      context.push('/studio/$templateId');
+      setState(() {
+        _activeMobileTemplateId = templateId;
+      });
     }
   }
 
@@ -278,48 +299,206 @@ class _ConsolePageState extends State<ConsolePage> {
                   ),
               ],
 
-              // 3. 시스템 설정 창 (설정 변경 시 파이어스토어 자동 저장)
+              // 3. 시스템 설정 창 (타이틀바 1:1 드래그 + 설정 변경 시 파이어스토어 자동 저장)
               if (_isSettingsOpen)
-                GestureDetector(
-                  onTap: () => setState(() => _isSettingsOpen = false),
-                  behavior: HitTestBehavior.translucent,
-                  child: Container(
-                    color: Colors.black.withValues(alpha: 0.35),
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: OsSettingsWindow(
-                        currentPcTheme: _pcTheme,
-                        currentWindowsVersion: _windowsVersion,
-                        currentMobileTheme: _mobileTheme,
-                        currentWallpaper: _wallpaper,
-                        onPcThemeChanged: (val) {
-                          setState(() => _pcTheme = val);
-                          _saveCurrentOsSettings();
-                        },
-                        onWindowsVersionChanged: (val) {
-                          setState(() => _windowsVersion = val);
-                          _saveCurrentOsSettings();
-                        },
-                        onMobileThemeChanged: (val) {
-                          setState(() => _mobileTheme = val);
-                          _saveCurrentOsSettings();
-                        },
-                        onWallpaperChanged: (val) {
-                          setState(() => _wallpaper = val);
-                          _saveCurrentOsSettings();
-                        },
-                        onClose: () => setState(() => _isSettingsOpen = false),
-                        onSignOut: _handleSignOut,
-                        user: user,
-                        isDesktop: isDesktop,
+                isDesktop
+                    ? Positioned(
+                        left: _settingsPos.dx,
+                        top: _settingsPos.dy,
+                        child: OsSettingsWindow(
+                          currentPcTheme: _pcTheme,
+                          currentWindowsVersion: _windowsVersion,
+                          currentMobileTheme: _mobileTheme,
+                          currentWallpaper: _wallpaper,
+                          onPcThemeChanged: (val) {
+                            setState(() => _pcTheme = val);
+                            _saveCurrentOsSettings();
+                          },
+                          onWindowsVersionChanged: (val) {
+                            setState(() => _windowsVersion = val);
+                            _saveCurrentOsSettings();
+                          },
+                          onMobileThemeChanged: (val) {
+                            setState(() => _mobileTheme = val);
+                            _saveCurrentOsSettings();
+                          },
+                          onWallpaperChanged: (val) {
+                            setState(() => _wallpaper = val);
+                            _saveCurrentOsSettings();
+                          },
+                          onClose: () => setState(() => _isSettingsOpen = false),
+                          onSignOut: _handleSignOut,
+                          onTitleDragStart: (DragStartDetails details) {
+                            _settingsDragStart = details.globalPosition - _settingsPos;
+                          },
+                          onTitleDragUpdate: (DragUpdateDetails details) {
+                            setState(() {
+                              _settingsPos = details.globalPosition - _settingsDragStart;
+                            });
+                          },
+                          user: user,
+                          isDesktop: isDesktop,
+                        ),
+                      )
+                    : GestureDetector(
+                        onTap: () => setState(() => _isSettingsOpen = false),
+                        behavior: HitTestBehavior.translucent,
+                        child: Container(
+                          color: Colors.black.withValues(alpha: 0.35),
+                          child: Center(
+                            child: GestureDetector(
+                              onTap: () {},
+                              child: OsSettingsWindow(
+                                currentPcTheme: _pcTheme,
+                                currentWindowsVersion: _windowsVersion,
+                                currentMobileTheme: _mobileTheme,
+                                currentWallpaper: _wallpaper,
+                                onPcThemeChanged: (val) {
+                                  setState(() => _pcTheme = val);
+                                  _saveCurrentOsSettings();
+                                },
+                                onWindowsVersionChanged: (val) {
+                                  setState(() => _windowsVersion = val);
+                                  _saveCurrentOsSettings();
+                                },
+                                onMobileThemeChanged: (val) {
+                                  setState(() => _mobileTheme = val);
+                                  _saveCurrentOsSettings();
+                                },
+                                onWallpaperChanged: (val) {
+                                  setState(() => _wallpaper = val);
+                                  _saveCurrentOsSettings();
+                                },
+                                onClose: () => setState(() => _isSettingsOpen = false),
+                                onSignOut: _handleSignOut,
+                                user: user,
+                                isDesktop: isDesktop,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+
+              // 4. 모바일 전체화면(Full Screen) 가상 스마트폰 앱 오버레이
+              if (!isDesktop && _activeMobileTemplateId != null)
+                Positioned.fill(
+                  child: _buildMobileFullScreenApp(_activeMobileTemplateId!),
                 ),
             ],
           );
         },
       ),
     );
+  }
+
+  /// 모바일 스마트폰 전체화면 가상 앱 뷰
+  Widget _buildMobileFullScreenApp(String templateId) {
+    return Container(
+      color: Colors.black,
+      child: SafeArea(
+        child: Stack(
+          children: [
+            // 스마트폰 전체화면 앱 콘텐츠
+            Positioned.fill(
+              child: DeviceFramePreview(
+                showFrame: false,
+                isDesktop: false,
+                child: _buildMobileAppWidget(templateId),
+              ),
+            ),
+
+            // 상단 오버레이 가이드 바 (모바일 홈으로 돌아가기 / 에디터 전환)
+            Positioned(
+              top: 10,
+              left: 14,
+              right: 14,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  InkWell(
+                    onTap: () => setState(() => _activeMobileTemplateId = null),
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.75),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.4),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(CupertinoIcons.chevron_left, size: 14, color: Colors.white),
+                          SizedBox(width: 4),
+                          Text('스마트폰 홈으로', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      final tid = _activeMobileTemplateId;
+                      setState(() => _activeMobileTemplateId = null);
+                      if (tid != null) {
+                        context.push('/studio/$tid');
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6366F1).withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF6366F1).withValues(alpha: 0.5),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(CupertinoIcons.pencil, size: 14, color: Colors.white),
+                          SizedBox(width: 4),
+                          Text('직접 편집', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobileAppWidget(String templateId) {
+    switch (templateId) {
+      case 'kakaotalk':
+        return KakaoTalkScreen(config: KakaoRoomConfig.defaultPreset());
+      case 'instagram':
+        return InstagramScreen(config: InstagramConfig.defaultPreset());
+      case 'toss':
+        return TossScreen(config: TossConfig.defaultPreset());
+      case 'x_twitter':
+        return XTwitterScreen(config: XTwitterConfig.defaultPreset());
+      case 'pinterest':
+        return PinterestScreen(config: PinterestConfig.defaultPreset());
+      case 'youtube':
+        return YoutubeScreen(config: YoutubeConfig.defaultPreset());
+      case 'delivery':
+        return DeliveryScreen(config: DeliveryConfig.defaultPreset());
+      default:
+        return KakaoTalkScreen(config: KakaoRoomConfig.defaultPreset());
+    }
   }
 }

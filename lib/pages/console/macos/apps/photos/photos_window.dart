@@ -5,10 +5,18 @@ import '../../../common/os_window_frame.dart';
 /// macOS Photos (사진) 창
 class PhotosWindow extends StatefulWidget {
   final VoidCallback onClose;
+  final Function(DragStartDetails)? onTitleDragStart;
+  final Function(DragUpdateDetails)? onTitleDragUpdate;
+  final double width;
+  final double height;
 
   const PhotosWindow({
     super.key,
     required this.onClose,
+    this.onTitleDragStart,
+    this.onTitleDragUpdate,
+    this.width = 800,
+    this.height = 520,
   });
 
   @override
@@ -33,9 +41,11 @@ class _PhotosWindowState extends State<PhotosWindow> {
     return OsWindowFrame(
       title: '사진 - 보관함',
       style: WindowStyle.macos,
-      width: 800,
-      height: 520,
+      width: widget.width,
+      height: widget.height,
       onClose: widget.onClose,
+      onTitleDragStart: widget.onTitleDragStart,
+      onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Row(
         children: [
           Container(

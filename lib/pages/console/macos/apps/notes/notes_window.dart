@@ -5,10 +5,18 @@ import '../../../common/os_window_frame.dart';
 /// macOS Notes (메모) 창
 class NotesWindow extends StatefulWidget {
   final VoidCallback onClose;
+  final Function(DragStartDetails)? onTitleDragStart;
+  final Function(DragUpdateDetails)? onTitleDragUpdate;
+  final double width;
+  final double height;
 
   const NotesWindow({
     super.key,
     required this.onClose,
+    this.onTitleDragStart,
+    this.onTitleDragUpdate,
+    this.width = 780,
+    this.height = 500,
   });
 
   @override
@@ -73,9 +81,11 @@ class _NotesWindowState extends State<NotesWindow> {
     return OsWindowFrame(
       title: '메모 - ${note['title']}',
       style: WindowStyle.macos,
-      width: 780,
-      height: 500,
+      width: widget.width,
+      height: widget.height,
       onClose: widget.onClose,
+      onTitleDragStart: widget.onTitleDragStart,
+      onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Column(
         children: [
           Container(

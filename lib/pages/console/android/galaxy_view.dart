@@ -128,12 +128,26 @@ class GalaxyView extends StatelessWidget {
                         onTap: () => onOpenTemplate('kakaotalk'),
                       ),
                       OsAppItem(
-                        title: '블루스크린',
-                        icon: CupertinoIcons.device_desktop,
+                        title: '토스 (Toss)',
+                        icon: CupertinoIcons.money_dollar_circle_fill,
                         iconColor: Colors.white,
-                        backgroundColor: const Color(0xFF0078D7),
+                        backgroundColor: const Color(0xFF0050FF),
                         isDesktop: false,
-                        onTap: () => onOpenTemplate('windows_bsod'),
+                        onTap: () => onOpenTemplate('toss'),
+                      ),
+                      OsAppItem(
+                        title: 'Instagram',
+                        imageAsset: 'assets/images/instagram_icon.webp',
+                        isDesktop: false,
+                        onTap: () => onOpenTemplate('instagram'),
+                      ),
+                      OsAppItem(
+                        title: 'X (Twitter)',
+                        icon: CupertinoIcons.conversation_bubble,
+                        iconColor: Colors.white,
+                        backgroundColor: const Color(0xFF1D9BF0),
+                        isDesktop: false,
+                        onTap: () => onOpenTemplate('x_twitter'),
                       ),
                       OsAppItem(
                         title: 'YouTube',
@@ -142,12 +156,6 @@ class GalaxyView extends StatelessWidget {
                         backgroundColor: const Color(0xFFFF0000),
                         isDesktop: false,
                         onTap: () => onOpenTemplate('youtube'),
-                      ),
-                      OsAppItem(
-                        title: 'Instagram',
-                        imageAsset: 'assets/images/instagram_icon.webp',
-                        isDesktop: false,
-                        onTap: () => onOpenTemplate('instagram'),
                       ),
                       OsAppItem(
                         title: '배달의민족',

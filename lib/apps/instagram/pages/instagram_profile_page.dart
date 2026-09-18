@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../data/instagram_model.dart';
+import '../widgets/instagram_modal_scope.dart';
 
 class InstagramProfilePage extends StatefulWidget {
   final InstagramConfig config;
@@ -35,66 +36,83 @@ class _InstagramProfilePageState extends State<InstagramProfilePage> with Single
   }
 
   void _openEditProfile() {
+    final modalScope = InstagramModalScope.maybeOf(context);
     final nameCtrl = TextEditingController(text: widget.config.bioName);
     final descCtrl = TextEditingController(text: widget.config.bioDescription);
     final linkCtrl = TextEditingController(text: widget.config.bioLink);
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            top: 16,
-            left: 16,
-            right: 16,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final editWidget = Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('취소', style: TextStyle(color: Colors.black54, fontSize: 15)),
-                  const Text('프로필 편집', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        widget.config.bioName = nameCtrl.text;
-                        widget.config.bioDescription = descCtrl.text;
-                        widget.config.bioLink = linkCtrl.text;
-                      });
-                      Navigator.pop(context);
-                    },
-                    child: const Text('완료', style: TextStyle(color: Color(0xFF0095F6), fontWeight: FontWeight.bold, fontSize: 15)),
-                  ),
-                ],
+              GestureDetector(
+                onTap: () {
+                  if (modalScope != null) {
+                    modalScope.hideModal();
+                  } else {
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('취소', style: TextStyle(color: Colors.black54, fontSize: 15)),
               ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: nameCtrl,
-                decoration: const InputDecoration(labelText: '이름', border: UnderlineInputBorder()),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: descCtrl,
-                maxLines: 2,
-                decoration: const InputDecoration(labelText: '소개', border: UnderlineInputBorder()),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: linkCtrl,
-                decoration: const InputDecoration(labelText: '링크', border: UnderlineInputBorder()),
+              const Text('프로필 편집', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    widget.config.bioName = nameCtrl.text;
+                    widget.config.bioDescription = descCtrl.text;
+                    widget.config.bioLink = linkCtrl.text;
+                  });
+                  if (modalScope != null) {
+                    modalScope.hideModal();
+                  } else {
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('완료', style: TextStyle(color: Color(0xFF0095F6), fontWeight: FontWeight.bold, fontSize: 15)),
               ),
             ],
           ),
-        );
-      },
+          const SizedBox(height: 20),
+          TextField(
+            controller: nameCtrl,
+            decoration: const InputDecoration(labelText: '이름', border: UnderlineInputBorder()),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: descCtrl,
+            maxLines: 2,
+            decoration: const InputDecoration(labelText: '소개', border: UnderlineInputBorder()),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: linkCtrl,
+            decoration: const InputDecoration(labelText: '링크', border: UnderlineInputBorder()),
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
     );
+
+    if (modalScope != null) {
+      modalScope.showModal(editWidget);
+    } else {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => editWidget,
+      );
+    }
   }
 
   @override

@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../data/instagram_model.dart';
 import 'instagram_comments_sheet.dart';
+import 'instagram_icons.dart';
+import 'instagram_modal_scope.dart';
 
 class InstagramPostCard extends StatefulWidget {
   final InstagramFeedPost post;
@@ -93,29 +95,34 @@ class _InstagramPostCardState extends State<InstagramPostCard> with SingleTicker
   }
 
   void _openCommentsSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) {
-        return InstagramCommentsSheet(
-          comments: widget.post.comments,
-          onAddComment: (text) {
-            setState(() {
-              widget.post.comments.add(
-                InstagramCommentItem(
-                  id: 'c_${DateTime.now().millisecondsSinceEpoch}',
-                  username: 'sunset_traveler',
-                  text: text,
-                  timeAgo: '방금 전',
-                ),
-              );
-              widget.post.commentCount = widget.post.comments.length;
-            });
-          },
-        );
+    final modalScope = InstagramModalScope.maybeOf(context);
+    final sheet = InstagramCommentsSheet(
+      comments: widget.post.comments,
+      onAddComment: (text) {
+        setState(() {
+          widget.post.comments.add(
+            InstagramCommentItem(
+              id: 'c_${DateTime.now().millisecondsSinceEpoch}',
+              username: 'sunset_traveler',
+              text: text,
+              timeAgo: '방금 전',
+            ),
+          );
+          widget.post.commentCount = widget.post.comments.length;
+        });
       },
     );
+
+    if (modalScope != null) {
+      modalScope.showModal(sheet);
+    } else {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => sheet,
+      );
+    }
   }
 
   @override
@@ -245,16 +252,16 @@ class _InstagramPostCardState extends State<InstagramPostCard> with SingleTicker
             children: [
               GestureDetector(
                 onTap: _toggleLike,
-                child: Icon(
-                  widget.post.isLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                child: InstagramIcons.heart(
+                  filled: widget.post.isLiked,
                   color: widget.post.isLiked ? Colors.red : Colors.black87,
-                  size: 26,
+                  size: 24,
                 ),
               ),
               const SizedBox(width: 16),
               GestureDetector(
                 onTap: () => _openCommentsSheet(context),
-                child: const Icon(CupertinoIcons.chat_bubble, size: 24, color: Colors.black87),
+                child: InstagramIcons.comment(size: 24, color: Colors.black87),
               ),
               const SizedBox(width: 16),
               GestureDetector(
@@ -263,7 +270,7 @@ class _InstagramPostCardState extends State<InstagramPostCard> with SingleTicker
                     const SnackBar(content: Text('게시물을 공유합니다 ✈️'), duration: Duration(seconds: 1)),
                   );
                 },
-                child: const Icon(CupertinoIcons.paperplane, size: 24, color: Colors.black87),
+                child: InstagramIcons.share(size: 24, color: Colors.black87),
               ),
               const Spacer(),
               GestureDetector(
@@ -272,10 +279,10 @@ class _InstagramPostCardState extends State<InstagramPostCard> with SingleTicker
                     widget.post.isSaved = !widget.post.isSaved;
                   });
                 },
-                child: Icon(
-                  widget.post.isSaved ? CupertinoIcons.bookmark_fill : CupertinoIcons.bookmark,
+                child: InstagramIcons.bookmark(
+                  filled: widget.post.isSaved,
                   color: Colors.black87,
-                  size: 25,
+                  size: 24,
                 ),
               ),
             ],

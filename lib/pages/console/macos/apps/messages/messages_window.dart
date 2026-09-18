@@ -5,10 +5,18 @@ import '../../../common/os_window_frame.dart';
 /// macOS Messages (iMessage) 창
 class MessagesWindow extends StatefulWidget {
   final VoidCallback onClose;
+  final Function(DragStartDetails)? onTitleDragStart;
+  final Function(DragUpdateDetails)? onTitleDragUpdate;
+  final double width;
+  final double height;
 
   const MessagesWindow({
     super.key,
     required this.onClose,
+    this.onTitleDragStart,
+    this.onTitleDragUpdate,
+    this.width = 760,
+    this.height = 500,
   });
 
   @override
@@ -98,9 +106,11 @@ class _MessagesWindowState extends State<MessagesWindow> {
     return OsWindowFrame(
       title: 'Messages',
       style: WindowStyle.macos,
-      width: 760,
-      height: 500,
+      width: widget.width,
+      height: widget.height,
       onClose: widget.onClose,
+      onTitleDragStart: widget.onTitleDragStart,
+      onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Row(
         children: [
           Container(

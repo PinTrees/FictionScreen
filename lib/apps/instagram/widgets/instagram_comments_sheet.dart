@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../data/instagram_model.dart';
+import 'instagram_icons.dart';
+import 'instagram_modal_scope.dart';
 
 class InstagramCommentsSheet extends StatefulWidget {
   final List<InstagramCommentItem> comments;
@@ -38,16 +40,24 @@ class _InstagramCommentsSheetState extends State<InstagramCommentsSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.75,
+      constraints: const BoxConstraints(maxHeight: 520),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 16,
+            offset: Offset(0, -4),
+          ),
+        ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Drag handle
           Container(
-            margin: const EdgeInsets.only(top: 10, bottom: 8),
+            margin: const EdgeInsets.only(top: 10, bottom: 6),
             width: 40,
             height: 4,
             decoration: BoxDecoration(
@@ -55,16 +65,31 @@ class _InstagramCommentsSheetState extends State<InstagramCommentsSheet> {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          // Title Bar
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              '댓글',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+          // Title Bar with close button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(width: 24),
+                const Text(
+                  '댓글',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    InstagramModalScope.maybeOf(context)?.hideModal();
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Icon(CupertinoIcons.xmark, size: 18, color: Colors.black54),
+                  ),
+                ),
+              ],
             ),
           ),
           const Divider(height: 1, thickness: 0.5),
@@ -148,10 +173,10 @@ class _InstagramCommentsSheetState extends State<InstagramCommentsSheet> {
                                       item.likes += item.isLiked ? 1 : -1;
                                     });
                                   },
-                                  child: Icon(
-                                    item.isLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
-                                    size: 16,
+                                  child: InstagramIcons.heart(
+                                    filled: item.isLiked,
                                     color: item.isLiked ? Colors.red : Colors.black45,
+                                    size: 16,
                                   ),
                                 ),
                                 if (item.likes > 0) ...[

@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../data/instagram_model.dart';
 import '../widgets/instagram_comments_sheet.dart';
+import '../widgets/instagram_icons.dart';
+import '../widgets/instagram_modal_scope.dart';
 
 class InstagramReelsPage extends StatefulWidget {
   const InstagramReelsPage({super.key});
@@ -38,28 +40,33 @@ class _InstagramReelsPageState extends State<InstagramReelsPage> with SingleTick
   }
 
   void _openComments() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) {
-        return InstagramCommentsSheet(
-          comments: _reelsComments,
-          onAddComment: (text) {
-            setState(() {
-              _reelsComments.add(
-                InstagramCommentItem(
-                  id: 'rc_${DateTime.now().millisecondsSinceEpoch}',
-                  username: 'sunset_traveler',
-                  text: text,
-                  timeAgo: '방금 전',
-                ),
-              );
-            });
-          },
-        );
+    final modalScope = InstagramModalScope.maybeOf(context);
+    final sheet = InstagramCommentsSheet(
+      comments: _reelsComments,
+      onAddComment: (text) {
+        setState(() {
+          _reelsComments.add(
+            InstagramCommentItem(
+              id: 'rc_${DateTime.now().millisecondsSinceEpoch}',
+              username: 'sunset_traveler',
+              text: text,
+              timeAgo: '방금 전',
+            ),
+          );
+        });
       },
     );
+
+    if (modalScope != null) {
+      modalScope.showModal(sheet);
+    } else {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => sheet,
+      );
+    }
   }
 
   @override
@@ -143,10 +150,13 @@ class _InstagramReelsPageState extends State<InstagramReelsPage> with SingleTick
             bottom: 36,
             child: Column(
               children: [
-                _buildActionItem(
-                  icon: _isLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                _buildActionWidget(
+                  iconWidget: InstagramIcons.heart(
+                    filled: _isLiked,
+                    color: _isLiked ? Colors.red : Colors.white,
+                    size: 28,
+                  ),
                   label: '${(_likeCount / 1000).toStringAsFixed(1)}k',
-                  color: _isLiked ? Colors.red : Colors.white,
                   onTap: () {
                     setState(() {
                       _isLiked = !_isLiked;
@@ -155,14 +165,20 @@ class _InstagramReelsPageState extends State<InstagramReelsPage> with SingleTick
                   },
                 ),
                 const SizedBox(height: 18),
-                _buildActionItem(
-                  icon: CupertinoIcons.chat_bubble,
+                _buildActionWidget(
+                  iconWidget: InstagramIcons.comment(
+                    color: Colors.white,
+                    size: 26,
+                  ),
                   label: '${_reelsComments.length}',
                   onTap: _openComments,
                 ),
                 const SizedBox(height: 18),
-                _buildActionItem(
-                  icon: CupertinoIcons.paperplane,
+                _buildActionWidget(
+                  iconWidget: InstagramIcons.share(
+                    color: Colors.white,
+                    size: 26,
+                  ),
                   label: '공유',
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -171,8 +187,12 @@ class _InstagramReelsPageState extends State<InstagramReelsPage> with SingleTick
                   },
                 ),
                 const SizedBox(height: 18),
-                _buildActionItem(
-                  icon: _isSaved ? CupertinoIcons.bookmark_fill : CupertinoIcons.bookmark,
+                _buildActionWidget(
+                  iconWidget: InstagramIcons.bookmark(
+                    filled: _isSaved,
+                    color: Colors.white,
+                    size: 26,
+                  ),
                   label: '저장',
                   onTap: () {
                     setState(() {
@@ -292,17 +312,20 @@ class _InstagramReelsPageState extends State<InstagramReelsPage> with SingleTick
     );
   }
 
-  Widget _buildActionItem({
-    required IconData icon,
+  Widget _buildActionWidget({
+    required Widget iconWidget,
     required String label,
-    Color color = Colors.white,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
         children: [
-          Icon(icon, color: color, size: 28),
+          SizedBox(
+            width: 32,
+            height: 32,
+            child: Center(child: iconWidget),
+          ),
           const SizedBox(height: 4),
           Text(
             label,

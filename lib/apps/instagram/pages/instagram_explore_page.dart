@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../widgets/instagram_icons.dart';
+import '../widgets/instagram_modal_scope.dart';
 
 class InstagramExplorePage extends StatefulWidget {
   const InstagramExplorePage({super.key});
@@ -96,81 +98,106 @@ class _InstagramExplorePageState extends State<InstagramExplorePage> {
   }
 
   void _showItemDetail(Map<String, dynamic> item) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          clipBehavior: Clip.antiAlias,
-          child: SizedBox(
-            width: 340,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+    final modalScope = InstagramModalScope.maybeOf(context);
+
+    final detailWidget = Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle / close header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: item['image'] != null
-                      ? Image.asset(
-                          item['image'] as String,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(colors: item['gradient'] as List<Color>),
-                            ),
-                            child: const Center(child: Icon(CupertinoIcons.photo, color: Colors.white, size: 48)),
-                          ),
-                        )
-                      : Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: item['gradient'] as List<Color>),
-                          ),
-                          child: const Center(child: Icon(CupertinoIcons.photo, color: Colors.white, size: 48)),
-                        ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const CircleAvatar(
-                            radius: 14,
-                            backgroundColor: Color(0xFF833AB4),
-                            child: Text('E', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                          ),
-                          const SizedBox(width: 8),
-                          const Text('explore_trending', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                          const Spacer(),
-                          Text('조회 ${item['views']}', style: const TextStyle(fontSize: 11, color: Colors.black54)),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        item['caption'] as String,
-                        style: const TextStyle(fontSize: 13, color: Colors.black87),
-                      ),
-                      const SizedBox(height: 14),
-                      Row(
-                        children: const [
-                          Icon(CupertinoIcons.heart, size: 22, color: Colors.black87),
-                          SizedBox(width: 16),
-                          Icon(CupertinoIcons.chat_bubble, size: 20, color: Colors.black87),
-                          SizedBox(width: 16),
-                          Icon(CupertinoIcons.paperplane, size: 20, color: Colors.black87),
-                          Spacer(),
-                          Icon(CupertinoIcons.bookmark, size: 22, color: Colors.black87),
-                        ],
-                      ),
-                    ],
+                const SizedBox(width: 24),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
                   ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (modalScope != null) {
+                      modalScope.hideModal();
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Icon(CupertinoIcons.xmark, size: 18, color: Colors.black54),
                 ),
               ],
             ),
           ),
-        );
-      },
+          AspectRatio(
+            aspectRatio: 1.2,
+            child: item['image'] != null
+                ? Image.asset(
+                    item['image'] as String,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => _buildColorTile(item),
+                  )
+                : _buildColorTile(item),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 14,
+                      backgroundColor: Color(0xFF833AB4),
+                      child: Text('E', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text('explore_trending', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    const Spacer(),
+                    Text('조회 ${item['views']}', style: const TextStyle(fontSize: 11, color: Colors.black54)),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  item['caption'] as String,
+                  style: const TextStyle(fontSize: 13, color: Colors.black87),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    InstagramIcons.heart(size: 22, color: Colors.black87),
+                    const SizedBox(width: 16),
+                    InstagramIcons.comment(size: 20, color: Colors.black87),
+                    const SizedBox(width: 16),
+                    InstagramIcons.share(size: 20, color: Colors.black87),
+                    const Spacer(),
+                    InstagramIcons.bookmark(size: 22, color: Colors.black87),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
+
+    if (modalScope != null) {
+      modalScope.showModal(detailWidget);
+    } else {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => detailWidget,
+      );
+    }
   }
 
   @override

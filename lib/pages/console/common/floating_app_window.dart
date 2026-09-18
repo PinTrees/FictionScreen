@@ -117,6 +117,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
                   children: [
                     // 1. 드래그 가능한 타이틀바 (마우스 포인터 위치 1:1 완벽추종)
                     GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onPanStart: (details) {
                         widget.onFocus();
                         _dragStartOffset = details.globalPosition - widget.position;

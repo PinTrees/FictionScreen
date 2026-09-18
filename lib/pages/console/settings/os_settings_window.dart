@@ -14,6 +14,8 @@ class OsSettingsWindow extends StatefulWidget {
   final ValueChanged<String> onWallpaperChanged;
   final VoidCallback onClose;
   final VoidCallback onSignOut;
+  final Function(DragStartDetails)? onTitleDragStart;
+  final Function(DragUpdateDetails)? onTitleDragUpdate;
   final User? user;
   final bool isDesktop;
 
@@ -29,6 +31,8 @@ class OsSettingsWindow extends StatefulWidget {
     required this.onWallpaperChanged,
     required this.onClose,
     required this.onSignOut,
+    this.onTitleDragStart,
+    this.onTitleDragUpdate,
     this.user,
     this.isDesktop = true,
   });
@@ -56,6 +60,8 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
       icon: CupertinoIcons.gear_alt_fill,
       style: windowStyle,
       onClose: widget.onClose,
+      onTitleDragStart: widget.onTitleDragStart,
+      onTitleDragUpdate: widget.onTitleDragUpdate,
       width: widget.isDesktop ? 760 : MediaQuery.of(context).size.width * 0.94,
       height: widget.isDesktop ? 530 : MediaQuery.of(context).size.height * 0.82,
       child: Row(

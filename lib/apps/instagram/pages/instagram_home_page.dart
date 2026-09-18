@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../data/instagram_model.dart';
+import '../widgets/instagram_icons.dart';
 import '../widgets/instagram_post_card.dart';
 
 class InstagramHomePage extends StatelessWidget {
@@ -33,68 +34,74 @@ class InstagramHomePage extends StatelessWidget {
             bottom: false,
             child: Row(
               children: [
-                // Instagram wordmark
-                const Text(
-                  'Instagram',
-                  style: TextStyle(
-                    fontFamily: 'serif',
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 24,
-                    letterSpacing: -0.5,
-                    color: Colors.black,
+                // Real Instagram wordmark logo
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      InstagramIcons.wordmark(height: 29),
+                      const SizedBox(width: 4),
+                      const Icon(CupertinoIcons.chevron_down, size: 12, color: Colors.black87),
+                    ],
                   ),
                 ),
-                const Icon(CupertinoIcons.chevron_down, size: 14, color: Colors.black87),
                 const Spacer(),
-                // Heart (Notifications)
-                Stack(
-                  children: [
-                    IconButton(
-                      icon: const Icon(CupertinoIcons.heart, size: 24, color: Colors.black87),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('새로운 활동 알림이 없습니다.'), duration: Duration(seconds: 1)),
-                        );
-                      },
-                    ),
-                    Positioned(
-                      right: 12,
-                      top: 12,
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
+                // Real Heart (Notifications)
+                GestureDetector(
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('새로운 활동 알림이 없습니다.'), duration: Duration(seconds: 1)),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Stack(
+                      children: [
+                        InstagramIcons.heart(size: 24, color: Colors.black87),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            width: 7,
+                            height: 7,
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-                // DM Paperplane with unread count
-                Stack(
-                  children: [
-                    IconButton(
-                      icon: const Icon(CupertinoIcons.paperplane, size: 24, color: Colors.black87),
-                      onPressed: onOpenDm,
-                    ),
-                    Positioned(
-                      right: 8,
-                      top: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(10),
+                const SizedBox(width: 6),
+                // Real DM / Messenger with unread count
+                GestureDetector(
+                  onTap: onOpenDm,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        InstagramIcons.messenger(size: 24, color: Colors.black87),
+                        Positioned(
+                          right: -4,
+                          top: -3,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Text(
+                              '2',
+                              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                            ),
+                          ),
                         ),
-                        child: const Text(
-                          '2',
-                          style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),

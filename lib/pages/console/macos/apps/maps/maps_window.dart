@@ -5,10 +5,18 @@ import '../../../common/os_window_frame.dart';
 /// macOS Maps (지도) 창
 class MapsWindow extends StatefulWidget {
   final VoidCallback onClose;
+  final Function(DragStartDetails)? onTitleDragStart;
+  final Function(DragUpdateDetails)? onTitleDragUpdate;
+  final double width;
+  final double height;
 
   const MapsWindow({
     super.key,
     required this.onClose,
+    this.onTitleDragStart,
+    this.onTitleDragUpdate,
+    this.width = 780,
+    this.height = 500,
   });
 
   @override
@@ -49,9 +57,11 @@ class _MapsWindowState extends State<MapsWindow> {
     return OsWindowFrame(
       title: '지도 - ${loc['name']}',
       style: WindowStyle.macos,
-      width: 780,
-      height: 500,
+      width: widget.width,
+      height: widget.height,
       onClose: widget.onClose,
+      onTitleDragStart: widget.onTitleDragStart,
+      onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Column(
         children: [
           Container(

@@ -154,7 +154,7 @@ class _MacosViewState extends State<MacosView> {
               windowData: win,
               onTapFocus: () => _bringToFront(win.id),
               onClose: () => _closeWindow(win.id),
-              child: _buildAppContent(win),
+              builder: (onDragStart, onDragUpdate) => _buildAppContent(win, onDragStart, onDragUpdate),
             ),
           );
         }),
@@ -189,45 +189,85 @@ class _MacosViewState extends State<MacosView> {
     );
   }
 
-  Widget _buildAppContent(MacosWindowData win) {
+  Widget _buildAppContent(
+    MacosWindowData win,
+    Function(DragStartDetails) onDragStart,
+    Function(DragUpdateDetails) onDragUpdate,
+  ) {
     switch (win.appId) {
       case 'finder':
         return FinderWindow(
+          width: win.size.width,
+          height: win.size.height,
           onClose: () => _closeWindow(win.id),
           onOpenTemplate: widget.onOpenTemplate,
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
         );
       case 'safari':
         return SafariWindow(
+          width: win.size.width,
+          height: win.size.height,
           onClose: () => _closeWindow(win.id),
           onOpenTemplate: widget.onOpenTemplate,
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
         );
       case 'terminal':
         return TerminalWindow(
+          width: win.size.width,
+          height: win.size.height,
           onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
         );
       case 'messages':
         return MessagesWindow(
+          width: win.size.width,
+          height: win.size.height,
           onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
         );
       case 'notes':
         return NotesWindow(
+          width: win.size.width,
+          height: win.size.height,
           onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
         );
       case 'mail':
         return MailWindow(
+          width: win.size.width,
+          height: win.size.height,
           onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
         );
       case 'photos':
         return PhotosWindow(
+          width: win.size.width,
+          height: win.size.height,
           onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
         );
       case 'music':
         return MusicWindow(
+          width: win.size.width,
+          height: win.size.height,
           onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
         );
       case 'maps':
         return MapsWindow(
+          width: win.size.width,
+          height: win.size.height,
           onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
         );
       default:
         return const SizedBox.shrink();
@@ -290,19 +330,22 @@ class _MacosViewState extends State<MacosView> {
   }
 }
 
-/// macOS MDI 가상 창 래퍼 위젯 (1:1 마우스 드래그 이동 + 리사이즈 + 포커스 연동)
+/// macOS MDI 가상 창 래퍼 위젯 (타이틀바 1:1 드래그 + 리사이즈 + 포커스 연동)
 class _MacosMdiWindowWrapper extends StatefulWidget {
   final MacosWindowData windowData;
   final VoidCallback onTapFocus;
   final VoidCallback onClose;
-  final Widget child;
+  final Widget Function(
+    Function(DragStartDetails) onDragStart,
+    Function(DragUpdateDetails) onDragUpdate,
+  ) builder;
 
   const _MacosMdiWindowWrapper({
     super.key,
     required this.windowData,
     required this.onTapFocus,
     required this.onClose,
-    required this.child,
+    required this.builder,
   });
 
   @override
@@ -311,6 +354,17 @@ class _MacosMdiWindowWrapper extends StatefulWidget {
 
 class _MacosMdiWindowWrapperState extends State<_MacosMdiWindowWrapper> {
   Offset _dragStartOffset = Offset.zero;
+
+  void _handleDragStart(DragStartDetails details) {
+    widget.onTapFocus();
+    _dragStartOffset = details.globalPosition - widget.windowData.position;
+  }
+
+  void _handleDragUpdate(DragUpdateDetails details) {
+    setState(() {
+      widget.windowData.position = details.globalPosition - _dragStartOffset;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -321,42 +375,17 @@ class _MacosMdiWindowWrapperState extends State<_MacosMdiWindowWrapper> {
         height: widget.windowData.size.height,
         child: Stack(
           children: [
-            // 창 본문 및 헤더 드래그 영역
+            // 창 내용 (OsWindowFrame 타이틀바에 드래그 제스처 직접 바인딩)
             Positioned.fill(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Column(
-                  children: [
-                    // 창 상단 드래그 헤더 바 (1:1 모션)
-                    GestureDetector(
-                      onPanStart: (details) {
-                        widget.onTapFocus();
-                        _dragStartOffset = details.globalPosition - widget.windowData.position;
-                      },
-                      onPanUpdate: (details) {
-                        setState(() {
-                          widget.windowData.position = details.globalPosition - _dragStartOffset;
-                        });
-                      },
-                      child: Container(
-                        height: 32,
-                        color: Colors.transparent,
-                      ),
-                    ),
-                    // 실제 창 애플리케이션
-                    Expanded(
-                      child: widget.child,
-                    ),
-                  ],
-                ),
-              ),
+              child: widget.builder(_handleDragStart, _handleDragUpdate),
             ),
 
-            // 창 우측 하단 리사이즈 핸들 (1:1 드래그 조절)
+            // 창 우측 하단 리사이즈 핸들 (1:1 마우스 드래그 조절)
             Positioned(
               right: 0,
               bottom: 0,
               child: GestureDetector(
+                onPanStart: (_) => widget.onTapFocus(),
                 onPanUpdate: (details) {
                   setState(() {
                     final newWidth = (widget.windowData.size.width + details.delta.dx).clamp(420.0, 1400.0);
@@ -367,15 +396,18 @@ class _MacosMdiWindowWrapperState extends State<_MacosMdiWindowWrapper> {
                 child: MouseRegion(
                   cursor: SystemMouseCursors.resizeUpLeftDownRight,
                   child: Container(
-                    width: 18,
-                    height: 18,
+                    width: 24,
+                    height: 24,
                     color: Colors.transparent,
                     child: const Align(
                       alignment: Alignment.bottomRight,
-                      child: Icon(
-                        CupertinoIcons.arrow_down_right,
-                        size: 11,
-                        color: Colors.white24,
+                      child: Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Icon(
+                          CupertinoIcons.arrow_down_right,
+                          size: 11,
+                          color: Colors.white38,
+                        ),
                       ),
                     ),
                   ),

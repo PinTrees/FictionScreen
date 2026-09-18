@@ -4,8 +4,8 @@ import '../../../common/os_window_frame.dart';
 /// macOS Terminal zsh 콘솔 창
 class TerminalWindow extends StatefulWidget {
   final VoidCallback onClose;
-  final Function(GestureDragStartDetails)? onTitleDragStart;
-  final Function(GestureDragUpdateDetails)? onTitleDragUpdate;
+  final Function(DragStartDetails)? onTitleDragStart;
+  final Function(DragUpdateDetails)? onTitleDragUpdate;
   final double width;
   final double height;
 

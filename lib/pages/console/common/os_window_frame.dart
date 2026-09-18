@@ -16,9 +16,9 @@ class OsWindowFrame extends StatelessWidget {
   final VoidCallback onClose;
   final VoidCallback? onMinimize;
   final VoidCallback? onMaximize;
-  final Function(GestureDragStartDetails)? onTitleDragStart;
-  final Function(GestureDragUpdateDetails)? onTitleDragUpdate;
-  final Function(GestureDragEndDetails)? onTitleDragEnd;
+  final Function(DragStartDetails)? onTitleDragStart;
+  final Function(DragUpdateDetails)? onTitleDragUpdate;
+  final Function(DragEndDetails)? onTitleDragEnd;
   final double width;
   final double height;
 
@@ -89,90 +89,89 @@ class OsWindowFrame extends StatelessWidget {
 
   Widget _buildMacTitleBar() {
     return Container(
-        height: 38,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
-          border: Border(
-            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
-          ),
+      height: 38,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        border: Border(
+          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
         ),
-        child: Row(
-          children: [
-            // macOS 신호등 버튼 (빨, 노, 초)
-            Row(
-              children: [
-                _buildMacTrafficLight(const Color(0xFFFF5F56), onClose),
-                const SizedBox(width: 8),
-                _buildMacTrafficLight(const Color(0xFFFFBD2E), onMinimize ?? onClose),
-                const SizedBox(width: 8),
-                _buildMacTrafficLight(const Color(0xFF27C93F), onMaximize ?? () {}),
-              ],
-            ),
-            Expanded(
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (icon != null) ...[
-                      Icon(icon, size: 14, color: Colors.white70),
-                      const SizedBox(width: 6),
-                    ],
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+      ),
+      child: Row(
+        children: [
+          // macOS 신호등 버튼 (빨, 노, 초)
+          Row(
+            children: [
+              _buildMacTrafficLight(const Color(0xFFFF5F56), onClose),
+              const SizedBox(width: 8),
+              _buildMacTrafficLight(const Color(0xFFFFBD2E), onMinimize ?? onClose),
+              const SizedBox(width: 8),
+              _buildMacTrafficLight(const Color(0xFF27C93F), onMaximize ?? () {}),
+            ],
+          ),
+          Expanded(
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (icon != null) ...[
+                    Icon(icon, size: 14, color: Colors.white70),
+                    const SizedBox(width: 6),
                   ],
-                ),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(width: 54), // 좌측 신호등과 밸런스 유지용
-          ],
-        ),
-      );
+          ),
+          const SizedBox(width: 54), // 좌측 신호등과 밸런스 유지용
+        ],
+      ),
+    );
   }
 
   Widget _buildWindowsTitleBar() {
     return Container(
-        height: 36,
-        padding: const EdgeInsets.only(left: 12),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.04),
-          border: Border(
-            bottom: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
-          ),
+      height: 36,
+      padding: const EdgeInsets.only(left: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.04),
+        border: Border(
+          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
         ),
-        child: Row(
-          children: [
-            if (icon != null) ...[
-              Icon(icon, size: 14, color: Colors.white70),
-              const SizedBox(width: 8),
-            ],
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const Spacer(),
-            // 윈도우 우측 조작 버튼 (최소화, 최대화, 닫기)
-            _buildWindowsButton(CupertinoIcons.minus, onMinimize ?? onClose),
-            _buildWindowsButton(CupertinoIcons.square, onMaximize ?? () {}),
-            _buildWindowsButton(
-              CupertinoIcons.xmark,
-              onClose,
-              isClose: true,
-            ),
+      ),
+      child: Row(
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 14, color: Colors.white70),
+            const SizedBox(width: 8),
           ],
-        ),
-      );
-    }
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const Spacer(),
+          // 윈도우 우측 조작 버튼 (최소화, 최대화, 닫기)
+          _buildWindowsButton(CupertinoIcons.minus, onMinimize ?? onClose),
+          _buildWindowsButton(CupertinoIcons.square, onMaximize ?? () {}),
+          _buildWindowsButton(
+            CupertinoIcons.xmark,
+            onClose,
+            isClose: true,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildMacTrafficLight(Color color, VoidCallback onTap) {

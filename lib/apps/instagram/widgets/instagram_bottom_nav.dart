@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'instagram_icons.dart';
 
 class InstagramBottomNav extends StatelessWidget {
   final int currentIndex;
@@ -18,11 +18,11 @@ class InstagramBottomNav extends StatelessWidget {
     final isDark = currentIndex == 3; // Reels tab is dark theme
     final bgColor = isDark ? Colors.black : Colors.white;
     final activeColor = isDark ? Colors.white : Colors.black;
-    final inactiveColor = isDark ? Colors.white60 : Colors.black54;
+    final inactiveColor = isDark ? Colors.white60 : Colors.black;
     final borderColor = isDark ? Colors.white12 : const Color(0xFFE5E7EB);
 
     return Container(
-      height: 52,
+      height: 48,
       decoration: BoxDecoration(
         color: bgColor,
         border: Border(
@@ -34,32 +34,39 @@ class InstagramBottomNav extends StatelessWidget {
         children: [
           _buildNavItem(
             index: 0,
-            icon: currentIndex == 0 ? CupertinoIcons.house_fill : CupertinoIcons.house,
-            activeColor: activeColor,
-            inactiveColor: inactiveColor,
+            iconWidget: InstagramIcons.home(
+              filled: currentIndex == 0,
+              color: currentIndex == 0 ? activeColor : inactiveColor,
+              size: 24,
+            ),
           ),
           _buildNavItem(
             index: 1,
-            icon: currentIndex == 1 ? CupertinoIcons.search : CupertinoIcons.search,
-            activeColor: activeColor,
-            inactiveColor: inactiveColor,
+            iconWidget: InstagramIcons.search(
+              filled: currentIndex == 1,
+              color: currentIndex == 1 ? activeColor : inactiveColor,
+              size: 24,
+            ),
           ),
           _buildNavItem(
             index: 2,
-            icon: CupertinoIcons.plus_app,
-            activeColor: activeColor,
-            inactiveColor: inactiveColor,
+            iconWidget: InstagramIcons.create(
+              filled: currentIndex == 2,
+              color: currentIndex == 2 ? activeColor : inactiveColor,
+              size: 24,
+            ),
           ),
           _buildNavItem(
             index: 3,
-            icon: currentIndex == 3 ? CupertinoIcons.play_rectangle_fill : CupertinoIcons.play_rectangle,
-            activeColor: activeColor,
-            inactiveColor: inactiveColor,
+            iconWidget: InstagramIcons.reels(
+              filled: currentIndex == 3,
+              color: currentIndex == 3 ? activeColor : inactiveColor,
+              size: 24,
+            ),
           ),
           _buildProfileNavItem(
             index: 4,
             activeColor: activeColor,
-            inactiveColor: inactiveColor,
           ),
         ],
       ),
@@ -68,24 +75,15 @@ class InstagramBottomNav extends StatelessWidget {
 
   Widget _buildNavItem({
     required int index,
-    required IconData icon,
-    required Color activeColor,
-    required Color inactiveColor,
+    required Widget iconWidget,
   }) {
-    final isSelected = currentIndex == index;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => onTabSelected(index),
       child: SizedBox(
-        width: 54,
-        height: 50,
-        child: Center(
-          child: Icon(
-            icon,
-            size: 26,
-            color: isSelected ? activeColor : inactiveColor,
-          ),
-        ),
+        width: 50,
+        height: 46,
+        child: Center(child: iconWidget),
       ),
     );
   }
@@ -93,15 +91,14 @@ class InstagramBottomNav extends StatelessWidget {
   Widget _buildProfileNavItem({
     required int index,
     required Color activeColor,
-    required Color inactiveColor,
   }) {
     final isSelected = currentIndex == index;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => onTabSelected(index),
       child: SizedBox(
-        width: 54,
-        height: 50,
+        width: 50,
+        height: 46,
         child: Center(
           child: Container(
             padding: const EdgeInsets.all(1.5),

@@ -6,8 +6,8 @@ import '../../../common/os_window_frame.dart';
 class FinderWindow extends StatefulWidget {
   final VoidCallback onClose;
   final Function(String templateId)? onOpenTemplate;
-  final Function(GestureDragStartDetails)? onTitleDragStart;
-  final Function(GestureDragUpdateDetails)? onTitleDragUpdate;
+  final Function(DragStartDetails)? onTitleDragStart;
+  final Function(DragUpdateDetails)? onTitleDragUpdate;
   final double width;
   final double height;
 

@@ -5,10 +5,18 @@ import '../../../common/os_window_frame.dart';
 /// macOS Mail (메일) 창
 class MailWindow extends StatefulWidget {
   final VoidCallback onClose;
+  final Function(DragStartDetails)? onTitleDragStart;
+  final Function(DragUpdateDetails)? onTitleDragUpdate;
+  final double width;
+  final double height;
 
   const MailWindow({
     super.key,
     required this.onClose,
+    this.onTitleDragStart,
+    this.onTitleDragUpdate,
+    this.width = 820,
+    this.height = 520,
   });
 
   @override
@@ -60,9 +68,11 @@ class _MailWindowState extends State<MailWindow> {
     return OsWindowFrame(
       title: 'Mail - 받은 편지함',
       style: WindowStyle.macos,
-      width: 820,
-      height: 520,
+      width: widget.width,
+      height: widget.height,
       onClose: widget.onClose,
+      onTitleDragStart: widget.onTitleDragStart,
+      onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Column(
         children: [
           Container(

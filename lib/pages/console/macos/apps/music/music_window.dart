@@ -5,10 +5,18 @@ import '../../../common/os_window_frame.dart';
 /// macOS Music (음악) 창
 class MusicWindow extends StatefulWidget {
   final VoidCallback onClose;
+  final Function(DragStartDetails)? onTitleDragStart;
+  final Function(DragUpdateDetails)? onTitleDragUpdate;
+  final double width;
+  final double height;
 
   const MusicWindow({
     super.key,
     required this.onClose,
+    this.onTitleDragStart,
+    this.onTitleDragUpdate,
+    this.width = 780,
+    this.height = 500,
   });
 
   @override
@@ -34,9 +42,11 @@ class _MusicWindowState extends State<MusicWindow> {
     return OsWindowFrame(
       title: '음악 - Apple Music',
       style: WindowStyle.macos,
-      width: 780,
-      height: 500,
+      width: widget.width,
+      height: widget.height,
       onClose: widget.onClose,
+      onTitleDragStart: widget.onTitleDragStart,
+      onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Column(
         children: [
           Container(
