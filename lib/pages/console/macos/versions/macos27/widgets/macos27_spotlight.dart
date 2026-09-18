@@ -56,6 +56,7 @@ class _Macos27SpotlightState extends State<Macos27Spotlight> with SingleTickerPr
     {'title': 'X (Twitter) 에디터', 'desc': '트윗 및 타임라인 생성', 'icon': 'assets/images/x_twitter_icon.webp', 'templateId': 'x_twitter'},
     {'title': 'YouTube 동영상 에디터', 'desc': '동영상 재생 및 댓글', 'icon': 'assets/images/youtube_icon.webp', 'templateId': 'youtube'},
     {'title': '배달의민족 배송 에디터', 'desc': '주문 및 배달 완료 화면', 'icon': 'assets/images/baemin_icon.webp', 'templateId': 'delivery'},
+    {'title': '야놀자(NOL) 에디터', 'desc': '호텔·모텔·펜션 예약 및 숙소 검색 조작', 'icon': null, 'iconData': CupertinoIcons.bed_double_fill, 'color': const Color(0xFFFF3478), 'templateId': 'yanolja'},
   ];
 
   @override

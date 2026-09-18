@@ -107,10 +107,11 @@ class _Macos27DockState extends State<Macos27Dock> {
                   _buildDockItem(17, 'X (Twitter) 에디터', 'assets/images/x_twitter_icon.webp', templateId: 'x_twitter'),
                   _buildDockItem(18, 'YouTube 에디터', 'assets/images/youtube_icon.webp', templateId: 'youtube'),
                   _buildDockItem(19, '배달의민족 에디터', 'assets/images/baemin_icon.webp', templateId: 'delivery'),
+                  _buildDockItem(20, '야놀자 에디터', null, icon: CupertinoIcons.bed_double_fill, templateId: 'yanolja'),
 
                   _buildDockDivider(),
 
-                  _buildDockItem(20, '랜딩 홈으로 이동', null, icon: CupertinoIcons.house_fill, isHome: true),
+                  _buildDockItem(21, '랜딩 홈으로 이동', null, icon: CupertinoIcons.house_fill, isHome: true),
                 ],
               ),
             ),

@@ -20,6 +20,8 @@ import '../../../apps/windows_bsod/data/windows_bsod_model.dart';
 import '../../../apps/windows_bsod/windows_bsod_screen.dart';
 import '../../../apps/x_twitter/data/x_twitter_model.dart';
 import '../../../apps/x_twitter/x_twitter_screen.dart';
+import '../../../apps/yanolja/data/yanolja_model.dart';
+import '../../../apps/yanolja/yanolja_screen.dart';
 import '../../../apps/coupang/data/coupang_model.dart';
 import '../../../apps/coupang/coupang_screen.dart';
 import '../../../apps/netflix/data/netflix_model.dart';
@@ -82,6 +84,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   late CoupangConfig _coupangConfig;
   late NetflixConfig _netflixConfig;
   late LotteryConfig _lotteryConfig;
+  late YanoljaConfig _yanoljaConfig;
 
   @override
   void initState() {
@@ -99,6 +102,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     _coupangConfig = CoupangConfig.defaultPreset();
     _netflixConfig = NetflixConfig.defaultPreset();
     _lotteryConfig = LotteryConfig.defaultPreset();
+    _yanoljaConfig = YanoljaConfig.defaultPreset();
   }
 
   @override
@@ -338,6 +342,11 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
         return LotteryScreen(
           config: _lotteryConfig,
           onConfigChanged: (cfg) => setState(() => _lotteryConfig = cfg),
+        );
+      case 'yanolja':
+        return YanoljaScreen(
+          config: _yanoljaConfig,
+          onConfigChanged: (cfg) => setState(() => _yanoljaConfig = cfg),
         );
       case 'windows_bsod':
         return WindowsBsodScreen(config: _bsodConfig);

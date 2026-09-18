@@ -25,6 +25,8 @@ import '../../../apps/windows_update/data/windows_update_model.dart';
 import '../../../apps/windows_update/windows_update_screen.dart';
 import '../../../apps/x_twitter/data/x_twitter_model.dart';
 import '../../../apps/x_twitter/x_twitter_screen.dart';
+import '../../../apps/yanolja/data/yanolja_model.dart';
+import '../../../apps/yanolja/yanolja_screen.dart';
 import '../../../apps/youtube/data/youtube_model.dart';
 import '../../../apps/youtube/youtube_screen.dart';
 
@@ -45,12 +47,14 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final CoupangConfig coupangConfig;
   final NetflixConfig netflixConfig;
   final LotteryConfig lotteryConfig;
+  final YanoljaConfig yanoljaConfig;
   final ValueChanged<KakaoBankConfig>? onKakaoBankChanged;
   final ValueChanged<DaangnConfig>? onDaangnChanged;
   final ValueChanged<YoutubeConfig>? onYoutubeChanged;
   final ValueChanged<CoupangConfig>? onCoupangChanged;
   final ValueChanged<NetflixConfig>? onNetflixChanged;
   final ValueChanged<LotteryConfig>? onLotteryChanged;
+  final ValueChanged<YanoljaConfig>? onYanoljaChanged;
 
   const StudioPreviewDispatcher({
     super.key,
@@ -69,12 +73,14 @@ class StudioPreviewDispatcher extends StatelessWidget {
     required this.coupangConfig,
     required this.netflixConfig,
     required this.lotteryConfig,
+    required this.yanoljaConfig,
     this.onKakaoBankChanged,
     this.onDaangnChanged,
     this.onYoutubeChanged,
     this.onCoupangChanged,
     this.onNetflixChanged,
     this.onLotteryChanged,
+    this.onYanoljaChanged,
   });
 
   @override
@@ -94,6 +100,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
       case 'coupang': return CoupangScreen(config: coupangConfig, onConfigChanged: onCoupangChanged);
       case 'netflix': return NetflixScreen(config: netflixConfig, onConfigChanged: onNetflixChanged);
       case 'lottery': return LotteryScreen(config: lotteryConfig, onConfigChanged: onLotteryChanged);
+      case 'yanolja': return YanoljaScreen(config: yanoljaConfig, onConfigChanged: onYanoljaChanged);
       default: return TossScreen(config: tossConfig);
     }
   }

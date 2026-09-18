@@ -15,6 +15,7 @@ import '../apps/toss/data/toss_model.dart';
 import '../apps/windows_bsod/data/windows_bsod_model.dart';
 import '../apps/windows_update/data/windows_update_model.dart';
 import '../apps/x_twitter/data/x_twitter_model.dart';
+import '../apps/yanolja/data/yanolja_model.dart';
 import '../apps/youtube/data/youtube_model.dart';
 import '../managers/export_manager.dart';
 import '../widgets/common/device_frame_preview.dart';
@@ -50,6 +51,7 @@ class _StudioPageState extends State<StudioPage> {
   late CoupangConfig _coupangConfig;
   late NetflixConfig _netflixConfig;
   late LotteryConfig _lotteryConfig;
+  late YanoljaConfig _yanoljaConfig;
 
   @override
   void initState() {
@@ -69,6 +71,7 @@ class _StudioPageState extends State<StudioPage> {
     _coupangConfig = CoupangConfig.defaultPreset();
     _netflixConfig = NetflixConfig.defaultPreset();
     _lotteryConfig = LotteryConfig.defaultPreset();
+    _yanoljaConfig = YanoljaConfig.defaultPreset();
   }
 
   Future<void> _exportScreen() async {
@@ -146,12 +149,14 @@ class _StudioPageState extends State<StudioPage> {
       coupangConfig: _coupangConfig,
       netflixConfig: _netflixConfig,
       lotteryConfig: _lotteryConfig,
+      yanoljaConfig: _yanoljaConfig,
       onKakaoBankChanged: (cfg) => setState(() => _kakaobankConfig = cfg),
       onDaangnChanged: (cfg) => setState(() => _daangnConfig = cfg),
       onYoutubeChanged: (cfg) => setState(() => _youtubeConfig = cfg),
       onCoupangChanged: (cfg) => setState(() => _coupangConfig = cfg),
       onNetflixChanged: (cfg) => setState(() => _netflixConfig = cfg),
       onLotteryChanged: (cfg) => setState(() => _lotteryConfig = cfg),
+      onYanoljaChanged: (cfg) => setState(() => _yanoljaConfig = cfg),
     );
   }
 }

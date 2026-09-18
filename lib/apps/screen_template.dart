@@ -168,5 +168,15 @@ class ScreenTemplate {
       badge: '인기',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'yanolja',
+      title: '야놀자(NOL) 숙소 & 여행',
+      description: '국내/해외 호텔·모텔·리조트·풀빌라 예약, 특가 타임세일, 모바일 앱 & 데스크탑 웹 지원',
+      category: TemplateCategory.lifestyle,
+      icon: CupertinoIcons.bed_double_fill,
+      themeColor: Color(0xFFFF3478),
+      badge: '신규',
+      isDesktop: true,
+    ),
   ];
 }
