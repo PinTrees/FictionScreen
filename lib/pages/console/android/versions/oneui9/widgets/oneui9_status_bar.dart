@@ -36,17 +36,6 @@ class OneUi9StatusBar extends StatelessWidget {
               child: Text(timeString, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: -0.2)),
             ),
             const Spacer(),
-            Container(
-              width: 13,
-              height: 13,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 0.6),
-                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.6), blurRadius: 3)],
-              ),
-            ),
-            const Spacer(),
             Padding(
               padding: const EdgeInsets.only(right: 18),
               child: Row(

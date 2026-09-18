@@ -44,18 +44,6 @@ class OneUi7StatusBar extends StatelessWidget {
             ),
           ),
 
-          // 중앙 펀치홀 카메라 컷아웃
-          Container(
-            width: 14,
-            height: 14,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 0.8),
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.6), blurRadius: 4, spreadRadius: 0.5)],
-            ),
-          ),
-
           // 우측 영역 (VoLTE, 5G, Wi-Fi, 배터리) -> 스와이프/탭 시 빠른 설정 (Quick Settings)
           Expanded(
             child: GestureDetector(
