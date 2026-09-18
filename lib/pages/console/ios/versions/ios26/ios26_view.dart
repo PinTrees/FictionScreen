@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../ios18/apps/settings/ios18_settings_view.dart';
 import 'models/ios26_app_item.dart';
 import 'widgets/ios26_app_icon.dart';
+import 'widgets/ios26_control_center.dart';
 import 'widgets/ios26_dock.dart';
 import 'widgets/ios26_home_indicator.dart';
 import 'widgets/ios26_jiggle.dart';
@@ -14,6 +15,7 @@ import 'widgets/ios26_widget_card.dart';
 
 /// iPhone 17/18 Pro iOS 26 공식 리퀴드 글래스 (Liquid Glass) 모바일 홈스크린 뷰
 /// - WWDC 2025 공식 광학 공식 (채도 증폭 + 프리즘 색수차 분산 + 코너 글로우 + 메니스커스 렌즈 굴절)
+/// - 상태바 우측 드래그 다운 제어 센터 (Control Center) 연동
 /// - 좌우 슬라이드 멀티 페이지 (PageView)
 /// - 롱프레스 홈 화면 편집 모드 (드래그 앤 드롭 실시간 위치 스왑, 지글 물리 흔들림, '-' 삭제 배지, 완료 버튼)
 class Ios26View extends StatefulWidget {
@@ -48,6 +50,7 @@ class _Ios26ViewState extends State<Ios26View> {
   late final PageController _pageController;
   int _currentPage = 0;
   bool _isEditMode = false;
+  bool _isControlCenterOpen = false;
 
   late List<Ios26AppItem> _page1Apps;
   late List<Ios26AppItem> _page2Apps;
@@ -187,6 +190,12 @@ class _Ios26ViewState extends State<Ios26View> {
     }
   }
 
+  void _toggleControlCenter(bool open) {
+    setState(() {
+      _isControlCenterOpen = open;
+    });
+  }
+
   void _onReorderPage1(int oldIndex, int newIndex) {
     setState(() {
       final item = _page1Apps.removeAt(oldIndex);
@@ -202,7 +211,7 @@ class _Ios26ViewState extends State<Ios26View> {
   }
 
   void _openApp(String appId) {
-    if (_isEditMode) return;
+    if (_isEditMode || _isControlCenterOpen) return;
 
     const creatorTemplates = {
       'kakaotalk',
@@ -305,7 +314,13 @@ class _Ios26ViewState extends State<Ios26View> {
         // 1. 공식 고화질 iOS 배경화면
         Positioned.fill(
           child: GestureDetector(
-            onTap: _exitEditMode,
+            onTap: () {
+              if (_isControlCenterOpen) {
+                _toggleControlCenter(false);
+                return;
+              }
+              _exitEditMode();
+            },
             behavior: HitTestBehavior.translucent,
             child: Image.asset(
               _getWallpaperAsset(),
@@ -315,71 +330,83 @@ class _Ios26ViewState extends State<Ios26View> {
           ),
         ),
 
-        // 2. 홈 스크린 콘텐츠 (상태바 + 편집 모드 헤더 + PageView + 페이지 인디케이터 + 리퀴드 독)
-        Positioned.fill(
-          child: SafeArea(
-            bottom: false,
-            child: Column(
-              children: [
-                // 최상단 상태바 & 다이내믹 아일랜드
-                Ios26StatusBar(timeString: widget.timeString),
-
-                // 편집 모드 헤더
-                AnimatedCrossFade(
-                  firstChild: const SizedBox(height: 10),
-                  secondChild: _buildEditModeHeader(),
-                  crossFadeState: _isEditMode
-                      ? CrossFadeState.showSecond
-                      : CrossFadeState.showFirst,
-                  duration: const Duration(milliseconds: 200),
-                ),
-
-                // 좌우 슬라이드 PageView
-                Expanded(
-                  child: PageView(
-                    controller: _pageController,
-                    physics: const BouncingScrollPhysics(),
-                    onPageChanged: (page) {
-                      setState(() {
-                        _currentPage = page;
-                      });
-                    },
-                    children: [
-                      _buildPage1(),
-                      _buildPage2(),
-                      _buildPage3AppLibrary(),
-                    ],
+        // 2. 홈 스크린 본체 콘텐츠
+        AnimatedScale(
+          scale: _isControlCenterOpen ? 0.93 : 1.0,
+          duration: const Duration(milliseconds: 320),
+          curve: Curves.easeOutCubic,
+          child: Positioned.fill(
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  // 최상단 상태바 & 다이내믹 아일랜드 (드래그 다운 / 우측 탭 시 제어 센터 열림)
+                  Ios26StatusBar(
+                    timeString: widget.timeString,
+                    onOpenControlCenter: () => _toggleControlCenter(true),
                   ),
-                ),
 
-                // iOS 26 리퀴드 글래스 페이지 인디케이터 도트 & 검색 캡슐
-                _buildPageIndicator(),
-                const SizedBox(height: 10),
+                  // 편집 모드 헤더
+                  AnimatedCrossFade(
+                    firstChild: const SizedBox(height: 10),
+                    secondChild: _buildEditModeHeader(),
+                    crossFadeState: _isEditMode
+                        ? CrossFadeState.showSecond
+                        : CrossFadeState.showFirst,
+                    duration: const Duration(milliseconds: 200),
+                  ),
 
-                // 3. Apple 공식 리퀴드 글래스 독 (Dock)
-                Ios26Dock(
-                  onOpenApp: _openApp,
-                  isEditMode: _isEditMode,
-                  onEnterEditMode: _enterEditMode,
-                ),
-                const SizedBox(height: 10),
+                  // 좌우 슬라이드 PageView
+                  Expanded(
+                    child: PageView(
+                      controller: _pageController,
+                      physics: const BouncingScrollPhysics(),
+                      onPageChanged: (page) {
+                        setState(() {
+                          _currentPage = page;
+                        });
+                      },
+                      children: [
+                        _buildPage1(),
+                        _buildPage2(),
+                        _buildPage3AppLibrary(),
+                      ],
+                    ),
+                  ),
 
-                // 4. 하단 홈 인디케이터 바
-                Ios26HomeIndicator(onHome: () {
-                  if (_isEditMode) {
-                    _exitEditMode();
-                    return;
-                  }
-                  if (_currentPage != 0) {
-                    _pageController.animateToPage(
-                      0,
-                      duration: const Duration(milliseconds: 350),
-                      curve: Curves.easeOutCubic,
-                    );
-                  }
-                }),
-                const SizedBox(height: 6),
-              ],
+                  // iOS 26 리퀴드 글래스 페이지 인디케이터 도트 & 검색 캡슐
+                  _buildPageIndicator(),
+                  const SizedBox(height: 10),
+
+                  // 3. Apple 공식 리퀴드 글래스 독 (Dock)
+                  Ios26Dock(
+                    onOpenApp: _openApp,
+                    isEditMode: _isEditMode,
+                    onEnterEditMode: _enterEditMode,
+                  ),
+                  const SizedBox(height: 10),
+
+                  // 4. 하단 홈 인디케이터 바
+                  Ios26HomeIndicator(onHome: () {
+                    if (_isControlCenterOpen) {
+                      _toggleControlCenter(false);
+                      return;
+                    }
+                    if (_isEditMode) {
+                      _exitEditMode();
+                      return;
+                    }
+                    if (_currentPage != 0) {
+                      _pageController.animateToPage(
+                        0,
+                        duration: const Duration(milliseconds: 350),
+                        curve: Curves.easeOutCubic,
+                      );
+                    }
+                  }),
+                  const SizedBox(height: 6),
+                ],
+              ),
             ),
           ),
         ),
@@ -389,6 +416,23 @@ class _Ios26ViewState extends State<Ios26View> {
           Positioned.fill(
             child: _buildAppOverlay(),
           ),
+
+        // 4. iOS 26 공식 리퀴드 글래스 제어 센터 (상태바 드래그 다운 또는 우측 탭 시 슬라이드 다운)
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 340),
+          curve: Curves.easeOutCubic,
+          top: _isControlCenterOpen ? 0 : -920,
+          bottom: _isControlCenterOpen ? 0 : 920,
+          left: 0,
+          right: 0,
+          child: Ios26ControlCenter(
+            onClose: () => _toggleControlCenter(false),
+            onOpenApp: (appId) {
+              _toggleControlCenter(false);
+              _openApp(appId);
+            },
+          ),
+        ),
       ],
     );
   }
@@ -513,7 +557,6 @@ class _Ios26ViewState extends State<Ios26View> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          // 앱 보관함 리퀴드 글래스 검색바
           Ios26LiquidGlass(
             height: 40,
             borderRadius: 14,
@@ -620,7 +663,6 @@ class _Ios26ViewState extends State<Ios26View> {
     );
   }
 
-  // iOS 26 리퀴드 글래스 페이지 인디케이터 도트 & 검색 캡슐
   Widget _buildPageIndicator() {
     return GestureDetector(
       onTap: () {
@@ -736,7 +778,10 @@ class _Ios26ViewState extends State<Ios26View> {
           right: 0,
           child: SafeArea(
             bottom: false,
-            child: Ios26StatusBar(timeString: widget.timeString),
+            child: Ios26StatusBar(
+              timeString: widget.timeString,
+              onOpenControlCenter: () => _toggleControlCenter(true),
+            ),
           ),
         ),
         Positioned(
