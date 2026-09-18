@@ -6,8 +6,8 @@ import 'navigation/app_router.dart';
 import 'services/firebase_service.dart';
 import 'style/app_theme.dart';
 
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+import 'package:web/web.dart' as web;
+import 'dart:js_interop';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,9 +15,12 @@ void main() async {
   // 웹 브라우저 기본 우클릭 메뉴(검사, 뒤로 등) 차단 및 가상 OS 우클릭 메뉴 전용 처리
   if (kIsWeb) {
     try {
-      html.window.onContextMenu.listen((event) {
-        event.preventDefault();
-      });
+      web.window.addEventListener(
+        'contextmenu',
+        (web.Event event) {
+          event.preventDefault();
+        }.toJS,
+      );
     } catch (e) {
       debugPrint('[Main] Prevent context menu error: $e');
     }

@@ -113,5 +113,15 @@ class ScreenTemplate {
       icon: CupertinoIcons.bag_fill,
       themeColor: Color(0xFF2AC1BC),
     ),
+    const ScreenTemplate(
+      id: 'coupang',
+      title: '쿠팡 (Coupang)',
+      description: '로켓배송, 로켓프레시, 골드박스, 데스크탑 와이드 몰 & 모바일 앱',
+      category: TemplateCategory.lifestyle,
+      icon: CupertinoIcons.cart_fill,
+      themeColor: Color(0xFFC72424),
+      badge: '인기',
+      isDesktop: true,
+    ),
   ];
 }

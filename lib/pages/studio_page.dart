@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:screenshot/screenshot.dart';
+import '../apps/coupang/data/coupang_model.dart';
+import '../apps/coupang/coupang_screen.dart';
 import '../apps/delivery/data/delivery_model.dart';
 import '../apps/delivery/delivery_screen.dart';
 import '../apps/instagram/data/instagram_model.dart';
@@ -52,6 +54,7 @@ class _StudioPageState extends State<StudioPage> {
   late YoutubeConfig _youtubeConfig;
   late InstagramConfig _instaConfig;
   late DeliveryConfig _deliveryConfig;
+  late CoupangConfig _coupangConfig;
 
   @override
   void initState() {
@@ -70,6 +73,7 @@ class _StudioPageState extends State<StudioPage> {
     _youtubeConfig = YoutubeConfig.defaultPreset();
     _instaConfig = InstagramConfig.defaultPreset();
     _deliveryConfig = DeliveryConfig.defaultPreset();
+    _coupangConfig = CoupangConfig.defaultPreset();
   }
 
   Future<void> _exportScreen() async {
@@ -577,6 +581,64 @@ class _StudioPageState extends State<StudioPage> {
     );
   }
 
+  void _editCoupang() {
+    final firstProd = _coupangConfig.products.isNotEmpty
+        ? _coupangConfig.products.first
+        : const CoupangProductItem(
+            id: 'p1',
+            title: '상품명',
+            price: 33900,
+            originalPrice: 45000,
+            discountPercent: 24,
+            rating: 4.8,
+            reviewCount: 1200,
+            badgeType: RocketBadgeType.rocket,
+            deliveryNotice: '내일(토) 새벽 7시 전 도착 보장',
+            imageUrl: '',
+          );
+
+    final titleCtrl = TextEditingController(text: firstProd.title);
+    final priceCtrl = TextEditingController(text: firstProd.price.toString());
+    final origPriceCtrl = TextEditingController(text: firstProd.originalPrice.toString());
+    final discountCtrl = TextEditingController(text: firstProd.discountPercent.toString());
+    final deliveryCtrl = TextEditingController(text: firstProd.deliveryNotice);
+    final searchCtrl = TextEditingController(text: _coupangConfig.searchKeyword);
+
+    _openQuickEditDialog(
+      title: '쿠팡 상품 및 검색어 수정',
+      children: [
+        _buildDialogInput('검색창 키워드', searchCtrl),
+        _buildDialogInput('메인 상품명', titleCtrl, maxLines: 2),
+        _buildDialogInput('판매 가격 (원)', priceCtrl, type: TextInputType.number),
+        _buildDialogInput('정상가 (원)', origPriceCtrl, type: TextInputType.number),
+        _buildDialogInput('할인율 (%)', discountCtrl, type: TextInputType.number),
+        _buildDialogInput('도착 예정 안내문', deliveryCtrl),
+      ],
+      onConfirm: () {
+        final newPrice = int.tryParse(priceCtrl.text) ?? firstProd.price;
+        final newOrig = int.tryParse(origPriceCtrl.text) ?? firstProd.originalPrice;
+        final newDisc = int.tryParse(discountCtrl.text) ?? firstProd.discountPercent;
+        final updatedFirst = firstProd.copyWith(
+          title: titleCtrl.text,
+          price: newPrice,
+          originalPrice: newOrig,
+          discountPercent: newDisc,
+          deliveryNotice: deliveryCtrl.text,
+        );
+        final list = List<CoupangProductItem>.from(_coupangConfig.products);
+        if (list.isNotEmpty) {
+          list[0] = updatedFirst;
+        } else {
+          list.add(updatedFirst);
+        }
+        _coupangConfig = _coupangConfig.copyWith(
+          searchKeyword: searchCtrl.text,
+          products: list,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -707,6 +769,13 @@ class _StudioPageState extends State<StudioPage> {
               onPressed: _editYoutube,
             ),
 
+          if (_template.id == 'coupang')
+            IconButton(
+              tooltip: '쿠팡 상품/정보 변경',
+              icon: const Icon(CupertinoIcons.cart_fill, color: Color(0xFFC72424), size: 22),
+              onPressed: _editCoupang,
+            ),
+
           // 디바이스 프레임 토글
           IconButton(
             tooltip: '디바이스 프레임 토글',
@@ -810,6 +879,11 @@ class _StudioPageState extends State<StudioPage> {
         return GestureDetector(
           onTap: _editWindowsUpdate,
           child: WindowsUpdateScreen(config: _winUpdateConfig),
+        );
+      case 'coupang':
+        return CoupangScreen(
+          config: _coupangConfig,
+          onConfigChanged: (cfg) => setState(() => _coupangConfig = cfg),
         );
       default:
         return TossScreen(config: _tossConfig);

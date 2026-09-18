@@ -16,6 +16,8 @@ import '../../../apps/windows_bsod/data/windows_bsod_model.dart';
 import '../../../apps/windows_bsod/windows_bsod_screen.dart';
 import '../../../apps/x_twitter/data/x_twitter_model.dart';
 import '../../../apps/x_twitter/x_twitter_screen.dart';
+import '../../../apps/coupang/data/coupang_model.dart';
+import '../../../apps/coupang/coupang_screen.dart';
 import '../../../apps/youtube/data/youtube_model.dart';
 import '../../../apps/youtube/youtube_screen.dart';
 import '../../../widgets/common/device_frame_preview.dart';
@@ -67,6 +69,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   late YoutubeConfig _youtubeConfig;
   late InstagramConfig _instaConfig;
   late DeliveryConfig _deliveryConfig;
+  late CoupangConfig _coupangConfig;
 
   @override
   void initState() {
@@ -79,6 +82,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     _youtubeConfig = YoutubeConfig.defaultPreset();
     _instaConfig = InstagramConfig.defaultPreset();
     _deliveryConfig = DeliveryConfig.defaultPreset();
+    _coupangConfig = CoupangConfig.defaultPreset();
   }
 
   @override
@@ -294,6 +298,11 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
         );
       case 'delivery':
         return DeliveryScreen(config: _deliveryConfig);
+      case 'coupang':
+        return CoupangScreen(
+          config: _coupangConfig,
+          onConfigChanged: (cfg) => setState(() => _coupangConfig = cfg),
+        );
       case 'windows_bsod':
         return WindowsBsodScreen(config: _bsodConfig);
       default:
