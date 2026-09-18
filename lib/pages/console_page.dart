@@ -300,7 +300,7 @@ class _ConsolePageState extends State<ConsolePage> {
                 if (_mobileTheme == 'ios')
                   IosView(
                     user: AuthService.currentUser,
-                    iosVersion: '18',
+                    iosVersion: '26',
                     timeString: _formatDate('h:mm'),
                     dateString: _formatDate('M월 d일 EEEE', 'ko_KR'),
                     currentWallpaper: _wallpaper,
