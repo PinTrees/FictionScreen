@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../common/os_window_frame.dart';
+import '../../../common/os_window_frame.dart';
 
 /// macOS Photos (사진) 창
 class PhotosWindow extends StatefulWidget {
@@ -38,7 +38,6 @@ class _PhotosWindowState extends State<PhotosWindow> {
       onClose: widget.onClose,
       child: Row(
         children: [
-          // 1. 좌측 보관함 사이드바
           Container(
             width: 180,
             decoration: BoxDecoration(
@@ -66,8 +65,6 @@ class _PhotosWindowState extends State<PhotosWindow> {
               ],
             ),
           ),
-
-          // 2. 우측 사진 그리드 / 프리뷰
           Expanded(
             child: _previewAsset != null
                 ? Stack(

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../common/os_window_frame.dart';
+import '../../../common/os_window_frame.dart';
 
 /// macOS Mail (메일) 창
 class MailWindow extends StatefulWidget {
@@ -65,7 +65,6 @@ class _MailWindowState extends State<MailWindow> {
       onClose: widget.onClose,
       child: Column(
         children: [
-          // 1. 상단 메일 툴바
           Container(
             height: 42,
             padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -89,12 +88,9 @@ class _MailWindowState extends State<MailWindow> {
               ],
             ),
           ),
-
-          // 2. 본문 (사이드바 + 메일 목록 + 메일 본문)
           Expanded(
             child: Row(
               children: [
-                // 좌측 메일함 사이드바 (160px)
                 Container(
                   width: 160,
                   decoration: BoxDecoration(
@@ -116,8 +112,6 @@ class _MailWindowState extends State<MailWindow> {
                     ],
                   ),
                 ),
-
-                // 중앙 메일 목록 (260px)
                 Container(
                   width: 260,
                   decoration: BoxDecoration(
@@ -161,7 +155,7 @@ class _MailWindowState extends State<MailWindow> {
                               const SizedBox(height: 3),
                               Text(
                                 item['subject'] as String,
-                                style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w500),
+                                style: TextStyle(color: Colors.white.withValues(alpha: 0.87), fontSize: 11, fontWeight: FontWeight.w500),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -179,8 +173,6 @@ class _MailWindowState extends State<MailWindow> {
                     },
                   ),
                 ),
-
-                // 우측 메일 본문 읽기 영역
                 Expanded(
                   child: Container(
                     color: const Color(0xFF161820),

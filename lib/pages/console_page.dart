@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../apps/screen_template.dart';
 import '../services/auth_service.dart';
+import '../services/user_settings_service.dart';
 import 'console/android/galaxy_view.dart';
 import 'console/common/floating_app_window.dart';
 import 'console/ios/ios_view.dart';
@@ -30,7 +31,7 @@ class FloatingWindowData {
   });
 }
 
-/// 가상 OS 콘솔 메인 페이지 (오케스트레이터 & MDI 창 관리자)
+/// 가상 OS 콘솔 메인 페이지 (오케스트레이터 & MDI 창 관리자 & Firestore 연동)
 class ConsolePage extends StatefulWidget {
   const ConsolePage({super.key});
 
@@ -50,12 +51,14 @@ class _ConsolePageState extends State<ConsolePage> {
 
   bool _isStartMenuOpen = false;
   bool _isSettingsOpen = false;
+  bool _isLoadingSettings = false;
 
   // MDI 열린 가상 창 관리
   final List<FloatingWindowData> _activeFloatingWindows = [];
   int _highestZIndex = 1;
 
   late Timer _clockTimer;
+  StreamSubscription<User?>? _authSubscription;
   DateTime _now = DateTime.now();
 
   @override
@@ -68,12 +71,51 @@ class _ConsolePageState extends State<ConsolePage> {
         });
       }
     });
+
+    // 유저 인증 상태 및 Firestore 설정 로드
+    _authSubscription = AuthService.authStateChanges.listen((user) {
+      if (user != null) {
+        _loadUserOsSettings();
+      }
+    });
+
+    _loadUserOsSettings();
   }
 
   @override
   void dispose() {
     _clockTimer.cancel();
+    _authSubscription?.cancel();
     super.dispose();
+  }
+
+  /// 파이어스토어에서 유저별 이전 OS 선택값 불러오기
+  Future<void> _loadUserOsSettings() async {
+    if (_isLoadingSettings) return;
+    _isLoadingSettings = true;
+
+    final settings = await UserSettingsService.loadOsSettings();
+    if (settings != null && mounted) {
+      setState(() {
+        _pcTheme = settings.pcTheme;
+        _windowsVersion = settings.windowsVersion;
+        _mobileTheme = settings.mobileTheme;
+        _wallpaper = settings.wallpaper;
+      });
+    }
+    _isLoadingSettings = false;
+  }
+
+  /// 파이어스토어에 유저 OS 선택값 동기화 저장
+  void _saveCurrentOsSettings() {
+    UserSettingsService.saveOsSettings(
+      UserOsSettings(
+        pcTheme: _pcTheme,
+        windowsVersion: _windowsVersion,
+        mobileTheme: _mobileTheme,
+        wallpaper: _wallpaper,
+      ),
+    );
   }
 
   void _bringToFront(String windowId) {
@@ -99,10 +141,8 @@ class _ConsolePageState extends State<ConsolePage> {
       final existingIndex = _activeFloatingWindows.indexWhere((w) => w.template.id == templateId);
 
       if (existingIndex != -1) {
-        // 이미 생성되어 열린 창이면 최상단으로 포커스 & 최소화 해제
         _bringToFront(_activeFloatingWindows[existingIndex].id);
       } else {
-        // 새 MDI 가상 창 생성
         final template = ScreenTemplate.allTemplates.firstWhere(
           (t) => t.id == templateId,
           orElse: () => ScreenTemplate.allTemplates.first,
@@ -127,7 +167,6 @@ class _ConsolePageState extends State<ConsolePage> {
         });
       }
     } else {
-      // 모바일 기기 접속 시 스튜디오 페이지로 이동
       context.push('/studio/$templateId');
     }
   }
@@ -164,7 +203,7 @@ class _ConsolePageState extends State<ConsolePage> {
 
           return Stack(
             children: [
-              // 1. 가상 OS 메인 뷰 (Windows / macOS)
+              // 1. 선택된 가상 OS 메인 뷰 (Windows / macOS)
               if (isDesktop) ...[
                 if (_pcTheme == 'macos')
                   MacosView(
@@ -194,7 +233,7 @@ class _ConsolePageState extends State<ConsolePage> {
                     onGoHome: () => context.go('/'),
                   ),
 
-                // 2. MDI (Multiple Document Interface) 가상 창 레이어 모음
+                // 2. MDI 가상 창 레이어 모음
                 ..._activeFloatingWindows.where((w) => !w.isMinimized).map((win) {
                   final isFocused = _activeFloatingWindows.isNotEmpty && _activeFloatingWindows.last.id == win.id;
 
@@ -239,7 +278,7 @@ class _ConsolePageState extends State<ConsolePage> {
                   ),
               ],
 
-              // 3. 시스템 설정 창
+              // 3. 시스템 설정 창 (설정 변경 시 파이어스토어 자동 저장)
               if (_isSettingsOpen)
                 GestureDetector(
                   onTap: () => setState(() => _isSettingsOpen = false),
@@ -253,10 +292,22 @@ class _ConsolePageState extends State<ConsolePage> {
                         currentWindowsVersion: _windowsVersion,
                         currentMobileTheme: _mobileTheme,
                         currentWallpaper: _wallpaper,
-                        onPcThemeChanged: (val) => setState(() => _pcTheme = val),
-                        onWindowsVersionChanged: (val) => setState(() => _windowsVersion = val),
-                        onMobileThemeChanged: (val) => setState(() => _mobileTheme = val),
-                        onWallpaperChanged: (val) => setState(() => _wallpaper = val),
+                        onPcThemeChanged: (val) {
+                          setState(() => _pcTheme = val);
+                          _saveCurrentOsSettings();
+                        },
+                        onWindowsVersionChanged: (val) {
+                          setState(() => _windowsVersion = val);
+                          _saveCurrentOsSettings();
+                        },
+                        onMobileThemeChanged: (val) {
+                          setState(() => _mobileTheme = val);
+                          _saveCurrentOsSettings();
+                        },
+                        onWallpaperChanged: (val) {
+                          setState(() => _wallpaper = val);
+                          _saveCurrentOsSettings();
+                        },
                         onClose: () => setState(() => _isSettingsOpen = false),
                         onSignOut: _handleSignOut,
                         user: user,

@@ -16,6 +16,13 @@ class DeviceFramePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 프레임이 꺼져있을 때는 부모 창(MDI 플로팅 창 등) 크기에 100% 반응형으로 채움
+    if (!showFrame) {
+      return SizedBox.expand(
+        child: child,
+      );
+    }
+
     if (isDesktop) {
       return _buildDesktopFrame();
     }
@@ -25,34 +32,6 @@ class DeviceFramePreview extends StatelessWidget {
   Widget _buildPhoneFrame() {
     const double screenWidth = 380;
     const double screenHeight = 800;
-
-    if (!showFrame) {
-      return Container(
-        width: screenWidth * scale,
-        height: screenHeight * scale,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.35),
-              blurRadius: 28,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Transform.scale(
-          scale: scale,
-          alignment: Alignment.topLeft,
-          child: SizedBox(
-            width: screenWidth,
-            height: screenHeight,
-            child: child,
-          ),
-        ),
-      );
-    }
 
     // 아이폰 스타일 외형 프레임
     return Container(
@@ -128,33 +107,6 @@ class DeviceFramePreview extends StatelessWidget {
   Widget _buildDesktopFrame() {
     const double screenWidth = 760;
     const double screenHeight = 480;
-
-    if (!showFrame) {
-      return Container(
-        width: screenWidth * scale,
-        height: screenHeight * scale,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.4),
-              blurRadius: 30,
-              offset: const Offset(0, 14),
-            ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Transform.scale(
-          scale: scale,
-          alignment: Alignment.topLeft,
-          child: SizedBox(
-            width: screenWidth,
-            height: screenHeight,
-            child: child,
-          ),
-        ),
-      );
-    }
 
     return Container(
       padding: EdgeInsets.all(10 * scale),

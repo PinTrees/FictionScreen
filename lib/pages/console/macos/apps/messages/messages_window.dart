@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../common/os_window_frame.dart';
+import '../../../common/os_window_frame.dart';
 
 /// macOS Messages (iMessage) 창
 class MessagesWindow extends StatefulWidget {
@@ -103,7 +103,6 @@ class _MessagesWindowState extends State<MessagesWindow> {
       onClose: widget.onClose,
       child: Row(
         children: [
-          // 1. 좌측 대화 목록 패널
           Container(
             width: 250,
             decoration: BoxDecoration(
@@ -112,7 +111,6 @@ class _MessagesWindowState extends State<MessagesWindow> {
             ),
             child: Column(
               children: [
-                // 검색 & 새 메시지
                 Padding(
                   padding: const EdgeInsets.all(12),
                   child: Row(
@@ -147,7 +145,6 @@ class _MessagesWindowState extends State<MessagesWindow> {
                     ],
                   ),
                 ),
-                // 대화 리스트
                 Expanded(
                   child: ListView.builder(
                     itemCount: _chats.length,
@@ -216,12 +213,9 @@ class _MessagesWindowState extends State<MessagesWindow> {
               ],
             ),
           ),
-
-          // 2. 우측 iMessage 대화창
           Expanded(
             child: Column(
               children: [
-                // 수신자 헤더
                 Container(
                   height: 48,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -251,8 +245,6 @@ class _MessagesWindowState extends State<MessagesWindow> {
                     ],
                   ),
                 ),
-
-                // 메시지 목록
                 Expanded(
                   child: ListView.builder(
                     controller: _scrollController,
@@ -298,8 +290,6 @@ class _MessagesWindowState extends State<MessagesWindow> {
                     },
                   ),
                 ),
-
-                // 하단 메시지 입력 바
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(

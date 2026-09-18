@@ -1,19 +1,39 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../common/os_app_item.dart';
-import 'apps/finder_window.dart';
-import 'apps/mail_window.dart';
-import 'apps/maps_window.dart';
-import 'apps/messages_window.dart';
-import 'apps/music_window.dart';
-import 'apps/notes_window.dart';
-import 'apps/photos_window.dart';
-import 'apps/safari_window.dart';
-import 'apps/terminal_window.dart';
+import 'apps/finder/finder_window.dart';
+import 'apps/mail/mail_window.dart';
+import 'apps/maps/maps_window.dart';
+import 'apps/messages/messages_window.dart';
+import 'apps/music/music_window.dart';
+import 'apps/notes/notes_window.dart';
+import 'apps/photos/photos_window.dart';
+import 'apps/safari/safari_window.dart';
+import 'apps/terminal/terminal_window.dart';
 import 'macos_dock.dart';
 import 'macos_menubar.dart';
 
-/// macOS 전용 데스크톱 뷰 레이아웃
+/// macOS MDI 가상 창 데이터 모델
+class MacosWindowData {
+  final String id;
+  final String appId;
+  Offset position;
+  Size size;
+  int zIndex;
+  bool isMinimized;
+
+  MacosWindowData({
+    required this.id,
+    required this.appId,
+    required this.position,
+    required this.size,
+    required this.zIndex,
+    this.isMinimized = false,
+  });
+}
+
+/// macOS 전용 데스크톱 MDI 뷰 레이아웃
 class MacosView extends StatefulWidget {
   final User? user;
   final String timeString;
@@ -39,17 +59,54 @@ class MacosView extends StatefulWidget {
 }
 
 class _MacosViewState extends State<MacosView> {
-  String? _activeAppId;
+  final List<MacosWindowData> _activeWindows = [];
+  int _highestZIndex = 1;
 
   void _openApp(String appId) {
+    final existingIndex = _activeWindows.indexWhere((w) => w.appId == appId);
+
+    if (existingIndex != -1) {
+      _bringToFront(_activeWindows[existingIndex].id);
+    } else {
+      _highestZIndex++;
+      final count = _activeWindows.length;
+      final initialPos = Offset(100.0 + (count * 28), 50.0 + (count * 22));
+      Size defaultSize = const Size(780, 520);
+
+      if (appId == 'terminal') {
+        defaultSize = const Size(680, 440);
+      } else if (appId == 'messages' || appId == 'notes') {
+        defaultSize = const Size(760, 500);
+      }
+
+      final newWin = MacosWindowData(
+        id: '${appId}_${DateTime.now().millisecondsSinceEpoch}',
+        appId: appId,
+        position: initialPos,
+        size: defaultSize,
+        zIndex: _highestZIndex,
+      );
+
+      setState(() {
+        _activeWindows.add(newWin);
+        _activeWindows.sort((a, b) => a.zIndex.compareTo(b.zIndex));
+      });
+    }
+  }
+
+  void _closeWindow(String windowId) {
     setState(() {
-      _activeAppId = appId;
+      _activeWindows.removeWhere((w) => w.id == windowId);
     });
   }
 
-  void _closeApp() {
+  void _bringToFront(String windowId) {
     setState(() {
-      _activeAppId = null;
+      _highestZIndex++;
+      final win = _activeWindows.firstWhere((w) => w.id == windowId);
+      win.zIndex = _highestZIndex;
+      win.isMinimized = false;
+      _activeWindows.sort((a, b) => a.zIndex.compareTo(b.zIndex));
     });
   }
 
@@ -57,7 +114,7 @@ class _MacosViewState extends State<MacosView> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // 1. 2K 고해상도 배경화면
+        // 1. 2K 고해상도 레티나 배경화면
         Positioned.fill(
           child: _buildMacWallpaper(),
         ),
@@ -85,7 +142,24 @@ class _MacosViewState extends State<MacosView> {
           ),
         ),
 
-        // 3. 상단 Apple 메뉴바
+        // 3. MDI 가상 floating 윈도우 창 레이어
+        ..._activeWindows.map((win) {
+          if (win.isMinimized) return const SizedBox.shrink();
+
+          return Positioned(
+            left: win.position.dx,
+            top: win.position.dy,
+            child: _MacosMdiWindowWrapper(
+              key: ValueKey(win.id),
+              windowData: win,
+              onTapFocus: () => _bringToFront(win.id),
+              onClose: () => _closeWindow(win.id),
+              child: _buildAppContent(win),
+            ),
+          );
+        }),
+
+        // 4. 상단 Apple 글로벌 메뉴바
         Positioned(
           top: 0,
           left: 0,
@@ -98,24 +172,6 @@ class _MacosViewState extends State<MacosView> {
             onGoHome: widget.onGoHome,
           ),
         ),
-
-        // 4. 활성화된 기본 앱 창 (오버레이 모달)
-        if (_activeAppId != null)
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: _closeApp,
-              behavior: HitTestBehavior.translucent,
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.25),
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () {}, // 창 내부 클릭 시 닫힘 방지
-                    child: _buildActiveAppWindow(),
-                  ),
-                ),
-              ),
-            ),
-          ),
 
         // 5. 하단 플로팅 글래스 독
         Positioned(
@@ -133,26 +189,46 @@ class _MacosViewState extends State<MacosView> {
     );
   }
 
-  Widget _buildActiveAppWindow() {
-    switch (_activeAppId) {
+  Widget _buildAppContent(MacosWindowData win) {
+    switch (win.appId) {
       case 'finder':
-        return FinderWindow(onClose: _closeApp, onOpenTemplate: widget.onOpenTemplate);
+        return FinderWindow(
+          onClose: () => _closeWindow(win.id),
+          onOpenTemplate: widget.onOpenTemplate,
+        );
       case 'safari':
-        return SafariWindow(onClose: _closeApp, onOpenTemplate: widget.onOpenTemplate);
+        return SafariWindow(
+          onClose: () => _closeWindow(win.id),
+          onOpenTemplate: widget.onOpenTemplate,
+        );
       case 'terminal':
-        return TerminalWindow(onClose: _closeApp);
+        return TerminalWindow(
+          onClose: () => _closeWindow(win.id),
+        );
       case 'messages':
-        return MessagesWindow(onClose: _closeApp);
+        return MessagesWindow(
+          onClose: () => _closeWindow(win.id),
+        );
       case 'notes':
-        return NotesWindow(onClose: _closeApp);
+        return NotesWindow(
+          onClose: () => _closeWindow(win.id),
+        );
       case 'mail':
-        return MailWindow(onClose: _closeApp);
+        return MailWindow(
+          onClose: () => _closeWindow(win.id),
+        );
       case 'photos':
-        return PhotosWindow(onClose: _closeApp);
+        return PhotosWindow(
+          onClose: () => _closeWindow(win.id),
+        );
       case 'music':
-        return MusicWindow(onClose: _closeApp);
+        return MusicWindow(
+          onClose: () => _closeWindow(win.id),
+        );
       case 'maps':
-        return MapsWindow(onClose: _closeApp);
+        return MapsWindow(
+          onClose: () => _closeWindow(win.id),
+        );
       default:
         return const SizedBox.shrink();
     }
@@ -201,44 +277,6 @@ class _MacosViewState extends State<MacosView> {
               colors: [Color(0xFF1E1B4B), Color(0xFF311042), Color(0xFF0F172A)],
             ),
           ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: 80,
-                left: 180,
-                child: Container(
-                  width: 500,
-                  height: 500,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        const Color(0xFFF43F5E).withValues(alpha: 0.16),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 120,
-                right: 200,
-                child: Container(
-                  width: 450,
-                  height: 450,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        const Color(0xFF8B5CF6).withValues(alpha: 0.18),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
         );
       default:
         return Image.asset(
@@ -249,5 +287,104 @@ class _MacosViewState extends State<MacosView> {
           filterQuality: FilterQuality.high,
         );
     }
+  }
+}
+
+/// macOS MDI 가상 창 래퍼 위젯 (1:1 마우스 드래그 이동 + 리사이즈 + 포커스 연동)
+class _MacosMdiWindowWrapper extends StatefulWidget {
+  final MacosWindowData windowData;
+  final VoidCallback onTapFocus;
+  final VoidCallback onClose;
+  final Widget child;
+
+  const _MacosMdiWindowWrapper({
+    super.key,
+    required this.windowData,
+    required this.onTapFocus,
+    required this.onClose,
+    required this.child,
+  });
+
+  @override
+  State<_MacosMdiWindowWrapper> createState() => _MacosMdiWindowWrapperState();
+}
+
+class _MacosMdiWindowWrapperState extends State<_MacosMdiWindowWrapper> {
+  Offset _dragStartOffset = Offset.zero;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => widget.onTapFocus(),
+      child: SizedBox(
+        width: widget.windowData.size.width,
+        height: widget.windowData.size.height,
+        child: Stack(
+          children: [
+            // 창 본문 및 헤더 드래그 영역
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Column(
+                  children: [
+                    // 창 상단 드래그 헤더 바 (1:1 모션)
+                    GestureDetector(
+                      onPanStart: (details) {
+                        widget.onTapFocus();
+                        _dragStartOffset = details.globalPosition - widget.windowData.position;
+                      },
+                      onPanUpdate: (details) {
+                        setState(() {
+                          widget.windowData.position = details.globalPosition - _dragStartOffset;
+                        });
+                      },
+                      child: Container(
+                        height: 32,
+                        color: Colors.transparent,
+                      ),
+                    ),
+                    // 실제 창 애플리케이션
+                    Expanded(
+                      child: widget.child,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // 창 우측 하단 리사이즈 핸들 (1:1 드래그 조절)
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: GestureDetector(
+                onPanUpdate: (details) {
+                  setState(() {
+                    final newWidth = (widget.windowData.size.width + details.delta.dx).clamp(420.0, 1400.0);
+                    final newHeight = (widget.windowData.size.height + details.delta.dy).clamp(320.0, 900.0);
+                    widget.windowData.size = Size(newWidth, newHeight);
+                  });
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.resizeUpLeftDownRight,
+                  child: Container(
+                    width: 18,
+                    height: 18,
+                    color: Colors.transparent,
+                    child: const Align(
+                      alignment: Alignment.bottomRight,
+                      child: Icon(
+                        CupertinoIcons.arrow_down_right,
+                        size: 11,
+                        color: Colors.white24,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

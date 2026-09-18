@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../common/os_window_frame.dart';
+import '../../../common/os_window_frame.dart';
 
 /// macOS Maps (지도) 창
 class MapsWindow extends StatefulWidget {
@@ -54,7 +54,6 @@ class _MapsWindowState extends State<MapsWindow> {
       onClose: widget.onClose,
       child: Column(
         children: [
-          // 1. 상단 검색 및 뷰 모드 바
           Container(
             height: 44,
             padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -64,7 +63,6 @@ class _MapsWindowState extends State<MapsWindow> {
             ),
             child: Row(
               children: [
-                // 검색창
                 Container(
                   width: 240,
                   height: 28,
@@ -83,7 +81,6 @@ class _MapsWindowState extends State<MapsWindow> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                // 모드 스위처 (탐색, 대중교통, 위성)
                 Container(
                   padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
@@ -105,12 +102,9 @@ class _MapsWindowState extends State<MapsWindow> {
               ],
             ),
           ),
-
-          // 2. 본문 (좌측 추천 장소 + 우측 시각적 지도 뷰)
           Expanded(
             child: Row(
               children: [
-                // 좌측 가이드 목록 (220px)
                 Container(
                   width: 220,
                   decoration: BoxDecoration(
@@ -163,8 +157,6 @@ class _MapsWindowState extends State<MapsWindow> {
                     },
                   ),
                 ),
-
-                // 우측 지도 프리뷰
                 Expanded(
                   child: Stack(
                     fit: StackFit.expand,

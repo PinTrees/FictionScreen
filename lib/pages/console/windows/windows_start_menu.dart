@@ -402,22 +402,32 @@ class WindowsStartMenu extends StatelessWidget {
   }
 
   Widget _buildListTile(String title, IconData? icon, Color color, VoidCallback onTap, {String? imageAsset}) {
-    return ListTile(
-      dense: true,
-      contentPadding: EdgeInsets.zero,
-      leading: Container(
-        width: 24,
-        height: 24,
-        alignment: Alignment.center,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: imageAsset != null
-              ? Image.asset(imageAsset, fit: BoxFit.cover)
-              : (icon != null ? Icon(icon, color: color, size: 18) : const SizedBox()),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(6),
+      hoverColor: Colors.white.withValues(alpha: 0.08),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Row(
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              alignment: Alignment.center,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: imageAsset != null
+                    ? Image.asset(imageAsset, fit: BoxFit.cover)
+                    : (icon != null ? Icon(icon, color: color, size: 18) : const SizedBox()),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 12)),
+            ),
+          ],
         ),
       ),
-      title: Text(title, style: const TextStyle(color: Colors.white, fontSize: 12)),
-      onTap: onTap,
     );
   }
 

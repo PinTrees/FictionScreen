@@ -16,6 +16,9 @@ class OsWindowFrame extends StatelessWidget {
   final VoidCallback onClose;
   final VoidCallback? onMinimize;
   final VoidCallback? onMaximize;
+  final Function(GestureDragStartDetails)? onTitleDragStart;
+  final Function(GestureDragUpdateDetails)? onTitleDragUpdate;
+  final Function(GestureDragEndDetails)? onTitleDragEnd;
   final double width;
   final double height;
 
@@ -28,6 +31,9 @@ class OsWindowFrame extends StatelessWidget {
     required this.onClose,
     this.onMinimize,
     this.onMaximize,
+    this.onTitleDragStart,
+    this.onTitleDragUpdate,
+    this.onTitleDragEnd,
     this.width = 680,
     this.height = 480,
   });
@@ -72,8 +78,17 @@ class OsWindowFrame extends StatelessWidget {
   }
 
   Widget _buildTitleBar() {
-    if (style == WindowStyle.macos) {
-      return Container(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onPanStart: onTitleDragStart,
+      onPanUpdate: onTitleDragUpdate,
+      onPanEnd: onTitleDragEnd,
+      child: style == WindowStyle.macos ? _buildMacTitleBar() : _buildWindowsTitleBar(),
+    );
+  }
+
+  Widget _buildMacTitleBar() {
+    return Container(
         height: 38,
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
@@ -119,9 +134,10 @@ class OsWindowFrame extends StatelessWidget {
           ],
         ),
       );
-    } else {
-      // Windows 11 타이틀바
-      return Container(
+  }
+
+  Widget _buildWindowsTitleBar() {
+    return Container(
         height: 36,
         padding: const EdgeInsets.only(left: 12),
         decoration: BoxDecoration(

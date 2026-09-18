@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
-import '../../common/os_window_frame.dart';
+import '../../../common/os_window_frame.dart';
 
 /// macOS Terminal zsh 콘솔 창
 class TerminalWindow extends StatefulWidget {
   final VoidCallback onClose;
+  final Function(GestureDragStartDetails)? onTitleDragStart;
+  final Function(GestureDragUpdateDetails)? onTitleDragUpdate;
+  final double width;
+  final double height;
 
   const TerminalWindow({
     super.key,
     required this.onClose,
+    this.onTitleDragStart,
+    this.onTitleDragUpdate,
+    this.width = 700,
+    this.height = 460,
   });
 
   @override
@@ -113,9 +121,11 @@ class _TerminalWindowState extends State<TerminalWindow> {
     return OsWindowFrame(
       title: 'fiction@MacBook-Pro: ~ (zsh)',
       style: WindowStyle.macos,
-      width: 700,
-      height: 460,
+      width: widget.width,
+      height: widget.height,
       onClose: widget.onClose,
+      onTitleDragStart: widget.onTitleDragStart,
+      onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Container(
         color: const Color(0xFF14151B),
         padding: const EdgeInsets.all(16),
@@ -176,8 +186,6 @@ class _TerminalWindowState extends State<TerminalWindow> {
                 },
               ),
             ),
-
-            // 프롬프트 입력 행
             Row(
               children: [
                 const Text(

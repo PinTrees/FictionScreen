@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../common/os_window_frame.dart';
+import '../../../common/os_window_frame.dart';
 
 /// macOS Music (음악) 창
 class MusicWindow extends StatefulWidget {
@@ -39,7 +39,6 @@ class _MusicWindowState extends State<MusicWindow> {
       onClose: widget.onClose,
       child: Column(
         children: [
-          // 1. 상단 플레이어 바
           Container(
             height: 60,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -49,7 +48,6 @@ class _MusicWindowState extends State<MusicWindow> {
             ),
             child: Row(
               children: [
-                // 재생 컨트롤 (이전, 재생/일시정지, 다음)
                 Row(
                   children: [
                     IconButton(
@@ -67,8 +65,6 @@ class _MusicWindowState extends State<MusicWindow> {
                   ],
                 ),
                 const SizedBox(width: 16),
-
-                // 현재 곡 정보 박스
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -105,8 +101,6 @@ class _MusicWindowState extends State<MusicWindow> {
                   ),
                 ),
                 const SizedBox(width: 16),
-
-                // 볼륨 슬라이더
                 const Row(
                   children: [
                     Icon(CupertinoIcons.volume_down, size: 14, color: Colors.white54),
@@ -127,12 +121,9 @@ class _MusicWindowState extends State<MusicWindow> {
               ],
             ),
           ),
-
-          // 2. 본문 (사이드바 + 트랙 리스트)
           Expanded(
             child: Row(
               children: [
-                // 좌측 사이드바
                 Container(
                   width: 170,
                   decoration: BoxDecoration(
@@ -157,8 +148,6 @@ class _MusicWindowState extends State<MusicWindow> {
                     ],
                   ),
                 ),
-
-                // 우측 트랙 목록
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),

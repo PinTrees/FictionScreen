@@ -49,10 +49,12 @@ class _MacosDockState extends State<MacosDock> {
           borderRadius: BorderRadius.circular(22),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
                 // 1. macOS 기본 앱들 (공식 WebP 아이콘 & 창 열기 연동)
                 _buildDockApp(
                   index: 0,
@@ -187,7 +189,8 @@ class _MacosDockState extends State<MacosDock> {
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildDockDivider() {

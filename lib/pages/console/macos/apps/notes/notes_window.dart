@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../common/os_window_frame.dart';
+import '../../../common/os_window_frame.dart';
 
 /// macOS Notes (메모) 창
 class NotesWindow extends StatefulWidget {
@@ -78,7 +78,6 @@ class _NotesWindowState extends State<NotesWindow> {
       onClose: widget.onClose,
       child: Column(
         children: [
-          // 1. 상단 툴바
           Container(
             height: 42,
             padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -94,7 +93,6 @@ class _NotesWindowState extends State<NotesWindow> {
                 const SizedBox(width: 14),
                 const Icon(CupertinoIcons.trash, size: 16, color: Colors.white54),
                 const Spacer(),
-                // 체크리스트, 표, 서식 버튼
                 Row(
                   children: [
                     _buildToolIcon(CupertinoIcons.checkmark_circle),
@@ -116,12 +114,9 @@ class _NotesWindowState extends State<NotesWindow> {
               ],
             ),
           ),
-
-          // 2. 본문 (좌측 노트 리스트 + 우측 편집기)
           Expanded(
             child: Row(
               children: [
-                // 좌측 노트 목록 (240px)
                 Container(
                   width: 240,
                   decoration: BoxDecoration(
@@ -186,8 +181,6 @@ class _NotesWindowState extends State<NotesWindow> {
                     },
                   ),
                 ),
-
-                // 우측 편집기 영역
                 Expanded(
                   child: Container(
                     color: const Color(0xFF1E2028),

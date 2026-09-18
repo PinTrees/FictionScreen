@@ -1,16 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../common/os_window_frame.dart';
+import '../../../common/os_window_frame.dart';
 
 /// macOS Safari 웹 브라우저 창
 class SafariWindow extends StatefulWidget {
   final VoidCallback onClose;
   final Function(String templateId)? onOpenTemplate;
+  final Function(GestureDragStartDetails)? onTitleDragStart;
+  final Function(GestureDragUpdateDetails)? onTitleDragUpdate;
+  final double width;
+  final double height;
 
   const SafariWindow({
     super.key,
     required this.onClose,
     this.onOpenTemplate,
+    this.onTitleDragStart,
+    this.onTitleDragUpdate,
+    this.width = 820,
+    this.height = 540,
   });
 
   @override
@@ -41,12 +49,13 @@ class _SafariWindowState extends State<SafariWindow> {
     return OsWindowFrame(
       title: 'Safari - FictionScreen Start Page',
       style: WindowStyle.macos,
-      width: 820,
-      height: 540,
+      width: widget.width,
+      height: widget.height,
       onClose: widget.onClose,
+      onTitleDragStart: widget.onTitleDragStart,
+      onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Column(
         children: [
-          // 1. 상단 통합 툴바 & 탭 바
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
@@ -55,7 +64,6 @@ class _SafariWindowState extends State<SafariWindow> {
             ),
             child: Row(
               children: [
-                // 네비게이션 화살표
                 const Row(
                   children: [
                     Icon(CupertinoIcons.chevron_left, size: 16, color: Colors.white54),
@@ -64,10 +72,8 @@ class _SafariWindowState extends State<SafariWindow> {
                   ],
                 ),
                 const SizedBox(width: 14),
-                // 사이드바 토글 버튼
                 const Icon(CupertinoIcons.sidebar_left, size: 16, color: Colors.white54),
                 const SizedBox(width: 14),
-                // URL / 스마트 검색창
                 Expanded(
                   child: Container(
                     height: 28,
@@ -98,7 +104,6 @@ class _SafariWindowState extends State<SafariWindow> {
                   ),
                 ),
                 const SizedBox(width: 14),
-                // 공유 / 탭 보기
                 const Row(
                   children: [
                     Icon(CupertinoIcons.share, size: 16, color: Colors.white54),
@@ -109,8 +114,6 @@ class _SafariWindowState extends State<SafariWindow> {
               ],
             ),
           ),
-
-          // 2. 탭 스트립
           Container(
             height: 32,
             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -126,8 +129,6 @@ class _SafariWindowState extends State<SafariWindow> {
               ],
             ),
           ),
-
-          // 3. 브라우저 본문 (Safari 시작 페이지 즐겨찾기)
           Expanded(
             child: Container(
               color: const Color(0xFF141720),

@@ -1,16 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../common/os_window_frame.dart';
+import '../../../common/os_window_frame.dart';
 
 /// macOS Finder 창
 class FinderWindow extends StatefulWidget {
   final VoidCallback onClose;
   final Function(String templateId)? onOpenTemplate;
+  final Function(GestureDragStartDetails)? onTitleDragStart;
+  final Function(GestureDragUpdateDetails)? onTitleDragUpdate;
+  final double width;
+  final double height;
 
   const FinderWindow({
     super.key,
     required this.onClose,
     this.onOpenTemplate,
+    this.onTitleDragStart,
+    this.onTitleDragUpdate,
+    this.width = 780,
+    this.height = 520,
   });
 
   @override
@@ -48,12 +56,13 @@ class _FinderWindowState extends State<FinderWindow> {
     return OsWindowFrame(
       title: 'Finder - 응용 프로그램',
       style: WindowStyle.macos,
-      width: 780,
-      height: 520,
+      width: widget.width,
+      height: widget.height,
       onClose: widget.onClose,
+      onTitleDragStart: widget.onTitleDragStart,
+      onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Column(
         children: [
-          // 1. 상단 Finder 도구 모음
           Container(
             height: 44,
             padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -63,7 +72,6 @@ class _FinderWindowState extends State<FinderWindow> {
             ),
             child: Row(
               children: [
-                // 뒤로가기 / 앞으로가기
                 Row(
                   children: [
                     Icon(CupertinoIcons.chevron_left, size: 16, color: Colors.white54),
@@ -77,7 +85,6 @@ class _FinderWindowState extends State<FinderWindow> {
                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
                 ),
                 const SizedBox(width: 16),
-                // 뷰 모드 스위처 (아이콘, 목록)
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.08),
@@ -91,7 +98,6 @@ class _FinderWindowState extends State<FinderWindow> {
                   ),
                 ),
                 const Spacer(),
-                // 검색 바
                 Container(
                   width: 180,
                   height: 26,
@@ -112,12 +118,9 @@ class _FinderWindowState extends State<FinderWindow> {
               ],
             ),
           ),
-
-          // 2. 본문 (좌측 사이드바 + 우측 파일/폴더 브라우저)
           Expanded(
             child: Row(
               children: [
-                // 좌측 사이드바
                 Container(
                   width: 190,
                   decoration: BoxDecoration(
@@ -175,8 +178,6 @@ class _FinderWindowState extends State<FinderWindow> {
                     ],
                   ),
                 ),
-
-                // 우측 아이템 뷰
                 Expanded(
                   child: Container(
                     color: Colors.transparent,
@@ -187,8 +188,6 @@ class _FinderWindowState extends State<FinderWindow> {
               ],
             ),
           ),
-
-          // 3. 하단 상태 표시줄
           Container(
             height: 24,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -303,29 +302,40 @@ class _FinderWindowState extends State<FinderWindow> {
         final IconData? icon = item['icon'];
         final Color? color = item['color'];
 
-        return ListTile(
-          dense: true,
-          leading: SizedBox(
-            width: 28,
-            height: 28,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: image != null
-                  ? Image.asset(image, fit: BoxFit.cover)
-                  : Container(
-                      color: color ?? Colors.grey,
-                      child: Icon(icon, color: Colors.white, size: 16),
-                    ),
-            ),
-          ),
-          title: Text(item['title'] as String, style: const TextStyle(color: Colors.white, fontSize: 12)),
-          trailing: Text(item['size'] as String, style: const TextStyle(color: Colors.white38, fontSize: 11)),
+        return InkWell(
           onTap: () {
             final type = item['type'] as String;
             if (widget.onOpenTemplate != null && (type == 'kakaotalk' || type == 'instagram' || type == 'youtube' || type == 'windows_bsod' || type == 'delivery')) {
               widget.onOpenTemplate!(type);
             }
           },
+          borderRadius: BorderRadius.circular(6),
+          hoverColor: Colors.white.withValues(alpha: 0.08),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: image != null
+                        ? Image.asset(image, fit: BoxFit.cover)
+                        : Container(
+                            color: color ?? Colors.grey,
+                            child: Icon(icon, color: Colors.white, size: 16),
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(item['title'] as String, style: const TextStyle(color: Colors.white, fontSize: 12)),
+                ),
+                Text(item['size'] as String, style: const TextStyle(color: Colors.white38, fontSize: 11)),
+              ],
+            ),
+          ),
         );
       },
     );
