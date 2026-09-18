@@ -54,6 +54,18 @@ class _ConsolePageState extends State<ConsolePage> {
     }
   }
 
+  String _formatDate(String pattern, [String? locale]) {
+    try {
+      return DateFormat(pattern, locale).format(_now);
+    } catch (_) {
+      try {
+        return DateFormat(pattern).format(_now);
+      } catch (_) {
+        return '${_now.hour.toString().padLeft(2, '0')}:${_now.minute.toString().padLeft(2, '0')}';
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -102,6 +114,7 @@ class _ConsolePageState extends State<ConsolePage> {
           top: _pcTheme == 'macos' ? 44 : 24,
           left: 24,
           bottom: 72,
+          width: 90,
           child: _buildDesktopIconGrid(),
         ),
 
@@ -309,8 +322,8 @@ class _ConsolePageState extends State<ConsolePage> {
 
   // Windows 11 하단 작업표시줄
   Widget _buildWindowsTaskbar(User? user) {
-    final timeStr = DateFormat('a h:mm', 'ko_KR').format(_now);
-    final dateStr = DateFormat('yyyy-MM-dd').format(_now);
+    final timeStr = _formatDate('a h:mm', 'ko_KR');
+    final dateStr = _formatDate('yyyy-MM-dd');
 
     return Container(
       height: 50,
@@ -519,7 +532,7 @@ class _ConsolePageState extends State<ConsolePage> {
 
   // macOS 상단 메뉴바
   Widget _buildMacMenuBar(User? user) {
-    final timeStr = DateFormat('E a h:mm', 'ko_KR').format(_now);
+    final timeStr = _formatDate('E a h:mm', 'ko_KR');
 
     return Container(
       height: 30,
@@ -742,7 +755,7 @@ class _ConsolePageState extends State<ConsolePage> {
   }
 
   Widget _buildMobileStatusBar() {
-    final timeStr = DateFormat('H:mm').format(_now);
+    final timeStr = _formatDate('H:mm');
 
     return SafeArea(
       bottom: false,
@@ -779,8 +792,8 @@ class _ConsolePageState extends State<ConsolePage> {
   }
 
   Widget _buildMobileClockWidget() {
-    final timeStr = DateFormat('h:mm').format(_now);
-    final dateStr = DateFormat('M월 d일 EEEE', 'ko_KR').format(_now);
+    final timeStr = _formatDate('h:mm');
+    final dateStr = _formatDate('M월 d일 EEEE', 'ko_KR');
 
     return Column(
       children: [
