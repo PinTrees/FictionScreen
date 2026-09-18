@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../apps/delivery/data/delivery_model.dart';
 import '../apps/delivery/delivery_screen.dart';
+import '../apps/daangn/data/daangn_model.dart';
+import '../apps/daangn/daangn_screen.dart';
 import '../apps/instagram/data/instagram_model.dart';
 import '../apps/instagram/instagram_screen.dart';
 import '../apps/kakaotalk/data/kakaotalk_model.dart';
@@ -644,6 +646,8 @@ class _ConsolePageState extends State<ConsolePage> {
         return YoutubeScreen(config: YoutubeConfig.defaultPreset());
       case 'delivery':
         return DeliveryScreen(config: DeliveryConfig.defaultPreset());
+      case 'daangn':
+        return DaangnScreen(config: DaangnConfig.defaultPreset());
       default:
         return KakaoTalkScreen(config: KakaoRoomConfig.defaultPreset());
     }

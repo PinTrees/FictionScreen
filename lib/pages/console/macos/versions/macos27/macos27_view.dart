@@ -102,6 +102,7 @@ class _Macos27ViewState extends State<Macos27View> {
   MacosDesktopItem? _contextMenuTarget;
   bool _isSpotlightOpen = false;
   String? _hoveredFolderId;
+  String? _pressedFolderId;
   final List<MacosDesktopItem> _customFolders = [];
   final TextEditingController _renameController = TextEditingController();
   final FocusNode _renameFocusNode = FocusNode();
@@ -313,6 +314,9 @@ class _Macos27ViewState extends State<Macos27View> {
             left: folder.position.dx,
             top: folder.position.dy,
             child: GestureDetector(
+              onTapDown: (_) => setState(() => _pressedFolderId = folder.id),
+              onTapUp: (_) => setState(() => _pressedFolderId = null),
+              onTapCancel: () => setState(() => _pressedFolderId = null),
               onPanUpdate: (details) {
                 setState(() {
                   folder.position += details.delta;
@@ -327,17 +331,21 @@ class _Macos27ViewState extends State<Macos27View> {
                   _contextMenuTarget = folder;
                 });
               },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                width: 82,
-                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: isDropHovered
-                      ? Border.all(color: const Color(0xFF38BDF8), width: 2)
-                      : Border.all(color: Colors.transparent, width: 2),
-                  color: isDropHovered ? const Color(0xFF38BDF8).withValues(alpha: 0.25) : Colors.transparent,
-                ),
+              child: AnimatedScale(
+                scale: _pressedFolderId == folder.id ? 0.90 : 1.0,
+                duration: const Duration(milliseconds: 90),
+                curve: Curves.easeOutCubic,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  width: 82,
+                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: isDropHovered
+                        ? Border.all(color: const Color(0xFF38BDF8), width: 2)
+                        : Border.all(color: Colors.transparent, width: 2),
+                    color: isDropHovered ? const Color(0xFF38BDF8).withValues(alpha: 0.25) : Colors.transparent,
+                  ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -417,8 +425,9 @@ class _Macos27ViewState extends State<Macos27View> {
                 ),
               ),
             ),
-          );
-        }),
+          ),
+        );
+      }),
 
         // 3. MDI 가상 floating 윈도우 창 레이어
         ..._activeWindows.map((win) {

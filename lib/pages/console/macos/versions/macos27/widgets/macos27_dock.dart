@@ -30,6 +30,7 @@ class Macos27Dock extends StatefulWidget {
 
 class _Macos27DockState extends State<Macos27Dock> {
   int? _hoveredIndex;
+  int? _pressedIndex;
 
   double _getScale(int index) {
     if (_hoveredIndex == null) return 1.0;
@@ -156,6 +157,9 @@ class _Macos27DockState extends State<Macos27Dock> {
         ),
         verticalOffset: -48 * scale - 12,
         child: GestureDetector(
+          onTapDown: (_) => setState(() => _pressedIndex = index),
+          onTapUp: (_) => setState(() => _pressedIndex = null),
+          onTapCancel: () => setState(() => _pressedIndex = null),
           onTap: () {
             if (isHome) {
               widget.onGoHome();
@@ -167,12 +171,16 @@ class _Macos27DockState extends State<Macos27Dock> {
               widget.onOpenApp?.call(appId);
             }
           },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 140),
+          child: AnimatedScale(
+            scale: _pressedIndex == index ? 0.86 : 1.0,
+            duration: const Duration(milliseconds: 90),
             curve: Curves.easeOutCubic,
-            width: size + 6,
-            height: size + 12,
-            margin: const EdgeInsets.symmetric(horizontal: 2),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 140),
+              curve: Curves.easeOutCubic,
+              width: size + 6,
+              height: size + 12,
+              margin: const EdgeInsets.symmetric(horizontal: 2),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -226,6 +234,7 @@ class _Macos27DockState extends State<Macos27Dock> {
                 ),
               ],
             ),
+          ),
           ),
         ),
       ),

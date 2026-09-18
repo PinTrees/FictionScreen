@@ -63,6 +63,7 @@ class WindowsDesktopIconWidget extends StatefulWidget {
 class _WindowsDesktopIconWidgetState extends State<WindowsDesktopIconWidget> {
   bool _isHovered = false;
   bool _isDragging = false;
+  bool _isPressed = false;
   Offset _dragDelta = Offset.zero;
   late TextEditingController _renameCtrl;
   late FocusNode _renameFocus;
@@ -126,6 +127,9 @@ class _WindowsDesktopIconWidgetState extends State<WindowsDesktopIconWidget> {
           onExit: (_) => setState(() => _isHovered = false),
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
+            onTapDown: (_) => setState(() => _isPressed = true),
+            onTapUp: (_) => setState(() => _isPressed = false),
+            onTapCancel: () => setState(() => _isPressed = false),
             onTap: widget.onTap,
             onDoubleTap: widget.onDoubleTap,
             onSecondaryTapUp: widget.onSecondaryTapUp,
@@ -133,31 +137,35 @@ class _WindowsDesktopIconWidgetState extends State<WindowsDesktopIconWidget> {
             onPanStart: (details) {
               setState(() {
                 _isDragging = true;
+                _isPressed = false;
                 _dragDelta = Offset.zero;
               });
               widget.onDragStart?.call();
             },
             onPanUpdate: (details) {
-              setState(() {
-                _dragDelta += details.delta;
-              });
+              setState(() => _dragDelta += details.delta);
             },
             onPanEnd: (details) {
               final finalDelta = _dragDelta;
               setState(() {
                 _isDragging = false;
+                _isPressed = false;
                 _dragDelta = Offset.zero;
               });
               widget.onDragEnd(finalDelta);
             },
-            child: Container(
-              width: 80,
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-              decoration: BoxDecoration(
-                color: bgColor,
-                borderRadius: BorderRadius.circular(4),
-                border: border,
-              ),
+            child: AnimatedScale(
+              scale: _isPressed ? 0.92 : 1.0,
+              duration: const Duration(milliseconds: 90),
+              curve: Curves.easeOutQuad,
+              child: Container(
+                width: 80,
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                decoration: BoxDecoration(
+                  color: bgColor,
+                  borderRadius: BorderRadius.circular(4),
+                  border: border,
+                ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -226,6 +234,7 @@ class _WindowsDesktopIconWidgetState extends State<WindowsDesktopIconWidget> {
                 ],
               ),
             ),
+          ),
           ),
         ),
       ),

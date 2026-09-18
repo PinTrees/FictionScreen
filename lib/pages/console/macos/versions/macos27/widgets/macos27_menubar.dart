@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../../../../common/scale_button.dart';
 
 /// macOS 27 Golden Gate 상단 글로벌 메뉴바
 /// - 정품 Apple 화이트 로고 (assets/images/apple_logo.webp)
@@ -60,13 +61,12 @@ class _Macos27MenuBarState extends State<Macos27MenuBar> {
               child: Row(
                 children: [
                   // 정품 Apple 로고 버튼
-                  Material(
-                    color: _isAppleMenuOpen ? Colors.white.withValues(alpha: 0.22) : Colors.transparent,
-                    borderRadius: BorderRadius.circular(4),
-                    child: InkWell(
+                  ScaleButton(
+                    pressedScale: 0.88,
+                    onTap: () => setState(() => _isAppleMenuOpen = !_isAppleMenuOpen),
+                    child: Material(
+                      color: _isAppleMenuOpen ? Colors.white.withValues(alpha: 0.22) : Colors.transparent,
                       borderRadius: BorderRadius.circular(4),
-                      hoverColor: Colors.white.withValues(alpha: 0.12),
-                      onTap: () => setState(() => _isAppleMenuOpen = !_isAppleMenuOpen),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
                         child: Image.asset(
@@ -95,9 +95,9 @@ class _Macos27MenuBarState extends State<Macos27MenuBar> {
                   const Spacer(),
 
                   // Apple Intelligence "Search or Ask" Spotlight AI 필
-                  InkWell(
+                  ScaleButton(
+                    pressedScale: 0.94,
                     onTap: widget.onToggleSpotlight ?? widget.onOpenSettings,
-                    borderRadius: BorderRadius.circular(12),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                       decoration: BoxDecoration(

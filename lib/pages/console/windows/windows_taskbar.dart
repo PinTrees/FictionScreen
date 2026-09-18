@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../common/scale_button.dart';
 
 /// Windows 7 / 10 / 11 하단 테스크바
 class WindowsTaskbar extends StatelessWidget {
@@ -75,14 +76,18 @@ class WindowsTaskbar extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      tooltip: '시작 (Windows 11)',
-                      icon: Icon(
-                        CupertinoIcons.square_grid_2x2_fill,
-                        color: isStartMenuOpen ? const Color(0xFF60A5FA) : Colors.white,
-                        size: 22,
+                    ScaleButton(
+                      pressedScale: 0.86,
+                      onTap: onToggleStartMenu,
+                      child: IconButton(
+                        tooltip: '시작 (Windows 11)',
+                        icon: Icon(
+                          CupertinoIcons.square_grid_2x2_fill,
+                          color: isStartMenuOpen ? const Color(0xFF60A5FA) : Colors.white,
+                          size: 22,
+                        ),
+                        onPressed: onToggleStartMenu,
                       ),
-                      onPressed: onToggleStartMenu,
                     ),
                     const SizedBox(width: 4),
                     // Windows 11 순정 핵심 기본 앱
@@ -243,17 +248,21 @@ class WindowsTaskbar extends StatelessWidget {
     VoidCallback onTap, {
     String? imageAsset,
   }) {
-    return Tooltip(
-      message: tooltip,
-      child: IconButton(
-        icon: imageAsset != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Image.asset(imageAsset, width: 20, height: 20, fit: BoxFit.contain),
-              )
-            : Icon(icon ?? CupertinoIcons.circle_fill, color: color, size: 20),
-        hoverColor: Colors.white.withValues(alpha: 0.15),
-        onPressed: onTap,
+    return ScaleButton(
+      pressedScale: 0.86,
+      onTap: onTap,
+      child: Tooltip(
+        message: tooltip,
+        child: IconButton(
+          icon: imageAsset != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Image.asset(imageAsset, width: 20, height: 20, fit: BoxFit.contain),
+                )
+              : Icon(icon ?? CupertinoIcons.circle_fill, color: color, size: 20),
+          hoverColor: Colors.white.withValues(alpha: 0.15),
+          onPressed: onTap,
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'scale_button.dart';
 
 /// 데스크톱 및 모바일 가상 OS 공통 앱 아이콘 위젯
 class OsAppItem extends StatelessWidget {
@@ -34,12 +35,15 @@ class OsAppItem extends StatelessWidget {
     final double iconSize = isDesktop ? 26 : 30;
     final double fontSize = isDesktop ? 11 : 12;
 
-    return InkWell(
+    return ScaleButton(
       onTap: onTap,
       onDoubleTap: onDoubleTap ?? onTap,
-      borderRadius: BorderRadius.circular(12),
-      hoverColor: Colors.white.withValues(alpha: 0.12),
-      child: Container(
+      child: InkWell(
+        onTap: onTap,
+        onDoubleTap: onDoubleTap ?? onTap,
+        borderRadius: BorderRadius.circular(12),
+        hoverColor: Colors.white.withValues(alpha: 0.12),
+        child: Container(
         width: isDesktop ? 78 : 70,
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
         child: Column(
@@ -125,6 +129,7 @@ class OsAppItem extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }
