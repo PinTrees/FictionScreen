@@ -5,6 +5,7 @@ import 'auth_service.dart';
 class UserOsSettings {
   final String pcTheme;
   final String windowsVersion;
+  final String macosVersion;
   final String mobileTheme;
   final String galaxyVersion;
   final String wallpaper;
@@ -12,6 +13,7 @@ class UserOsSettings {
   UserOsSettings({
     this.pcTheme = 'windows',
     this.windowsVersion = '11',
+    this.macosVersion = '27',
     this.mobileTheme = 'ios',
     this.galaxyVersion = '9',
     this.wallpaper = 'win10_hero',
@@ -21,6 +23,7 @@ class UserOsSettings {
     return {
       'pcTheme': pcTheme,
       'windowsVersion': windowsVersion,
+      'macosVersion': macosVersion,
       'mobileTheme': mobileTheme,
       'galaxyVersion': galaxyVersion,
       'wallpaper': wallpaper,
@@ -33,6 +36,7 @@ class UserOsSettings {
     return UserOsSettings(
       pcTheme: map['pcTheme'] as String? ?? 'windows',
       windowsVersion: map['windowsVersion'] as String? ?? '11',
+      macosVersion: map['macosVersion'] as String? ?? '27',
       mobileTheme: map['mobileTheme'] as String? ?? 'ios',
       galaxyVersion: map['galaxyVersion'] as String? ?? '9',
       wallpaper: map['wallpaper'] as String? ?? 'win10_hero',

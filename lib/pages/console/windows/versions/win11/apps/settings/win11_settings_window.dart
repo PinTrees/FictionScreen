@@ -62,7 +62,7 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
   // 순정 카테고리 + 운영체제 전환 (공식 WebP 3D 아이콘 적용)
   final List<Map<String, String>> _categories = [
     {'title': '시스템', 'icon': 'assets/images/windows/settings/System.webp'},
-    {'title': '운영체제 (OS) 전환', 'icon': 'assets/images/windows/settings/System.webp'},
+    {'title': '운영체제 전환', 'icon': 'assets/images/windows/settings/System.webp'},
     {'title': 'Bluetooth 및 장치', 'icon': 'assets/images/windows/settings/Bluetooth_and_devices.webp'},
     {'title': '네트워크 및 인터넷', 'icon': 'assets/images/windows/settings/Network_and_internet.webp'},
     {'title': '개인 설정', 'icon': 'assets/images/windows/settings/Personalisation.webp'},
@@ -77,11 +77,6 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
 
   // 시스템 카테고리 항목 목록 (스크린샷 그대로 순서 및 텍스트 100% 일치)
   final List<Map<String, dynamic>> _systemItems = [
-    {
-      'title': '운영체제 (OS) 환경 전환',
-      'desc': 'Windows, macOS, Galaxy, iPhone 시스템 실시간 즉시 전환',
-      'icon': CupertinoIcons.arrow_2_circlepath,
-    },
     {
       'title': '디스플레이',
       'desc': '모니터, 밝기, 야간 모드, 디스플레이 프로필',
@@ -515,22 +510,7 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
   Widget _buildRightContent() {
     final title = _categories[_selectedCategoryIndex]['title']!;
     if (title == '시스템') return _buildSystemView();
-    if (title == '운영체제 (OS) 전환') {
-      return SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(28, 20, 28, 28),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              '운영체제 (OS) 전환',
-              style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold, letterSpacing: -0.5),
-            ),
-            const SizedBox(height: 16),
-            _buildOsSwitchingCard(),
-          ],
-        ),
-      );
-    }
+    if (title == '운영체제 전환') return _buildOsSwitchView();
     if (title == '개인 설정') return _buildPersonalizationView();
     return _buildGenericCategoryView(title);
   }
@@ -558,15 +538,11 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
           _buildDeviceTopBanner(),
           const SizedBox(height: 18),
 
-          // 3. 가상 운영체제 (OS) 환경 전환 메인 Fluent 카드
-          _buildOsSwitchingCard(),
-          const SizedBox(height: 14),
-
-          // 4. "Windows가 정품 인증되지 않았습니다." 안내 배너 카드
+          // 3. "Windows가 정품 인증되지 않았습니다." 안내 배너 카드
           _buildActivationNoticeCard(),
           const SizedBox(height: 16),
 
-          // 5. 시스템 설정 타일 목록 (운영체제 전환, 디스플레이, 소리, 알림, 집중, 전원, 저장소 등)
+          // 4. 시스템 설정 타일 목록 (디스플레이, 소리, 알림, 집중, 전원, 저장소 등)
           ..._systemItems.map((item) => _buildSystemCard(item)),
         ],
       ),
@@ -619,7 +595,7 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
                 const Text('  ·  ', style: TextStyle(color: Colors.white38, fontSize: 11)),
                 InkWell(
                   onTap: () {
-                    final osIdx = _categories.indexWhere((c) => c['title'] == '운영체제 (OS) 전환');
+                    final osIdx = _categories.indexWhere((c) => c['title'] == '운영체제 전환');
                     if (osIdx != -1) {
                       setState(() => _selectedCategoryIndex = osIdx);
                     } else {
@@ -925,9 +901,6 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
       ),
       child: Builder(
         builder: (context) {
-          if (title == '운영체제 (OS) 환경 전환') {
-            return _buildOsSwitchingCard(standalone: false);
-          }
           if (title == '디스플레이') {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1309,229 +1282,179 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
     );
   }
 
-  /// 운영체제 (OS) 전환 메인 Fluent 카드
-  Widget _buildOsSwitchingCard({bool standalone = true}) {
-    return Container(
-      margin: EdgeInsets.only(bottom: standalone ? 16 : 0),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF262626),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: const Color(0xFF60CDFF).withValues(alpha: 0.3)),
-      ),
+  /// Windows 11 순정 스타일 '운영체제 전환' 상세 화면
+  Widget _buildOsSwitchView() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(28, 20, 28, 28),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0078D4).withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: const Color(0xFF60CDFF).withValues(alpha: 0.4)),
-                ),
-                child: const Center(child: Icon(CupertinoIcons.arrow_2_circlepath, color: Color(0xFF60CDFF), size: 18)),
-              ),
-              const SizedBox(width: 14),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('가상 운영체제 (OS) 환경 전환', style: TextStyle(color: Colors.white, fontSize: 13.5, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 2),
-                    Text('원하는 OS를 클릭하면 해당 데스크톱 또는 모바일 환경으로 즉시 전환됩니다.', style: TextStyle(color: Colors.white54, fontSize: 11.5)),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF10B981).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.4)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(width: 6, height: 6, decoration: const BoxDecoration(color: Color(0xFF10B981), shape: BoxShape.circle)),
-                    const SizedBox(width: 6),
-                    const Text('Windows 11 사용 중', style: TextStyle(color: Color(0xFF10B981), fontSize: 10.5, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
-            ],
+          const Text(
+            '운영체제 전환',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.5,
+            ),
           ),
-          const SizedBox(height: 16),
-          const Text('데스크톱 OS (PC 환경)', style: TextStyle(color: Colors.white70, fontSize: 11.5, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: _buildOsOptionTile(
-                  title: 'Windows 11',
-                  subtitle: 'Fluent 중앙 작업표시줄 & 스냅',
-                  icon: CupertinoIcons.device_desktop,
-                  accentColor: const Color(0xFF60CDFF),
-                  isCurrent: true,
-                  onTap: () {},
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildOsOptionTile(
-                  title: 'Windows 10',
-                  subtitle: 'Hero 어두운 테스크바 & 시작 메뉴',
-                  icon: CupertinoIcons.device_desktop,
-                  accentColor: const Color(0xFF0078D7),
-                  isCurrent: false,
-                  onTap: () {
-                    widget.onClose();
-                    widget.onSelectOs?.call('windows_10');
-                  },
-                ),
-              ),
-            ],
+          const SizedBox(height: 6),
+          const Text(
+            '데스크톱 및 모바일 가상 운영체제(OS) 환경을 선택하여 즉시 전환합니다.',
+            style: TextStyle(color: Colors.white54, fontSize: 12),
+          ),
+          const SizedBox(height: 20),
+
+          // 1. 데스크톱 운영체제 섹션
+          const Text(
+            '데스크톱 운영체제 (PC 환경)',
+            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: _buildOsOptionTile(
-                  title: 'Windows 7',
-                  subtitle: 'Aero Glass & 오브 시작 버튼',
-                  icon: CupertinoIcons.device_desktop,
-                  accentColor: const Color(0xFF38BDF8),
-                  isCurrent: false,
-                  onTap: () {
-                    widget.onClose();
-                    widget.onSelectOs?.call('windows_7');
-                  },
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildOsOptionTile(
-                  title: 'macOS Sequoia',
-                  subtitle: 'Golden Gate 공식 배경 & 글래스 독',
-                  icon: CupertinoIcons.device_laptop,
-                  accentColor: const Color(0xFFA855F7),
-                  isCurrent: false,
-                  onTap: () {
-                    widget.onClose();
-                    widget.onSelectOs?.call('macos');
-                  },
-                ),
-              ),
-            ],
+          _buildWin11SettingsTile(
+            title: 'Windows 11',
+            desc: 'Fluent 중앙 작업표시줄, 스냅 레이아웃, 반투명 아크릴',
+            icon: CupertinoIcons.device_desktop,
+            isCurrent: true,
+            onTap: () {},
           ),
-          const SizedBox(height: 16),
-          const Text('모바일 OS (스마트폰 환경)', style: TextStyle(color: Colors.white70, fontSize: 11.5, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          _buildWin11SettingsTile(
+            title: 'Windows 10',
+            desc: 'Hero 어두운 테스크바, 타일 시작 메뉴',
+            icon: CupertinoIcons.device_desktop,
+            isCurrent: false,
+            onTap: () {
+              widget.onClose();
+              widget.onSelectOs?.call('windows_10');
+            },
+          ),
+          const SizedBox(height: 4),
+          _buildWin11SettingsTile(
+            title: 'Windows 7',
+            desc: 'Aero Glass 테마, 클래식 원형 시작 버튼',
+            icon: CupertinoIcons.device_desktop,
+            isCurrent: false,
+            onTap: () {
+              widget.onClose();
+              widget.onSelectOs?.call('windows_7');
+            },
+          ),
+          const SizedBox(height: 4),
+          _buildWin11SettingsTile(
+            title: 'macOS Sequoia',
+            desc: 'Golden Gate 공식 배경화면, 상단 글로벌 메뉴바, 글래스 독',
+            icon: CupertinoIcons.device_laptop,
+            isCurrent: false,
+            onTap: () {
+              widget.onClose();
+              widget.onSelectOs?.call('macos');
+            },
+          ),
+
+          const SizedBox(height: 24),
+
+          // 2. 모바일 운영체제 섹션
+          const Text(
+            '모바일 운영체제 (스마트폰 환경)',
+            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: _buildOsOptionTile(
-                  title: 'Galaxy (One UI 9 최신)',
-                  subtitle: '나우 브리프 & 3버튼 내비게이션 & 좌우 슬라이드',
-                  icon: CupertinoIcons.device_phone_portrait,
-                  accentColor: const Color(0xFF10B981),
-                  isCurrent: false,
-                  onTap: () {
-                    widget.onClose();
-                    widget.onSelectOs?.call('galaxy');
-                  },
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildOsOptionTile(
-                  title: 'iPhone (iOS 18)',
-                  subtitle: '다이내믹 아일랜드 & 4칸 하단 독',
-                  icon: CupertinoIcons.device_phone_portrait,
-                  accentColor: const Color(0xFF0284C7),
-                  isCurrent: false,
-                  onTap: () {
-                    widget.onClose();
-                    widget.onSelectOs?.call('ios');
-                  },
-                ),
-              ),
-            ],
+          _buildWin11SettingsTile(
+            title: 'Samsung Galaxy (One UI 9 최신)',
+            desc: '나우 브리프 AI 보드, 3버튼 내비게이션, 좌우 멀티 페이지',
+            icon: CupertinoIcons.device_phone_portrait,
+            isCurrent: false,
+            onTap: () {
+              widget.onClose();
+              widget.onSelectOs?.call('galaxy');
+            },
+          ),
+          const SizedBox(height: 4),
+          _buildWin11SettingsTile(
+            title: 'Apple iPhone (iOS 18)',
+            desc: '다이내믹 아일랜드, 4칸 하단 독, 리퀴드 글래스',
+            icon: CupertinoIcons.device_phone_portrait,
+            isCurrent: false,
+            onTap: () {
+              widget.onClose();
+              widget.onSelectOs?.call('ios');
+            },
           ),
         ],
       ),
     );
   }
 
-  Widget _buildOsOptionTile({
+  /// 순정 Windows 11 Fluent 스타일 설정 항목 타일
+  Widget _buildWin11SettingsTile({
     required String title,
-    required String subtitle,
+    required String desc,
     required IconData icon,
-    required Color accentColor,
     required bool isCurrent,
     required VoidCallback onTap,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
-      hoverColor: Colors.white.withValues(alpha: 0.05),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: isCurrent ? const Color(0xFF60CDFF).withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.025),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: isCurrent ? const Color(0xFF60CDFF).withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.06),
-            width: isCurrent ? 1.5 : 1.0,
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF262626),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: isCurrent ? const Color(0xFF60CDFF).withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.06),
         ),
-        child: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: accentColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Center(child: Icon(icon, color: accentColor, size: 16)),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(6),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(6),
+          hoverColor: Colors.white.withValues(alpha: 0.04),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                Icon(icon, size: 20, color: isCurrent ? const Color(0xFF60CDFF) : Colors.white70),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.bold)),
-                      if (isCurrent) ...[
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                          decoration: BoxDecoration(color: const Color(0xFF60CDFF), borderRadius: BorderRadius.circular(3)),
-                          child: const Text('현재 사용 중', style: TextStyle(color: Colors.black, fontSize: 9.5, fontWeight: FontWeight.bold)),
-                        ),
-                      ],
+                      Text(title, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 2),
+                      Text(desc, style: const TextStyle(color: Colors.white54, fontSize: 11.5)),
                     ],
                   ),
-                  const SizedBox(height: 2),
-                  Text(subtitle, style: const TextStyle(color: Colors.white54, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis),
-                ],
-              ),
-            ),
-            if (!isCurrent)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                 ),
-                child: const Text('전환', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500)),
-              ),
-          ],
+                if (isCurrent)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF60CDFF).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: const Color(0xFF60CDFF).withValues(alpha: 0.4)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(CupertinoIcons.checkmark_alt, size: 12, color: Color(0xFF60CDFF)),
+                        SizedBox(width: 4),
+                        Text('현재 사용 중', style: TextStyle(color: Color(0xFF60CDFF), fontSize: 11, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  )
+                else
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF333333),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+                    ),
+                    child: const Text('전환', style: TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w500)),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );

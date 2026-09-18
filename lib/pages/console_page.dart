@@ -67,6 +67,8 @@ class _ConsolePageState extends State<ConsolePage> {
   String _pcTheme = 'windows';
   // Windows 버전: '7', '10', '11' (기본: '11')
   String _windowsVersion = '11';
+  // macOS 버전: '15', '27' (기본: '27' Golden Gate)
+  String _macosVersion = '27';
   // 모바일 OS: 'ios' vs 'galaxy'
   String _mobileTheme = 'ios';
   // Galaxy 버전: '6', '7', '9' (기본: '9')
@@ -98,6 +100,14 @@ class _ConsolePageState extends State<ConsolePage> {
         _windowsVersion = '11';
         _pcTheme = 'windows';
         _activeOs = 'windows';
+      } else if (osKey == 'macos_27') {
+        _macosVersion = '27';
+        _pcTheme = 'macos';
+        _activeOs = 'macos';
+      } else if (osKey == 'macos_15') {
+        _macosVersion = '15';
+        _pcTheme = 'macos';
+        _activeOs = 'macos';
       } else if (osKey == 'galaxy' || osKey == 'ios') {
         _activeOs = osKey;
         _mobileTheme = osKey;
@@ -163,6 +173,7 @@ class _ConsolePageState extends State<ConsolePage> {
       setState(() {
         _pcTheme = settings.pcTheme;
         _windowsVersion = settings.windowsVersion;
+        _macosVersion = settings.macosVersion;
         _mobileTheme = settings.mobileTheme;
         _galaxyVersion = settings.galaxyVersion;
         _wallpaper = settings.wallpaper;
@@ -177,6 +188,7 @@ class _ConsolePageState extends State<ConsolePage> {
       UserOsSettings(
         pcTheme: _pcTheme,
         windowsVersion: _windowsVersion,
+        macosVersion: _macosVersion,
         mobileTheme: _mobileTheme,
         galaxyVersion: _galaxyVersion,
         wallpaper: _wallpaper,
@@ -283,6 +295,7 @@ class _ConsolePageState extends State<ConsolePage> {
               // 1. 선택된 가상 OS 메인 뷰 (Windows / macOS / Galaxy / iOS)
               if (activeOs == 'macos') ...[
                 MacosView(
+                  macosVersion: _macosVersion,
                   user: user,
                   timeString: _formatDate('E a h:mm', 'ko_KR'),
                   currentWallpaper: _wallpaper,
@@ -290,6 +303,11 @@ class _ConsolePageState extends State<ConsolePage> {
                   onOpenSettings: () => setState(() => _isSettingsOpen = true),
                   onSignOut: _handleSignOut,
                   onGoHome: () => context.go('/'),
+                  onSelectOs: _handleSelectOs,
+                  onWallpaperChanged: (val) {
+                    setState(() => _wallpaper = val);
+                    _saveCurrentOsSettings();
+                  },
                 ),
                 ..._buildDesktopWindowsLayer(isMacStyle: true),
               ] else if (activeOs == 'windows') ...[

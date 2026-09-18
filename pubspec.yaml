@@ -38,6 +38,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/macos/
+    - assets/images/macos/golden_gate/
     - assets/images/windows/
     - assets/images/windows/settings/
     - assets/images/ios/
