@@ -16,6 +16,8 @@ import '../apps/toss/data/toss_model.dart';
 import '../apps/toss/toss_screen.dart';
 import '../apps/windows_bsod/data/windows_bsod_model.dart';
 import '../apps/windows_bsod/windows_bsod_screen.dart';
+import '../apps/windows_update/data/windows_update_model.dart';
+import '../apps/windows_update/windows_update_screen.dart';
 import '../apps/x_twitter/data/x_twitter_model.dart';
 import '../apps/x_twitter/x_twitter_screen.dart';
 import '../apps/youtube/data/youtube_model.dart';
@@ -46,6 +48,7 @@ class _StudioPageState extends State<StudioPage> {
   late XTwitterConfig _twitterConfig;
   late PinterestConfig _pinterestConfig;
   late WindowsBsodConfig _bsodConfig;
+  late WindowsUpdateConfig _winUpdateConfig;
   late YoutubeConfig _youtubeConfig;
   late InstagramConfig _instaConfig;
   late DeliveryConfig _deliveryConfig;
@@ -63,6 +66,7 @@ class _StudioPageState extends State<StudioPage> {
     _twitterConfig = XTwitterConfig.defaultPreset();
     _pinterestConfig = PinterestConfig.defaultPreset();
     _bsodConfig = WindowsBsodConfig.defaultPreset();
+    _winUpdateConfig = WindowsUpdateConfig.defaultPreset();
     _youtubeConfig = YoutubeConfig.defaultPreset();
     _instaConfig = InstagramConfig.defaultPreset();
     _deliveryConfig = DeliveryConfig.defaultPreset();
@@ -417,15 +421,17 @@ class _StudioPageState extends State<StudioPage> {
   }
 
   void _editYoutube() {
-    final titleCtrl = TextEditingController(text: _youtubeConfig.title);
+    final videoIdCtrl = TextEditingController(text: _youtubeConfig.videoId);
+    final titleCtrl = TextEditingController(text: _youtubeConfig.videoTitle);
     final channelCtrl = TextEditingController(text: _youtubeConfig.channelName);
     final subCtrl = TextEditingController(text: _youtubeConfig.subscriberCount);
     final viewCtrl = TextEditingController(text: _youtubeConfig.viewCount);
     final timeCtrl = TextEditingController(text: _youtubeConfig.uploadTime);
 
     _openQuickEditDialog(
-      title: '유튜브 비디오 정보 수정',
+      title: '유튜브 영상 및 정보 수정',
       children: [
+        _buildDialogInput('유튜브 영상 ID 또는 링크 (IFrame 재생)', videoIdCtrl),
         _buildDialogInput('동영상 제목', titleCtrl, maxLines: 2),
         _buildDialogInput('채널 이름', channelCtrl),
         _buildDialogInput('구독자 수', subCtrl),
@@ -433,11 +439,22 @@ class _StudioPageState extends State<StudioPage> {
         _buildDialogInput('업로드 일자', timeCtrl),
       ],
       onConfirm: () {
-        _youtubeConfig.title = titleCtrl.text;
-        _youtubeConfig.channelName = channelCtrl.text;
-        _youtubeConfig.subscriberCount = subCtrl.text;
-        _youtubeConfig.viewCount = viewCtrl.text;
-        _youtubeConfig.uploadTime = timeCtrl.text;
+        String vid = videoIdCtrl.text.trim();
+        if (vid.contains('v=')) {
+          vid = vid.split('v=')[1].split('&')[0];
+        } else if (vid.contains('youtu.be/')) {
+          vid = vid.split('youtu.be/')[1].split('?')[0];
+        } else if (vid.contains('embed/')) {
+          vid = vid.split('embed/')[1].split('?')[0];
+        }
+        _youtubeConfig = _youtubeConfig.copyWith(
+          videoId: vid.isNotEmpty ? vid : _youtubeConfig.videoId,
+          title: titleCtrl.text,
+          channelName: channelCtrl.text,
+          subscriberCount: subCtrl.text,
+          viewCount: viewCtrl.text,
+          uploadTime: timeCtrl.text,
+        );
       },
     );
   }
@@ -536,6 +553,26 @@ class _StudioPageState extends State<StudioPage> {
         _bsodConfig.percentage = int.tryParse(percentCtrl.text) ?? _bsodConfig.percentage;
         _bsodConfig.stopCode = stopCodeCtrl.text;
         _bsodConfig.whatFailed = failedCtrl.text;
+      },
+    );
+  }
+
+  void _editWindowsUpdate() {
+    final percentCtrl = TextEditingController(text: _winUpdateConfig.progress.toString());
+    final msgCtrl = TextEditingController(text: _winUpdateConfig.primaryMessage);
+    final subMsgCtrl = TextEditingController(text: _winUpdateConfig.secondaryMessage);
+
+    _openQuickEditDialog(
+      title: 'Windows 가짜 업데이트 수정',
+      children: [
+        _buildDialogInput('진행률 퍼센트 (%)', percentCtrl, type: TextInputType.number),
+        _buildDialogInput('주요 안내 문구', msgCtrl),
+        _buildDialogInput('보조 안내 문구', subMsgCtrl, maxLines: 3),
+      ],
+      onConfirm: () {
+        _winUpdateConfig.progress = int.tryParse(percentCtrl.text) ?? _winUpdateConfig.progress;
+        _winUpdateConfig.primaryMessage = msgCtrl.text;
+        _winUpdateConfig.secondaryMessage = subMsgCtrl.text;
       },
     );
   }
@@ -663,6 +700,13 @@ class _StudioPageState extends State<StudioPage> {
 
           const SizedBox(width: 12),
 
+          if (_template.id == 'youtube')
+            IconButton(
+              tooltip: '유튜브 영상/정보 변경',
+              icon: const Icon(CupertinoIcons.play_circle_fill, color: Color(0xFFFF3333), size: 22),
+              onPressed: _editYoutube,
+            ),
+
           // 디바이스 프레임 토글
           IconButton(
             tooltip: '디바이스 프레임 토글',
@@ -748,9 +792,9 @@ class _StudioPageState extends State<StudioPage> {
           child: InstagramScreen(config: _instaConfig),
         );
       case 'youtube':
-        return GestureDetector(
-          onTap: _editYoutube,
-          child: YoutubeScreen(config: _youtubeConfig),
+        return YoutubeScreen(
+          config: _youtubeConfig,
+          onConfigChanged: (cfg) => setState(() => _youtubeConfig = cfg),
         );
       case 'delivery':
         return GestureDetector(
@@ -761,6 +805,11 @@ class _StudioPageState extends State<StudioPage> {
         return GestureDetector(
           onTap: _editBsod,
           child: WindowsBsodScreen(config: _bsodConfig),
+        );
+      case 'windows_update':
+        return GestureDetector(
+          onTap: _editWindowsUpdate,
+          child: WindowsUpdateScreen(config: _winUpdateConfig),
         );
       default:
         return TossScreen(config: _tossConfig);

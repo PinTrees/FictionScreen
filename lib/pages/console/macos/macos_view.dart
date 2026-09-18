@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../common/os_app_item.dart';
+import 'apps/chrome/chrome_window.dart';
 import 'apps/finder/finder_window.dart';
 import 'apps/mail/mail_window.dart';
 import 'apps/maps/maps_window.dart';
@@ -18,7 +19,7 @@ import 'macos_menubar.dart';
 class MacosWindowData {
   final String id;
   final String appId;
-  Offset position;
+  final ValueNotifier<Offset> positionNotifier;
   Size size;
   int zIndex;
   bool isMinimized;
@@ -26,11 +27,14 @@ class MacosWindowData {
   MacosWindowData({
     required this.id,
     required this.appId,
-    required this.position,
+    required Offset position,
     required this.size,
     required this.zIndex,
     this.isMinimized = false,
-  });
+  }) : positionNotifier = ValueNotifier<Offset>(position);
+
+  Offset get position => positionNotifier.value;
+  set position(Offset newPos) => positionNotifier.value = newPos;
 }
 
 /// macOS 전용 데스크톱 MDI 뷰 레이아웃
@@ -142,20 +146,25 @@ class _MacosViewState extends State<MacosView> {
           ),
         ),
 
-        // 3. MDI 가상 floating 윈도우 창 레이어
+        // 3. MDI 가상 floating 윈도우 창 레이어 (120fps 부드러운 드래그 최적화)
         ..._activeWindows.map((win) {
           if (win.isMinimized) return const SizedBox.shrink();
 
-          return Positioned(
-            left: win.position.dx,
-            top: win.position.dy,
-            child: _MacosMdiWindowWrapper(
-              key: ValueKey(win.id),
-              windowData: win,
-              onTapFocus: () => _bringToFront(win.id),
-              onClose: () => _closeWindow(win.id),
-              builder: (onDragStart, onDragUpdate) => _buildAppContent(win, onDragStart, onDragUpdate),
-            ),
+          return ValueListenableBuilder<Offset>(
+            valueListenable: win.positionNotifier,
+            builder: (context, pos, child) {
+              return Positioned(
+                left: pos.dx,
+                top: pos.dy,
+                child: _MacosMdiWindowWrapper(
+                  key: ValueKey(win.id),
+                  windowData: win,
+                  onTapFocus: () => _bringToFront(win.id),
+                  onClose: () => _closeWindow(win.id),
+                  builder: (onDragStart, onDragUpdate) => _buildAppContent(win, onDragStart, onDragUpdate),
+                ),
+              );
+            },
           );
         }),
 
@@ -206,6 +215,15 @@ class _MacosViewState extends State<MacosView> {
         );
       case 'safari':
         return SafariWindow(
+          width: win.size.width,
+          height: win.size.height,
+          onClose: () => _closeWindow(win.id),
+          onOpenTemplate: widget.onOpenTemplate,
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'chrome':
+        return MacosChromeWindow(
           width: win.size.width,
           height: win.size.height,
           onClose: () => _closeWindow(win.id),
@@ -361,9 +379,7 @@ class _MacosMdiWindowWrapperState extends State<_MacosMdiWindowWrapper> {
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
-    setState(() {
-      widget.windowData.position = details.globalPosition - _dragStartOffset;
-    });
+    widget.windowData.position = details.globalPosition - _dragStartOffset;
   }
 
   @override

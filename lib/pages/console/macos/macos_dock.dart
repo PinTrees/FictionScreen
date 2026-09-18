@@ -70,6 +70,13 @@ class _MacosDockState extends State<MacosDock> {
                 ),
                 _buildDockApp(
                   index: 2,
+                  tooltip: 'Google Chrome',
+                  icon: CupertinoIcons.globe,
+                  gradient: const LinearGradient(colors: [Color(0xFFEA4335), Color(0xFFFBBC05), Color(0xFF34A853)]),
+                  onTap: () => widget.onOpenApp?.call('chrome'),
+                ),
+                _buildDockApp(
+                  index: 2,
                   tooltip: 'Messages',
                   imageAsset: 'assets/images/macos/messages.webp',
                   onTap: () => widget.onOpenApp?.call('messages'),

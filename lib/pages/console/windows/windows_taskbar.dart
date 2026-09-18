@@ -11,6 +11,7 @@ class WindowsTaskbar extends StatelessWidget {
   final String dateString;
   final bool isStartMenuOpen;
   final VoidCallback onToggleStartMenu;
+  final VoidCallback? onToggleQuickSettings;
   final Function(String templateId) onOpenTemplate;
   final VoidCallback onOpenSettings;
   final VoidCallback onSignOut;
@@ -24,6 +25,7 @@ class WindowsTaskbar extends StatelessWidget {
     required this.dateString,
     required this.isStartMenuOpen,
     required this.onToggleStartMenu,
+    this.onToggleQuickSettings,
     required this.onOpenTemplate,
     required this.onOpenSettings,
     required this.onSignOut,
@@ -106,7 +108,6 @@ class WindowsTaskbar extends StatelessWidget {
       color: const Color(0xFF101216),
       child: Row(
         children: [
-          // Windows 10 시작 버튼
           InkWell(
             onTap: onToggleStartMenu,
             hoverColor: const Color(0xFF1E212B),
@@ -121,8 +122,6 @@ class WindowsTaskbar extends StatelessWidget {
               ),
             ),
           ),
-
-          // 검색창
           Container(
             width: 200,
             height: 32,
@@ -137,7 +136,6 @@ class WindowsTaskbar extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(width: 4),
           _buildTaskbarIcon(null, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
           _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
@@ -145,7 +143,6 @@ class WindowsTaskbar extends StatelessWidget {
           _buildTaskbarIcon(null, const Color(0xFFE1306C), 'Instagram', () => onOpenTemplate('instagram'), imageAsset: 'assets/images/instagram_icon.webp'),
           _buildTaskbarIcon(CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), '배달의민족', () => onOpenTemplate('delivery')),
           _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정', onOpenSettings),
-
           const Spacer(),
           _buildSystemTray(),
         ],
@@ -153,7 +150,7 @@ class WindowsTaskbar extends StatelessWidget {
     );
   }
 
-  // Windows 7: 클래식 에어로 글래스 & 원형 오브(Orb)
+  // Windows 7: 클래식 에어로 글래스
   Widget _buildWin7Taskbar() {
     return Container(
       height: 42,
@@ -168,7 +165,6 @@ class WindowsTaskbar extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
           child: Row(
             children: [
-              // Windows 7 원형 오브 시작 버튼
               InkWell(
                 onTap: onToggleStartMenu,
                 child: Container(
@@ -193,7 +189,6 @@ class WindowsTaskbar extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(width: 8),
               _buildTaskbarIcon(null, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
               _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
@@ -201,11 +196,8 @@ class WindowsTaskbar extends StatelessWidget {
               _buildTaskbarIcon(null, const Color(0xFFE1306C), 'Instagram', () => onOpenTemplate('instagram'), imageAsset: 'assets/images/instagram_icon.webp'),
               _buildTaskbarIcon(CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), '배달의민족', () => onOpenTemplate('delivery')),
               _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정', onOpenSettings),
-
               const Spacer(),
               _buildSystemTray(),
-
-              // Windows 7 바탕화면 보기 (맨 우측 직사각형 바)
               Container(
                 width: 14,
                 height: 42,
@@ -247,20 +239,32 @@ class WindowsTaskbar extends StatelessWidget {
   Widget _buildSystemTray() {
     return Row(
       children: [
-        const Icon(CupertinoIcons.wifi, size: 16, color: Colors.white70),
+        InkWell(
+          onTap: onToggleQuickSettings,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            child: Row(
+              children: [
+                const Icon(CupertinoIcons.wifi, size: 16, color: Colors.white70),
+                const SizedBox(width: 8),
+                const Icon(CupertinoIcons.volume_up, size: 16, color: Colors.white70),
+                const SizedBox(width: 8),
+                const Icon(CupertinoIcons.battery_charging, size: 16, color: Colors.white70),
+              ],
+            ),
+          ),
+        ),
         const SizedBox(width: 8),
-        const Icon(CupertinoIcons.volume_up, size: 16, color: Colors.white70),
-        const SizedBox(width: 8),
-        const Icon(CupertinoIcons.battery_charging, size: 16, color: Colors.white70),
-        const SizedBox(width: 12),
-
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(timeString, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
-            Text(dateString, style: const TextStyle(color: Colors.white70, fontSize: 10)),
-          ],
+        InkWell(
+          onTap: onToggleQuickSettings,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(timeString, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+              Text(dateString, style: const TextStyle(color: Colors.white70, fontSize: 10)),
+            ],
+          ),
         ),
         const SizedBox(width: 12),
         _buildUserMenu(),

@@ -15,6 +15,10 @@ import '../apps/pinterest/pinterest_screen.dart';
 import '../apps/screen_template.dart';
 import '../apps/toss/data/toss_model.dart';
 import '../apps/toss/toss_screen.dart';
+import '../apps/windows_bsod/data/windows_bsod_model.dart';
+import '../apps/windows_bsod/windows_bsod_screen.dart';
+import '../apps/windows_update/data/windows_update_model.dart';
+import '../apps/windows_update/windows_update_screen.dart';
 import '../apps/x_twitter/data/x_twitter_model.dart';
 import '../apps/x_twitter/x_twitter_screen.dart';
 import '../apps/youtube/data/youtube_model.dart';
@@ -32,7 +36,7 @@ import 'console/windows/windows_view.dart';
 class FloatingWindowData {
   final String id;
   final ScreenTemplate template;
-  Offset position;
+  final ValueNotifier<Offset> positionNotifier;
   Size size;
   bool isMinimized;
   int zIndex;
@@ -40,11 +44,14 @@ class FloatingWindowData {
   FloatingWindowData({
     required this.id,
     required this.template,
-    required this.position,
+    required Offset position,
     required this.size,
     this.isMinimized = false,
     this.zIndex = 0,
-  });
+  }) : positionNotifier = ValueNotifier<Offset>(position);
+
+  Offset get position => positionNotifier.value;
+  set position(Offset newPos) => positionNotifier.value = newPos;
 }
 
 /// 가상 OS 콘솔 메인 페이지 (오케스트레이터 & MDI 창 관리자 & Firestore 연동)
@@ -69,6 +76,7 @@ class _ConsolePageState extends State<ConsolePage> {
   bool _isSettingsOpen = false;
   bool _isLoadingSettings = false;
   String? _activeMobileTemplateId;
+  String? _activeFullScreenTemplateId;
   Offset _settingsPos = const Offset(120, 60);
   Offset _settingsDragStart = Offset.zero;
 
@@ -153,9 +161,14 @@ class _ConsolePageState extends State<ConsolePage> {
       _isSettingsOpen = false;
     });
 
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isDesktop = screenWidth >= 768;
+    if (templateId == 'windows_update' || templateId == 'windows_bsod') {
+      setState(() {
+        _activeFullScreenTemplateId = templateId;
+      });
+      return;
+    }
 
+    final isDesktop = _pcTheme == 'windows' || _pcTheme == 'macos';
     if (isDesktop) {
       final existingIndex = _activeFloatingWindows.indexWhere((w) => w.template.id == templateId);
 
@@ -254,25 +267,30 @@ class _ConsolePageState extends State<ConsolePage> {
                     onGoHome: () => context.go('/'),
                   ),
 
-                // 2. MDI 가상 창 레이어 모음
+                // 2. MDI 가상 창 레이어 모음 (120fps 부드러운 드래그 최적화)
                 ..._activeFloatingWindows.where((w) => !w.isMinimized).map((win) {
                   final isFocused = _activeFloatingWindows.isNotEmpty && _activeFloatingWindows.last.id == win.id;
 
-                  return FloatingAppWindow(
-                    key: ValueKey(win.id),
-                    template: win.template,
-                    position: win.position,
-                    size: win.size,
-                    isFocused: isFocused,
-                    isMacStyle: _pcTheme == 'macos',
-                    onFocus: () => _bringToFront(win.id),
-                    onPositionChanged: (newPos) => setState(() => win.position = newPos),
-                    onSizeChanged: (newSize) => setState(() => win.size = newSize),
-                    onMinimize: () => setState(() => win.isMinimized = true),
-                    onClose: () {
-                      setState(() {
-                        _activeFloatingWindows.removeWhere((w) => w.id == win.id);
-                      });
+                  return ValueListenableBuilder<Offset>(
+                    valueListenable: win.positionNotifier,
+                    builder: (context, pos, child) {
+                      return FloatingAppWindow(
+                        key: ValueKey(win.id),
+                        template: win.template,
+                        position: pos,
+                        size: win.size,
+                        isFocused: isFocused,
+                        isMacStyle: _pcTheme == 'macos',
+                        onFocus: () => _bringToFront(win.id),
+                        onPositionChanged: (newPos) => win.position = newPos,
+                        onSizeChanged: (newSize) => setState(() => win.size = newSize),
+                        onMinimize: () => setState(() => win.isMinimized = true),
+                        onClose: () {
+                          setState(() {
+                            _activeFloatingWindows.removeWhere((w) => w.id == win.id);
+                          });
+                        },
+                      );
                     },
                   );
                 }),
@@ -384,11 +402,62 @@ class _ConsolePageState extends State<ConsolePage> {
                 Positioned.fill(
                   child: _buildMobileFullScreenApp(_activeMobileTemplateId!),
                 ),
+
+              // 5. OS 전체화면 (Windows 가짜 업데이트 / 블루스크린) 오버레이
+              if (_activeFullScreenTemplateId != null)
+                Positioned.fill(
+                  child: _buildFullScreenOsTemplate(_activeFullScreenTemplateId!),
+                ),
             ],
           );
         },
       ),
     );
+  }
+
+  /// OS 시스템 전체화면(Full Screen) 모달 렌더러
+  Widget _buildFullScreenOsTemplate(String templateId) {
+    if (templateId == 'windows_update') {
+      return WindowsUpdateScreen(
+        config: WindowsUpdateConfig.defaultPreset(),
+        onClose: () => setState(() => _activeFullScreenTemplateId = null),
+      );
+    } else if (templateId == 'windows_bsod') {
+      return Scaffold(
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: WindowsBsodScreen(config: WindowsBsodConfig.defaultPreset()),
+            ),
+            Positioned(
+              top: 20,
+              right: 20,
+              child: InkWell(
+                onTap: () => setState(() => _activeFullScreenTemplateId = null),
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(CupertinoIcons.xmark, size: 14, color: Colors.white),
+                      SizedBox(width: 6),
+                      Text('전체화면 종료', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 
   /// 모바일 스마트폰 전체화면 가상 앱 뷰

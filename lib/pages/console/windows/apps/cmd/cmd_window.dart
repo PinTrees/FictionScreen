@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../../common/os_window_frame.dart';
+import '../../../common/os_window_frame.dart';
 
 /// Windows 명령 프롬프트 (cmd / PowerShell)
 class WindowsCmdWindow extends StatefulWidget {
@@ -66,7 +66,7 @@ class _WindowsCmdWindowState extends State<WindowsCmdWindow> {
   Widget build(BuildContext context) {
     return OsWindowFrame(
       title: '명령 프롬프트',
-      icon: CupertinoIcons.terminal,
+      icon: CupertinoIcons.device_desktop,
       style: WindowStyle.windows,
       width: widget.width,
       height: widget.height,

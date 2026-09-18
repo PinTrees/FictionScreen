@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../../common/os_window_frame.dart';
+import '../../../common/os_window_frame.dart';
 
 /// Windows 11 메모장 (Notepad)
 class WindowsNotepadWindow extends StatefulWidget {

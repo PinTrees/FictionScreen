@@ -80,6 +80,16 @@ class ScreenTemplate {
       isDesktop: true,
     ),
     const ScreenTemplate(
+      id: 'windows_update',
+      title: 'Windows 가짜 업데이트',
+      description: '현실감 넘치는 Windows 10/11 업데이트 진행 전체화면 (% 퍼센트 애니메이션)',
+      category: TemplateCategory.os,
+      icon: CupertinoIcons.arrow_clockwise,
+      themeColor: Color(0xFF0078D7),
+      badge: '전체화면',
+      isDesktop: true,
+    ),
+    const ScreenTemplate(
       id: 'youtube',
       title: '유튜브 영상 & 댓글',
       description: '유튜브 플레이어, 채널 정보, 조회수, 베스트 댓글 생성',

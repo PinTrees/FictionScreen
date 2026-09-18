@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../../common/os_window_frame.dart';
+import '../../../common/os_window_frame.dart';
 
 /// Windows 11 파일 탐색기 (File Explorer) 창
 class WindowsFileExplorerWindow extends StatefulWidget {

@@ -288,7 +288,10 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
       case 'instagram':
         return InstagramScreen(config: _instaConfig);
       case 'youtube':
-        return YoutubeScreen(config: _youtubeConfig);
+        return YoutubeScreen(
+          config: _youtubeConfig,
+          onConfigChanged: (cfg) => setState(() => _youtubeConfig = cfg),
+        );
       case 'delivery':
         return DeliveryScreen(config: _deliveryConfig);
       case 'windows_bsod':
