@@ -214,5 +214,16 @@ class ScreenTemplate {
       badge: 'HOT',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'photoshop',
+      title: '포토샵 (Photoshop)',
+      description: '전문가용 그래픽 디자인 에디터, 눈금자 캔버스, 레이어 패널 및 도구 팔레트 연출',
+      category: TemplateCategory.os,
+      icon: CupertinoIcons.paintbrush_fill,
+      imageAsset: 'assets/images/photoshop_icon.webp',
+      themeColor: Color(0xFF31A8FF),
+      badge: '신규',
+      isDesktop: true,
+    ),
   ];
 }

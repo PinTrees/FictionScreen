@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
 import '../apps/blind/data/blind_model.dart';
 import '../apps/discord/data/discord_model.dart';
+import '../apps/photoshop/data/photoshop_model.dart';
 import '../apps/coupang/data/coupang_model.dart';
 import '../apps/daangn/data/daangn_model.dart';
 import '../apps/delivery/data/delivery_model.dart';
@@ -58,6 +59,7 @@ class _StudioPageState extends State<StudioPage> {
   late UpbitConfig _upbitConfig;
   late BlindConfig _blindConfig;
   late DiscordConfig _discordConfig;
+  late PhotoshopConfig _photoshopConfig;
 
   @override
   void initState() {
@@ -81,6 +83,7 @@ class _StudioPageState extends State<StudioPage> {
     _upbitConfig = UpbitConfig.defaultPreset();
     _blindConfig = BlindConfig.defaultPreset();
     _discordConfig = DiscordConfig.defaultPreset();
+    _photoshopConfig = PhotoshopConfig.defaultPreset();
   }
 
   Future<void> _exportScreen() async {
@@ -162,6 +165,7 @@ class _StudioPageState extends State<StudioPage> {
       upbitConfig: _upbitConfig,
       blindConfig: _blindConfig,
       discordConfig: _discordConfig,
+      photoshopConfig: _photoshopConfig,
       onKakaoBankChanged: (cfg) => setState(() => _kakaobankConfig = cfg),
       onDaangnChanged: (cfg) => setState(() => _daangnConfig = cfg),
       onYoutubeChanged: (cfg) => setState(() => _youtubeConfig = cfg),
@@ -172,6 +176,7 @@ class _StudioPageState extends State<StudioPage> {
       onUpbitChanged: (cfg) => setState(() => _upbitConfig = cfg),
       onBlindChanged: (cfg) => setState(() => _blindConfig = cfg),
       onDiscordChanged: (cfg) => setState(() => _discordConfig = cfg),
+      onPhotoshopChanged: (cfg) => setState(() => _photoshopConfig = cfg),
     );
   }
 }

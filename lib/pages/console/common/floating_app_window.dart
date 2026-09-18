@@ -26,6 +26,8 @@ import '../../../apps/blind/data/blind_model.dart';
 import '../../../apps/blind/blind_screen.dart';
 import '../../../apps/discord/data/discord_model.dart';
 import '../../../apps/discord/discord_screen.dart';
+import '../../../apps/photoshop/data/photoshop_model.dart';
+import '../../../apps/photoshop/photoshop_screen.dart';
 import '../../../apps/yanolja/data/yanolja_model.dart';
 import '../../../apps/yanolja/yanolja_screen.dart';
 import '../../../apps/coupang/data/coupang_model.dart';
@@ -94,6 +96,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   late UpbitConfig _upbitConfig;
   late BlindConfig _blindConfig;
   late DiscordConfig _discordConfig;
+  late PhotoshopConfig _photoshopConfig;
 
   @override
   void initState() {
@@ -115,6 +118,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     _upbitConfig = UpbitConfig.defaultPreset();
     _blindConfig = BlindConfig.defaultPreset();
     _discordConfig = DiscordConfig.defaultPreset();
+    _photoshopConfig = PhotoshopConfig.defaultPreset();
   }
 
   @override
@@ -374,6 +378,11 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
         return DiscordScreen(
           config: _discordConfig,
           onConfigChanged: (cfg) => setState(() => _discordConfig = cfg),
+        );
+      case 'photoshop':
+        return PhotoshopScreen(
+          config: _photoshopConfig,
+          onConfigChanged: (cfg) => setState(() => _photoshopConfig = cfg),
         );
       case 'windows_bsod':
         return WindowsBsodScreen(config: _bsodConfig);

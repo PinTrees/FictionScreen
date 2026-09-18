@@ -3,6 +3,8 @@ import '../../../apps/blind/blind_screen.dart';
 import '../../../apps/blind/data/blind_model.dart';
 import '../../../apps/discord/discord_screen.dart';
 import '../../../apps/discord/data/discord_model.dart';
+import '../../../apps/photoshop/photoshop_screen.dart';
+import '../../../apps/photoshop/data/photoshop_model.dart';
 import '../../../apps/coupang/coupang_screen.dart';
 import '../../../apps/coupang/data/coupang_model.dart';
 import '../../../apps/daangn/daangn_screen.dart';
@@ -89,6 +91,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
     required this.upbitConfig,
     required this.blindConfig,
     required this.discordConfig,
+    required this.photoshopConfig,
     this.onKakaoBankChanged,
     this.onDaangnChanged,
     this.onYoutubeChanged,
@@ -99,7 +102,11 @@ class StudioPreviewDispatcher extends StatelessWidget {
     this.onUpbitChanged,
     this.onBlindChanged,
     this.onDiscordChanged,
+    this.onPhotoshopChanged,
   });
+
+  final PhotoshopConfig photoshopConfig;
+  final ValueChanged<PhotoshopConfig>? onPhotoshopChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +129,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
       case 'upbit': return UpbitScreen(config: upbitConfig, onConfigChanged: onUpbitChanged);
       case 'blind': return BlindScreen(config: blindConfig, onConfigChanged: onBlindChanged);
       case 'discord': return DiscordScreen(config: discordConfig, onConfigChanged: onDiscordChanged);
+      case 'photoshop': return PhotoshopScreen(config: photoshopConfig, onConfigChanged: onPhotoshopChanged);
       default: return TossScreen(config: tossConfig);
     }
   }

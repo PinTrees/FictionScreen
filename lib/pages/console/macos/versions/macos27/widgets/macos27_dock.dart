@@ -111,10 +111,11 @@ class _Macos27DockState extends State<Macos27Dock> {
                   _buildDockItem(21, '업비트 에디터', 'assets/images/upbit_icon.webp', templateId: 'upbit'),
                   _buildDockItem(22, '블라인드 에디터', 'assets/images/blind_icon.webp', templateId: 'blind'),
                   _buildDockItem(23, '디스코드 에디터', 'assets/images/discord_icon.webp', templateId: 'discord'),
+                  _buildDockItem(24, '포토샵 에디터', 'assets/images/photoshop_icon.webp', templateId: 'photoshop'),
 
                   _buildDockDivider(),
 
-                  _buildDockItem(24, '랜딩 홈으로 이동', null, icon: CupertinoIcons.house_fill, isHome: true),
+                  _buildDockItem(25, '랜딩 홈으로 이동', null, icon: CupertinoIcons.house_fill, isHome: true),
                 ],
               ),
             ),
