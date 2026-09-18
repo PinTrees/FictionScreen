@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:screenshot/screenshot.dart';
 import '../apps/coupang/data/coupang_model.dart';
 import '../apps/coupang/coupang_screen.dart';
+import '../apps/netflix/data/netflix_model.dart';
+import '../apps/netflix/netflix_screen.dart';
 import '../apps/delivery/data/delivery_model.dart';
 import '../apps/delivery/delivery_screen.dart';
 import '../apps/instagram/data/instagram_model.dart';
@@ -55,6 +57,7 @@ class _StudioPageState extends State<StudioPage> {
   late InstagramConfig _instaConfig;
   late DeliveryConfig _deliveryConfig;
   late CoupangConfig _coupangConfig;
+  late NetflixConfig _netflixConfig;
 
   @override
   void initState() {
@@ -74,6 +77,7 @@ class _StudioPageState extends State<StudioPage> {
     _instaConfig = InstagramConfig.defaultPreset();
     _deliveryConfig = DeliveryConfig.defaultPreset();
     _coupangConfig = CoupangConfig.defaultPreset();
+    _netflixConfig = NetflixConfig.defaultPreset();
   }
 
   Future<void> _exportScreen() async {
@@ -639,6 +643,49 @@ class _StudioPageState extends State<StudioPage> {
     );
   }
 
+  void _editNetflix() {
+    final hero = _netflixConfig.heroMedia;
+    final titleCtrl = TextEditingController(text: hero.title);
+    final taglineCtrl = TextEditingController(text: hero.tagline);
+    final descCtrl = TextEditingController(text: hero.description);
+    final matchCtrl = TextEditingController(text: hero.matchPercentage.toString());
+    final ageCtrl = TextEditingController(text: hero.ageRating);
+    final seasonsCtrl = TextEditingController(text: hero.durationOrSeasons);
+
+    _openQuickEditDialog(
+      title: '넷플릭스 메인 히어로 및 설정 수정',
+      children: [
+        _buildDialogInput('메인 작품 타이틀', titleCtrl),
+        _buildDialogInput('작품 한 줄 카피 (태그라인)', taglineCtrl),
+        _buildDialogInput('줄거리 (시놉시스)', descCtrl, maxLines: 3),
+        _buildDialogInput('일치율 (%) (예: 99)', matchCtrl, type: TextInputType.number),
+        _buildDialogInput('연령 등급 (19, 15, 12, ALL)', ageCtrl),
+        _buildDialogInput('시즌 또는 러닝타임 (예: 시즌 3개)', seasonsCtrl),
+      ],
+      onConfirm: () {
+        final match = int.tryParse(matchCtrl.text) ?? hero.matchPercentage;
+        final updatedHero = hero.copyWith(
+          title: titleCtrl.text,
+          tagline: taglineCtrl.text,
+          description: descCtrl.text,
+          matchPercentage: match,
+          ageRating: ageCtrl.text,
+          durationOrSeasons: seasonsCtrl.text,
+        );
+
+        final top10 = List<NetflixMediaItem>.from(_netflixConfig.top10Series);
+        if (top10.isNotEmpty) {
+          top10[0] = updatedHero;
+        }
+
+        _netflixConfig = _netflixConfig.copyWith(
+          heroMedia: updatedHero,
+          top10Series: top10,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -776,6 +823,13 @@ class _StudioPageState extends State<StudioPage> {
               onPressed: _editCoupang,
             ),
 
+          if (_template.id == 'netflix')
+            IconButton(
+              tooltip: '넷플릭스 콘텐츠/프로필 변경',
+              icon: const Icon(CupertinoIcons.tv_fill, color: Color(0xFFE50914), size: 22),
+              onPressed: _editNetflix,
+            ),
+
           // 디바이스 프레임 토글
           IconButton(
             tooltip: '디바이스 프레임 토글',
@@ -884,6 +938,11 @@ class _StudioPageState extends State<StudioPage> {
         return CoupangScreen(
           config: _coupangConfig,
           onConfigChanged: (cfg) => setState(() => _coupangConfig = cfg),
+        );
+      case 'netflix':
+        return NetflixScreen(
+          config: _netflixConfig,
+          onConfigChanged: (cfg) => setState(() => _netflixConfig = cfg),
         );
       default:
         return TossScreen(config: _tossConfig);

@@ -166,6 +166,12 @@ class _MacosDockState extends State<MacosDock> {
                 ),
                 _buildDockApp(
                   index: 14,
+                  tooltip: 'Netflix 오리지널 에디터',
+                  imageAsset: 'assets/images/netflix_icon.webp',
+                  onTap: () => widget.onOpenTemplate('netflix'),
+                ),
+                _buildDockApp(
+                  index: 15,
                   tooltip: '배달의민족 배송 에디터',
                   icon: CupertinoIcons.bag_fill,
                   gradient: const LinearGradient(
@@ -179,7 +185,7 @@ class _MacosDockState extends State<MacosDock> {
 
                 // 3. 홈 이동 & 휴지통
                 _buildDockApp(
-                  index: 15,
+                  index: 16,
                   tooltip: '랜딩 홈으로 이동',
                   icon: CupertinoIcons.house_fill,
                   gradient: const LinearGradient(
@@ -188,7 +194,7 @@ class _MacosDockState extends State<MacosDock> {
                   onTap: widget.onGoHome,
                 ),
                 _buildDockApp(
-                  index: 16,
+                  index: 17,
                   tooltip: '휴지통',
                   icon: CupertinoIcons.trash_fill,
                   iconColor: Colors.white70,

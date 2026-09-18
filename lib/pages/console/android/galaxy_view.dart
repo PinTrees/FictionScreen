@@ -240,6 +240,12 @@ class _GalaxyViewState extends State<GalaxyView> {
                         onTap: () => widget.onOpenTemplate('coupang'),
                       ),
                       OsAppItem(
+                        title: 'Netflix',
+                        imageAsset: 'assets/images/netflix_icon.webp',
+                        isDesktop: false,
+                        onTap: () => widget.onOpenTemplate('netflix'),
+                      ),
+                      OsAppItem(
                         title: '배달의민족',
                         icon: CupertinoIcons.bag_fill,
                         iconColor: Colors.white,

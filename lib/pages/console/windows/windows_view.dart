@@ -177,12 +177,20 @@ class _WindowsViewState extends State<WindowsView> {
         onTap: () => widget.onOpenTemplate('coupang'),
       ),
       DesktopIconItem(
+        id: 'netflix',
+        title: 'Netflix',
+        imageAsset: 'assets/images/netflix_icon.webp',
+        gridX: 1,
+        gridY: 2,
+        onTap: () => widget.onOpenTemplate('netflix'),
+      ),
+      DesktopIconItem(
         id: 'delivery',
         title: '배달의민족',
         icon: CupertinoIcons.bag_fill,
         iconColor: const Color(0xFF2AC1BC),
         gridX: 1,
-        gridY: 2,
+        gridY: 3,
         onTap: () => widget.onOpenTemplate('delivery'),
       ),
       DesktopIconItem(
@@ -191,7 +199,7 @@ class _WindowsViewState extends State<WindowsView> {
         icon: CupertinoIcons.device_desktop,
         iconColor: const Color(0xFF0078D7),
         gridX: 1,
-        gridY: 3,
+        gridY: 4,
         onTap: () => widget.onOpenTemplate('windows_bsod'),
       ),
       DesktopIconItem(
@@ -199,8 +207,8 @@ class _WindowsViewState extends State<WindowsView> {
         title: '가짜 업데이트',
         icon: CupertinoIcons.arrow_clockwise,
         iconColor: const Color(0xFF60A5FA),
-        gridX: 1,
-        gridY: 4,
+        gridX: 2,
+        gridY: 0,
         onTap: () => widget.onOpenTemplate('windows_update'),
       ),
       DesktopIconItem(
@@ -209,7 +217,7 @@ class _WindowsViewState extends State<WindowsView> {
         icon: CupertinoIcons.doc_plaintext,
         iconColor: Colors.white70,
         gridX: 2,
-        gridY: 0,
+        gridY: 1,
         onTap: () => _openWinApp('notepad'),
       ),
       DesktopIconItem(
@@ -218,7 +226,7 @@ class _WindowsViewState extends State<WindowsView> {
         icon: CupertinoIcons.number,
         iconColor: const Color(0xFF10B981),
         gridX: 2,
-        gridY: 1,
+        gridY: 2,
         onTap: () => _openWinApp('calculator'),
       ),
       DesktopIconItem(
@@ -227,7 +235,7 @@ class _WindowsViewState extends State<WindowsView> {
         icon: CupertinoIcons.paintbrush_fill,
         iconColor: const Color(0xFFF59E0B),
         gridX: 2,
-        gridY: 2,
+        gridY: 3,
         onTap: () => _openWinApp('paint'),
       ),
       DesktopIconItem(
@@ -236,7 +244,7 @@ class _WindowsViewState extends State<WindowsView> {
         icon: CupertinoIcons.gear_alt_fill,
         iconColor: Colors.white70,
         gridX: 2,
-        gridY: 3,
+        gridY: 4,
         onTap: () => _openWinApp('settings'),
       ),
       DesktopIconItem(
@@ -244,8 +252,8 @@ class _WindowsViewState extends State<WindowsView> {
         title: '휴지통',
         icon: CupertinoIcons.trash_fill,
         iconColor: Colors.white70,
-        gridX: 2,
-        gridY: 4,
+        gridX: 3,
+        gridY: 0,
         onTap: () {},
       ),
     ];

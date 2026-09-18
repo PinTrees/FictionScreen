@@ -18,6 +18,8 @@ import '../../../apps/x_twitter/data/x_twitter_model.dart';
 import '../../../apps/x_twitter/x_twitter_screen.dart';
 import '../../../apps/coupang/data/coupang_model.dart';
 import '../../../apps/coupang/coupang_screen.dart';
+import '../../../apps/netflix/data/netflix_model.dart';
+import '../../../apps/netflix/netflix_screen.dart';
 import '../../../apps/youtube/data/youtube_model.dart';
 import '../../../apps/youtube/youtube_screen.dart';
 import '../../../widgets/common/device_frame_preview.dart';
@@ -70,6 +72,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   late InstagramConfig _instaConfig;
   late DeliveryConfig _deliveryConfig;
   late CoupangConfig _coupangConfig;
+  late NetflixConfig _netflixConfig;
 
   @override
   void initState() {
@@ -83,6 +86,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     _instaConfig = InstagramConfig.defaultPreset();
     _deliveryConfig = DeliveryConfig.defaultPreset();
     _coupangConfig = CoupangConfig.defaultPreset();
+    _netflixConfig = NetflixConfig.defaultPreset();
   }
 
   @override
@@ -302,6 +306,11 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
         return CoupangScreen(
           config: _coupangConfig,
           onConfigChanged: (cfg) => setState(() => _coupangConfig = cfg),
+        );
+      case 'netflix':
+        return NetflixScreen(
+          config: _netflixConfig,
+          onConfigChanged: (cfg) => setState(() => _netflixConfig = cfg),
         );
       case 'windows_bsod':
         return WindowsBsodScreen(config: _bsodConfig);

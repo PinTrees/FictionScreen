@@ -128,5 +128,16 @@ class ScreenTemplate {
       badge: '인기',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'netflix',
+      title: '넷플릭스 (Netflix)',
+      description: '프로필 선택, 오리지널 시리즈, TOP 10 거대 순위, 회차별 상세 모달',
+      category: TemplateCategory.sns,
+      icon: CupertinoIcons.tv_fill,
+      imageAsset: 'assets/images/netflix_icon.webp',
+      themeColor: Color(0xFFE50914),
+      badge: 'HOT',
+      isDesktop: true,
+    ),
   ];
 }
