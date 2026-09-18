@@ -13,6 +13,7 @@ class WindowsTaskbar extends StatelessWidget {
   final VoidCallback onToggleStartMenu;
   final VoidCallback? onToggleQuickSettings;
   final Function(String templateId) onOpenTemplate;
+  final Function(String appId)? onOpenWinApp;
   final VoidCallback onOpenSettings;
   final VoidCallback onSignOut;
   final VoidCallback onGoHome;
@@ -27,6 +28,7 @@ class WindowsTaskbar extends StatelessWidget {
     required this.onToggleStartMenu,
     this.onToggleQuickSettings,
     required this.onOpenTemplate,
+    this.onOpenWinApp,
     required this.onOpenSettings,
     required this.onSignOut,
     required this.onGoHome,
@@ -83,15 +85,21 @@ class WindowsTaskbar extends StatelessWidget {
                       onPressed: onToggleStartMenu,
                     ),
                     const SizedBox(width: 4),
+                    // Windows 11 순정 핵심 기본 앱
+                    _buildTaskbarIcon(null, Colors.transparent, '파일 탐색기', () => onOpenWinApp?.call('file_explorer'), imageAsset: 'assets/images/windows/explorer.png'),
+                    _buildTaskbarIcon(null, Colors.transparent, '설정', () => (onOpenWinApp != null ? onOpenWinApp!('settings') : onOpenSettings()), imageAsset: 'assets/images/windows/settings/System.webp'),
+                    _buildTaskbarIcon(null, Colors.transparent, 'Edge', () => onOpenWinApp?.call('edge'), imageAsset: 'assets/images/windows/edge.png'),
+                    _buildTaskbarIcon(null, Colors.transparent, 'Chrome', () => onOpenWinApp?.call('chrome'), imageAsset: 'assets/images/windows/chrome.png'),
+                    _buildTaskbarIcon(null, Colors.transparent, '메모장', () => onOpenWinApp?.call('notepad'), imageAsset: 'assets/images/windows/notepad.png'),
+                    _buildTaskbarIcon(null, Colors.transparent, '계산기', () => onOpenWinApp?.call('calculator'), imageAsset: 'assets/images/windows/calc.png'),
+                    // 사용자 창작 템플릿 앱
                     _buildTaskbarIcon(null, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
-                    _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
-                    _buildTaskbarIcon(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), 'YouTube', () => onOpenTemplate('youtube')),
-                    _buildTaskbarIcon(null, const Color(0xFFE1306C), 'Instagram', () => onOpenTemplate('instagram'), imageAsset: 'assets/images/instagram_icon.webp'),
                     _buildTaskbarIcon(null, const Color(0xFFC72424), '쿠팡', () => onOpenTemplate('coupang'), imageAsset: 'assets/images/coupang_icon.webp'),
                     _buildTaskbarIcon(null, const Color(0xFFE50914), 'Netflix', () => onOpenTemplate('netflix'), imageAsset: 'assets/images/netflix_icon.webp'),
+                    _buildTaskbarIcon(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), 'YouTube', () => onOpenTemplate('youtube')),
+                    _buildTaskbarIcon(null, const Color(0xFFE1306C), 'Instagram', () => onOpenTemplate('instagram'), imageAsset: 'assets/images/instagram_icon.webp'),
                     _buildTaskbarIcon(null, const Color(0xFF0066B3), '동행복권', () => onOpenTemplate('lottery'), imageAsset: 'assets/images/lottery_icon.webp'),
-                    _buildTaskbarIcon(CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), '배달의민족', () => onOpenTemplate('delivery')),
-                    _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정 (OS 변경 / 배경화면)', onOpenSettings),
+                    _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
                   ],
                 ),
                 const Spacer(),
@@ -148,7 +156,7 @@ class WindowsTaskbar extends StatelessWidget {
           _buildTaskbarIcon(null, const Color(0xFFE50914), 'Netflix', () => onOpenTemplate('netflix'), imageAsset: 'assets/images/netflix_icon.webp'),
           _buildTaskbarIcon(null, const Color(0xFF0066B3), '동행복권', () => onOpenTemplate('lottery'), imageAsset: 'assets/images/lottery_icon.webp'),
           _buildTaskbarIcon(CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), '배달의민족', () => onOpenTemplate('delivery')),
-          _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정', onOpenSettings),
+          _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정', () => (onOpenWinApp != null ? onOpenWinApp!('settings') : onOpenSettings())),
           const Spacer(),
           _buildSystemTray(),
         ],
@@ -209,7 +217,7 @@ class WindowsTaskbar extends StatelessWidget {
               _buildTaskbarIcon(null, const Color(0xFFE50914), 'Netflix', () => onOpenTemplate('netflix'), imageAsset: 'assets/images/netflix_icon.webp'),
               _buildTaskbarIcon(null, const Color(0xFF0066B3), '동행복권', () => onOpenTemplate('lottery'), imageAsset: 'assets/images/lottery_icon.webp'),
               _buildTaskbarIcon(CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), '배달의민족', () => onOpenTemplate('delivery')),
-              _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정', onOpenSettings),
+              _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정', () => (onOpenWinApp != null ? onOpenWinApp!('settings') : onOpenSettings())),
               const Spacer(),
               _buildSystemTray(),
               Container(

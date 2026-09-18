@@ -8,6 +8,7 @@ class WindowsStartMenu extends StatelessWidget {
   final String windowsVersion;
   final User? user;
   final Function(String templateId) onOpenTemplate;
+  final Function(String appId)? onOpenWinApp;
   final VoidCallback onOpenSettings;
   final VoidCallback onSignOut;
   final VoidCallback onGoHome;
@@ -17,6 +18,7 @@ class WindowsStartMenu extends StatelessWidget {
     this.windowsVersion = '10',
     required this.user,
     required this.onOpenTemplate,
+    this.onOpenWinApp,
     required this.onOpenSettings,
     required this.onSignOut,
     required this.onGoHome,
@@ -98,7 +100,7 @@ class WindowsStartMenu extends StatelessWidget {
                 IconButton(icon: const Icon(CupertinoIcons.bars, size: 18, color: Colors.white70), onPressed: () {}),
                 const Spacer(),
                 IconButton(icon: const Icon(CupertinoIcons.person_fill, size: 18, color: Colors.white70), onPressed: () {}),
-                IconButton(icon: const Icon(CupertinoIcons.gear_alt_fill, size: 18, color: Colors.white70), onPressed: onOpenSettings),
+                IconButton(icon: const Icon(CupertinoIcons.gear_alt_fill, size: 18, color: Colors.white70), onPressed: () => (onOpenWinApp != null ? onOpenWinApp!('settings') : onOpenSettings())),
                 IconButton(icon: const Icon(CupertinoIcons.power, size: 18, color: Color(0xFFEF4444)), onPressed: onSignOut),
               ],
             ),
@@ -124,7 +126,7 @@ class WindowsStartMenu extends StatelessWidget {
                         _buildListTile('Netflix', null, const Color(0xFFE50914), () => onOpenTemplate('netflix'), imageAsset: 'assets/images/netflix_icon.webp'),
                         _buildListTile('동행복권 (로또 6/45)', null, const Color(0xFF0066B3), () => onOpenTemplate('lottery'), imageAsset: 'assets/images/lottery_icon.webp'),
                         _buildListTile('배달의민족', CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), () => onOpenTemplate('delivery')),
-                        _buildListTile('시스템 설정', CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), onOpenSettings),
+                        _buildListTile('시스템 설정', CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), () => (onOpenWinApp != null ? onOpenWinApp!('settings') : onOpenSettings())),
                       ],
                     ),
                   ),
@@ -206,7 +208,7 @@ class WindowsStartMenu extends StatelessWidget {
                             _buildWin7ProgramItem('Netflix 오리지널', null, const Color(0xFFE50914), () => onOpenTemplate('netflix'), imageAsset: 'assets/images/netflix_icon.webp'),
                             _buildWin7ProgramItem('동행복권 로또 6/45', null, const Color(0xFF0066B3), () => onOpenTemplate('lottery'), imageAsset: 'assets/images/lottery_icon.webp'),
                             _buildWin7ProgramItem('배달의민족 배송 현황', CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), () => onOpenTemplate('delivery')),
-                            _buildWin7ProgramItem('시스템 설정 (제어판)', CupertinoIcons.gear_alt_fill, const Color(0xFF475569), onOpenSettings),
+                            _buildWin7ProgramItem('시스템 설정 (제어판)', CupertinoIcons.gear_alt_fill, const Color(0xFF475569), () => (onOpenWinApp != null ? onOpenWinApp!('settings') : onOpenSettings())),
                           ],
                         ),
                       ),
@@ -226,10 +228,10 @@ class WindowsStartMenu extends StatelessWidget {
                               child: user?.photoURL == null ? const Icon(CupertinoIcons.person_fill, color: Colors.white, size: 20) : null,
                             ),
                             const SizedBox(height: 12),
-                            _buildWin7SystemLink('컴퓨터', () {}),
-                            _buildWin7SystemLink('문서', () {}),
-                            _buildWin7SystemLink('사진', () {}),
-                            _buildWin7SystemLink('제어판 (설정)', onOpenSettings),
+                            _buildWin7SystemLink('컴퓨터', () => onOpenWinApp?.call('file_explorer')),
+                            _buildWin7SystemLink('문서', () => onOpenWinApp?.call('file_explorer')),
+                            _buildWin7SystemLink('사진', () => onOpenWinApp?.call('file_explorer')),
+                            _buildWin7SystemLink('제어판 (설정)', () => (onOpenWinApp != null ? onOpenWinApp!('settings') : onOpenSettings())),
                             _buildWin7SystemLink('랜딩 홈', onGoHome),
                             const Spacer(),
                             // 시스템 종료 버튼
@@ -360,15 +362,20 @@ class WindowsStartMenu extends StatelessWidget {
       mainAxisSpacing: 8,
       crossAxisSpacing: 8,
       children: [
+        _buildAppItem('설정', null, const Color(0xFF0078D7), () => (onOpenWinApp != null ? onOpenWinApp!('settings') : onOpenSettings()), imageAsset: 'assets/images/windows/settings/System.webp'),
+        _buildAppItem('파일 탐색기', null, const Color(0xFFF59E0B), () => onOpenWinApp?.call('file_explorer'), imageAsset: 'assets/images/windows/explorer.png'),
+        _buildAppItem('Edge', null, const Color(0xFF0284C7), () => onOpenWinApp?.call('edge'), imageAsset: 'assets/images/windows/edge.png'),
+        _buildAppItem('Chrome', null, const Color(0xFFEA4335), () => onOpenWinApp?.call('chrome'), imageAsset: 'assets/images/windows/chrome.png'),
+        _buildAppItem('메모장', null, const Color(0xFF10B981), () => onOpenWinApp?.call('notepad'), imageAsset: 'assets/images/windows/notepad.png'),
+        _buildAppItem('계산기', null, const Color(0xFF3B82F6), () => onOpenWinApp?.call('calculator'), imageAsset: 'assets/images/windows/calc.png'),
         _buildAppItem('카카오톡', null, const Color(0xFFFEE500), () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
-        _buildAppItem('블루스크린', CupertinoIcons.device_desktop, const Color(0xFF0078D7), () => onOpenTemplate('windows_bsod')),
-        _buildAppItem('YouTube', CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), () => onOpenTemplate('youtube')),
-        _buildAppItem('Instagram', null, const Color(0xFFE1306C), () => onOpenTemplate('instagram'), imageAsset: 'assets/images/instagram_icon.webp'),
         _buildAppItem('쿠팡', null, const Color(0xFFC72424), () => onOpenTemplate('coupang'), imageAsset: 'assets/images/coupang_icon.webp'),
         _buildAppItem('Netflix', null, const Color(0xFFE50914), () => onOpenTemplate('netflix'), imageAsset: 'assets/images/netflix_icon.webp'),
+        _buildAppItem('YouTube', CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), () => onOpenTemplate('youtube')),
+        _buildAppItem('Instagram', null, const Color(0xFFE1306C), () => onOpenTemplate('instagram'), imageAsset: 'assets/images/instagram_icon.webp'),
         _buildAppItem('동행복권', null, const Color(0xFF0066B3), () => onOpenTemplate('lottery'), imageAsset: 'assets/images/lottery_icon.webp'),
         _buildAppItem('배달의민족', CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), () => onOpenTemplate('delivery')),
-        _buildAppItem('시스템 설정', CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), onOpenSettings),
+        _buildAppItem('블루스크린', CupertinoIcons.device_desktop, const Color(0xFF0078D7), () => onOpenTemplate('windows_bsod')),
       ],
     );
   }

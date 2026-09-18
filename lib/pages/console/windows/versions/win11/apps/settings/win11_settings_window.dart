@@ -559,16 +559,34 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
               ),
             ),
             const SizedBox(height: 2),
-            InkWell(
-              onTap: _renamePcDialog,
-              child: const Text(
-                '이름 바꾸기',
-                style: TextStyle(
-                  color: Color(0xFF60CDFF),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+            Row(
+              children: [
+                InkWell(
+                  onTap: _renamePcDialog,
+                  child: const Text(
+                    '이름 바꾸기',
+                    style: TextStyle(
+                      color: Color(0xFF60CDFF),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-              ),
+                if (widget.onOpenSystemSettings != null) ...[
+                  const Text('  ·  ', style: TextStyle(color: Colors.white38, fontSize: 11)),
+                  InkWell(
+                    onTap: widget.onOpenSystemSettings,
+                    child: const Text(
+                      'OS 모드 변경',
+                      style: TextStyle(
+                        color: Color(0xFF60CDFF),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ],
         ),
