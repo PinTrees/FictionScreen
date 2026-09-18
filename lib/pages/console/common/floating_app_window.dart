@@ -32,6 +32,8 @@ import '../../../apps/visual_studio/data/visual_studio_model.dart';
 import '../../../apps/visual_studio/visual_studio_screen.dart';
 import '../../../apps/chrome/data/chrome_model.dart';
 import '../../../apps/chrome/chrome_screen.dart';
+import '../../../apps/davinci_resolve/data/davinci_resolve_model.dart';
+import '../../../apps/davinci_resolve/davinci_resolve_screen.dart';
 import '../../../apps/yanolja/data/yanolja_model.dart';
 import '../../../apps/yanolja/yanolja_screen.dart';
 import '../../../apps/coupang/data/coupang_model.dart';
@@ -103,6 +105,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   late PhotoshopConfig _photoshopConfig;
   late VisualStudioConfig _visualStudioConfig;
   late ChromeConfig _chromeConfig;
+  late DavinciConfig _davinciConfig;
 
   @override
   void initState() {
@@ -127,6 +130,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     _photoshopConfig = PhotoshopConfig.defaultPreset();
     _visualStudioConfig = VisualStudioConfig.defaultPreset();
     _chromeConfig = ChromeConfig.defaultPreset();
+    _davinciConfig = DavinciConfig.defaultPreset();
   }
 
   @override
@@ -401,6 +405,11 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
         return ChromeScreen(
           config: _chromeConfig,
           onConfigChanged: (cfg) => setState(() => _chromeConfig = cfg),
+        );
+      case 'davinci_resolve':
+        return DavinciResolveScreen(
+          config: _davinciConfig,
+          onConfigChanged: (cfg) => setState(() => _davinciConfig = cfg),
         );
       case 'windows_bsod':
         return WindowsBsodScreen(config: _bsodConfig);

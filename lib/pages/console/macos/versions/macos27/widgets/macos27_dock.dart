@@ -113,10 +113,11 @@ class _Macos27DockState extends State<Macos27Dock> {
                   _buildDockItem(23, '디스코드 에디터', 'assets/images/discord_icon.webp', templateId: 'discord'),
                   _buildDockItem(24, '포토샵 에디터', 'assets/images/photoshop_icon.webp', templateId: 'photoshop'),
                   _buildDockItem(25, 'Visual Studio 2026', 'assets/images/visual_studio_icon.webp', templateId: 'visual_studio'),
+                  _buildDockItem(26, 'DaVinci Resolve', 'assets/images/davinci_resolve_icon.webp', templateId: 'davinci_resolve'),
 
                   _buildDockDivider(),
 
-                  _buildDockItem(26, '랜딩 홈으로 이동', null, icon: CupertinoIcons.house_fill, isHome: true),
+                  _buildDockItem(27, '랜딩 홈으로 이동', null, icon: CupertinoIcons.house_fill, isHome: true),
                 ],
               ),
             ),

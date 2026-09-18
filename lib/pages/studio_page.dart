@@ -6,6 +6,7 @@ import '../apps/discord/data/discord_model.dart';
 import '../apps/photoshop/data/photoshop_model.dart';
 import '../apps/visual_studio/data/visual_studio_model.dart';
 import '../apps/chrome/data/chrome_model.dart';
+import '../apps/davinci_resolve/data/davinci_resolve_model.dart';
 import '../apps/coupang/data/coupang_model.dart';
 import '../apps/daangn/data/daangn_model.dart';
 import '../apps/delivery/data/delivery_model.dart';
@@ -64,6 +65,7 @@ class _StudioPageState extends State<StudioPage> {
   late PhotoshopConfig _photoshopConfig;
   late VisualStudioConfig _visualStudioConfig;
   late ChromeConfig _chromeConfig;
+  late DavinciConfig _davinciConfig;
 
   @override
   void initState() {
@@ -90,6 +92,7 @@ class _StudioPageState extends State<StudioPage> {
     _photoshopConfig = PhotoshopConfig.defaultPreset();
     _visualStudioConfig = VisualStudioConfig.defaultPreset();
     _chromeConfig = ChromeConfig.defaultPreset();
+    _davinciConfig = DavinciConfig.defaultPreset();
   }
 
   Future<void> _exportScreen() async {
@@ -174,6 +177,7 @@ class _StudioPageState extends State<StudioPage> {
       photoshopConfig: _photoshopConfig,
       visualStudioConfig: _visualStudioConfig,
       chromeConfig: _chromeConfig,
+      davinciConfig: _davinciConfig,
       onKakaoBankChanged: (cfg) => setState(() => _kakaobankConfig = cfg),
       onDaangnChanged: (cfg) => setState(() => _daangnConfig = cfg),
       onYoutubeChanged: (cfg) => setState(() => _youtubeConfig = cfg),
@@ -187,6 +191,7 @@ class _StudioPageState extends State<StudioPage> {
       onPhotoshopChanged: (cfg) => setState(() => _photoshopConfig = cfg),
       onVisualStudioChanged: (cfg) => setState(() => _visualStudioConfig = cfg),
       onChromeChanged: (cfg) => setState(() => _chromeConfig = cfg),
+      onDavinciChanged: (cfg) => setState(() => _davinciConfig = cfg),
     );
   }
 }

@@ -247,5 +247,16 @@ class ScreenTemplate {
       badge: '인기',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'davinci_resolve',
+      title: '다빈치 리졸브 (DaVinci Resolve)',
+      description: '블랙매직 디자인 전문 영상 편집기, 헐리우드 컬러 그레이딩 휠, 노드 트리 그래프 & 멀티트랙 타임라인',
+      category: TemplateCategory.os,
+      icon: CupertinoIcons.videocam_circle_fill,
+      imageAsset: 'assets/images/davinci_resolve_icon.webp',
+      themeColor: Color(0xFFE53935),
+      badge: '신규',
+      isDesktop: true,
+    ),
   ];
 }

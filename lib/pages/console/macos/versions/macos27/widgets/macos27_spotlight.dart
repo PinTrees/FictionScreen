@@ -62,6 +62,7 @@ class _Macos27SpotlightState extends State<Macos27Spotlight> with SingleTickerPr
     {'title': '디스코드(Discord) 에디터', 'desc': '게이머 & 개발자 음성/채팅 서버, 봇 메시지, 역할 컬러 연출', 'icon': 'assets/images/discord_icon.webp', 'templateId': 'discord'},
     {'title': '포토샵(Photoshop) 에디터', 'desc': '전문가용 그래픽 에디터, 캔버스 눈금자, 레이어 및 도구 팔레트 연출', 'icon': 'assets/images/photoshop_icon.webp', 'templateId': 'photoshop'},
     {'title': 'Visual Studio 2026', 'desc': '마이크로소프트 C# 코드 에디터, 중단점 디버깅, 솔루션 탐색기 연출', 'icon': 'assets/images/visual_studio_icon.webp', 'templateId': 'visual_studio'},
+    {'title': '다빈치 리졸브(DaVinci Resolve)', 'desc': '전문 영상 편집기, 헐리우드 컬러 그레이딩 휠, 노드 그래프 & 타임라인', 'icon': 'assets/images/davinci_resolve_icon.webp', 'templateId': 'davinci_resolve'},
   ];
 
   @override
