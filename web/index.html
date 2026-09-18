@@ -88,5 +88,27 @@
     <div class="loading-text">FictionScreen 스튜디오 로딩 중...</div>
   </div>
   <script src="flutter_bootstrap.js" async></script>
+  <script>
+    // Flutter 앱이 로드되면 로딩 인디케이터를 매끄럽게 제거합니다.
+    window.addEventListener('flutter-first-frame', function() {
+      var loader = document.getElementById('loading-container');
+      if (loader) {
+        loader.style.transition = 'opacity 0.3s ease';
+        loader.style.opacity = '0';
+        setTimeout(function() { loader.remove(); }, 300);
+      }
+    });
+    // 폴백: 첫 프레임 이벤트 미수신 시에도 3초 후 안전 제거
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var loader = document.getElementById('loading-container');
+        if (loader) {
+          loader.style.transition = 'opacity 0.3s ease';
+          loader.style.opacity = '0';
+          setTimeout(function() { loader.remove(); }, 300);
+        }
+      }, 2000);
+    });
+  </script>
 </body>
 </html>
