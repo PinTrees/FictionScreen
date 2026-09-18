@@ -245,6 +245,15 @@ class _WindowsViewState extends State<WindowsView> {
         isSystemApp: true,
         onTap: () {},
       ),
+      DesktopIconItem(
+        id: 'lottery',
+        title: '동행복권',
+        imageAsset: 'assets/images/lottery_icon.webp',
+        gridX: 3,
+        gridY: 1,
+        isSystemApp: true,
+        onTap: () => widget.onOpenTemplate('lottery'),
+      ),
     ];
   }
 

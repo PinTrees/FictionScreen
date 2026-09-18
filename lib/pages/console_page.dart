@@ -182,7 +182,7 @@ class _ConsolePageState extends State<ConsolePage> {
 
         final count = _activeFloatingWindows.length;
         final initialPos = Offset(100.0 + (count * 30), 50.0 + (count * 25));
-        final initialSize = (template.id == 'coupang' || template.id == 'netflix')
+        final initialSize = (template.id == 'coupang' || template.id == 'netflix' || template.id == 'lottery')
             ? const Size(980, 620)
             : (template.isDesktop ? const Size(760, 500) : const Size(380, 680));
 

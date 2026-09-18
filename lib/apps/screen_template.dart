@@ -139,5 +139,16 @@ class ScreenTemplate {
       badge: 'HOT',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'lottery',
+      title: '동행복권 (로또 6/45)',
+      description: '로또 6/45 추첨 결과, 1등 당첨 영수증 생성, QR 당첨 확인, 스피또 2000',
+      category: TemplateCategory.lifestyle,
+      icon: CupertinoIcons.tickets_fill,
+      imageAsset: 'assets/images/lottery_icon.webp',
+      themeColor: Color(0xFF0066B3),
+      badge: '인기',
+      isDesktop: true,
+    ),
   ];
 }

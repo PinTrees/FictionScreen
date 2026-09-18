@@ -172,6 +172,12 @@ class _MacosDockState extends State<MacosDock> {
                 ),
                 _buildDockApp(
                   index: 15,
+                  tooltip: '동행복권 로또 6/45',
+                  imageAsset: 'assets/images/lottery_icon.webp',
+                  onTap: () => widget.onOpenTemplate('lottery'),
+                ),
+                _buildDockApp(
+                  index: 16,
                   tooltip: '배달의민족 배송 에디터',
                   icon: CupertinoIcons.bag_fill,
                   gradient: const LinearGradient(

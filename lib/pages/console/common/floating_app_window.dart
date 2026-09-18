@@ -20,6 +20,8 @@ import '../../../apps/coupang/data/coupang_model.dart';
 import '../../../apps/coupang/coupang_screen.dart';
 import '../../../apps/netflix/data/netflix_model.dart';
 import '../../../apps/netflix/netflix_screen.dart';
+import '../../../apps/lottery/data/lottery_model.dart';
+import '../../../apps/lottery/lottery_screen.dart';
 import '../../../apps/youtube/data/youtube_model.dart';
 import '../../../apps/youtube/youtube_screen.dart';
 import '../../../widgets/common/device_frame_preview.dart';
@@ -73,6 +75,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   late DeliveryConfig _deliveryConfig;
   late CoupangConfig _coupangConfig;
   late NetflixConfig _netflixConfig;
+  late LotteryConfig _lotteryConfig;
 
   @override
   void initState() {
@@ -87,6 +90,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     _deliveryConfig = DeliveryConfig.defaultPreset();
     _coupangConfig = CoupangConfig.defaultPreset();
     _netflixConfig = NetflixConfig.defaultPreset();
+    _lotteryConfig = LotteryConfig.defaultPreset();
   }
 
   @override
@@ -311,6 +315,11 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
         return NetflixScreen(
           config: _netflixConfig,
           onConfigChanged: (cfg) => setState(() => _netflixConfig = cfg),
+        );
+      case 'lottery':
+        return LotteryScreen(
+          config: _lotteryConfig,
+          onConfigChanged: (cfg) => setState(() => _lotteryConfig = cfg),
         );
       case 'windows_bsod':
         return WindowsBsodScreen(config: _bsodConfig);
