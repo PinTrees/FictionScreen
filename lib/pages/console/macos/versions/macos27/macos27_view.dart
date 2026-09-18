@@ -15,6 +15,7 @@ import 'apps/settings/macos27_settings_window.dart';
 import 'widgets/macos27_context_menu.dart';
 import 'widgets/macos27_dock.dart';
 import 'widgets/macos27_menubar.dart';
+import 'widgets/macos27_spotlight.dart';
 
 /// macOS MDI 가상 창 데이터 모델
 class Macos27WindowData {
@@ -38,13 +39,15 @@ class Macos27WindowData {
   set position(Offset newPos) => positionNotifier.value = newPos;
 }
 
-/// macOS 데스크톱 사용자 생성 아이템 모델
+/// macOS 데스크톱 사용자 생성 아이템 모델 (폴더 및 파일)
 class MacosDesktopItem {
   final String id;
   String title;
   Offset position;
   final String imageAsset;
   final bool isFolder;
+  bool isEditing;
+  final List<MacosDesktopItem> children;
 
   MacosDesktopItem({
     required this.id,
@@ -52,7 +55,9 @@ class MacosDesktopItem {
     required this.position,
     required this.imageAsset,
     this.isFolder = false,
-  });
+    this.isEditing = false,
+    List<MacosDesktopItem>? children,
+  }) : children = children ?? [];
 }
 
 /// macOS 27 Golden Gate 플래그십 데스크톱 뷰 레이아웃
@@ -94,10 +99,15 @@ class _Macos27ViewState extends State<Macos27View> {
   String _activeWallpaper = '';
   double _glassTransparency = 0.55;
   Offset? _contextMenuPos;
+  MacosDesktopItem? _contextMenuTarget;
+  bool _isSpotlightOpen = false;
+  String? _hoveredFolderId;
   final List<MacosDesktopItem> _customFolders = [];
+  final TextEditingController _renameController = TextEditingController();
+  final FocusNode _renameFocusNode = FocusNode();
 
   void _handleCreateNewFolder(Offset clickPos) {
-    final folderNum = _customFolders.length + 1;
+    final folderNum = _customFolders.where((i) => i.isFolder).length + 1;
     final title = folderNum == 1 ? '무제 폴더' : '무제 폴더 $folderNum';
     final size = MediaQuery.of(context).size;
     final pos = Offset(
@@ -115,6 +125,78 @@ class _Macos27ViewState extends State<Macos27View> {
         ),
       );
     });
+  }
+
+  void _handleCreateNewDocument(Offset clickPos) {
+    final docNum = _customFolders.where((i) => !i.isFolder).length + 1;
+    final title = docNum == 1 ? '새로운 문서.txt' : '새로운 문서 $docNum.txt';
+    final size = MediaQuery.of(context).size;
+    final pos = Offset(
+      (clickPos.dx - 30).clamp(20.0, size.width - 120.0),
+      (clickPos.dy - 30).clamp(50.0, size.height - 180.0),
+    );
+    setState(() {
+      _customFolders.add(
+        MacosDesktopItem(
+          id: 'doc_${DateTime.now().millisecondsSinceEpoch}',
+          title: title,
+          position: pos,
+          imageAsset: 'assets/images/macos/notes.png',
+          isFolder: false,
+        ),
+      );
+    });
+  }
+
+  void _startRenaming(MacosDesktopItem item) {
+    _renameController.text = item.title;
+    setState(() {
+      for (final it in _customFolders) { it.isEditing = false; }
+      item.isEditing = true;
+    });
+    _renameFocusNode.requestFocus();
+  }
+
+  void _finishRenaming(MacosDesktopItem item) {
+    final newTitle = _renameController.text.trim();
+    if (newTitle.isNotEmpty) {
+      setState(() {
+        item.title = newTitle;
+        item.isEditing = false;
+      });
+    } else {
+      setState(() => item.isEditing = false);
+    }
+  }
+
+  void _deleteItem(MacosDesktopItem item) {
+    setState(() {
+      _customFolders.removeWhere((i) => i.id == item.id);
+    });
+  }
+
+  void _checkDropTarget(MacosDesktopItem draggedItem) {
+    MacosDesktopItem? target;
+    for (final other in _customFolders) {
+      if (other.id == draggedItem.id || !other.isFolder) continue;
+      final dist = (other.position - draggedItem.position).distance;
+      if (dist < 55) {
+        target = other;
+        break;
+      }
+    }
+    setState(() => _hoveredFolderId = target?.id);
+  }
+
+  void _finishDragAndDrop(MacosDesktopItem draggedItem) {
+    if (_hoveredFolderId != null) {
+      final targetFolder = _customFolders.firstWhere((i) => i.id == _hoveredFolderId);
+      setState(() {
+        targetFolder.children.add(draggedItem);
+        _customFolders.removeWhere((i) => i.id == draggedItem.id);
+        _hoveredFolderId = null;
+      });
+    }
   }
 
   @override
@@ -189,9 +271,13 @@ class _Macos27ViewState extends State<Macos27View> {
         Positioned.fill(
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onSecondaryTapDown: (details) => setState(() => _contextMenuPos = details.globalPosition),
+            onSecondaryTapDown: (details) => setState(() {
+              _contextMenuPos = details.globalPosition;
+              _contextMenuTarget = null;
+            }),
             onTap: () {
-              if (_contextMenuPos != null) setState(() => _contextMenuPos = null);
+              if (_contextMenuPos != null) setState(() { _contextMenuPos = null; _contextMenuTarget = null; });
+              if (_isSpotlightOpen) setState(() => _isSpotlightOpen = false);
             },
             child: _buildMacWallpaper(),
           ),
@@ -220,50 +306,113 @@ class _Macos27ViewState extends State<Macos27View> {
           ),
         ),
 
-        // 2-1. 사용자 생성 데스크톱 폴더 (드래그 이동 & 더블클릭 Finder 열기)
+        // 2-1. 사용자 생성 데스크톱 폴더 및 가상 파일 (드래그 & 드롭 폴더 이동, 인라인 이름 변경, 우클릭 삭제)
         ..._customFolders.map((folder) {
+          final isDropHovered = _hoveredFolderId == folder.id;
           return Positioned(
             left: folder.position.dx,
             top: folder.position.dy,
             child: GestureDetector(
               onPanUpdate: (details) {
-                setState(() => folder.position += details.delta);
+                setState(() {
+                  folder.position += details.delta;
+                  _checkDropTarget(folder);
+                });
               },
-              onTap: () => _openApp('finder'),
+              onPanEnd: (_) => _finishDragAndDrop(folder),
+              onDoubleTap: () => _openApp(folder.isFolder ? 'finder' : 'notes'),
               onSecondaryTapDown: (details) {
-                setState(() => _contextMenuPos = details.globalPosition);
+                setState(() {
+                  _contextMenuPos = details.globalPosition;
+                  _contextMenuTarget = folder;
+                });
               },
-              child: Container(
-                width: 76,
-                padding: const EdgeInsets.symmetric(vertical: 4),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                width: 82,
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: isDropHovered
+                      ? Border.all(color: const Color(0xFF38BDF8), width: 2)
+                      : Border.all(color: Colors.transparent, width: 2),
+                  color: isDropHovered ? const Color(0xFF38BDF8).withValues(alpha: 0.25) : Colors.transparent,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset(
-                      folder.imageAsset,
-                      width: 54,
-                      height: 54,
-                      filterQuality: FilterQuality.high,
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Image.asset(
+                          folder.imageAsset,
+                          width: 54,
+                          height: 54,
+                          filterQuality: FilterQuality.high,
+                        ),
+                        if (folder.children.isNotEmpty)
+                          Positioned(
+                            right: -2,
+                            bottom: -2,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF007AFF),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.white, width: 1.2),
+                              ),
+                              child: Text(
+                                '${folder.children.length}',
+                                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.45),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        folder.title,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                    if (folder.isEditing)
+                      Container(
+                        height: 24,
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
                           color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
+                          borderRadius: BorderRadius.circular(4),
+                          boxShadow: [
+                            BoxShadow(color: const Color(0xFF007AFF).withValues(alpha: 0.5), blurRadius: 4),
+                          ],
+                        ),
+                        child: TextField(
+                          controller: _renameController,
+                          focusNode: _renameFocusNode,
+                          autofocus: true,
+                          style: const TextStyle(color: Colors.black, fontSize: 11, fontWeight: FontWeight.w500),
+                          decoration: const InputDecoration(border: InputBorder.none, isDense: true, contentPadding: EdgeInsets.symmetric(vertical: 4)),
+                          onSubmitted: (_) => _finishRenaming(folder),
+                          onTapOutside: (_) => _finishRenaming(folder),
+                        ),
+                      )
+                    else
+                      GestureDetector(
+                        onDoubleTap: () => _startRenaming(folder),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.45),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            folder.title,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -306,7 +455,7 @@ class _Macos27ViewState extends State<Macos27View> {
             onOpenOsSwitch: () => _openApp('settings'),
             onSignOut: widget.onSignOut,
             onGoHome: widget.onGoHome,
-            onToggleSpotlight: () => _openApp('finder'),
+            onToggleSpotlight: () => setState(() => _isSpotlightOpen = !_isSpotlightOpen),
           ),
         ),
 
@@ -329,11 +478,58 @@ class _Macos27ViewState extends State<Macos27View> {
         if (_contextMenuPos != null)
           Macos27ContextMenu(
             position: _contextMenuPos!,
+            isItemTarget: _contextMenuTarget != null,
+            targetTitle: _contextMenuTarget?.title,
             onNewFolder: () => _handleCreateNewFolder(_contextMenuPos!),
+            onNewDocument: () => _handleCreateNewDocument(_contextMenuPos!),
             onOpenWallpaperSettings: () => _openApp('settings'),
             onOpenSettings: () => _openApp('settings'),
             onOpenOsSwitch: () => _openApp('settings'),
-            onClose: () => setState(() => _contextMenuPos = null),
+            onOpenItem: () {
+              if (_contextMenuTarget != null) {
+                _openApp(_contextMenuTarget!.isFolder ? 'finder' : 'notes');
+              }
+            },
+            onRenameItem: () {
+              if (_contextMenuTarget != null) {
+                _startRenaming(_contextMenuTarget!);
+              }
+            },
+            onDeleteItem: () {
+              if (_contextMenuTarget != null) {
+                _deleteItem(_contextMenuTarget!);
+              }
+            },
+            onClose: () => setState(() {
+              _contextMenuPos = null;
+              _contextMenuTarget = null;
+            }),
+          ),
+
+        // 7. macOS 27 Spotlight "Search or Ask" AI 오버레이
+        if (_isSpotlightOpen)
+          Positioned.fill(
+            child: Macos27Spotlight(
+              onOpenApp: (appId) {
+                setState(() => _isSpotlightOpen = false);
+                _openApp(appId);
+              },
+              onOpenTemplate: (tmplId) {
+                setState(() => _isSpotlightOpen = false);
+                widget.onOpenTemplate(tmplId);
+              },
+              onOpenSettings: () {
+                setState(() => _isSpotlightOpen = false);
+                _openApp('settings');
+              },
+              onSelectOs: widget.onSelectOs != null
+                  ? (osKey) {
+                      setState(() => _isSpotlightOpen = false);
+                      widget.onSelectOs!(osKey);
+                    }
+                  : null,
+              onClose: () => setState(() => _isSpotlightOpen = false),
+            ),
           ),
       ],
     );
