@@ -6,12 +6,14 @@ class UserOsSettings {
   final String pcTheme;
   final String windowsVersion;
   final String mobileTheme;
+  final String galaxyVersion;
   final String wallpaper;
 
   UserOsSettings({
     this.pcTheme = 'windows',
     this.windowsVersion = '11',
     this.mobileTheme = 'ios',
+    this.galaxyVersion = '7',
     this.wallpaper = 'win10_hero',
   });
 
@@ -20,6 +22,7 @@ class UserOsSettings {
       'pcTheme': pcTheme,
       'windowsVersion': windowsVersion,
       'mobileTheme': mobileTheme,
+      'galaxyVersion': galaxyVersion,
       'wallpaper': wallpaper,
       'updatedAt': FieldValue.serverTimestamp(),
     };
@@ -31,6 +34,7 @@ class UserOsSettings {
       pcTheme: map['pcTheme'] as String? ?? 'windows',
       windowsVersion: map['windowsVersion'] as String? ?? '11',
       mobileTheme: map['mobileTheme'] as String? ?? 'ios',
+      galaxyVersion: map['galaxyVersion'] as String? ?? '7',
       wallpaper: map['wallpaper'] as String? ?? 'win10_hero',
     );
   }

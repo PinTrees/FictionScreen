@@ -69,6 +69,8 @@ class _ConsolePageState extends State<ConsolePage> {
   String _windowsVersion = '11';
   // 모바일 OS: 'ios' vs 'galaxy'
   String _mobileTheme = 'ios';
+  // Galaxy 버전: '6', '7' (기본: '7')
+  String _galaxyVersion = '7';
   // 전역 바탕화면 테마
   String _wallpaper = 'win10_hero';
 
@@ -127,6 +129,7 @@ class _ConsolePageState extends State<ConsolePage> {
         _pcTheme = settings.pcTheme;
         _windowsVersion = settings.windowsVersion;
         _mobileTheme = settings.mobileTheme;
+        _galaxyVersion = settings.galaxyVersion;
         _wallpaper = settings.wallpaper;
       });
     }
@@ -140,6 +143,7 @@ class _ConsolePageState extends State<ConsolePage> {
         pcTheme: _pcTheme,
         windowsVersion: _windowsVersion,
         mobileTheme: _mobileTheme,
+        galaxyVersion: _galaxyVersion,
         wallpaper: _wallpaper,
       ),
     );
@@ -323,6 +327,8 @@ class _ConsolePageState extends State<ConsolePage> {
                   )
                 else
                   GalaxyView(
+                    oneUiVersion: _galaxyVersion,
+                    user: AuthService.currentUser,
                     timeString: _formatDate('h:mm'),
                     dateString: _formatDate('M월 d일 EEEE', 'ko_KR'),
                     currentWallpaper: _wallpaper,
@@ -330,6 +336,18 @@ class _ConsolePageState extends State<ConsolePage> {
                     onOpenSettings: () => setState(() => _isSettingsOpen = true),
                     onSignOut: _handleSignOut,
                     onGoHome: () => context.go('/'),
+                    onSelectOs: (os) {
+                      setState(() {
+                        if (os == 'galaxy') {
+                          _mobileTheme = 'galaxy';
+                        } else if (os == 'ios') {
+                          _mobileTheme = 'ios';
+                        } else if (os == 'windows' || os == 'macos') {
+                          _pcTheme = os;
+                        }
+                      });
+                      _saveCurrentOsSettings();
+                    },
                   ),
               ],
 
