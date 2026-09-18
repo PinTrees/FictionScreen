@@ -40,3 +40,6 @@ flutter:
     - assets/images/macos/
     - assets/images/windows/
     - assets/images/windows/settings/
+    - assets/images/ios/
+    - assets/images/ios/wallpapers/
+    - assets/images/ios/icons/

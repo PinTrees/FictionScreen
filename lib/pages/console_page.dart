@@ -299,6 +299,8 @@ class _ConsolePageState extends State<ConsolePage> {
               ] else ...[
                 if (_mobileTheme == 'ios')
                   IosView(
+                    user: AuthService.currentUser,
+                    iosVersion: '18',
                     timeString: _formatDate('h:mm'),
                     dateString: _formatDate('M월 d일 EEEE', 'ko_KR'),
                     currentWallpaper: _wallpaper,
