@@ -86,10 +86,23 @@ class _ConsolePageState extends State<ConsolePage> {
 
   void _handleSelectOs(String osKey) {
     setState(() {
-      _activeOs = osKey;
-      if (osKey == 'galaxy' || osKey == 'ios') {
+      if (osKey == 'windows_7') {
+        _windowsVersion = '7';
+        _pcTheme = 'windows';
+        _activeOs = 'windows';
+      } else if (osKey == 'windows_10') {
+        _windowsVersion = '10';
+        _pcTheme = 'windows';
+        _activeOs = 'windows';
+      } else if (osKey == 'windows_11') {
+        _windowsVersion = '11';
+        _pcTheme = 'windows';
+        _activeOs = 'windows';
+      } else if (osKey == 'galaxy' || osKey == 'ios') {
+        _activeOs = osKey;
         _mobileTheme = osKey;
       } else if (osKey == 'windows' || osKey == 'macos') {
+        _activeOs = osKey;
         _pcTheme = osKey;
       }
     });
@@ -295,6 +308,7 @@ class _ConsolePageState extends State<ConsolePage> {
                   }),
                   onSignOut: _handleSignOut,
                   onGoHome: () => context.go('/'),
+                  onSelectOs: _handleSelectOs,
                 ),
                 ..._buildDesktopWindowsLayer(isMacStyle: false),
               ] else if (activeOs == 'galaxy') ...[

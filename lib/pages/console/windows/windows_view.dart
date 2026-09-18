@@ -62,6 +62,7 @@ class WindowsView extends StatefulWidget {
   final VoidCallback onOpenSettings;
   final VoidCallback onSignOut;
   final VoidCallback onGoHome;
+  final Function(String osKey)? onSelectOs;
 
   const WindowsView({
     super.key,
@@ -76,6 +77,7 @@ class WindowsView extends StatefulWidget {
     required this.onOpenSettings,
     required this.onSignOut,
     required this.onGoHome,
+    this.onSelectOs,
   });
 
   @override
@@ -846,6 +848,7 @@ class _WindowsViewState extends State<WindowsView> {
             onTitleDragUpdate: onDragUpdate,
             currentWallpaper: _wallpaperOverride ?? widget.currentWallpaper,
             onSelectWallpaper: (key) => setState(() => _wallpaperOverride = key),
+            onSelectOs: widget.onSelectOs,
           );
         }
         return WindowsSettingsWindow(
