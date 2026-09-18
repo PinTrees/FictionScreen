@@ -5,9 +5,11 @@ import '../common/os_window_frame.dart';
 
 class OsSettingsWindow extends StatefulWidget {
   final String currentPcTheme;
+  final String currentWindowsVersion;
   final String currentMobileTheme;
   final String currentWallpaper;
   final ValueChanged<String> onPcThemeChanged;
+  final ValueChanged<String> onWindowsVersionChanged;
   final ValueChanged<String> onMobileThemeChanged;
   final ValueChanged<String> onWallpaperChanged;
   final VoidCallback onClose;
@@ -18,9 +20,11 @@ class OsSettingsWindow extends StatefulWidget {
   const OsSettingsWindow({
     super.key,
     required this.currentPcTheme,
+    required this.currentWindowsVersion,
     required this.currentMobileTheme,
     required this.currentWallpaper,
     required this.onPcThemeChanged,
+    required this.onWindowsVersionChanged,
     required this.onMobileThemeChanged,
     required this.onWallpaperChanged,
     required this.onClose,
@@ -52,8 +56,8 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
       icon: CupertinoIcons.gear_alt_fill,
       style: windowStyle,
       onClose: widget.onClose,
-      width: widget.isDesktop ? 720 : MediaQuery.of(context).size.width * 0.92,
-      height: widget.isDesktop ? 500 : MediaQuery.of(context).size.height * 0.78,
+      width: widget.isDesktop ? 760 : MediaQuery.of(context).size.width * 0.94,
+      height: widget.isDesktop ? 530 : MediaQuery.of(context).size.height * 0.82,
       child: Row(
         children: [
           // 좌측 카테고리 사이드바
@@ -156,38 +160,104 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
           ),
           const SizedBox(height: 6),
           const Text(
-            '선택한 OS의 작업표시줄, 독 바, 창 스타일, 시스템 사운드 및 아이콘이 즉각 적용됩니다.',
+            'Windows(7, 10, 11) 및 macOS Sequoia를 선택하면 테스크바, 시작 메뉴, 독 및 창 스타일이 즉각 전환됩니다.',
             style: TextStyle(color: Colors.white54, fontSize: 12),
           ),
           const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: _buildOsCard(
-                  id: 'windows',
-                  title: 'Windows 11',
-                  subtitle: 'Fluent 테스크바 & 중앙 시작 메뉴',
-                  icon: CupertinoIcons.device_desktop,
-                  color: const Color(0xFF0078D7),
-                  isSelected: widget.currentPcTheme == 'windows',
-                  onTap: () => widget.onPcThemeChanged('windows'),
-                ),
+
+          // Windows 버전 선택 (7, 10, 11)
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.04),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: widget.currentPcTheme == 'windows'
+                    ? const Color(0xFF0078D7).withValues(alpha: 0.5)
+                    : Colors.white.withValues(alpha: 0.08),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: _buildOsCard(
-                  id: 'macos',
-                  title: 'macOS Sequoia',
-                  subtitle: '상단 메뉴바 & 블러 플로팅 독(Dock)',
-                  icon: CupertinoIcons.compass,
-                  color: const Color(0xFFA855F7),
-                  isSelected: widget.currentPcTheme == 'macos',
-                  onTap: () => widget.onPcThemeChanged('macos'),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(CupertinoIcons.device_desktop, color: Color(0xFF0078D7), size: 18),
+                        SizedBox(width: 8),
+                        Text(
+                          'Windows 시리즈',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                    if (widget.currentPcTheme == 'windows')
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0078D7),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'Windows ${widget.currentWindowsVersion} 사용 중',
+                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildWindowsVersionButton(
+                        version: '7',
+                        title: 'Windows 7',
+                        subtitle: 'Aero Glass & 오브 버튼',
+                        defaultWallpaper: 'win7_harmony',
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildWindowsVersionButton(
+                        version: '10',
+                        title: 'Windows 10',
+                        subtitle: 'Hero 어두운 테스크바',
+                        defaultWallpaper: 'win10_hero',
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildWindowsVersionButton(
+                        version: '11',
+                        title: 'Windows 11',
+                        subtitle: 'Fluent 중앙 테스크바',
+                        defaultWallpaper: 'win11_bloom',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 14),
+
+          // macOS 카드
+          _buildOsCard(
+            id: 'macos',
+            title: 'macOS Sequoia',
+            subtitle: '상단 Apple 메뉴바 & 블러 플로팅 독(Dock)',
+            icon: CupertinoIcons.compass,
+            color: const Color(0xFFA855F7),
+            isSelected: widget.currentPcTheme == 'macos',
+            onTap: () {
+              widget.onPcThemeChanged('macos');
+              widget.onWallpaperChanged('aurora');
+            },
+          ),
+
+          const SizedBox(height: 24),
           const Text(
             '모바일 OS 선택 (스마트폰 환경)',
             style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
@@ -226,6 +296,64 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildWindowsVersionButton({
+    required String version,
+    required String title,
+    required String subtitle,
+    required String defaultWallpaper,
+  }) {
+    final isSelected = widget.currentPcTheme == 'windows' && widget.currentWindowsVersion == version;
+
+    return InkWell(
+      onTap: () {
+        widget.onPcThemeChanged('windows');
+        widget.onWindowsVersionChanged(version);
+        widget.onWallpaperChanged(defaultWallpaper);
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF0078D7).withValues(alpha: 0.25)
+              : Colors.white.withValues(alpha: 0.04),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF0078D7) : Colors.white.withValues(alpha: 0.08),
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: isSelected ? const Color(0xFF60A5FA) : Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+                if (isSelected)
+                  const Icon(CupertinoIcons.checkmark_alt, size: 14, color: Color(0xFF60A5FA)),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: Colors.white54, fontSize: 10),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -288,10 +416,42 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
   // 2. 바탕화면 탭
   Widget _buildWallpaperTab() {
     final wallpapers = [
-      {'id': 'bloom', 'title': 'Windows 11 Bloom', 'desc': '클래식 블루 블룸'},
-      {'id': 'aurora', 'title': 'macOS Sequoia Aurora', 'desc': '선명한 오로라 퍼플'},
-      {'id': 'minimal_dark', 'title': 'Dark Titanium', 'desc': '미니멀 심야 그라데이션'},
-      {'id': 'cyberpunk', 'title': 'Neon Horizon', 'desc': '네온 사이버 웨이브'},
+      {
+        'id': 'win10_hero',
+        'title': 'Windows 10 Hero (기본)',
+        'desc': '창문 빛 레이저 공식 배경화면',
+        'asset': 'assets/images/win10_hero.webp',
+      },
+      {
+        'id': 'win11_bloom',
+        'title': 'Windows 11 Bloom',
+        'desc': '블루 페탈 공식 배경화면',
+        'asset': 'assets/images/win11_bloom.webp',
+      },
+      {
+        'id': 'win7_harmony',
+        'title': 'Windows 7 Harmony',
+        'desc': '클래식 하모니 2K 배경화면',
+        'asset': 'assets/images/win7_harmony.webp',
+      },
+      {
+        'id': 'aurora',
+        'title': 'macOS Sequoia Aurora',
+        'desc': '선명한 오로라 퍼플',
+        'asset': null,
+      },
+      {
+        'id': 'minimal_dark',
+        'title': 'Dark Titanium',
+        'desc': '미니멀 심야 그라데이션',
+        'asset': null,
+      },
+      {
+        'id': 'cyberpunk',
+        'title': 'Neon Horizon',
+        'desc': '네온 사이버 웨이브',
+        'asset': null,
+      },
     ];
 
     return SingleChildScrollView(
@@ -304,7 +464,7 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
           ),
           const SizedBox(height: 6),
           const Text(
-            '가상 OS의 배경 분위기를 자유롭게 변경할 수 있습니다.',
+            '가상 OS의 배경 이미지를 자유롭게 변경할 수 있습니다. (WebP 경량화 적용)',
             style: TextStyle(color: Colors.white54, fontSize: 12),
           ),
           const SizedBox(height: 16),
@@ -313,14 +473,18 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
             runSpacing: 12,
             children: wallpapers.map((w) {
               final isSelected = widget.currentWallpaper == w['id'];
+              final assetPath = w['asset'];
+
               return InkWell(
                 onTap: () => widget.onWallpaperChanged(w['id']!),
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
-                  width: 200,
-                  padding: const EdgeInsets.all(12),
+                  width: 230,
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFF6366F1).withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.04),
+                    color: isSelected
+                        ? const Color(0xFF6366F1).withValues(alpha: 0.2)
+                        : Colors.white.withValues(alpha: 0.04),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: isSelected ? const Color(0xFF6366F1) : Colors.white.withValues(alpha: 0.1),
@@ -331,15 +495,27 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        height: 70,
+                        height: 85,
+                        width: double.infinity,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(6),
-                          gradient: _getWallpaperGradient(w['id']!),
+                          gradient: assetPath == null ? _getWallpaperGradient(w['id'] as String) : null,
                         ),
+                        clipBehavior: Clip.antiAlias,
+                        child: assetPath != null
+                            ? Image.asset(assetPath, fit: BoxFit.cover)
+                            : null,
                       ),
                       const SizedBox(height: 8),
-                      Text(w['title']!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-                      Text(w['desc']!, style: const TextStyle(color: Colors.white54, fontSize: 10)),
+                      Text(
+                        w['title'] as String,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        w['desc'] as String,
+                        style: const TextStyle(color: Colors.white54, fontSize: 10),
+                      ),
                     ],
                   ),
                 ),
@@ -359,7 +535,6 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
         return const LinearGradient(colors: [Color(0xFF0A0B10), Color(0xFF151722), Color(0xFF0A0B10)]);
       case 'cyberpunk':
         return const LinearGradient(colors: [Color(0xFF020617), Color(0xFF4C1D95), Color(0xFFBE185D)]);
-      case 'bloom':
       default:
         return const LinearGradient(colors: [Color(0xFF193256), Color(0xFF0F1E38), Color(0xFF090E1A)]);
     }
@@ -470,7 +645,7 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
               ),
               SizedBox(height: 6),
               Text(
-                '유튜브 숏폼, 릴스, 웹툰, 드라마 소품 제작 시 필요한 메신저 및 시스템 화면을 오차 없이 완벽하게 시뮬레이션합니다.\n모든 아이콘은 엄격한 Cupertino 디자인 가이드를 준수합니다.',
+                '유튜브 숏폼, 릴스, 웹툰, 드라마 소품 제작 시 필요한 메신저 및 시스템 화면을 오차 없이 완벽하게 시뮬레이션합니다.\n모든 에셋은 경량화된 WebP로 제공되며, 아이콘은 Cupertino 디자인 가이드를 준수합니다.',
                 style: TextStyle(color: Colors.white60, fontSize: 11, height: 1.5),
               ),
             ],

@@ -43,9 +43,9 @@ class MacosView extends StatelessWidget {
             children: [
               OsAppItem(
                 title: 'Macintosh HD',
-                icon: CupertinoIcons.circle_grid_hex,
-                iconColor: const Color(0xFF94A3B8),
-                backgroundColor: const Color(0xFF334155).withValues(alpha: 0.4),
+                imageAsset: 'assets/images/apple_logo.webp',
+                iconColor: Colors.white,
+                backgroundColor: Colors.white.withValues(alpha: 0.18),
                 onTap: () {},
               ),
               const SizedBox(height: 12),

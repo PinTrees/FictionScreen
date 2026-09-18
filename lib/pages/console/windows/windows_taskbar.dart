@@ -3,8 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// Windows 11 하단 테스크바 (Fluent Taskbar)
+/// Windows 7 / 10 / 11 하단 테스크바
 class WindowsTaskbar extends StatelessWidget {
+  final String windowsVersion;
   final User? user;
   final String timeString;
   final String dateString;
@@ -17,6 +18,7 @@ class WindowsTaskbar extends StatelessWidget {
 
   const WindowsTaskbar({
     super.key,
+    this.windowsVersion = '10',
     required this.user,
     required this.timeString,
     required this.dateString,
@@ -30,6 +32,17 @@ class WindowsTaskbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (windowsVersion == '7') {
+      return _buildWin7Taskbar();
+    } else if (windowsVersion == '10') {
+      return _buildWin10Taskbar();
+    } else {
+      return _buildWin11Taskbar();
+    }
+  }
+
+  // Windows 11: 중앙 정렬 Fluent 테스크바
+  Widget _buildWin11Taskbar() {
     return Container(
       height: 50,
       decoration: BoxDecoration(
@@ -45,7 +58,7 @@ class WindowsTaskbar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14),
             child: Row(
               children: [
-                // 좌측: 날씨 위젯
+                // 좌측 날씨 위젯
                 const Row(
                   children: [
                     Icon(CupertinoIcons.sun_max_fill, color: Colors.amber, size: 18),
@@ -53,16 +66,13 @@ class WindowsTaskbar extends StatelessWidget {
                     Text('24°C 맑음', style: TextStyle(color: Colors.white70, fontSize: 12)),
                   ],
                 ),
-
                 const Spacer(),
-
-                // 중앙 정렬: 시작 메뉴 및 앱 런처
+                // 중앙 정렬 앱 아이콘들
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // 시작 버튼
                     IconButton(
-                      tooltip: '시작',
+                      tooltip: '시작 (Windows 11)',
                       icon: Icon(
                         CupertinoIcons.square_grid_2x2_fill,
                         color: isStartMenuOpen ? const Color(0xFF60A5FA) : Colors.white,
@@ -71,8 +81,6 @@ class WindowsTaskbar extends StatelessWidget {
                       onPressed: onToggleStartMenu,
                     ),
                     const SizedBox(width: 4),
-
-                    // 스튜디오 템플릿 앱들
                     _buildTaskbarIcon(CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk')),
                     _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
                     _buildTaskbarIcon(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), 'YouTube', () => onOpenTemplate('youtube')),
@@ -81,36 +89,133 @@ class WindowsTaskbar extends StatelessWidget {
                     _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정 (OS 변경 / 배경화면)', onOpenSettings),
                   ],
                 ),
-
                 const Spacer(),
-
-                // 우측: 시스템 트레이 & 시계
-                Row(
-                  children: [
-                    const Icon(CupertinoIcons.wifi, size: 16, color: Colors.white70),
-                    const SizedBox(width: 8),
-                    const Icon(CupertinoIcons.volume_up, size: 16, color: Colors.white70),
-                    const SizedBox(width: 8),
-                    const Icon(CupertinoIcons.battery_charging, size: 16, color: Colors.white70),
-                    const SizedBox(width: 12),
-
-                    // 시간 & 날짜
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(timeString, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
-                        Text(dateString, style: const TextStyle(color: Colors.white70, fontSize: 10)),
-                      ],
-                    ),
-                    const SizedBox(width: 12),
-
-                    // 프로필 팝업 메뉴
-                    _buildUserMenu(),
-                  ],
-                ),
+                _buildSystemTray(),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Windows 10: 좌측 정렬 어두운 테스크바 + 코타나/검색창
+  Widget _buildWin10Taskbar() {
+    return Container(
+      height: 44,
+      color: const Color(0xFF101216),
+      child: Row(
+        children: [
+          // Windows 10 시작 버튼
+          InkWell(
+            onTap: onToggleStartMenu,
+            hoverColor: const Color(0xFF1E212B),
+            child: Container(
+              width: 48,
+              height: 44,
+              alignment: Alignment.center,
+              child: Icon(
+                CupertinoIcons.square_grid_2x2_fill,
+                color: isStartMenuOpen ? const Color(0xFF0078D7) : Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+
+          // 검색창
+          Container(
+            width: 200,
+            height: 32,
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            color: const Color(0xFF1F222A),
+            child: const Row(
+              children: [
+                Icon(CupertinoIcons.search, color: Colors.white54, size: 14),
+                SizedBox(width: 8),
+                Text('검색하려면 여기에 입력하십시오.', style: TextStyle(color: Colors.white54, fontSize: 11)),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 4),
+          _buildTaskbarIcon(CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk')),
+          _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
+          _buildTaskbarIcon(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), 'YouTube', () => onOpenTemplate('youtube')),
+          _buildTaskbarIcon(CupertinoIcons.camera_fill, const Color(0xFFE1306C), 'Instagram', () => onOpenTemplate('instagram')),
+          _buildTaskbarIcon(CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), '배달의민족', () => onOpenTemplate('delivery')),
+          _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정', onOpenSettings),
+
+          const Spacer(),
+          _buildSystemTray(),
+        ],
+      ),
+    );
+  }
+
+  // Windows 7: 클래식 에어로 글래스 & 원형 오브(Orb)
+  Widget _buildWin7Taskbar() {
+    return Container(
+      height: 42,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0E2F54).withValues(alpha: 0.7),
+        border: Border(
+          top: BorderSide(color: const Color(0xFF67B5FA).withValues(alpha: 0.4), width: 1),
+        ),
+      ),
+      child: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+          child: Row(
+            children: [
+              // Windows 7 원형 오브 시작 버튼
+              InkWell(
+                onTap: onToggleStartMenu,
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  margin: const EdgeInsets.only(left: 4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const RadialGradient(
+                      colors: [Color(0xFF60A5FA), Color(0xFF1D4ED8), Color(0xFF0F172A)],
+                    ),
+                    border: Border.all(color: Colors.white70, width: 1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF38BDF8).withValues(alpha: 0.6),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(CupertinoIcons.circle_grid_hex, color: Colors.white, size: 20),
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 8),
+              _buildTaskbarIcon(CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk')),
+              _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
+              _buildTaskbarIcon(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), 'YouTube', () => onOpenTemplate('youtube')),
+              _buildTaskbarIcon(CupertinoIcons.camera_fill, const Color(0xFFE1306C), 'Instagram', () => onOpenTemplate('instagram')),
+              _buildTaskbarIcon(CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), '배달의민족', () => onOpenTemplate('delivery')),
+              _buildTaskbarIcon(CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), '설정', onOpenSettings),
+
+              const Spacer(),
+              _buildSystemTray(),
+
+              // Windows 7 바탕화면 보기 (맨 우측 직사각형 바)
+              Container(
+                width: 14,
+                height: 42,
+                margin: const EdgeInsets.only(left: 8),
+                decoration: BoxDecoration(
+                  border: Border(left: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
+                  color: Colors.white.withValues(alpha: 0.1),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -125,6 +230,30 @@ class WindowsTaskbar extends StatelessWidget {
         hoverColor: Colors.white.withValues(alpha: 0.15),
         onPressed: onTap,
       ),
+    );
+  }
+
+  Widget _buildSystemTray() {
+    return Row(
+      children: [
+        const Icon(CupertinoIcons.wifi, size: 16, color: Colors.white70),
+        const SizedBox(width: 8),
+        const Icon(CupertinoIcons.volume_up, size: 16, color: Colors.white70),
+        const SizedBox(width: 8),
+        const Icon(CupertinoIcons.battery_charging, size: 16, color: Colors.white70),
+        const SizedBox(width: 12),
+
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(timeString, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+            Text(dateString, style: const TextStyle(color: Colors.white70, fontSize: 10)),
+          ],
+        ),
+        const SizedBox(width: 12),
+        _buildUserMenu(),
+      ],
     );
   }
 

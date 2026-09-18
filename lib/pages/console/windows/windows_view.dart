@@ -5,8 +5,9 @@ import '../common/os_app_item.dart';
 import 'windows_start_menu.dart';
 import 'windows_taskbar.dart';
 
-/// Windows 11 전용 데스크톱 뷰 레이아웃
+/// Windows 7 / 10 / 11 데스크톱 뷰 레이아웃
 class WindowsView extends StatelessWidget {
+  final String windowsVersion;
   final User? user;
   final String timeString;
   final String dateString;
@@ -20,6 +21,7 @@ class WindowsView extends StatelessWidget {
 
   const WindowsView({
     super.key,
+    this.windowsVersion = '10',
     required this.user,
     required this.timeString,
     required this.dateString,
@@ -36,7 +38,7 @@ class WindowsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // 1. 배경화면
+        // 1. 배경화면 (WebP 이미지 또는 그라데이션)
         Positioned.fill(
           child: _buildWindowsWallpaper(),
         ),
@@ -52,7 +54,7 @@ class WindowsView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 OsAppItem(
-                  title: '내 PC',
+                  title: windowsVersion == '7' ? '컴퓨터' : '내 PC',
                   icon: CupertinoIcons.device_desktop,
                   iconColor: const Color(0xFF60A5FA),
                   onTap: () {},
@@ -101,31 +103,41 @@ class WindowsView extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 OsAppItem(
-                  title: '랜딩 홈',
-                  icon: CupertinoIcons.house_fill,
+                  title: '휴지통',
+                  icon: CupertinoIcons.trash_fill,
                   iconColor: Colors.white70,
-                  onTap: onGoHome,
+                  onTap: () {},
                 ),
               ],
             ),
           ),
         ),
 
-        // 3. 시작 메뉴 팝업
+        // 3. 시작 메뉴 팝업 (버전별 위치 및 UI 분기)
         if (isStartMenuOpen)
           Positioned(
-            bottom: 60,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: WindowsStartMenu(
-                user: user,
-                onOpenTemplate: onOpenTemplate,
-                onOpenSettings: onOpenSettings,
-                onSignOut: onSignOut,
-                onGoHome: onGoHome,
-              ),
-            ),
+            bottom: windowsVersion == '11' ? 60 : (windowsVersion == '10' ? 44 : 42),
+            left: windowsVersion == '11' ? 0 : 0,
+            right: windowsVersion == '11' ? 0 : null,
+            child: windowsVersion == '11'
+                ? Center(
+                    child: WindowsStartMenu(
+                      windowsVersion: windowsVersion,
+                      user: user,
+                      onOpenTemplate: onOpenTemplate,
+                      onOpenSettings: onOpenSettings,
+                      onSignOut: onSignOut,
+                      onGoHome: onGoHome,
+                    ),
+                  )
+                : WindowsStartMenu(
+                    windowsVersion: windowsVersion,
+                    user: user,
+                    onOpenTemplate: onOpenTemplate,
+                    onOpenSettings: onOpenSettings,
+                    onSignOut: onSignOut,
+                    onGoHome: onGoHome,
+                  ),
           ),
 
         // 4. 하단 작업표시줄
@@ -134,6 +146,7 @@ class WindowsView extends StatelessWidget {
           left: 0,
           right: 0,
           child: WindowsTaskbar(
+            windowsVersion: windowsVersion,
             user: user,
             timeString: timeString,
             dateString: dateString,
@@ -150,6 +163,31 @@ class WindowsView extends StatelessWidget {
   }
 
   Widget _buildWindowsWallpaper() {
+    // 1. WebP 이미지 배경화면 분기
+    if (currentWallpaper == 'win10_hero') {
+      return Image.asset(
+        'assets/images/win10_hero.webp',
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    } else if (currentWallpaper == 'win11_bloom') {
+      return Image.asset(
+        'assets/images/win11_bloom.webp',
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    } else if (currentWallpaper == 'win7_harmony') {
+      return Image.asset(
+        'assets/images/win7_harmony.webp',
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    }
+
+    // 2. 그라데이션 테마 분기
     switch (currentWallpaper) {
       case 'aurora':
         return Container(
@@ -173,44 +211,14 @@ class WindowsView extends StatelessWidget {
             ),
           ),
         );
-      case 'bloom':
       default:
-        return Container(
-          decoration: const BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment(0.0, -0.2),
-              radius: 1.2,
-              colors: [
-                Color(0xFF193256),
-                Color(0xFF0F1E38),
-                Color(0xFF090E1A),
-              ],
-            ),
-          ),
-          child: CustomPaint(
-            painter: _BloomPetalPainter(),
-          ),
+        // 기본 윈도우 배경: 사용자가 업로드한 win10_hero.webp
+        return Image.asset(
+          'assets/images/win10_hero.webp',
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
         );
     }
   }
-}
-
-class _BloomPetalPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width * 0.5, size.height * 0.45);
-    final paint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          const Color(0xFF60A5FA).withValues(alpha: 0.22),
-          const Color(0xFF3B82F6).withValues(alpha: 0.10),
-          Colors.transparent,
-        ],
-      ).createShader(Rect.fromCircle(center: center, radius: 260));
-
-    canvas.drawCircle(center, 260, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

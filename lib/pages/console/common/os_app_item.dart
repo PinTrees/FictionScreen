@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// 데스크톱 및 모바일 가상 OS 공통 앱 아이콘 위젯
 class OsAppItem extends StatelessWidget {
   final String title;
-  final IconData icon;
+  final IconData? icon;
+  final String? imageAsset;
   final Color iconColor;
   final Color? backgroundColor;
   final LinearGradient? backgroundGradient;
@@ -15,7 +17,8 @@ class OsAppItem extends StatelessWidget {
   const OsAppItem({
     super.key,
     required this.title,
-    required this.icon,
+    this.icon,
+    this.imageAsset,
     this.iconColor = Colors.white,
     this.backgroundColor,
     this.backgroundGradient,
@@ -67,7 +70,17 @@ class OsAppItem extends StatelessWidget {
                     ],
                   ),
                   child: Center(
-                    child: Icon(icon, color: iconColor, size: iconSize),
+                    child: imageAsset != null
+                        ? Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Image.asset(
+                              imageAsset!,
+                              width: iconSize,
+                              height: iconSize,
+                              fit: BoxFit.contain,
+                            ),
+                          )
+                        : Icon(icon ?? CupertinoIcons.circle_fill, color: iconColor, size: iconSize),
                   ),
                 ),
                 if (badge != null)

@@ -19,12 +19,14 @@ class ConsolePage extends StatefulWidget {
 }
 
 class _ConsolePageState extends State<ConsolePage> {
-  // 데스크톱 OS: 'macos' vs 'windows'
-  String _pcTheme = 'macos';
+  // 데스크톱 OS: 'windows' vs 'macos' (기본: windows)
+  String _pcTheme = 'windows';
+  // Windows 버전: '7', '10', '11' (기본: '11')
+  String _windowsVersion = '11';
   // 모바일 OS: 'ios' vs 'galaxy'
   String _mobileTheme = 'ios';
-  // 전역 바탕화면 테마: 'aurora', 'bloom', 'minimal_dark', 'cyberpunk'
-  String _wallpaper = 'aurora';
+  // 전역 바탕화면 테마 (기본: 사용자가 업로드한 win10_hero)
+  String _wallpaper = 'win10_hero';
 
   bool _isStartMenuOpen = false;
   bool _isSettingsOpen = false;
@@ -103,6 +105,7 @@ class _ConsolePageState extends State<ConsolePage> {
                   )
                 else
                   WindowsView(
+                    windowsVersion: _windowsVersion,
                     user: user,
                     timeString: _formatDate('a h:mm', 'ko_KR'),
                     dateString: _formatDate('yyyy-MM-dd'),
@@ -151,9 +154,11 @@ class _ConsolePageState extends State<ConsolePage> {
                       onTap: () {}, // 창 내부 클릭 시 닫힘 방지
                       child: OsSettingsWindow(
                         currentPcTheme: _pcTheme,
+                        currentWindowsVersion: _windowsVersion,
                         currentMobileTheme: _mobileTheme,
                         currentWallpaper: _wallpaper,
                         onPcThemeChanged: (val) => setState(() => _pcTheme = val),
+                        onWindowsVersionChanged: (val) => setState(() => _windowsVersion = val),
                         onMobileThemeChanged: (val) => setState(() => _mobileTheme = val),
                         onWallpaperChanged: (val) => setState(() => _wallpaper = val),
                         onClose: () => setState(() => _isSettingsOpen = false),
