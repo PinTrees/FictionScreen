@@ -11,15 +11,14 @@ import '../../apps/settings/settings_window.dart';
 import 'widgets/oneui9_app_drawer.dart';
 import 'widgets/oneui9_brief_page.dart';
 import 'widgets/oneui9_home_widgets.dart';
-import 'widgets/oneui9_notification_shade.dart';
 import 'widgets/oneui9_now_bar.dart';
 import 'widgets/oneui9_quick_settings.dart';
 import 'widgets/oneui9_status_bar.dart';
 
 /// Samsung Galaxy One UI 9 플래그십 모바일 홈스크린 뷰
-/// - Android 17 기반, Galaxy S26 Ultra 플래그십
-/// - 좌우 멀티페이지 슬라이드 (PageView: Now Brief AI 보드 <-> 메인 홈 <-> 앱 그리드 2)
-/// - 깃허브 공식 One UI 아이콘 및 오피셜 고화질 배경화면 탑재
+/// - 실시간 드래그 다운/업 퀵 세팅 패널 연동 (media_1789750829725.png 디자인 적용)
+/// - 좌우 멀티페이지 슬라이드 (PageView)
+/// - 깃허브 공식 One UI 아이콘 및 고해상도 배경화면 탑재
 class OneUi9View extends StatefulWidget {
   final String timeString;
   final String dateString;
@@ -44,12 +43,13 @@ class OneUi9View extends StatefulWidget {
   State<OneUi9View> createState() => _OneUi9ViewState();
 }
 
-class _OneUi9ViewState extends State<OneUi9View> {
+class _OneUi9ViewState extends State<OneUi9View> with SingleTickerProviderStateMixin {
   late PageController _pageController;
   int _currentPage = 1; // 0: Now Brief AI 보드, 1: 메인 홈, 2: 보조 앱 페이지
 
-  bool _isQuickSettingsOpen = false;
-  bool _isNotificationShadeOpen = false;
+  late AnimationController _panelController;
+  late Animation<double> _panelAnimation;
+
   bool _isAppDrawerOpen = false;
   String? _activeGalaxyApp;
 
@@ -57,19 +57,27 @@ class _OneUi9ViewState extends State<OneUi9View> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 1);
+    _panelController = AnimationController(vsync: this, duration: const Duration(milliseconds: 320));
+    _panelAnimation = CurvedAnimation(parent: _panelController, curve: Curves.easeOutCubic, reverseCurve: Curves.easeInCubic);
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    _panelController.dispose();
     super.dispose();
   }
 
   void _openGalaxyApp(String appId) => setState(() => _activeGalaxyApp = appId);
   void _closeGalaxyApp() => setState(() => _activeGalaxyApp = null);
 
+  void _openQuickPanel() => _panelController.forward();
+  void _closeQuickPanel() => _panelController.reverse();
+
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Stack(
       children: [
         // 1. One UI 9 공식 고해상도 배경화면
@@ -79,16 +87,32 @@ class _OneUi9ViewState extends State<OneUi9View> {
         Positioned.fill(
           child: Column(
             children: [
-              // 상단 상태바 & 펀치홀 카메라
+              // 상단 상태바 & 실시간 드래그 다운 제스처 연동
               OneUi9StatusBar(
                 timeString: widget.timeString,
-                onOpenQuickSettings: () => setState(() => _isQuickSettingsOpen = true),
-                onOpenNotificationShade: () => setState(() => _isNotificationShadeOpen = true),
+                onVerticalDragStart: (_) {},
+                onVerticalDragUpdate: (details) {
+                  if (screenHeight > 0) {
+                    _panelController.value = (_panelController.value + (details.primaryDelta! / screenHeight) * 1.6).clamp(0.0, 1.0);
+                  }
+                },
+                onVerticalDragEnd: (details) {
+                  if (details.primaryVelocity != null && details.primaryVelocity! > 250) {
+                    _panelController.forward();
+                  } else if (details.primaryVelocity != null && details.primaryVelocity! < -250) {
+                    _panelController.reverse();
+                  } else if (_panelController.value > 0.25) {
+                    _panelController.forward();
+                  } else {
+                    _panelController.reverse();
+                  }
+                },
+                onTap: _openQuickPanel,
               ),
               const SizedBox(height: 4),
 
-              // One UI 9 라이브 Now Bar 캡슐
-              OneUi9NowBar(onTap: () => setState(() => _isNotificationShadeOpen = true)),
+              // One UI 9 라이브 Now Bar 캡슐 (탭 시 퀵 패널 오픈)
+              OneUi9NowBar(onTap: _openQuickPanel),
               const SizedBox(height: 6),
 
               // 좌우 슬라이드 PageView 영역 (Now Brief -> 메인 홈 -> 서브 페이지)
@@ -98,16 +122,8 @@ class _OneUi9ViewState extends State<OneUi9View> {
                   physics: const BouncingScrollPhysics(),
                   onPageChanged: (page) => setState(() => _currentPage = page),
                   children: [
-                    // 페이지 0: 좌측 Now Brief & Galaxy AI 데일리 보드
-                    OneUi9BriefPage(
-                      dateString: widget.dateString,
-                      onOpenTemplate: () => widget.onOpenTemplate('kakaotalk'),
-                    ),
-
-                    // 페이지 1: 중앙 메인 홈 화면 (위젯 + AI 검색바 + 앱 그리드 1)
+                    OneUi9BriefPage(dateString: widget.dateString, onOpenTemplate: () => widget.onOpenTemplate('kakaotalk')),
                     _buildMainHomePage(),
-
-                    // 페이지 2: 우측 서브 앱 페이지 (Galaxy 생태계 앱 그리드 2)
                     _buildSecondaryAppsPage(),
                   ],
                 ),
@@ -128,7 +144,7 @@ class _OneUi9ViewState extends State<OneUi9View> {
                 ),
               ),
 
-              // 3. One UI 9 하단 고정 도크 (5대 핵심 앱)
+              // 3. 하단 고정 도크 (5대 핵심 앱)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
@@ -161,37 +177,45 @@ class _OneUi9ViewState extends State<OneUi9View> {
         if (_activeGalaxyApp != null)
           Positioned.fill(child: _buildGalaxyAppWidget(_activeGalaxyApp!)),
 
-        // 5. One UI 9 스플릿 빠른 설정 (Quick Settings)
-        if (_isQuickSettingsOpen)
-          Positioned.fill(
-            child: OneUi9QuickSettings(
-              timeString: widget.timeString,
-              dateString: widget.dateString,
-              onClose: () => setState(() => _isQuickSettingsOpen = false),
-              onSwitchToNotifications: () => setState(() {
-                _isQuickSettingsOpen = false;
-                _isNotificationShadeOpen = true;
-              }),
-              onOpenSettings: widget.onOpenSettings,
-            ),
-          ),
+        // 5. One UI 9 최신 퀵 세팅 패널 (상단에서 실시간 드래그 다운 / 업 제스처 연동)
+        AnimatedBuilder(
+          animation: _panelAnimation,
+          builder: (context, child) {
+            final progress = _panelAnimation.value;
+            if (progress <= 0.0) return const SizedBox.shrink();
 
-        // 6. One UI 9 스플릿 알림 셰이드 (Notification Shade)
-        if (_isNotificationShadeOpen)
-          Positioned.fill(
-            child: OneUi9NotificationShade(
-              timeString: widget.timeString,
-              dateString: widget.dateString,
-              onClose: () => setState(() => _isNotificationShadeOpen = false),
-              onSwitchToQuickSettings: () => setState(() {
-                _isNotificationShadeOpen = false;
-                _isQuickSettingsOpen = true;
-              }),
-              onOpenSettings: widget.onOpenSettings,
-            ),
+            return Positioned.fill(
+              child: Transform.translate(
+                offset: Offset(0, -screenHeight * (1.0 - progress)),
+                child: child,
+              ),
+            );
+          },
+          child: OneUi9QuickSettings(
+            timeString: widget.timeString,
+            dateString: widget.dateString,
+            onClose: _closeQuickPanel,
+            onOpenSettings: widget.onOpenSettings,
+            onDragUpdate: (details) {
+              if (screenHeight > 0) {
+                _panelController.value = (_panelController.value + (details.primaryDelta! / screenHeight) * 1.6).clamp(0.0, 1.0);
+              }
+            },
+            onDragEnd: (details) {
+              if (details.primaryVelocity != null && details.primaryVelocity! < -250) {
+                _panelController.reverse();
+              } else if (details.primaryVelocity != null && details.primaryVelocity! > 250) {
+                _panelController.forward();
+              } else if (_panelController.value < 0.75) {
+                _panelController.reverse();
+              } else {
+                _panelController.forward();
+              }
+            },
           ),
+        ),
 
-        // 7. One UI 9 전체 앱 서랍 (App Drawer)
+        // 6. One UI 9 전체 앱 서랍 (App Drawer)
         if (_isAppDrawerOpen)
           Positioned.fill(
             child: OneUi9AppDrawer(
@@ -213,26 +237,12 @@ class _OneUi9ViewState extends State<OneUi9View> {
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
-            // One UI 9 시계 및 날씨 카드
-            OneUi9WeatherClockCard(
-              timeString: widget.timeString,
-              dateString: widget.dateString,
-              onTap: () => setState(() => _isQuickSettingsOpen = true),
-            ),
+            OneUi9WeatherClockCard(timeString: widget.timeString, dateString: widget.dateString, onTap: _openQuickPanel),
             const SizedBox(height: 10),
-
-            // S26 Ultra & Buds3 Pro 배터리 카드
             const OneUi9BatteryWidget(),
             const SizedBox(height: 12),
-
-            // Galaxy AI 검색 캡슐 바
-            OneUi9GalaxyAiSearchBar(
-              onSearchTap: () => setState(() => _isAppDrawerOpen = true),
-              onAiTap: () => setState(() => _isAppDrawerOpen = true),
-            ),
+            OneUi9GalaxyAiSearchBar(onSearchTap: () => setState(() => _isAppDrawerOpen = true), onAiTap: () => setState(() => _isAppDrawerOpen = true)),
             const SizedBox(height: 16),
-
-            // 메인 앱 그리드 1 (깃허브 공식 아이콘 적용)
             GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -266,7 +276,6 @@ class _OneUi9ViewState extends State<OneUi9View> {
         child: Column(
           children: [
             const SizedBox(height: 8),
-            // 삼성 생태계 전용 위젯/카드
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -291,8 +300,6 @@ class _OneUi9ViewState extends State<OneUi9View> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // 서브 앱 그리드 2 (노트, 헬스, 빅스비, 계산기, 내 파일 등)
             GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -349,10 +356,7 @@ class _OneUi9ViewState extends State<OneUi9View> {
           boxShadow: [BoxShadow(color: (image != null ? Colors.black : color).withValues(alpha: 0.35), blurRadius: 10, offset: const Offset(0, 4))],
         ),
         child: image != null
-            ? Padding(
-                padding: const EdgeInsets.all(4),
-                child: Image.asset(image, fit: BoxFit.contain),
-              )
+            ? Padding(padding: const EdgeInsets.all(4), child: Image.asset(image, fit: BoxFit.contain))
             : Icon(icon, color: Colors.white, size: 26),
       ),
     );
@@ -373,10 +377,8 @@ class _OneUi9ViewState extends State<OneUi9View> {
 
   Widget _buildGalaxyWallpaper() {
     switch (widget.currentWallpaper) {
-      case 'sapphire':
-        return Image.asset('assets/images/galaxy/wallpapers/oneui_sapphire.webp', fit: BoxFit.cover);
-      case 'emerald':
-        return Image.asset('assets/images/galaxy/wallpapers/oneui_emerald.webp', fit: BoxFit.cover);
+      case 'sapphire': return Image.asset('assets/images/galaxy/wallpapers/oneui_sapphire.webp', fit: BoxFit.cover);
+      case 'emerald': return Image.asset('assets/images/galaxy/wallpapers/oneui_emerald.webp', fit: BoxFit.cover);
       case 'bloom':
         return Container(
           decoration: const BoxDecoration(

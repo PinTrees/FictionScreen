@@ -2,21 +2,23 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// Samsung Galaxy One UI 9 플래그십 스플릿 빠른 설정 (Quick Settings) 패널
+/// Samsung One UI 9 최신 퀵 세팅 패널 (media_1789750829725.png 1:1 완벽 구현)
 class OneUi9QuickSettings extends StatefulWidget {
   final String timeString;
   final String dateString;
   final VoidCallback onClose;
-  final VoidCallback? onSwitchToNotifications;
   final VoidCallback? onOpenSettings;
+  final Function(DragUpdateDetails details)? onDragUpdate;
+  final Function(DragEndDetails details)? onDragEnd;
 
   const OneUi9QuickSettings({
     super.key,
     required this.timeString,
     required this.dateString,
     required this.onClose,
-    this.onSwitchToNotifications,
     this.onOpenSettings,
+    this.onDragUpdate,
+    this.onDragEnd,
   });
 
   @override
@@ -26,76 +28,71 @@ class OneUi9QuickSettings extends StatefulWidget {
 class _OneUi9QuickSettingsState extends State<OneUi9QuickSettings> {
   bool _isWifiOn = true;
   bool _isBluetoothOn = true;
-  bool _isSoundOn = true;
-  bool _isRotationOn = true;
+  bool _isAutoRotateLocked = true;
+  bool _isFlightModeOn = false;
   bool _isFlashlightOn = false;
-  bool _isAirplaneOn = false;
+  bool _isMobileDataOn = false;
   bool _isHotspotOn = false;
-  bool _isPowerSavingOn = false;
-  bool _isEyeComfortOn = false;
-  bool _isDarkModeOn = true;
+  bool _isBatterySaverOn = false;
+  bool _isLocationOn = true; // active state (화이트 원형 + 블랙 핀)
+  bool _isSmartSwitchOn = false;
+  bool _isDarkModeOn = false;
+  bool _isMuted = false;
 
-  double _brightness = 0.85;
-  double _volume = 0.70;
+  double _brightness = 0.35;
+  double _volume = 0.40;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onHorizontalDragUpdate: (details) {
-        if (details.primaryDelta != null && details.primaryDelta! > 12) {
-          widget.onSwitchToNotifications?.call();
-        }
+      behavior: HitTestBehavior.opaque,
+      onVerticalDragUpdate: widget.onDragUpdate ?? (details) {
+        if (details.primaryDelta != null && details.primaryDelta! < -8) widget.onClose();
       },
-      onVerticalDragUpdate: (details) {
-        if (details.primaryDelta != null && details.primaryDelta! < -8) {
-          widget.onClose();
-        }
-      },
+      onVerticalDragEnd: widget.onDragEnd,
       child: Container(
-        color: Colors.black.withValues(alpha: 0.7),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF9F83DB), Color(0xFF9070D2), Color(0xFF8666C8), Color(0xFF7C5EBD)],
+          ),
+        ),
         child: ClipRRect(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
             child: SafeArea(
+              bottom: false,
               child: Column(
                 children: [
-                  // 상단 시스템 제어 바 & 탭 전환 인디케이터
+                  // 1. 상단 스테이터스 바 (No SIM • No service | BT, NFC, Signal, Wi-Fi, (74) 배터리)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    child: Column(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(width: 44, height: 4.5, decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.35), borderRadius: BorderRadius.circular(3))),
-                        const SizedBox(height: 10),
+                        const Text('No SIM • No service', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
                         Row(
                           children: [
-                            Text(widget.timeString, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 8),
-                            Text(widget.dateString, style: const TextStyle(color: Colors.white60, fontSize: 13)),
-                            const Spacer(),
-                            // 스플릿 전환 탭
-                            InkWell(
-                              onTap: widget.onSwitchToNotifications,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
-                                child: const Row(
-                                  children: [
-                                    Icon(CupertinoIcons.bell_fill, size: 12, color: Colors.white70),
-                                    SizedBox(width: 4),
-                                    Text('알림 보기', style: TextStyle(color: Colors.white70, fontSize: 11)),
-                                  ],
-                                ),
-                              ),
+                            const Icon(CupertinoIcons.bluetooth, color: Colors.white, size: 12),
+                            const SizedBox(width: 4),
+                            // NFC (N) 아이콘
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 2.5, vertical: 0.5),
+                              decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 0.8), borderRadius: BorderRadius.circular(2)),
+                              child: const Text('N', style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold, height: 1.1)),
                             ),
-                            const SizedBox(width: 12),
-                            InkWell(onTap: widget.onClose, child: const Icon(CupertinoIcons.power, size: 19, color: Colors.white70)),
-                            const SizedBox(width: 14),
-                            InkWell(
-                              onTap: () {
-                                widget.onClose();
-                                widget.onOpenSettings?.call();
-                              },
-                              child: const Icon(CupertinoIcons.gear_alt_fill, size: 19, color: Colors.white70),
+                            const SizedBox(width: 4),
+                            // VoLTE 신호
+                            const Icon(CupertinoIcons.antenna_radiowaves_left_right, color: Colors.white, size: 12),
+                            const SizedBox(width: 4),
+                            const Icon(CupertinoIcons.wifi, color: Colors.white, size: 13),
+                            const SizedBox(width: 5),
+                            // 74% 알약형 배터리
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.35), borderRadius: BorderRadius.circular(9)),
+                              child: const Text('74', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                             ),
                           ],
                         ),
@@ -103,107 +100,214 @@ class _OneUi9QuickSettingsState extends State<OneUi9QuickSettings> {
                     ),
                   ),
 
-                  // 패널 스크롤 영역
+                  // 2. 상단 헤더: 시각 + 날짜 & 액션 아이콘들 (연필, 전원, 설정)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 24, right: 20, top: 6, bottom: 12),
+                    child: Row(
+                      children: [
+                        Text(
+                          widget.timeString.isNotEmpty ? widget.timeString : '10:28',
+                          style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          widget.dateString.isNotEmpty ? widget.dateString : 'Mon, Mar 16',
+                          style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+                        ),
+                        const Spacer(),
+                        InkWell(onTap: () {}, child: const Icon(CupertinoIcons.pencil, size: 20, color: Colors.white)),
+                        const SizedBox(width: 18),
+                        InkWell(onTap: widget.onClose, child: const Icon(CupertinoIcons.power, size: 20, color: Colors.white)),
+                        const SizedBox(width: 18),
+                        InkWell(
+                          onTap: () {
+                            widget.onClose();
+                            widget.onOpenSettings?.call();
+                          },
+                          child: const Icon(CupertinoIcons.gear_alt_fill, size: 20, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // 3. 메인 패널 스크롤 영역
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       physics: const BouncingScrollPhysics(),
                       child: Column(
                         children: [
-                          // 1. One UI 9 대형 캡슐 (Wi-Fi & Bluetooth)
+                          // Wi-Fi & Bluetooth 대형 캡슐
                           Row(
                             children: [
                               Expanded(
-                                child: _buildLargePill(
+                                child: _buildConnectivityPill(
                                   title: 'Wi-Fi',
-                                  subtitle: _isWifiOn ? 'Fiction_Galaxy_6E' : '사용 안 함',
+                                  subtitle: 'FRITZ!Box 7490',
                                   icon: CupertinoIcons.wifi,
                                   isOn: _isWifiOn,
-                                  onToggle: () => setState(() => _isWifiOn = !_isWifiOn),
+                                  onTap: () => setState(() => _isWifiOn = !_isWifiOn),
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 12),
                               Expanded(
-                                child: _buildLargePill(
+                                child: _buildConnectivityPill(
                                   title: 'Bluetooth',
-                                  subtitle: _isBluetoothOn ? 'Galaxy Buds3 Pro' : '사용 안 함',
+                                  subtitle: null,
                                   icon: CupertinoIcons.bluetooth,
                                   isOn: _isBluetoothOn,
-                                  onToggle: () => setState(() => _isBluetoothOn = !_isBluetoothOn),
+                                  onTap: () => setState(() => _isBluetoothOn = !_isBluetoothOn),
                                 ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 12),
 
-                          // 2. 4x2 원형 토글 카드
+                          // 4x2 퀵 토글 통합 반투명 카드
                           Container(
-                            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+                            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.08),
-                              borderRadius: BorderRadius.circular(30),
-                              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                              color: Colors.white.withValues(alpha: 0.16),
+                              borderRadius: BorderRadius.circular(28),
                             ),
-                            child: GridView.count(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              crossAxisCount: 4,
-                              mainAxisSpacing: 14,
-                              crossAxisSpacing: 8,
-                              childAspectRatio: 0.88,
+                            child: Column(
                               children: [
-                                _buildQuickCircleToggle('소리', CupertinoIcons.speaker_2_fill, _isSoundOn, () => setState(() => _isSoundOn = !_isSoundOn)),
-                                _buildQuickCircleToggle('자동 회전', CupertinoIcons.device_phone_portrait, _isRotationOn, () => setState(() => _isRotationOn = !_isRotationOn)),
-                                _buildQuickCircleToggle('손전등', CupertinoIcons.lightbulb_fill, _isFlashlightOn, () => setState(() => _isFlashlightOn = !_isFlashlightOn)),
-                                _buildQuickCircleToggle('비행기 모드', CupertinoIcons.airplane, _isAirplaneOn, () => setState(() => _isAirplaneOn = !_isAirplaneOn)),
-                                _buildQuickCircleToggle('핫스팟', CupertinoIcons.antenna_radiowaves_left_right, _isHotspotOn, () => setState(() => _isHotspotOn = !_isHotspotOn)),
-                                _buildQuickCircleToggle('절전 모드', CupertinoIcons.battery_25, _isPowerSavingOn, () => setState(() => _isPowerSavingOn = !_isPowerSavingOn)),
-                                _buildQuickCircleToggle('편안한 화면', CupertinoIcons.eye_fill, _isEyeComfortOn, () => setState(() => _isEyeComfortOn = !_isEyeComfortOn)),
-                                _buildQuickCircleToggle('다크 모드', CupertinoIcons.moon_fill, _isDarkModeOn, () => setState(() => _isDarkModeOn = !_isDarkModeOn)),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: [
+                                    _buildCircleToggle(CupertinoIcons.lock_fill, _isAutoRotateLocked, () => setState(() => _isAutoRotateLocked = !_isAutoRotateLocked)),
+                                    _buildCircleToggle(CupertinoIcons.airplane, _isFlightModeOn, () => setState(() => _isFlightModeOn = !_isFlightModeOn)),
+                                    _buildCircleToggle(CupertinoIcons.lightbulb_fill, _isFlashlightOn, () => setState(() => _isFlashlightOn = !_isFlashlightOn)),
+                                    _buildCircleToggle(CupertinoIcons.arrow_up_arrow_down, _isMobileDataOn, () => setState(() => _isMobileDataOn = !_isMobileDataOn)),
+                                  ],
+                                ),
+                                const SizedBox(height: 14),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: [
+                                    _buildCircleToggle(CupertinoIcons.antenna_radiowaves_left_right, _isHotspotOn, () => setState(() => _isHotspotOn = !_isHotspotOn)),
+                                    _buildCircleToggle(CupertinoIcons.battery_25, _isBatterySaverOn, () => setState(() => _isBatterySaverOn = !_isBatterySaverOn)),
+                                    // 활성화된 위치 토글: 화이트 원형 + 블랙 핀
+                                    _buildCircleToggle(CupertinoIcons.location_solid, _isLocationOn, () => setState(() => _isLocationOn = !_isLocationOn), isHighlighted: _isLocationOn),
+                                    _buildCircleToggle(CupertinoIcons.device_phone_portrait, _isSmartSwitchOn, () => setState(() => _isSmartSwitchOn = !_isSmartSwitchOn)),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                // 카드 하단 미니 드래그 핸들
+                                Container(width: 32, height: 3, decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.35), borderRadius: BorderRadius.circular(2))),
                               ],
                             ),
                           ),
                           const SizedBox(height: 12),
 
-                          // 3. 듀얼 수직 슬라이더 캡슐
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildSliderCapsule(
-                                  title: '화면 밝기',
-                                  percent: '${(_brightness * 100).round()}%',
-                                  icon: CupertinoIcons.sun_max_fill,
-                                  value: _brightness,
-                                  accentColor: const Color(0xFF3B82F6),
-                                  onChanged: (val) => setState(() => _brightness = val),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: _buildSliderCapsule(
-                                  title: '미디어 음량',
-                                  percent: '${(_volume * 100).round()}%',
-                                  icon: CupertinoIcons.volume_up,
-                                  value: _volume,
-                                  accentColor: const Color(0xFF60A5FA),
-                                  onChanged: (val) => setState(() => _volume = val),
-                                ),
-                              ),
-                            ],
+                          // 밝기 슬라이더 카드 + 우측 초승달 다크모드 버튼
+                          _buildSliderWithSideButton(
+                            value: _brightness,
+                            thumbIcon: CupertinoIcons.sun_max,
+                            sideIcon: CupertinoIcons.moon_fill,
+                            isSideActive: _isDarkModeOn,
+                            onSliderChanged: (val) => setState(() => _brightness = val),
+                            onSideTap: () => setState(() => _isDarkModeOn = !_isDarkModeOn),
                           ),
                           const SizedBox(height: 12),
 
-                          // 4. 하단 기기 제어 & 스마트 뷰
+                          // 음량 슬라이더 카드 + 우측 스피커 버튼
+                          _buildSliderWithSideButton(
+                            value: _volume,
+                            thumbIcon: CupertinoIcons.music_note,
+                            sideIcon: _isMuted ? CupertinoIcons.volume_off : CupertinoIcons.volume_up,
+                            isSideActive: !_isMuted,
+                            onSliderChanged: (val) => setState(() => _volume = val),
+                            onSideTap: () => setState(() => _isMuted = !_isMuted),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // 미디어 재생 바 (♪ Play music | Media output)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.16),
+                              borderRadius: BorderRadius.circular(26),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(CupertinoIcons.music_note_2, size: 16, color: Colors.white),
+                                const SizedBox(width: 8),
+                                const Text('Play music', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
+                                const Spacer(),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.18),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Text('Media output', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // 하단 2x2 유틸리티 캡슐들
                           Row(
                             children: [
-                              Expanded(child: _buildUtilityButton(title: '스마트 뷰', subtitle: '화면 공유', icon: CupertinoIcons.tv, onTap: () {})),
-                              const SizedBox(width: 10),
-                              Expanded(child: _buildUtilityButton(title: '기기 제어', subtitle: 'SmartThings', icon: CupertinoIcons.house_alt_fill, onTap: () {})),
+                              Expanded(child: _buildBottomCapsule(icon: CupertinoIcons.shield_fill, title: 'Privacy display', subtitle: null)),
+                              const SizedBox(width: 12),
+                              Expanded(child: _buildBottomCapsule(icon: CupertinoIcons.arrow_2_circlepath, title: 'Smart View', subtitle: 'Mirror screen')),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(child: _buildBottomCapsule(icon: CupertinoIcons.device_phone_portrait, title: 'Nearby devices', subtitle: null)),
+                              const SizedBox(width: 12),
+                              Expanded(child: _buildBottomCapsule(icon: CupertinoIcons.circle_grid_hex_fill, title: 'SmartThings', subtitle: 'Device control')),
                             ],
                           ),
                           const SizedBox(height: 24),
                         ],
                       ),
+                    ),
+                  ),
+
+                  // 4. 하단 삼성 3버튼 내비게이션 바 (|||  O  <)
+                  Container(
+                    height: 48,
+                    padding: const EdgeInsets.symmetric(horizontal: 50),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // 최근 앱 (|||)
+                        InkWell(
+                          onTap: widget.onClose,
+                          child: const Row(
+                            children: [
+                              Text('|', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold)),
+                              SizedBox(width: 2),
+                              Text('|', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold)),
+                              SizedBox(width: 2),
+                              Text('|', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                        // 홈 (O 스쿼클)
+                        InkWell(
+                          onTap: widget.onClose,
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4.5),
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                          ),
+                        ),
+                        // 뒤로가기 (<)
+                        InkWell(
+                          onTap: widget.onClose,
+                          child: const Icon(CupertinoIcons.chevron_left, color: Colors.white, size: 20),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -215,147 +319,176 @@ class _OneUi9QuickSettingsState extends State<OneUi9QuickSettings> {
     );
   }
 
-  Widget _buildLargePill({
+  Widget _buildConnectivityPill({
     required String title,
-    required String subtitle,
+    required String? subtitle,
     required IconData icon,
     required bool isOn,
-    required VoidCallback onToggle,
+    required VoidCallback onTap,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: isOn ? const Color(0xFF2563EB) : Colors.white.withValues(alpha: 0.1),
+        color: Colors.white.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: isOn ? const Color(0xFF3B82F6) : Colors.white.withValues(alpha: 0.12)),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 22, color: Colors.white),
+          // 좌측 화이트 원형 버튼 (dark 아이콘)
+          InkWell(
+            onTap: onTap,
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+              child: Icon(icon, color: Colors.black87, size: 20),
+            ),
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(title, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
-                Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 10), maxLines: 1, overflow: TextOverflow.ellipsis),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 1),
+                  Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 10), maxLines: 1, overflow: TextOverflow.ellipsis),
+                ],
               ],
             ),
           ),
-          CupertinoSwitch(
-            value: isOn,
-            activeTrackColor: Colors.white,
-            thumbColor: isOn ? const Color(0xFF2563EB) : Colors.white70,
-            onChanged: (val) => onToggle(),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildQuickCircleToggle(String title, IconData icon, bool isOn, VoidCallback onTap) {
+  Widget _buildCircleToggle(IconData icon, bool isOn, VoidCallback onTap, {bool isHighlighted = false}) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(22),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      borderRadius: BorderRadius.circular(26),
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: isHighlighted ? Colors.white : Colors.white.withValues(alpha: 0.18),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: isHighlighted ? Colors.black87 : Colors.white, size: 22),
+      ),
+    );
+  }
+
+  Widget _buildSliderWithSideButton({
+    required double value,
+    required IconData thumbIcon,
+    required IconData sideIcon,
+    required bool isSideActive,
+    required ValueChanged<double> onSliderChanged,
+    required VoidCallback onSideTap,
+  }) {
+    return Container(
+      height: 54,
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Row(
         children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: isOn ? const Color(0xFF2563EB) : Colors.white.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-              boxShadow: isOn ? [BoxShadow(color: const Color(0xFF2563EB).withValues(alpha: 0.45), blurRadius: 10, spreadRadius: 1)] : null,
+          // 좌측 슬라이더 바
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onHorizontalDragUpdate: (details) {
+                    final newVal = (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0);
+                    onSliderChanged(newVal);
+                  },
+                  child: Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      // 슬라이더 채움
+                      FractionallySizedBox(
+                        widthFactor: value.clamp(0.12, 1.0),
+                        child: Container(
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.35),
+                            borderRadius: BorderRadius.circular(23),
+                          ),
+                        ),
+                      ),
+                      // 화이트 썸 (아이콘)
+                      Positioned(
+                        left: (constraints.maxWidth - 46) * value,
+                        child: Container(
+                          width: 46,
+                          height: 46,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+                          ),
+                          child: Icon(thumbIcon, color: Colors.black87, size: 20),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-            child: Icon(icon, size: 21, color: Colors.white),
           ),
-          const SizedBox(height: 6),
-          Text(title, style: TextStyle(color: isOn ? Colors.white : Colors.white70, fontSize: 10, fontWeight: isOn ? FontWeight.bold : FontWeight.normal), maxLines: 1, overflow: TextOverflow.ellipsis),
+          const SizedBox(width: 8),
+          // 우측 원형 토글 버튼
+          InkWell(
+            onTap: onSideTap,
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: isSideActive ? Colors.white : Colors.black.withValues(alpha: 0.18),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(sideIcon, color: isSideActive ? Colors.black87 : Colors.white, size: 20),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSliderCapsule({
-    required String title,
-    required String percent,
-    required IconData icon,
-    required double value,
-    required Color accentColor,
-    required ValueChanged<double> onChanged,
-  }) {
+  Widget _buildBottomCapsule({required IconData icon, required String title, required String? subtitle}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
+        color: Colors.white.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(icon, size: 15, color: Colors.white70),
-                  const SizedBox(width: 6),
-                  Text(title, style: const TextStyle(color: Colors.white70, fontSize: 11)),
-                ],
-              ),
-              Text(percent, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
-            ],
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), shape: BoxShape.circle),
+            child: Icon(icon, color: Colors.white, size: 18),
           ),
-          const SizedBox(height: 6),
-          SliderTheme(
-            data: SliderThemeData(
-              activeTrackColor: accentColor,
-              inactiveTrackColor: Colors.white.withValues(alpha: 0.15),
-              thumbColor: Colors.white,
-              trackHeight: 12,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(title, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 1),
+                  Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 9.5), maxLines: 1, overflow: TextOverflow.ellipsis),
+                ],
+              ],
             ),
-            child: Slider(value: value, onChanged: onChanged),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildUtilityButton({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 20, color: Colors.white70),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                  Text(subtitle, style: const TextStyle(color: Colors.white54, fontSize: 10), maxLines: 1, overflow: TextOverflow.ellipsis),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
