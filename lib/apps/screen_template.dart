@@ -236,5 +236,16 @@ class ScreenTemplate {
       badge: 'HOT',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'chrome',
+      title: '구글 크롬 (Google Chrome)',
+      description: '멀티탭 브라우저, 옴니박스 주소창, 프레임 내 새 탭 인터셉트 & 포털 스마트 리더 연출',
+      category: TemplateCategory.os,
+      icon: CupertinoIcons.globe,
+      imageAsset: 'assets/images/windows/chrome.png',
+      themeColor: Color(0xFF4285F4),
+      badge: '인기',
+      isDesktop: true,
+    ),
   ];
 }
