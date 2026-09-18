@@ -118,6 +118,15 @@ class ScreenTemplate {
       themeColor: Color(0xFF2AC1BC),
     ),
     const ScreenTemplate(
+      id: 'daangn',
+      title: '당근마켓 중고거래',
+      description: '당근마켓 중고거래 채팅, 매너온도, 거래완료, 네고 대화 연출',
+      category: TemplateCategory.lifestyle,
+      icon: CupertinoIcons.cart_fill,
+      themeColor: Color(0xFFFF6F0F),
+      badge: '신규',
+    ),
+    const ScreenTemplate(
       id: 'coupang',
       title: '쿠팡 (Coupang)',
       description: '로켓배송, 로켓프레시, 골드박스, 데스크탑 와이드 몰 & 모바일 앱',

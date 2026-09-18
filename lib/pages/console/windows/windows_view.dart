@@ -738,6 +738,7 @@ class _WindowsViewState extends State<WindowsView> {
               onOpenSettings: () => _openWinApp('settings'),
               onClose: () => setState(() => _contextMenuPosition = null),
               onSort: (_) => _sortIconsByName(),
+              onSelectOs: widget.onSelectOs,
             ),
 
           // 8. 개별 아이콘 우클릭 컨텍스트 메뉴 (열기, 이름 바꾸기, 삭제)

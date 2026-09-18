@@ -485,6 +485,7 @@ class _Macos27ViewState extends State<Macos27View> {
             onOpenWallpaperSettings: () => _openApp('settings'),
             onOpenSettings: () => _openApp('settings'),
             onOpenOsSwitch: () => _openApp('settings'),
+            onSelectOs: widget.onSelectOs,
             onOpenItem: () {
               if (_contextMenuTarget != null) {
                 _openApp(_contextMenuTarget!.isFolder ? 'finder' : 'notes');

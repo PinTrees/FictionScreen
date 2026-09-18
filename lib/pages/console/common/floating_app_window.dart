@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../apps/delivery/data/delivery_model.dart';
 import '../../../apps/delivery/delivery_screen.dart';
+import '../../../apps/daangn/data/daangn_model.dart';
+import '../../../apps/daangn/daangn_screen.dart';
 import '../../../apps/instagram/data/instagram_model.dart';
 import '../../../apps/instagram/instagram_screen.dart';
 import '../../../apps/kakaotalk/data/kakaotalk_model.dart';
@@ -73,6 +75,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   late YoutubeConfig _youtubeConfig;
   late InstagramConfig _instaConfig;
   late DeliveryConfig _deliveryConfig;
+  late DaangnConfig _daangnConfig;
   late CoupangConfig _coupangConfig;
   late NetflixConfig _netflixConfig;
   late LotteryConfig _lotteryConfig;
@@ -85,6 +88,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     _twitterConfig = XTwitterConfig.defaultPreset();
     _pinterestConfig = PinterestConfig.defaultPreset();
     _bsodConfig = WindowsBsodConfig.defaultPreset();
+    _daangnConfig = DaangnConfig.defaultPreset();
     _youtubeConfig = YoutubeConfig.defaultPreset();
     _instaConfig = InstagramConfig.defaultPreset();
     _deliveryConfig = DeliveryConfig.defaultPreset();
@@ -306,6 +310,8 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
         );
       case 'delivery':
         return DeliveryScreen(config: _deliveryConfig);
+      case 'daangn':
+        return DaangnScreen(config: _daangnConfig);
       case 'coupang':
         return CoupangScreen(
           config: _coupangConfig,
