@@ -39,3 +39,4 @@ flutter:
     - assets/images/
     - assets/images/macos/
     - assets/images/windows/
+    - assets/images/windows/settings/
