@@ -1,10 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/ios26_liquid_glass.dart';
+import 'ios26_cc_icons.dart';
 
-/// Apple iOS 26 공식 리퀴드 글래스 연결성 (Connectivity) 2x2 카드
+/// Apple iOS 26 리퀴드 글래스 연결성 (Connectivity) 2x2 카드
 class Ios26ConnectivityCard extends StatefulWidget {
-  const Ios26ConnectivityCard({super.key});
+  final double cardSize;
+  const Ios26ConnectivityCard({super.key, required this.cardSize});
 
   @override
   State<Ios26ConnectivityCard> createState() => _Ios26ConnectivityCardState();
@@ -13,18 +14,25 @@ class Ios26ConnectivityCard extends StatefulWidget {
 class _Ios26ConnectivityCardState extends State<Ios26ConnectivityCard> {
   bool _isAirplaneOn = false;
   bool _isAirDropOn = true;
-  bool _isWifiOn = false;
+  bool _isWifiOn = false; // 레퍼런스: 와이파이 비활성 (슬래시 표시)
   bool _isCellularOn = true;
   bool _isBluetoothOn = true;
 
   @override
   Widget build(BuildContext context) {
+    final size = widget.cardSize;
+    final pad = size * (14.0 / 180.0);
+    final innerGap = size * (10.0 / 180.0);
+    final btnSize = (size - 2 * pad - innerGap) / 2.0;
+    final miniBtnSize = (btnSize - 7.0) / 2.0;
+
     return Ios26LiquidGlass(
-      height: 160,
-      borderRadius: 28,
+      width: size,
+      height: size,
+      borderRadius: size * 0.20,
       blurSigma: 36,
       tintColor: const Color(0xFF0F2644),
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(pad),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -33,13 +41,15 @@ class _Ios26ConnectivityCardState extends State<Ios26ConnectivityCard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildBigCircle(
-                icon: CupertinoIcons.airplane,
+                size: btnSize,
+                child: Ios26AirplaneIcon(size: btnSize * 0.44),
                 isActive: _isAirplaneOn,
                 activeColor: const Color(0xFFFF9500),
                 onTap: () => setState(() => _isAirplaneOn = !_isAirplaneOn),
               ),
               _buildBigCircle(
-                icon: CupertinoIcons.radiowaves_right,
+                size: btnSize,
+                child: Ios26AirDropIcon(size: btnSize * 0.44),
                 isActive: _isAirDropOn,
                 activeColor: const Color(0xFF007AFF),
                 onTap: () => setState(() => _isAirDropOn = !_isAirDropOn),
@@ -47,17 +57,18 @@ class _Ios26ConnectivityCardState extends State<Ios26ConnectivityCard> {
             ],
           ),
 
-          // Row 2: Wi-Fi + 4단 미니 클러스터 (셀룰러, 블루투스, 핫스팟, VPN)
+          // Row 2: Wi-Fi + 4단 미니 클러스터
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildBigCircle(
-                icon: _isWifiOn ? CupertinoIcons.wifi : CupertinoIcons.wifi_slash,
+                size: btnSize,
+                child: Ios26WifiIcon(size: btnSize * 0.44, isSlashed: !_isWifiOn),
                 isActive: _isWifiOn,
                 activeColor: const Color(0xFF007AFF),
                 onTap: () => setState(() => _isWifiOn = !_isWifiOn),
               ),
-              _buildMiniCluster(),
+              _buildMiniCluster(size: btnSize, miniSize: miniBtnSize),
             ],
           ),
         ],
@@ -66,7 +77,8 @@ class _Ios26ConnectivityCardState extends State<Ios26ConnectivityCard> {
   }
 
   Widget _buildBigCircle({
-    required IconData icon,
+    required double size,
+    required Widget child,
     required bool isActive,
     required Color activeColor,
     required VoidCallback onTap,
@@ -74,49 +86,39 @@ class _Ios26ConnectivityCardState extends State<Ios26ConnectivityCard> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 54,
-        height: 54,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: isActive ? activeColor : Colors.white.withValues(alpha: 0.16),
-          boxShadow: isActive ? [BoxShadow(color: activeColor.withValues(alpha: 0.4), blurRadius: 8, spreadRadius: 1)] : null,
+          boxShadow: isActive ? [BoxShadow(color: activeColor.withValues(alpha: 0.45), blurRadius: 8, spreadRadius: 1)] : null,
         ),
-        child: Center(child: Icon(icon, color: Colors.white, size: 24)),
+        child: Center(child: child),
       ),
     );
   }
 
-  Widget _buildMiniCluster() {
+  Widget _buildMiniCluster({required double size, required double miniSize}) {
     return Container(
-      width: 54,
-      height: 54,
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(16)),
+      width: size,
+      height: size,
+      padding: const EdgeInsets.all(2.5),
+      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(size * 0.32)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildMiniIcon(
-                icon: CupertinoIcons.antenna_radiowaves_left_right,
-                isActive: _isCellularOn,
-                activeColor: const Color(0xFF34C759),
-                onTap: () => setState(() => _isCellularOn = !_isCellularOn),
-              ),
-              _buildMiniIcon(
-                icon: CupertinoIcons.bluetooth,
-                isActive: _isBluetoothOn,
-                activeColor: const Color(0xFF007AFF),
-                onTap: () => setState(() => _isBluetoothOn = !_isBluetoothOn),
-              ),
+              _buildMiniIcon(size: miniSize, child: Ios26CellularIcon(size: miniSize * 0.56), isActive: _isCellularOn, activeColor: const Color(0xFF34C759), onTap: () => setState(() => _isCellularOn = !_isCellularOn)),
+              _buildMiniIcon(size: miniSize, child: Ios26BluetoothIcon(size: miniSize * 0.56), isActive: _isBluetoothOn, activeColor: const Color(0xFF007AFF), onTap: () => setState(() => _isBluetoothOn = !_isBluetoothOn)),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildMiniIcon(icon: CupertinoIcons.link, isActive: false, activeColor: const Color(0xFF34C759), onTap: () {}),
-              _buildMiniIcon(icon: CupertinoIcons.globe, isActive: true, activeColor: const Color(0xFF007AFF), onTap: () {}),
+              _buildMiniIcon(size: miniSize, child: Ios26HotspotIcon(size: miniSize * 0.56), isActive: false, activeColor: const Color(0xFF34C759), onTap: () {}),
+              _buildMiniIcon(size: miniSize, child: Ios26GlobeIcon(size: miniSize * 0.56), isActive: true, activeColor: const Color(0xFF007AFF), onTap: () {}),
             ],
           ),
         ],
@@ -124,19 +126,14 @@ class _Ios26ConnectivityCardState extends State<Ios26ConnectivityCard> {
     );
   }
 
-  Widget _buildMiniIcon({
-    required IconData icon,
-    required bool isActive,
-    required Color activeColor,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildMiniIcon({required double size, required Widget child, required bool isActive, required Color activeColor, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 21,
-        height: 21,
+        width: size,
+        height: size,
         decoration: BoxDecoration(shape: BoxShape.circle, color: isActive ? activeColor : Colors.white.withValues(alpha: 0.15)),
-        child: Center(child: Icon(icon, color: Colors.white, size: 11.5)),
+        child: Center(child: child),
       ),
     );
   }

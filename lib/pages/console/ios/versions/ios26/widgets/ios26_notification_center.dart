@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'ios26_liquid_glass.dart';
+import '../control_center/widgets/ios26_cc_icons.dart';
 
 /// Apple iOS 26 공식 리퀴드 글래스 (Liquid Glass) 알림 센터 (Notification Center)
 /// - 레퍼런스 이미지(media_1789745290626.png) 100% 픽셀 퍼펙트 구현
@@ -38,12 +39,14 @@ class _Ios26NotificationCenterState extends State<Ios26NotificationCenter> {
       onTap: widget.onClose,
       behavior: HitTestBehavior.translucent,
       child: SafeArea(
+        top: false,
         bottom: true,
         child: Column(
           children: [
+            SizedBox(height: MediaQuery.of(context).padding.top * 0.7 + 10),
             // 1. 최상단 상태표시줄 (SKT | 4바 LTE 93% 녹색 알약 배터리)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -293,7 +296,7 @@ class _Ios26NotificationCenterState extends State<Ios26NotificationCenter> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildLiquidGlassCircleButton(
-                    icon: Icons.flashlight_on_rounded,
+                    iconWidget: Ios26FlashlightIcon(size: 24, color: _isFlashlightOn ? Colors.black : Colors.white),
                     isActive: _isFlashlightOn,
                     onTap: () {
                       setState(() {
@@ -302,7 +305,7 @@ class _Ios26NotificationCenterState extends State<Ios26NotificationCenter> {
                     },
                   ),
                   _buildLiquidGlassCircleButton(
-                    icon: CupertinoIcons.camera_fill,
+                    iconWidget: const Ios26CameraIcon(size: 24, color: Colors.white),
                     isActive: false,
                     onTap: () {
                       widget.onClose();
@@ -541,11 +544,7 @@ class _Ios26NotificationCenterState extends State<Ios26NotificationCenter> {
   }
 
   // 하단 원형 리퀴드 글래스 퀵 버튼
-  Widget _buildLiquidGlassCircleButton({
-    required IconData icon,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildLiquidGlassCircleButton({required Widget iconWidget, required bool isActive, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Ios26LiquidGlass(
@@ -554,13 +553,7 @@ class _Ios26NotificationCenterState extends State<Ios26NotificationCenter> {
         borderRadius: 26,
         blurSigma: 32,
         tintColor: isActive ? Colors.white : const Color(0xFF0F1E30),
-        child: Center(
-          child: Icon(
-            icon,
-            color: isActive ? Colors.black : Colors.white,
-            size: 24,
-          ),
-        ),
+        child: Center(child: iconWidget),
       ),
     );
   }

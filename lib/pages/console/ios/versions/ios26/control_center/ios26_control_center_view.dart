@@ -1,12 +1,16 @@
+import 'dart:math' as math;
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'widgets/ios26_cc_header.dart';
+import 'widgets/ios26_cc_icons.dart';
 import 'widgets/ios26_connectivity_card.dart';
 import 'widgets/ios26_now_playing_card.dart';
 import 'widgets/ios26_quick_toggles.dart';
 import 'widgets/ios26_vertical_slider.dart';
 
-/// Apple iOS 26 공식 리퀴드 글래스 (Liquid Glass) 제어 센터 모듈형 뷰
+/// Apple iOS 26 공식 리퀴드 글래스 제어 센터 (Control Center) 모듈형 뷰
+/// 레퍼런스 스크린샷과 100% 수학적 비례 및 패딩 일치 (472x1024 스케일 완벽 대응)
 class Ios26ControlCenterView extends StatefulWidget {
   final VoidCallback onClose;
   final Function(String appId) onOpenApp;
@@ -21,137 +25,168 @@ class _Ios26ControlCenterViewState extends State<Ios26ControlCenterView> {
   bool _isRotationLocked = true; // 스크린샷 레퍼런스: 회전 잠금 활성화(흰색바탕+빨간락)
   bool _isFocusMode = false;
   bool _isFlashlightOn = false;
-  double _brightness = 0.45;
-  double _volume = 0.52;
+  double _brightness = 0.38; // 레퍼런스: 약 38% 하단 필링
+  double _volume = 0.32; // 레퍼런스: 약 32% 하단 필링
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onClose,
-      onVerticalDragEnd: (details) {
-        if (details.primaryVelocity != null && details.primaryVelocity! < -80) widget.onClose();
-      },
-      behavior: HitTestBehavior.translucent,
-      child: SafeArea(
-        bottom: true,
-        child: Column(
-          children: [
-            // 1. 상단 바 (+ 및 ⏻ 유틸리티 버튼 & SKT LTE 4바 + 93% 배터리)
-            Ios26CcHeader(onClose: widget.onClose),
-            const SizedBox(height: 12),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final totalWidth = constraints.maxWidth;
+        // 기준 모바일 472px 비율 스케일링
+        final width = totalWidth.clamp(320.0, 520.0);
+        final scale = width / 472.0;
 
-            // 2. 메인 모듈 그리드 + 우측 세로 레일 탭
-            Expanded(
-              child: GestureDetector(
-                onTap: () {},
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        final unitSize = 80.0 * scale;
+        final gap = 20.0 * scale;
+        final cardSize = 180.0 * scale; // 80 + 20 + 80 = 180
+        final contentWidth = 380.0 * scale; // 80*4 + 20*3 = 380
+        final horizPadding = (totalWidth - contentWidth) / 2.0;
+        final topPad = math.max(14.0, MediaQuery.of(context).padding.top * 0.7);
+
+        return GestureDetector(
+          onTap: widget.onClose,
+          onVerticalDragEnd: (details) {
+            if (details.primaryVelocity != null && details.primaryVelocity! < -80) widget.onClose();
+          },
+          behavior: HitTestBehavior.translucent,
+          child: Stack(
+            children: [
+              // 1. 전체 화면 초고굴절 배경 가우시안 블러 오버레이
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 36, sigmaY: 36),
+                  child: Container(color: Colors.black.withValues(alpha: 0.24)),
+                ),
+              ),
+
+              // 2. 메인 콘텐츠 스크롤 뷰
+              SafeArea(
+                top: false,
+                bottom: true,
+                child: Column(
                   children: [
-                    const SizedBox(width: 14),
-                    // 중앙 메인 스크롤 모듈
-                    Expanded(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        child: Column(
-                          children: [
-                            // Row 1: 연결성 2x2 카드 + 지금 재생 중 2x2 카드
-                            const Row(
-                              children: [
-                                Expanded(child: Ios26ConnectivityCard()),
-                                SizedBox(width: 14),
-                                Expanded(child: Ios26NowPlayingCard()),
-                              ],
-                            ),
-                            const SizedBox(height: 14),
+                    SizedBox(height: topPad),
 
-                            // Row 2: 회전잠금/화면미러링/집중모드 + 수직 밝기 & 볼륨 슬라이더
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  flex: 11,
-                                  child: Ios26QuickTogglesSection(
+                    // 상단 헤더 (+ 및 ⏻ 버튼, SKT LTE 4바 & 93% 배터리)
+                    Ios26CcHeader(horizontalPadding: horizPadding, onClose: widget.onClose),
+                    SizedBox(height: 16.0 * scale),
+
+                    // 메인 카드 그리드
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          child: Column(
+                            children: [
+                              // Row 1: 연결성 2x2 카드 + 지금 재생 중 2x2 카드
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Ios26ConnectivityCard(cardSize: cardSize),
+                                  SizedBox(width: gap),
+                                  Ios26NowPlayingCard(cardSize: cardSize),
+                                ],
+                              ),
+                              SizedBox(height: gap),
+
+                              // Row 2: 회전잠금/화면미러링/집중모드 + 밝기 & 볼륨 수직 슬라이더
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // 좌측 2x2 영역: 회전잠금(80) + 화면미러링(80) / 집중모드(180x80)
+                                  Ios26QuickTogglesSection(
+                                    unitSize: unitSize,
+                                    cardSize: cardSize,
+                                    gap: gap,
                                     isRotationLocked: _isRotationLocked,
                                     isFocusMode: _isFocusMode,
                                     onToggleRotation: (v) => setState(() => _isRotationLocked = v),
                                     onToggleFocus: (v) => setState(() => _isFocusMode = v),
                                     onOpenApp: widget.onOpenApp,
                                   ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  flex: 5,
-                                  child: Ios26VerticalSlider(
+                                  SizedBox(width: gap),
+
+                                  // 우측 2칸: 밝기 슬라이더 (80x180) + 볼륨 슬라이더 (80x180)
+                                  Ios26VerticalSlider(
+                                    width: unitSize,
+                                    height: cardSize,
                                     value: _brightness,
-                                    icon: CupertinoIcons.sun_max_fill,
-                                    iconColor: const Color(0xFFFF9500),
+                                    iconBuilder: (isOnFill) => Ios26SunIcon(
+                                      size: unitSize * 0.36,
+                                      color: isOnFill ? const Color(0xFFFF9500) : Colors.white70,
+                                    ),
                                     onChanged: (v) => setState(() => _brightness = v),
                                   ),
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  flex: 5,
-                                  child: Ios26VerticalSlider(
+                                  SizedBox(width: gap),
+                                  Ios26VerticalSlider(
+                                    width: unitSize,
+                                    height: cardSize,
                                     value: _volume,
-                                    icon: CupertinoIcons.speaker_2_fill,
-                                    iconColor: const Color(0xFF2C2C2E),
+                                    iconBuilder: (isOnFill) => Ios26SpeakerIcon(
+                                      size: unitSize * 0.36,
+                                      color: isOnFill ? const Color(0xFF2C2C2E) : Colors.white70,
+                                    ),
                                     onChanged: (v) => setState(() => _volume = v),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 14),
+                                ],
+                              ),
+                              SizedBox(height: gap),
 
-                            // Row 3 & 4: 6개 완전한 정원형 리퀴드 퀵 토글
-                            Ios26BottomActionsGrid(
-                              isFlashlightOn: _isFlashlightOn,
-                              onToggleFlashlight: () => setState(() => _isFlashlightOn = !_isFlashlightOn),
-                              onOpenApp: widget.onOpenApp,
-                            ),
-                            const SizedBox(height: 24),
-                          ],
+                              // Row 3 & 4: 6개 완전한 정원형 리퀴드 퀵 토글 (손전등, 타이머, 계산기, 카메라 / QR, 화면녹화)
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: horizPadding),
+                                child: Ios26BottomActionsGrid(
+                                  unitSize: unitSize,
+                                  gap: gap,
+                                  isFlashlightOn: _isFlashlightOn,
+                                  onToggleFlashlight: () => setState(() => _isFlashlightOn = !_isFlashlightOn),
+                                  onOpenApp: widget.onOpenApp,
+                                ),
+                              ),
+                              SizedBox(height: 24.0 * scale),
+                            ],
+                          ),
                         ),
                       ),
                     ),
 
-                    // 우측 세로 레일 인디케이터 (하트, 음악, 무선) - 스크린샷 100% 일치
-                    Padding(
-                      padding: const EdgeInsets.only(top: 172, right: 6, left: 4),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(CupertinoIcons.heart_fill, color: Colors.white.withValues(alpha: 0.95), size: 16),
-                          const SizedBox(height: 24),
-                          Icon(CupertinoIcons.music_note, color: Colors.white.withValues(alpha: 0.55), size: 16),
-                          const SizedBox(height: 24),
-                          Icon(CupertinoIcons.antenna_radiowaves_left_right, color: Colors.white.withValues(alpha: 0.55), size: 16),
-                        ],
+                    // 하단 홈 인디케이터 제스처 바
+                    GestureDetector(
+                      onTap: widget.onClose,
+                      child: Container(
+                        width: 120,
+                        height: 18,
+                        alignment: Alignment.center,
+                        color: Colors.transparent,
+                        child: Container(width: 60, height: 4.5, decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.7), borderRadius: BorderRadius.circular(3))),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
 
-            // 3. 하단 홈 인디케이터 닫기 핸들 바
-            GestureDetector(
-              onTap: widget.onClose,
-              child: Container(
-                width: 120,
-                height: 16,
-                alignment: Alignment.center,
-                color: Colors.transparent,
-                child: Container(
-                  width: 60,
-                  height: 4.5,
-                  decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.7), borderRadius: BorderRadius.circular(3)),
+              // 3. 우측 세로 레일 인디케이터 (하트, 음악, 안테나) - 레퍼런스 위치 정확히 일치
+              Positioned(
+                right: math.max(4.0, (horizPadding - 24.0) / 2.0),
+                top: topPad + 160.0 * scale,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(CupertinoIcons.heart_fill, color: Colors.white.withValues(alpha: 0.95), size: 16),
+                    const SizedBox(height: 28),
+                    Icon(CupertinoIcons.music_note, color: Colors.white.withValues(alpha: 0.50), size: 16),
+                    const SizedBox(height: 28),
+                    Icon(CupertinoIcons.antenna_radiowaves_left_right, color: Colors.white.withValues(alpha: 0.50), size: 16),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 4),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
