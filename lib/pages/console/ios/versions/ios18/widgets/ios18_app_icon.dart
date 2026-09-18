@@ -101,24 +101,25 @@ class _Ios18AppIconState extends State<Ios18AppIcon> {
               ],
             ),
           ),
-          const SizedBox(height: 5),
-
-          // 2. 앱 타이틀 (순정 텍스트 섀도우)
-          Text(
-            widget.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 11.5,
-              fontWeight: FontWeight.w500,
-              letterSpacing: -0.2,
-              shadows: [
-                Shadow(color: Colors.black54, blurRadius: 4, offset: Offset(0, 1)),
-              ],
+          // 2. 앱 타이틀 (순정 텍스트 섀도우 - 제목이 있을 때만 표시)
+          if (widget.title.isNotEmpty) ...[
+            const SizedBox(height: 5),
+            Text(
+              widget.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w500,
+                letterSpacing: -0.2,
+                shadows: [
+                  Shadow(color: Colors.black54, blurRadius: 4, offset: Offset(0, 1)),
+                ],
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
