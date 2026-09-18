@@ -48,6 +48,7 @@ class _WindowsFileExplorerWindowState extends State<WindowsFileExplorerWindow> {
     {'title': '블라인드_익명커뮤니티_템플릿', 'type': 'blind', 'size': '64 MB', 'icon': CupertinoIcons.building_2_fill, 'color': Color(0xFFDA3238)},
     {'title': '디스코드_커뮤니티_템플릿', 'type': 'discord', 'size': '128 MB', 'icon': CupertinoIcons.game_controller_solid, 'color': Color(0xFF5865F2)},
     {'title': '포토샵_그래픽작업_템플릿', 'type': 'photoshop', 'size': '256 MB', 'icon': CupertinoIcons.paintbrush_fill, 'color': Color(0xFF31A8FF)},
+    {'title': '비주얼스튜디오2026_프로젝트', 'type': 'visual_studio', 'size': '512 MB', 'icon': CupertinoIcons.chevron_left_slash_chevron_right, 'color': Color(0xFF68217A)},
   ];
 
   @override

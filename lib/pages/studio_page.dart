@@ -4,6 +4,7 @@ import 'package:screenshot/screenshot.dart';
 import '../apps/blind/data/blind_model.dart';
 import '../apps/discord/data/discord_model.dart';
 import '../apps/photoshop/data/photoshop_model.dart';
+import '../apps/visual_studio/data/visual_studio_model.dart';
 import '../apps/coupang/data/coupang_model.dart';
 import '../apps/daangn/data/daangn_model.dart';
 import '../apps/delivery/data/delivery_model.dart';
@@ -60,6 +61,7 @@ class _StudioPageState extends State<StudioPage> {
   late BlindConfig _blindConfig;
   late DiscordConfig _discordConfig;
   late PhotoshopConfig _photoshopConfig;
+  late VisualStudioConfig _visualStudioConfig;
 
   @override
   void initState() {
@@ -84,6 +86,7 @@ class _StudioPageState extends State<StudioPage> {
     _blindConfig = BlindConfig.defaultPreset();
     _discordConfig = DiscordConfig.defaultPreset();
     _photoshopConfig = PhotoshopConfig.defaultPreset();
+    _visualStudioConfig = VisualStudioConfig.defaultPreset();
   }
 
   Future<void> _exportScreen() async {
@@ -166,6 +169,7 @@ class _StudioPageState extends State<StudioPage> {
       blindConfig: _blindConfig,
       discordConfig: _discordConfig,
       photoshopConfig: _photoshopConfig,
+      visualStudioConfig: _visualStudioConfig,
       onKakaoBankChanged: (cfg) => setState(() => _kakaobankConfig = cfg),
       onDaangnChanged: (cfg) => setState(() => _daangnConfig = cfg),
       onYoutubeChanged: (cfg) => setState(() => _youtubeConfig = cfg),
@@ -177,6 +181,7 @@ class _StudioPageState extends State<StudioPage> {
       onBlindChanged: (cfg) => setState(() => _blindConfig = cfg),
       onDiscordChanged: (cfg) => setState(() => _discordConfig = cfg),
       onPhotoshopChanged: (cfg) => setState(() => _photoshopConfig = cfg),
+      onVisualStudioChanged: (cfg) => setState(() => _visualStudioConfig = cfg),
     );
   }
 }

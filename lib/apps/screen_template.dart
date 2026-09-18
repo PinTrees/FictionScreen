@@ -225,5 +225,16 @@ class ScreenTemplate {
       badge: '신규',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'visual_studio',
+      title: '비주얼 스튜디오 2026',
+      description: '마이크로소프트 Visual Studio 2026 Professional, C# 코드 에디터, 중단점 디버깅, 솔루션 탐색기 연출',
+      category: TemplateCategory.os,
+      icon: CupertinoIcons.chevron_left_slash_chevron_right,
+      imageAsset: 'assets/images/visual_studio_icon.webp',
+      themeColor: Color(0xFF68217A),
+      badge: 'HOT',
+      isDesktop: true,
+    ),
   ];
 }

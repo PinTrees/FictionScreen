@@ -61,6 +61,7 @@ class _Macos27SpotlightState extends State<Macos27Spotlight> with SingleTickerPr
     {'title': '블라인드(Blind) 에디터', 'desc': '직장인 익명 커뮤니티, 회사 인증 뱃지, 실시간 투표 및 댓글 조작', 'icon': 'assets/images/blind_icon.webp', 'templateId': 'blind'},
     {'title': '디스코드(Discord) 에디터', 'desc': '게이머 & 개발자 음성/채팅 서버, 봇 메시지, 역할 컬러 연출', 'icon': 'assets/images/discord_icon.webp', 'templateId': 'discord'},
     {'title': '포토샵(Photoshop) 에디터', 'desc': '전문가용 그래픽 에디터, 캔버스 눈금자, 레이어 및 도구 팔레트 연출', 'icon': 'assets/images/photoshop_icon.webp', 'templateId': 'photoshop'},
+    {'title': 'Visual Studio 2026', 'desc': '마이크로소프트 C# 코드 에디터, 중단점 디버깅, 솔루션 탐색기 연출', 'icon': 'assets/images/visual_studio_icon.webp', 'templateId': 'visual_studio'},
   ];
 
   @override
