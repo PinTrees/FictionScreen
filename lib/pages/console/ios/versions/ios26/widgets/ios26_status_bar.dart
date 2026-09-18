@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'ios26_dynamic_island.dart';
 
 /// iOS 26 순정 상단 상태 표시줄
 /// - 상태바 우측 또는 전체를 아래로 드래그(Swipe Down)하거나 탭하면 제어 센터(Control Center) 진입
@@ -113,8 +112,6 @@ class Ios26StatusBar extends StatelessWidget {
             ],
           ),
 
-          // 중앙 다이내믹 아일랜드 (상태바 중앙)
-          Ios26DynamicIsland(onTap: onDynamicIslandTap),
         ],
       ),
     );

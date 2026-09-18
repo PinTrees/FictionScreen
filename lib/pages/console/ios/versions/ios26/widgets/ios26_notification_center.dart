@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'ios26_liquid_glass.dart';
 import '../control_center/widgets/ios26_cc_icons.dart';
+import '../control_center/widgets/ios26_circle_glass_button.dart';
 
 /// Apple iOS 26 공식 리퀴드 글래스 (Liquid Glass) 알림 센터 (Notification Center)
 /// - 레퍼런스 이미지(media_1789745290626.png) 100% 픽셀 퍼펙트 구현
@@ -543,18 +544,13 @@ class _Ios26NotificationCenterState extends State<Ios26NotificationCenter> {
     );
   }
 
-  // 하단 원형 리퀴드 글래스 퀵 버튼
+  // 하단 원형 리퀴드 글래스 퀵 버튼 (media_1789747178861.png 은은한 비대칭 아웃라인 적용)
   Widget _buildLiquidGlassCircleButton({required Widget iconWidget, required bool isActive, required VoidCallback onTap}) {
-    return GestureDetector(
+    return Ios26CircleGlassButton(
+      size: 52,
+      isActive: isActive,
       onTap: onTap,
-      child: Ios26LiquidGlass(
-        width: 52,
-        height: 52,
-        borderRadius: 26,
-        blurSigma: 32,
-        tintColor: isActive ? Colors.white : const Color(0xFF0F1E30),
-        child: Center(child: iconWidget),
-      ),
+      child: iconWidget,
     );
   }
 

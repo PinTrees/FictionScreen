@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../ios18/apps/settings/ios18_settings_view.dart';
 import 'models/ios26_app_item.dart';
-import 'widgets/ios26_app_icon.dart';
 import 'widgets/ios26_control_center.dart';
 import 'widgets/ios26_dock.dart';
 import 'widgets/ios26_home_indicator.dart';
@@ -15,6 +14,7 @@ import 'widgets/ios26_notification_center.dart';
 import 'widgets/ios26_reorderable_grid.dart';
 import 'widgets/ios26_status_bar.dart';
 import 'widgets/ios26_widget_card.dart';
+import 'widgets/ios26_app_library.dart';
 
 /// iPhone 17/18 Pro iOS 26 공식 리퀴드 글래스 (Liquid Glass) 모바일 홈스크린 뷰
 /// - WWDC 2025 공식 광학 공식 (채도 증폭 + 프리즘 색수차 분산 + 코너 글로우 + 메니스커스 렌즈 굴절)
@@ -690,117 +690,8 @@ class _Ios26ViewState extends State<Ios26View> with TickerProviderStateMixin {
     );
   }
 
-  // Page 3: iOS 26 앱 보관함 (App Library)
-  Widget _buildPage3AppLibrary() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          Ios26LiquidGlass(
-            height: 40,
-            borderRadius: 14,
-            blurSigma: 24,
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: const Row(
-              children: [
-                Icon(CupertinoIcons.search, color: Colors.white70, size: 16),
-                SizedBox(width: 8),
-                Text(
-                  '앱 보관함',
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                Spacer(),
-                Icon(CupertinoIcons.mic_fill, color: Colors.white70, size: 16),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 0.88,
-              physics: const BouncingScrollPhysics(),
-              children: [
-                _buildCategoryFolder('추천', [
-                  {'id': 'phone', 'image': 'assets/images/ios/icons26/phone.png'},
-                  {'id': 'safari', 'image': 'assets/images/ios/icons26/safari.png'},
-                  {'id': 'messages', 'image': 'assets/images/ios/icons26/messages.png', 'badge': 3},
-                  {'id': 'kakaotalk', 'image': 'assets/images/kakaotalk_icon.webp', 'badge': 99},
-                ]),
-                _buildCategoryFolder('소셜', [
-                  {'id': 'instagram', 'image': 'assets/images/instagram_icon.webp', 'badge': 5},
-                  {'id': 'facetime', 'image': 'assets/images/ios/icons26/facetime.png'},
-                  {'id': 'mail', 'image': 'assets/images/ios/icons26/mail.png', 'badge': 14},
-                  {'id': 'messages', 'image': 'assets/images/ios/icons26/messages.png'},
-                ]),
-                _buildCategoryFolder('엔터테인먼트', [
-                  {'id': 'youtube', 'custom': Container(color: Colors.red, child: const Icon(CupertinoIcons.play_arrow_solid, color: Colors.white, size: 20))},
-                  {'id': 'netflix', 'image': 'assets/images/netflix_icon.webp'},
-                  {'id': 'music', 'image': 'assets/images/ios/icons26/music.png'},
-                  {'id': 'photos', 'image': 'assets/images/ios/icons26/photos.png'},
-                ]),
-                _buildCategoryFolder('유틸리티', [
-                  {'id': 'settings', 'image': 'assets/images/ios/icons26/settings.png'},
-                  {'id': 'calculator', 'image': 'assets/images/ios/icons26/calculator.png'},
-                  {'id': 'clock', 'image': 'assets/images/ios/icons26/clock.png'},
-                  {'id': 'files', 'image': 'assets/images/ios/icons26/files.png'},
-                ]),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryFolder(String title, List<Map<String, dynamic>> apps) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Ios26LiquidGlass(
-          borderRadius: 26,
-          blurSigma: 30,
-          padding: const EdgeInsets.all(12),
-          child: GridView.count(
-            shrinkWrap: true,
-            crossAxisCount: 2,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            physics: const NeverScrollableScrollPhysics(),
-            children: apps.take(4).map((app) {
-              return Ios26AppIcon(
-                title: '',
-                size: 46,
-                imageAsset: app['image'] as String?,
-                customIcon: app['custom'] as Widget?,
-                badgeCount: app['badge'] as int?,
-                onTap: () => _openApp(app['id'] as String),
-              );
-            }).toList(),
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 11.5,
-            fontWeight: FontWeight.w500,
-            shadows: [
-              Shadow(color: Colors.black54, blurRadius: 4, offset: Offset(0, 1)),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  // Page 3: iOS 26 앱 보관함 (App Library) - media_1789747282110.png 1:1 일치
+  Widget _buildPage3AppLibrary() => Ios26AppLibrary(onOpenApp: _openApp);
 
   /// Apple iOS 26 공식 리퀴드 글래스 검색 (Search) 캡슐
   /// - media_1789742479750.png 1:1 일치

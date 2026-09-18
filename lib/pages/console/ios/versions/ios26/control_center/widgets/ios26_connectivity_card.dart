@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/ios26_liquid_glass.dart';
 import 'ios26_cc_icons.dart';
+import 'ios26_circle_glass_button.dart';
 
 /// Apple iOS 26 리퀴드 글래스 연결성 (Connectivity) 2x2 카드
 class Ios26ConnectivityCard extends StatefulWidget {
@@ -83,25 +84,12 @@ class _Ios26ConnectivityCardState extends State<Ios26ConnectivityCard> {
     required Color activeColor,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
+    return Ios26CircleGlassButton(
+      size: size,
+      isActive: isActive,
+      activeBgColor: activeColor,
       onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: isActive ? activeColor : Colors.white.withValues(alpha: 0.22),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.16), width: 0.7),
-          boxShadow: [
-            BoxShadow(
-              color: isActive ? activeColor.withValues(alpha: 0.40) : Colors.black.withValues(alpha: 0.12),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Center(child: child),
-      ),
+      child: child,
     );
   }
 
