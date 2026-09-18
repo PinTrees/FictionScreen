@@ -369,32 +369,30 @@ class _Win11RecycleBinWindowState extends State<Win11RecycleBinWindow> {
 
           Expanded(
             flex: 2,
-            child: Container(
+            child: SizedBox(
               height: 30,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(CupertinoIcons.search, size: 13, color: Colors.white54),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: TextField(
-                      onChanged: (val) => setState(() => _searchQuery = val.trim()),
-                      style: const TextStyle(color: Colors.white, fontSize: 11),
-                      decoration: const InputDecoration(
-                        hintText: '휴지통 검색',
-                        hintStyle: TextStyle(color: Colors.white38, fontSize: 11),
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
+              child: TextField(
+                onChanged: (val) => setState(() => _searchQuery = val.trim()),
+                style: const TextStyle(color: Colors.white, fontSize: 11),
+                textAlignVertical: TextAlignVertical.center,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white.withValues(alpha: 0.06),
+                  hoverColor: Colors.white.withValues(alpha: 0.09),
+                  hintText: '휴지통 검색',
+                  hintStyle: const TextStyle(color: Colors.white38, fontSize: 11),
+                  prefixIcon: const Icon(CupertinoIcons.search, size: 13, color: Colors.white54),
+                  prefixIconConstraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4),
+                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
                   ),
-                ],
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4),
+                    borderSide: const BorderSide(color: Color(0xFF60CDFF), width: 1.2),
+                  ),
+                ),
               ),
             ),
           ),

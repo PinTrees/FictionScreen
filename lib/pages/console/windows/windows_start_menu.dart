@@ -381,53 +381,47 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
   // Windows 11 세부 구현 (스크린샷 100% 1:1 일치)
   // ==========================================
 
-  // 1. 상단 검색창 (하늘색 돋보기 + 둥근 필 형태)
+  // 1. 상단 검색창 (하늘색 돋보기 + 순정 통합 둥근 필 형태)
   Widget _buildWin11TopSearch() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(28, 24, 28, 16),
-      child: Container(
+      child: SizedBox(
         height: 38,
-        decoration: BoxDecoration(
-          color: const Color(0xFF262B37).withValues(alpha: 0.95),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.12), width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+        child: TextField(
+          controller: _searchController,
+          onChanged: (val) => setState(() => _searchQuery = val.trim()),
+          style: const TextStyle(color: Colors.white, fontSize: 12),
+          textAlignVertical: TextAlignVertical.center,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: const Color(0xFF262B37).withValues(alpha: 0.95),
+            hoverColor: const Color(0xFF2E3444).withValues(alpha: 0.95),
+            hintText: '앱, 설정 및 문서 검색',
+            hintStyle: const TextStyle(color: Colors.white54, fontSize: 12),
+            prefixIcon: const Padding(
+              padding: EdgeInsets.only(left: 14, right: 10),
+              child: Icon(CupertinoIcons.search, size: 16, color: Color(0xFF38BDF8)),
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            const SizedBox(width: 14),
-            const Icon(CupertinoIcons.search, size: 16, color: Color(0xFF38BDF8)),
-            const SizedBox(width: 10),
-            Expanded(
-              child: TextField(
-                controller: _searchController,
-                onChanged: (val) => setState(() => _searchQuery = val.trim()),
-                style: const TextStyle(color: Colors.white, fontSize: 12),
-                decoration: const InputDecoration(
-                  hintText: '앱, 설정 및 문서 검색',
-                  hintStyle: TextStyle(color: Colors.white54, fontSize: 12),
-                  border: InputBorder.none,
-                  isDense: true,
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
+            prefixIconConstraints: const BoxConstraints(minWidth: 40, minHeight: 38),
+            suffixIcon: _searchQuery.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(CupertinoIcons.clear_circled_solid, size: 14, color: Colors.white54),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() => _searchQuery = '');
+                    },
+                  )
+                : null,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12), width: 1),
             ),
-            if (_searchQuery.isNotEmpty)
-              IconButton(
-                icon: const Icon(CupertinoIcons.clear_circled_solid, size: 14, color: Colors.white54),
-                onPressed: () {
-                  _searchController.clear();
-                  setState(() => _searchQuery = '');
-                },
-              ),
-            const SizedBox(width: 8),
-          ],
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: const BorderSide(color: Color(0xFF60CDFF), width: 1.5),
+            ),
+          ),
         ),
       ),
     );
