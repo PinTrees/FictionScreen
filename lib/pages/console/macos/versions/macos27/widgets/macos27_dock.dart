@@ -47,14 +47,8 @@ class _Macos27DockState extends State<Macos27Dock> {
     return Center(
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E1E2E).withValues(alpha: bgAlpha),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.22),
-            width: 1.2,
-          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.42),
@@ -72,17 +66,27 @@ class _Macos27DockState extends State<Macos27Dock> {
           borderRadius: BorderRadius.circular(24),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              clipBehavior: Clip.none,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  _buildDockItem(0, 'Finder', 'assets/images/macos/finder.webp', appId: 'finder'),
-                  _buildDockItem(1, 'Safari', 'assets/images/macos/safari.webp', appId: 'safari'),
-                  _buildDockItem(2, 'Google Chrome', null, icon: CupertinoIcons.globe, appId: 'chrome'),
-                  _buildDockItem(3, 'Messages', 'assets/images/macos/messages.webp', appId: 'messages'),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E1E2E).withValues(alpha: bgAlpha),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.22),
+                  width: 1.2,
+                ),
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _buildDockItem(0, 'Finder', 'assets/images/macos/finder.webp', appId: 'finder'),
+                    _buildDockItem(1, 'Safari', 'assets/images/macos/safari.webp', appId: 'safari'),
+                    _buildDockItem(2, 'Google Chrome', 'assets/images/macos/chrome.png', appId: 'chrome'),
+                    _buildDockItem(3, 'Messages', 'assets/images/macos/messages.webp', appId: 'messages'),
                   _buildDockItem(4, 'Mail', 'assets/images/macos/mail.webp', appId: 'mail'),
                   _buildDockItem(5, 'Maps', 'assets/images/macos/maps.png', appId: 'maps'),
                   _buildDockItem(6, 'Photos', 'assets/images/macos/photos.webp', appId: 'photos'),
@@ -110,6 +114,7 @@ class _Macos27DockState extends State<Macos27Dock> {
           ),
         ),
       ),
+    ),
     );
   }
 

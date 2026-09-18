@@ -12,6 +12,7 @@ import '../../apps/photos/photos_window.dart';
 import '../../apps/safari/safari_window.dart';
 import '../../apps/terminal/terminal_window.dart';
 import 'apps/settings/macos27_settings_window.dart';
+import 'widgets/macos27_context_menu.dart';
 import 'widgets/macos27_dock.dart';
 import 'widgets/macos27_menubar.dart';
 
@@ -75,6 +76,7 @@ class _Macos27ViewState extends State<Macos27View> {
   int _highestZIndex = 1;
   String _activeWallpaper = '';
   double _glassTransparency = 0.55;
+  Offset? _contextMenuPos;
 
   @override
   void initState() {
@@ -144,8 +146,17 @@ class _Macos27ViewState extends State<Macos27View> {
 
     return Stack(
       children: [
-        // 1. macOS 27 Golden Gate 레티나 배경화면
-        Positioned.fill(child: _buildMacWallpaper()),
+        // 1. macOS 27 Golden Gate 레티나 배경화면 + 우클릭 제스처
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onSecondaryTapDown: (details) => setState(() => _contextMenuPos = details.globalPosition),
+            onTap: () {
+              if (_contextMenuPos != null) setState(() => _contextMenuPos = null);
+            },
+            child: _buildMacWallpaper(),
+          ),
+        ),
 
         // 2. 바탕화면 디스크 & 시스템 설정 아이콘 (우측 상단)
         Positioned(
@@ -222,6 +233,17 @@ class _Macos27ViewState extends State<Macos27View> {
             onGoHome: widget.onGoHome,
           ),
         ),
+
+        // 6. macOS 27 우클릭 컨텍스트 메뉴
+        if (_contextMenuPos != null)
+          Macos27ContextMenu(
+            position: _contextMenuPos!,
+            onNewFolder: () {},
+            onOpenWallpaperSettings: () => _openApp('settings'),
+            onOpenSettings: () => _openApp('settings'),
+            onOpenOsSwitch: () => _openApp('settings'),
+            onClose: () => setState(() => _contextMenuPos = null),
+          ),
       ],
     );
   }
