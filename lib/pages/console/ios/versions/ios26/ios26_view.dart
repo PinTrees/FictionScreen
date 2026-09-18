@@ -429,17 +429,27 @@ class _Ios26ViewState extends State<Ios26View> with TickerProviderStateMixin {
                           ),
                         ),
 
-                        // iOS 26 리퀴드 글래스 검색 캡슐 (Search Capsule)
-                        _buildSearchCapsule(),
-                        const SizedBox(height: 10),
-
-                        // 3. Apple 공식 리퀴드 글래스 독 (Dock)
-                        Ios26Dock(
-                          onOpenApp: _openApp,
-                          isEditMode: _isEditMode,
-                          onEnterEditMode: _enterEditMode,
+                        // iOS 26 하단 독 및 검색 캡슐 (앱 보관함 페이지에서는 완전 숨김)
+                        AnimatedCrossFade(
+                          firstChild: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _buildSearchCapsule(),
+                              const SizedBox(height: 10),
+                              Ios26Dock(
+                                onOpenApp: _openApp,
+                                isEditMode: _isEditMode,
+                                onEnterEditMode: _enterEditMode,
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                          secondChild: const SizedBox.shrink(),
+                          crossFadeState: _currentPage == 2
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: const Duration(milliseconds: 220),
                         ),
-                        const SizedBox(height: 10),
 
                         // 4. 하단 홈 인디케이터 바
                         Ios26HomeIndicator(onHome: () {
