@@ -49,15 +49,15 @@ class _Macos27SpotlightState extends State<Macos27Spotlight> with SingleTickerPr
 
   final List<Map<String, dynamic>> _allTemplates = [
     {'title': '카카오톡 채팅 에디터', 'desc': 'FictionScreen 대화방 조작', 'icon': 'assets/images/kakaotalk_icon.webp', 'templateId': 'kakaotalk'},
-    {'title': '카카오뱅크 에디터', 'desc': '통장 잔액, 세이프박스, 거래 내역', 'icon': null, 'iconData': CupertinoIcons.creditcard_fill, 'color': Color(0xFFFEE500), 'templateId': 'kakaobank'},
-    {'title': '당근마켓 채팅 에디터', 'desc': '중고거래 채팅 및 매너온도 조작', 'icon': null, 'iconData': CupertinoIcons.chat_bubble_text_fill, 'color': Color(0xFFFF6F0F), 'templateId': 'daangn'},
+    {'title': '카카오뱅크 에디터', 'desc': '통장 잔액, 세이프박스, 거래 내역', 'icon': 'assets/images/kakaobank_icon.webp', 'templateId': 'kakaobank'},
+    {'title': '당근마켓 채팅 에디터', 'desc': '중고거래 채팅 및 매너온도 조작', 'icon': 'assets/images/daangn_icon.webp', 'templateId': 'daangn'},
     {'title': 'Instagram 에디터', 'desc': '피드, 릴스, 스토리 제작', 'icon': 'assets/images/instagram_icon.webp', 'templateId': 'instagram'},
     {'title': 'Toss 송금 에디터', 'desc': '금융 거래내역 시뮬레이션', 'icon': 'assets/images/toss_icon.webp', 'templateId': 'toss'},
     {'title': 'X (Twitter) 에디터', 'desc': '트윗 및 타임라인 생성', 'icon': 'assets/images/x_twitter_icon.webp', 'templateId': 'x_twitter'},
     {'title': 'YouTube 동영상 에디터', 'desc': '동영상 재생 및 댓글', 'icon': 'assets/images/youtube_icon.webp', 'templateId': 'youtube'},
     {'title': '배달의민족 배송 에디터', 'desc': '주문 및 배달 완료 화면', 'icon': 'assets/images/baemin_icon.webp', 'templateId': 'delivery'},
-    {'title': '야놀자(NOL) 에디터', 'desc': '호텔·모텔·펜션 예약 및 숙소 검색 조작', 'icon': null, 'iconData': CupertinoIcons.bed_double_fill, 'color': const Color(0xFFFF3478), 'templateId': 'yanolja'},
-    {'title': '업비트(Upbit) 에디터', 'desc': '비트코인 시세, 호가창, 보유자산 및 수익률 조작', 'icon': null, 'iconData': CupertinoIcons.chart_bar_alt_fill, 'color': const Color(0xFF093687), 'templateId': 'upbit'},
+    {'title': '야놀자(NOL) 에디터', 'desc': '호텔·모텔·펜션 예약 및 숙소 검색 조작', 'icon': 'assets/images/yanolja_icon.webp', 'templateId': 'yanolja'},
+    {'title': '업비트(Upbit) 에디터', 'desc': '비트코인 시세, 호가창, 보유자산 및 수익률 조작', 'icon': 'assets/images/upbit_icon.webp', 'templateId': 'upbit'},
   ];
 
   @override

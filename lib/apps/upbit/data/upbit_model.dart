@@ -62,6 +62,40 @@ class UpbitOrderbookUnit {
   });
 }
 
+/// 스테이킹 상품 모델
+class UpbitStakingItem {
+  final String symbol;
+  final String coinName;
+  final double estimatedApr; // 연 보상률 %
+  final double stakedAmount;
+  final double totalReward;
+  final String period;
+
+  UpbitStakingItem({
+    required this.symbol,
+    required this.coinName,
+    required this.estimatedApr,
+    required this.stakedAmount,
+    required this.totalReward,
+    this.period = '언제든 신청/해제 가능',
+  });
+}
+
+/// 공지사항 모델
+class UpbitNoticeItem {
+  final String title;
+  final String category;
+  final String date;
+  final bool isImportant;
+
+  UpbitNoticeItem({
+    required this.title,
+    this.category = '안내',
+    required this.date,
+    this.isImportant = false,
+  });
+}
+
 /// 업비트 전역 설정 및 상태 모델
 class UpbitConfig {
   double totalAssets; // 총 보유자산 (원)
@@ -69,8 +103,10 @@ class UpbitConfig {
   String selectedCoinSymbol; // 현재 선택된 코인 ("BTC")
   List<UpbitCoinItem> coins; // 코인 시세 목록
   List<UpbitHoldingItem> holdings; // 보유 코인 목록
+  List<UpbitStakingItem> stakings; // 스테이킹 목록
+  List<UpbitNoticeItem> notices; // 공지사항 목록
   String activeMarketTab; // "KRW", "BTC", "USDT", "보유"
-  String activeGnbTab; // "거래소", "입출금", "투자내역", "코인동향", "스테이킹"
+  String activeGnbTab; // "거래소", "입출금", "투자내역", "코인동향", "스테이킹", "고객센터"
 
   UpbitConfig({
     required this.totalAssets,
@@ -78,6 +114,8 @@ class UpbitConfig {
     this.selectedCoinSymbol = 'BTC',
     required this.coins,
     required this.holdings,
+    required this.stakings,
+    required this.notices,
     this.activeMarketTab = 'KRW',
     this.activeGnbTab = '거래소',
   });
@@ -226,6 +264,60 @@ class UpbitConfig {
           holdingQuantity: 300.0,
           avgBuyPrice: 95000,
           currentPrice: 284000,
+        ),
+      ],
+      stakings: [
+        UpbitStakingItem(
+          symbol: 'ETH',
+          coinName: '이더리움',
+          estimatedApr: 3.40,
+          stakedAmount: 32.0,
+          totalReward: 1.15,
+        ),
+        UpbitStakingItem(
+          symbol: 'SOL',
+          coinName: '솔라나',
+          estimatedApr: 6.85,
+          stakedAmount: 150.0,
+          totalReward: 8.42,
+        ),
+        UpbitStakingItem(
+          symbol: 'ADA',
+          coinName: '에이다',
+          estimatedApr: 2.95,
+          stakedAmount: 5000.0,
+          totalReward: 124.5,
+        ),
+        UpbitStakingItem(
+          symbol: 'ATOM',
+          coinName: '코스모스',
+          estimatedApr: 14.20,
+          stakedAmount: 200.0,
+          totalReward: 22.8,
+        ),
+      ],
+      notices: [
+        UpbitNoticeItem(
+          title: '[안내] 가상자산이용자보호법 시행에 따른 이용자 예치금 및 자산 보호 안내',
+          category: '안내',
+          date: '2026.09.18',
+          isImportant: true,
+        ),
+        UpbitNoticeItem(
+          title: '[안내] 케이뱅크(Kbank) 펌뱅킹 정기 점검에 따른 원화 입출금 일시 중단 안내',
+          category: '점검',
+          date: '2026.09.17',
+          isImportant: true,
+        ),
+        UpbitNoticeItem(
+          title: '[거래] 수이(SUI), 아발란체(AVAX) 네트워크 업그레이드 지원 안내',
+          category: '입출금',
+          date: '2026.09.15',
+        ),
+        UpbitNoticeItem(
+          title: '[이벤트] 업비트 스테이킹 보상 부스트 페스티벌 안내',
+          category: '이벤트',
+          date: '2026.09.12',
         ),
       ],
     );

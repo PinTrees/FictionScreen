@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../data/upbit_model.dart';
-import '../../widgets/upbit_coin_tile.dart';
+import '../../../data/upbit_model.dart';
+import '../../../widgets/upbit_coin_tile.dart';
 
 class UpbitMobileExchangePage extends StatefulWidget {
   final UpbitConfig config;
@@ -29,7 +29,6 @@ class _UpbitMobileExchangePageState extends State<UpbitMobileExchangePage> {
       body: SafeArea(
         child: Column(
           children: [
-            // 1. 모바일 앱 상단바
             Container(
               height: 50,
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -62,8 +61,6 @@ class _UpbitMobileExchangePageState extends State<UpbitMobileExchangePage> {
                 ],
               ),
             ),
-
-            // 2. 마켓 선택 탭 (KRW, BTC, USDT, 보유)
             Container(
               height: 40,
               decoration: BoxDecoration(
@@ -95,8 +92,6 @@ class _UpbitMobileExchangePageState extends State<UpbitMobileExchangePage> {
                 }).toList(),
               ),
             ),
-
-            // 3. 정렬 필터 헤더 바
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               color: const Color(0xFFF9FAFB),
@@ -108,8 +103,6 @@ class _UpbitMobileExchangePageState extends State<UpbitMobileExchangePage> {
                 ],
               ),
             ),
-
-            // 4. 실시간 코인 목록
             Expanded(
               child: ListView.builder(
                 itemCount: widget.config.coins.length,

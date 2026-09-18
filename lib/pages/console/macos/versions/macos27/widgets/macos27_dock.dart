@@ -102,13 +102,13 @@ class _Macos27DockState extends State<Macos27Dock> {
                   _buildDockItem(12, '카카오톡 채팅 에디터', 'assets/images/kakaotalk_icon.webp', templateId: 'kakaotalk'),
                   _buildDockItem(13, 'Instagram 에디터', 'assets/images/instagram_icon.webp', templateId: 'instagram'),
                   _buildDockItem(14, 'Toss 에디터', 'assets/images/toss_icon.webp', templateId: 'toss'),
-                  _buildDockItem(15, '카카오뱅크 에디터', null, icon: CupertinoIcons.creditcard_fill, templateId: 'kakaobank'),
-                  _buildDockItem(16, '당근마켓 에디터', null, icon: CupertinoIcons.chat_bubble_text_fill, templateId: 'daangn'),
+                  _buildDockItem(15, '카카오뱅크 에디터', 'assets/images/kakaobank_icon.webp', templateId: 'kakaobank'),
+                  _buildDockItem(16, '당근마켓 에디터', 'assets/images/daangn_icon.webp', templateId: 'daangn'),
                   _buildDockItem(17, 'X (Twitter) 에디터', 'assets/images/x_twitter_icon.webp', templateId: 'x_twitter'),
                   _buildDockItem(18, 'YouTube 에디터', 'assets/images/youtube_icon.webp', templateId: 'youtube'),
                   _buildDockItem(19, '배달의민족 에디터', 'assets/images/baemin_icon.webp', templateId: 'delivery'),
-                  _buildDockItem(20, '야놀자 에디터', null, icon: CupertinoIcons.bed_double_fill, templateId: 'yanolja'),
-                  _buildDockItem(21, '업비트 에디터', null, icon: CupertinoIcons.chart_bar_alt_fill, templateId: 'upbit'),
+                  _buildDockItem(20, '야놀자 에디터', 'assets/images/yanolja_icon.webp', templateId: 'yanolja'),
+                  _buildDockItem(21, '업비트 에디터', 'assets/images/upbit_icon.webp', templateId: 'upbit'),
 
                   _buildDockDivider(),
 

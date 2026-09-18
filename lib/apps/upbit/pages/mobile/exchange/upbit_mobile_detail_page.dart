@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../data/upbit_model.dart';
-import '../../widgets/upbit_chart_preview.dart';
-import '../../widgets/upbit_orderbook.dart';
+import '../../../data/upbit_model.dart';
+import '../../../widgets/upbit_chart_preview.dart';
+import '../../../widgets/upbit_orderbook.dart';
 
 class UpbitMobileDetailPage extends StatefulWidget {
   final UpbitCoinItem coin;
@@ -37,7 +37,6 @@ class _UpbitMobileDetailPageState extends State<UpbitMobileDetailPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // 1. 상단 바
             Container(
               height: 52,
               padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -73,8 +72,6 @@ class _UpbitMobileDetailPageState extends State<UpbitMobileDetailPage> {
                 ],
               ),
             ),
-
-            // 2. 탭 (호가, 차트, 시세)
             Container(
               height: 40,
               decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey.shade200))),
@@ -98,15 +95,11 @@ class _UpbitMobileDetailPageState extends State<UpbitMobileDetailPage> {
                 }).toList(),
               ),
             ),
-
-            // 3. 메인 콘텐츠
             Expanded(
               child: _activeSubTab == 1
                   ? UpbitChartPreview(coin: coin)
                   : SingleChildScrollView(child: UpbitOrderbook(coin: coin)),
             ),
-
-            // 4. 하단 매수/매도 액션 버튼
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(

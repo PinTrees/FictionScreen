@@ -2,9 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'data/upbit_model.dart';
 import 'pages/desktop/upbit_desktop_exchange_page.dart';
-import 'pages/mobile/upbit_mobile_detail_page.dart';
-import 'pages/mobile/upbit_mobile_exchange_page.dart';
-import 'pages/mobile/upbit_mobile_investment_page.dart';
+import 'pages/mobile/coin_info/upbit_mobile_coin_info_page.dart';
+import 'pages/mobile/deposit_withdraw/upbit_mobile_deposit_page.dart';
+import 'pages/mobile/exchange/upbit_mobile_detail_page.dart';
+import 'pages/mobile/exchange/upbit_mobile_exchange_page.dart';
+import 'pages/mobile/investment/upbit_mobile_investment_page.dart';
+import 'pages/mobile/more/upbit_mobile_more_page.dart';
 import 'widgets/upbit_bottom_nav.dart';
 import 'widgets/upbit_edit_dialog.dart';
 
@@ -115,16 +118,15 @@ class _UpbitScreenState extends State<UpbitScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: _mobileTab == 2
-          ? UpbitMobileInvestmentPage(config: _config, onOpenEditDialog: _openEditDialog)
-          : UpbitMobileExchangePage(
-              config: _config,
-              onSelectCoin: _handleSelectCoin,
-              onOpenEditDialog: _openEditDialog,
-            ),
+      body: _buildCurrentMobileTabBody(),
       bottomNavigationBar: UpbitBottomNav(
         activeIndex: _mobileTab,
-        onTap: (index) => setState(() => _mobileTab = index),
+        onTap: (index) {
+          setState(() {
+            _mobileTab = index;
+            _isViewingDetail = false;
+          });
+        },
       ),
       floatingActionButton: FloatingActionButton.small(
         backgroundColor: const Color(0xFF093687),
@@ -133,5 +135,38 @@ class _UpbitScreenState extends State<UpbitScreen> {
         child: const Icon(CupertinoIcons.slider_horizontal_3, size: 18),
       ),
     );
+  }
+
+  Widget _buildCurrentMobileTabBody() {
+    switch (_mobileTab) {
+      case 1:
+        return UpbitMobileCoinInfoPage(
+          config: _config,
+          onSelectCoin: _handleSelectCoin,
+          onOpenEditDialog: _openEditDialog,
+        );
+      case 2:
+        return UpbitMobileInvestmentPage(
+          config: _config,
+          onOpenEditDialog: _openEditDialog,
+        );
+      case 3:
+        return UpbitMobileDepositPage(
+          config: _config,
+          onOpenEditDialog: _openEditDialog,
+        );
+      case 4:
+        return UpbitMobileMorePage(
+          config: _config,
+          onOpenEditDialog: _openEditDialog,
+        );
+      case 0:
+      default:
+        return UpbitMobileExchangePage(
+          config: _config,
+          onSelectCoin: _handleSelectCoin,
+          onOpenEditDialog: _openEditDialog,
+        );
+    }
   }
 }

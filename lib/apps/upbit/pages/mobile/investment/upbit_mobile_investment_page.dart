@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../data/upbit_model.dart';
+import '../../../data/upbit_model.dart';
 
 class UpbitMobileInvestmentPage extends StatelessWidget {
   final UpbitConfig config;
@@ -26,7 +26,6 @@ class UpbitMobileInvestmentPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // 1. 상단 바
             Container(
               height: 50,
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -42,13 +41,10 @@ class UpbitMobileInvestmentPage extends StatelessWidget {
                 ],
               ),
             ),
-
-            // 2. 스크롤 본문
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.all(14),
                 children: [
-                  // 총 보유자산 카드
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -80,7 +76,6 @@ class UpbitMobileInvestmentPage extends StatelessWidget {
                           ],
                         ),
                         const Divider(height: 24, color: Color(0xFFEEEEEE)),
-
                         _buildStatRow('총 평가손익', '$sign${_formatNumber(config.totalProfitAmount)} KRW', valueColor: profitColor, isBold: true),
                         const SizedBox(height: 8),
                         _buildStatRow('총 수익률', '$sign${config.totalProfitRate.toStringAsFixed(2)}%', valueColor: profitColor, isBold: true),
@@ -94,8 +89,6 @@ class UpbitMobileInvestmentPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 18),
-
-                  // 보유 자산 목록 헤더
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -104,8 +97,6 @@ class UpbitMobileInvestmentPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 10),
-
-                  // 보유 코인 카드 리스트
                   ...config.holdings.map((holding) => _buildHoldingCard(holding)),
                 ],
               ),
