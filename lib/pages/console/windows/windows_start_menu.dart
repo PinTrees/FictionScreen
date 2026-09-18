@@ -922,6 +922,7 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
       {'name': '메모장', 'icon': 'assets/images/windows/notepad.png', 'action': () => widget.onOpenWinApp?.call('notepad')},
       {'name': '캡처 도구', 'icon': 'assets/images/windows/snip.png', 'action': () => widget.onOpenWinApp?.call('snip')},
       {'name': '파일 탐색기', 'icon': 'assets/images/windows/explorer.png', 'action': () => widget.onOpenWinApp?.call('file_explorer')},
+      {'name': '휴지통', 'icon': 'assets/images/windows/recycle_bin.png', 'action': () => widget.onOpenWinApp?.call('recycle_bin')},
       {'name': '카카오톡 채팅방', 'icon': 'assets/images/kakaotalk_icon.webp', 'action': () => widget.onOpenTemplate('kakaotalk')},
       {'name': '쿠팡 로켓쇼핑', 'icon': 'assets/images/coupang_icon.webp', 'action': () => widget.onOpenTemplate('coupang')},
       {'name': 'Netflix 오리지널', 'icon': 'assets/images/netflix_icon.webp', 'action': () => widget.onOpenTemplate('netflix')},

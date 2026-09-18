@@ -13,6 +13,7 @@ import 'versions/win11/apps/calculator/win11_calculator_window.dart';
 import 'versions/win11/apps/file_explorer/win11_file_explorer_window.dart';
 import 'versions/win11/apps/notepad/win11_notepad_window.dart';
 import 'versions/win11/apps/settings/win11_settings_window.dart';
+import 'versions/win11/apps/recycle_bin/win11_recycle_bin_window.dart';
 import 'widgets/windows_context_menu.dart';
 import 'widgets/windows_desktop_icon_widget.dart';
 import 'widgets/windows_item_context_menu.dart';
@@ -256,7 +257,7 @@ class _WindowsViewState extends State<WindowsView> {
         gridX: 3,
         gridY: 0,
         isSystemApp: true,
-        onTap: () {},
+        onTap: () => _openWinApp('recycle_bin'),
       ),
       DesktopIconItem(
         id: 'lottery',
@@ -282,7 +283,7 @@ class _WindowsViewState extends State<WindowsView> {
       Size defaultSize = const Size(760, 520);
 
       if (widget.windowsVersion == '11') {
-        if (appId == 'file_explorer') {
+        if (appId == 'file_explorer' || appId == 'recycle_bin') {
           defaultSize = const Size(860, 560);
         } else if (appId == 'settings') {
           defaultSize = const Size(880, 580);
@@ -493,6 +494,58 @@ class _WindowsViewState extends State<WindowsView> {
     });
   }
 
+  /// 바탕화면 우클릭 -> '새로 만들기' -> 새 텍스트 문서 생성 및 즉시 이름 변경 모드 활성화
+  void _handleCreateNewTextDocument() {
+    final existingTitles = _desktopIcons.map((e) => e.title).toSet();
+    String docTitle = '새 텍스트 문서.txt';
+    if (existingTitles.contains(docTitle)) {
+      int index = 2;
+      while (existingTitles.contains('새 텍스트 문서 ($index).txt')) {
+        index++;
+      }
+      docTitle = '새 텍스트 문서 ($index).txt';
+    }
+
+    final occupiedPositions = _desktopIcons.map((e) => '${e.gridX}_${e.gridY}').toSet();
+    int newGridX = 0;
+    int newGridY = 0;
+    bool found = false;
+
+    for (int col = 0; col < 15; col++) {
+      for (int row = 0; row < 7; row++) {
+        if (!occupiedPositions.contains('${col}_$row')) {
+          newGridX = col;
+          newGridY = row;
+          found = true;
+          break;
+        }
+      }
+      if (found) break;
+    }
+
+    final newDocId = 'txt_${DateTime.now().millisecondsSinceEpoch}';
+    final newDoc = DesktopIconItem(
+      id: newDocId,
+      title: docTitle,
+      imageAsset: 'assets/images/windows/notepad.png',
+      gridX: newGridX,
+      gridY: newGridY,
+      isSystemApp: false,
+      isFolder: false,
+      isTextDoc: true,
+      onTap: () => _openWinApp('notepad'),
+    );
+
+    setState(() {
+      _desktopIcons.add(newDoc);
+      _selectedItemId = newDocId;
+      _renamingItemId = newDocId;
+      _contextMenuPosition = null;
+      _itemContextMenuPosition = null;
+      _contextMenuItem = null;
+    });
+  }
+
   void _sortIconsByName() {
     setState(() {
       _desktopIcons.sort((a, b) => a.title.compareTo(b.title));
@@ -679,7 +732,7 @@ class _WindowsViewState extends State<WindowsView> {
               position: _contextMenuPosition!,
               onRefresh: () => setState(() {}),
               onNewFolder: _handleCreateNewFolder,
-              onNewNote: () => _openWinApp('notepad'),
+              onNewTextDocument: _handleCreateNewTextDocument,
               onOpenSettings: () => _openWinApp('settings'),
               onClose: () => setState(() => _contextMenuPosition = null),
               onSort: (_) => _sortIconsByName(),
@@ -743,6 +796,19 @@ class _WindowsViewState extends State<WindowsView> {
           width: win.size.width,
           height: win.size.height,
           onClose: () => _closeWindow(win.id),
+          onOpenTemplate: widget.onOpenTemplate,
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'recycle_bin':
+        return Win11RecycleBinWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
           onOpenTemplate: widget.onOpenTemplate,
           onTitleDragStart: onDragStart,
           onTitleDragUpdate: onDragUpdate,

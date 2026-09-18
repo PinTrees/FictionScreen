@@ -12,6 +12,7 @@ class DesktopIconItem {
   final VoidCallback onTap;
   final bool isSystemApp; // 기본 앱 여부 (기본 앱은 이름 변경 불가)
   final bool isFolder; // 폴더 여부
+  final bool isTextDoc; // 텍스트 문서 여부
 
   DesktopIconItem({
     required this.id,
@@ -24,6 +25,7 @@ class DesktopIconItem {
     required this.onTap,
     this.isSystemApp = true,
     this.isFolder = false,
+    this.isTextDoc = false,
   });
 }
 
