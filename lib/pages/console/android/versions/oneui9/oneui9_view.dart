@@ -23,6 +23,7 @@ class OneUi9View extends StatefulWidget {
   final VoidCallback onOpenSettings;
   final VoidCallback onSignOut;
   final VoidCallback onGoHome;
+  final Function(String osKey)? onSelectOs;
 
   const OneUi9View({
     super.key,
@@ -33,6 +34,7 @@ class OneUi9View extends StatefulWidget {
     required this.onOpenSettings,
     required this.onSignOut,
     required this.onGoHome,
+    this.onSelectOs,
   });
 
   @override
@@ -259,46 +261,49 @@ class _OneUi9ViewState extends State<OneUi9View> with SingleTickerProviderStateM
   Widget _buildMainHomePage() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          const SizedBox(height: 12),
-          // 1. 상단 2열 위젯 섹션 (좌: 날씨 2x2 카드, 우: Now brief + Start 헬스 필)
-          SizedBox(
-            height: 148,
-            child: Row(
-              children: [
-                Expanded(child: OneUi9WeatherCard(onTap: _openQuickPanel)),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      OneUi9NowBriefCapsule(onTap: () => widget.onOpenTemplate('kakaotalk')),
-                      OneUi9HealthStartCapsule(onTap: () => widget.onOpenTemplate('toss')),
-                    ],
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          children: [
+            const SizedBox(height: 12),
+            // 1. 상단 2열 위젯 섹션 (좌: 날씨 2x2 카드, 우: Now brief + Start 헬스 필)
+            SizedBox(
+              height: 148,
+              child: Row(
+                children: [
+                  Expanded(child: OneUi9WeatherCard(onTap: _openQuickPanel)),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        OneUi9NowBriefCapsule(onTap: () => widget.onOpenTemplate('kakaotalk')),
+                        OneUi9HealthStartCapsule(onTap: () => widget.onOpenTemplate('toss')),
+                      ],
+                    ),
                   ),
-                ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // 2. Google 검색 캡슐 바
+            OneUi9GoogleSearchCapsule(onTap: () => setState(() => _isAppDrawerOpen = true)),
+            const SizedBox(height: 24),
+
+            // 3. 홈 화면 1열 메인 앱 (Store, Gallery, Play Store, Google 폴더)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                OneUi9AppItem(label: 'Store', iconWidget: const OneUi9StoreIcon(), onTap: () => setState(() => _isAppDrawerOpen = true)),
+                OneUi9AppItem(label: 'Gallery', iconWidget: const OneUi9GalleryIcon(), onTap: () => _openGalaxyApp('gallery')),
+                OneUi9AppItem(label: 'Play Store', iconWidget: const OneUi9PlayStoreIcon(), badgeCount: 2, onTap: () => widget.onOpenTemplate('kakaotalk')),
+                OneUi9GoogleFolderWidget(badgeCount: 1, onTap: () => setState(() => _isAppDrawerOpen = true)),
               ],
             ),
-          ),
-          const SizedBox(height: 16),
-
-          // 2. Google 검색 캡슐 바
-          OneUi9GoogleSearchCapsule(onTap: () => setState(() => _isAppDrawerOpen = true)),
-          const SizedBox(height: 28),
-
-          // 3. 홈 화면 1열 메인 앱 (Store, Gallery, Play Store, Google 폴더)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              OneUi9AppItem(label: 'Store', iconWidget: const OneUi9StoreIcon(), onTap: () => setState(() => _isAppDrawerOpen = true)),
-              OneUi9AppItem(label: 'Gallery', iconWidget: const OneUi9GalleryIcon(), onTap: () => _openGalaxyApp('gallery')),
-              OneUi9AppItem(label: 'Play Store', iconWidget: const OneUi9PlayStoreIcon(), badgeCount: 2, onTap: () => widget.onOpenTemplate('kakaotalk')),
-              OneUi9GoogleFolderWidget(badgeCount: 1, onTap: () => setState(() => _isAppDrawerOpen = true)),
-            ],
-          ),
-          const Spacer(),
-        ],
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
@@ -415,7 +420,7 @@ class _OneUi9ViewState extends State<OneUi9View> with SingleTickerProviderStateM
       case 'phone': return SamsungPhoneWindow(onClose: _closeGalaxyApp);
       case 'messages': return SamsungMessagesWindow(onClose: _closeGalaxyApp);
       case 'gallery': return SamsungGalleryWindow(onClose: _closeGalaxyApp);
-      case 'settings': return SamsungSettingsWindow(onClose: _closeGalaxyApp, onOpenSystemSettings: widget.onOpenSettings);
+      case 'settings': return SamsungSettingsWindow(onClose: _closeGalaxyApp, onOpenSystemSettings: widget.onOpenSettings, onSelectOs: widget.onSelectOs);
       case 'internet': return SamsungInternetWindow(onClose: _closeGalaxyApp);
       case 'calculator': return SamsungCalculatorWindow(onClose: _closeGalaxyApp);
       case 'my_files': return SamsungMyFilesWindow(onClose: _closeGalaxyApp);
@@ -432,42 +437,52 @@ class _OneUi9ViewState extends State<OneUi9View> with SingleTickerProviderStateM
           colors: [Color(0xFF6342E8), Color(0xFF5331D8), Color(0xFF4320C2)],
         ),
       ),
-      child: CustomPaint(painter: _OneUi9SignatureCurvesPainter()),
+      child: Stack(
+        children: [
+          Positioned(
+            top: 40,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                width: 320,
+                height: 320,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      const Color(0xFF8B6DF8).withValues(alpha: 0.42),
+                      const Color(0xFF6342E8).withValues(alpha: 0.0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 80,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                width: 360,
+                height: 360,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      const Color(0xFF9070FA).withValues(alpha: 0.38),
+                      const Color(0xFF4320C2).withValues(alpha: 0.0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
-}
-
-/// One UI 9 시그니처 바이올렛 커브드 곡선 페인터 (media_1789750911144.png 1:1 싱크)
-class _OneUi9SignatureCurvesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-
-    // 상단 라벤더 발광 구체
-    final topCirclePaint = Paint()
-      ..shader = RadialGradient(
-        colors: [const Color(0xFF8B6DF8).withValues(alpha: 0.45), const Color(0xFF6342E8).withValues(alpha: 0.0)],
-      ).createShader(Rect.fromCircle(center: Offset(w * 0.5, h * 0.35), radius: w * 0.48));
-    canvas.drawCircle(Offset(w * 0.5, h * 0.35), w * 0.48, topCirclePaint);
-
-    // 하단 라벤더 발광 구체
-    final bottomCirclePaint = Paint()
-      ..shader = RadialGradient(
-        colors: [const Color(0xFF9070FA).withValues(alpha: 0.4), const Color(0xFF4320C2).withValues(alpha: 0.0)],
-      ).createShader(Rect.fromCircle(center: Offset(w * 0.5, h * 0.65), radius: w * 0.52));
-    canvas.drawCircle(Offset(w * 0.5, h * 0.65), w * 0.52, bottomCirclePaint);
-
-    // 부드러운 우측 백라이트 하이라이트
-    final edgeGlow = Paint()
-      ..shader = RadialGradient(
-        colors: [const Color(0xFFA78BFA).withValues(alpha: 0.25), Colors.transparent],
-      ).createShader(Rect.fromCircle(center: Offset(w, h * 0.4), radius: w * 0.6));
-    canvas.drawRect(Rect.fromLTWH(0, 0, w, h), edgeGlow);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _NavLine extends StatelessWidget {

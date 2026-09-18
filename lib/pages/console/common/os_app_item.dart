@@ -78,6 +78,7 @@ class OsAppItem extends StatelessWidget {
                               width: iconSize,
                               height: iconSize,
                               fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) => Icon(icon ?? CupertinoIcons.circle_fill, color: iconColor, size: iconSize),
                             ),
                           )
                         : Icon(icon ?? CupertinoIcons.circle_fill, color: iconColor, size: iconSize),

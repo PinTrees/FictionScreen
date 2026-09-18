@@ -67,6 +67,7 @@ class GalaxyView extends StatelessWidget {
           onOpenSettings: onOpenSettings,
           onSignOut: onSignOut,
           onGoHome: onGoHome,
+          onSelectOs: onSelectOs,
         );
     }
   }

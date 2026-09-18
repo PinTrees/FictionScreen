@@ -74,6 +74,28 @@ class _ConsolePageState extends State<ConsolePage> {
   // 전역 바탕화면 테마
   String _wallpaper = 'win10_hero';
 
+  // 사용자가 명시적으로 선택한 활성 OS ('windows', 'macos', 'ios', 'galaxy')
+  String? _activeOs;
+  bool _isDesktopMobileFullScreen = false;
+
+  String get _currentActiveOs {
+    if (_activeOs != null) return _activeOs!;
+    final screenWidth = MediaQuery.of(context).size.width;
+    return screenWidth >= 768 ? _pcTheme : _mobileTheme;
+  }
+
+  void _handleSelectOs(String osKey) {
+    setState(() {
+      _activeOs = osKey;
+      if (osKey == 'galaxy' || osKey == 'ios') {
+        _mobileTheme = osKey;
+      } else if (osKey == 'windows' || osKey == 'macos') {
+        _pcTheme = osKey;
+      }
+    });
+    _saveCurrentOsSettings();
+  }
+
   bool _isStartMenuOpen = false;
   bool _isSettingsOpen = false;
   bool _isLoadingSettings = false;
@@ -172,8 +194,8 @@ class _ConsolePageState extends State<ConsolePage> {
       return;
     }
 
-    final isDesktop = _pcTheme == 'windows' || _pcTheme == 'macos';
-    if (isDesktop) {
+    final isDesktopOs = _currentActiveOs == 'windows' || _currentActiveOs == 'macos';
+    if (isDesktopOs) {
       final existingIndex = _activeFloatingWindows.indexWhere((w) => w.template.id == templateId);
 
       if (existingIndex != -1) {
@@ -235,6 +257,8 @@ class _ConsolePageState extends State<ConsolePage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth >= 768;
 
+    final activeOs = _currentActiveOs;
+
     return Scaffold(
       body: StreamBuilder<User?>(
         stream: AuthService.authStateChanges,
@@ -243,111 +267,111 @@ class _ConsolePageState extends State<ConsolePage> {
 
           return Stack(
             children: [
-              // 1. 선택된 가상 OS 메인 뷰 (Windows / macOS)
-              if (isDesktop) ...[
-                if (_pcTheme == 'macos')
-                  MacosView(
-                    user: user,
-                    timeString: _formatDate('E a h:mm', 'ko_KR'),
-                    currentWallpaper: _wallpaper,
-                    onOpenTemplate: _openTemplate,
-                    onOpenSettings: () => setState(() => _isSettingsOpen = true),
-                    onSignOut: _handleSignOut,
-                    onGoHome: () => context.go('/'),
+              // 1. 선택된 가상 OS 메인 뷰 (Windows / macOS / Galaxy / iOS)
+              if (activeOs == 'macos') ...[
+                MacosView(
+                  user: user,
+                  timeString: _formatDate('E a h:mm', 'ko_KR'),
+                  currentWallpaper: _wallpaper,
+                  onOpenTemplate: _openTemplate,
+                  onOpenSettings: () => setState(() => _isSettingsOpen = true),
+                  onSignOut: _handleSignOut,
+                  onGoHome: () => context.go('/'),
+                ),
+                ..._buildDesktopWindowsLayer(isMacStyle: true),
+              ] else if (activeOs == 'windows') ...[
+                WindowsView(
+                  windowsVersion: _windowsVersion,
+                  user: user,
+                  timeString: _formatDate('a h:mm', 'ko_KR'),
+                  dateString: _formatDate('yyyy-MM-dd'),
+                  currentWallpaper: _wallpaper,
+                  isStartMenuOpen: _isStartMenuOpen,
+                  onToggleStartMenu: () => setState(() => _isStartMenuOpen = !_isStartMenuOpen),
+                  onOpenTemplate: _openTemplate,
+                  onOpenSettings: () => setState(() {
+                    _isStartMenuOpen = false;
+                    _isSettingsOpen = true;
+                  }),
+                  onSignOut: _handleSignOut,
+                  onGoHome: () => context.go('/'),
+                ),
+                ..._buildDesktopWindowsLayer(isMacStyle: false),
+              ] else if (activeOs == 'galaxy') ...[
+                if (isDesktop && !_isDesktopMobileFullScreen)
+                  _buildDesktopPhoneContainer(
+                    title: 'Samsung Galaxy S26 Ultra (One UI 9)',
+                    osKey: 'galaxy',
+                    child: GalaxyView(
+                      oneUiVersion: _galaxyVersion,
+                      user: AuthService.currentUser,
+                      timeString: _formatDate('h:mm'),
+                      dateString: _formatDate('M월 d일 EEEE', 'ko_KR'),
+                      currentWallpaper: _wallpaper,
+                      onOpenTemplate: _openTemplate,
+                      onOpenSettings: () => setState(() => _isSettingsOpen = true),
+                      onSignOut: _handleSignOut,
+                      onGoHome: () => context.go('/'),
+                      onSelectOs: _handleSelectOs,
+                    ),
                   )
                 else
-                  WindowsView(
-                    windowsVersion: _windowsVersion,
-                    user: user,
-                    timeString: _formatDate('a h:mm', 'ko_KR'),
-                    dateString: _formatDate('yyyy-MM-dd'),
-                    currentWallpaper: _wallpaper,
-                    isStartMenuOpen: _isStartMenuOpen,
-                    onToggleStartMenu: () => setState(() => _isStartMenuOpen = !_isStartMenuOpen),
-                    onOpenTemplate: _openTemplate,
-                    onOpenSettings: () => setState(() {
-                      _isStartMenuOpen = false;
-                      _isSettingsOpen = true;
-                    }),
-                    onSignOut: _handleSignOut,
-                    onGoHome: () => context.go('/'),
+                  Stack(
+                    children: [
+                      Positioned.fill(
+                        child: GalaxyView(
+                          oneUiVersion: _galaxyVersion,
+                          user: AuthService.currentUser,
+                          timeString: _formatDate('h:mm'),
+                          dateString: _formatDate('M월 d일 EEEE', 'ko_KR'),
+                          currentWallpaper: _wallpaper,
+                          onOpenTemplate: _openTemplate,
+                          onOpenSettings: () => setState(() => _isSettingsOpen = true),
+                          onSignOut: _handleSignOut,
+                          onGoHome: () => context.go('/'),
+                          onSelectOs: _handleSelectOs,
+                        ),
+                      ),
+                      if (isDesktop && _isDesktopMobileFullScreen) _buildDesktopFullScreenOverlayBar('Samsung Galaxy One UI 9'),
+                    ],
                   ),
-
-                // 2. MDI 가상 창 레이어 모음 (120fps 부드러운 드래그 최적화)
-                ..._activeFloatingWindows.where((w) => !w.isMinimized).map((win) {
-                  final isFocused = _activeFloatingWindows.isNotEmpty && _activeFloatingWindows.last.id == win.id;
-
-                  return ValueListenableBuilder<Offset>(
-                    valueListenable: win.positionNotifier,
-                    builder: (context, pos, child) {
-                      return FloatingAppWindow(
-                        key: ValueKey(win.id),
-                        template: win.template,
-                        position: pos,
-                        size: win.size,
-                        isFocused: isFocused,
-                        isMacStyle: _pcTheme == 'macos',
-                        onFocus: () => _bringToFront(win.id),
-                        onPositionChanged: (newPos) => win.position = newPos,
-                        onSizeChanged: (newSize) => setState(() => win.size = newSize),
-                        onMinimize: () => setState(() => win.isMinimized = true),
-                        onClose: () {
-                          setState(() {
-                            _activeFloatingWindows.removeWhere((w) => w.id == win.id);
-                          });
-                        },
-                      );
-                    },
-                  );
-                }),
               ] else ...[
-                if (_mobileTheme == 'ios')
-                  IosView(
-                    user: AuthService.currentUser,
-                    iosVersion: '26',
-                    timeString: _formatDate('h:mm'),
-                    dateString: _formatDate('M월 d일 EEEE', 'ko_KR'),
-                    currentWallpaper: _wallpaper,
-                    onOpenTemplate: _openTemplate,
-                    onOpenSettings: () => setState(() => _isSettingsOpen = true),
-                    onSignOut: _handleSignOut,
-                    onGoHome: () => context.go('/'),
-                    onSelectOs: (os) {
-                      setState(() {
-                        if (os == 'galaxy') {
-                          _mobileTheme = 'galaxy';
-                        } else if (os == 'ios') {
-                          _mobileTheme = 'ios';
-                        } else if (os == 'windows' || os == 'macos') {
-                          _pcTheme = os;
-                        }
-                      });
-                      _saveCurrentOsSettings();
-                    },
+                if (isDesktop && !_isDesktopMobileFullScreen)
+                  _buildDesktopPhoneContainer(
+                    title: 'Apple iPhone 16 Pro (iOS 18)',
+                    osKey: 'ios',
+                    child: IosView(
+                      user: AuthService.currentUser,
+                      iosVersion: '26',
+                      timeString: _formatDate('h:mm'),
+                      dateString: _formatDate('M월 d일 EEEE', 'ko_KR'),
+                      currentWallpaper: _wallpaper,
+                      onOpenTemplate: _openTemplate,
+                      onOpenSettings: () => setState(() => _isSettingsOpen = true),
+                      onSignOut: _handleSignOut,
+                      onGoHome: () => context.go('/'),
+                      onSelectOs: _handleSelectOs,
+                    ),
                   )
                 else
-                  GalaxyView(
-                    oneUiVersion: _galaxyVersion,
-                    user: AuthService.currentUser,
-                    timeString: _formatDate('h:mm'),
-                    dateString: _formatDate('M월 d일 EEEE', 'ko_KR'),
-                    currentWallpaper: _wallpaper,
-                    onOpenTemplate: _openTemplate,
-                    onOpenSettings: () => setState(() => _isSettingsOpen = true),
-                    onSignOut: _handleSignOut,
-                    onGoHome: () => context.go('/'),
-                    onSelectOs: (os) {
-                      setState(() {
-                        if (os == 'galaxy') {
-                          _mobileTheme = 'galaxy';
-                        } else if (os == 'ios') {
-                          _mobileTheme = 'ios';
-                        } else if (os == 'windows' || os == 'macos') {
-                          _pcTheme = os;
-                        }
-                      });
-                      _saveCurrentOsSettings();
-                    },
+                  Stack(
+                    children: [
+                      Positioned.fill(
+                        child: IosView(
+                          user: AuthService.currentUser,
+                          iosVersion: '26',
+                          timeString: _formatDate('h:mm'),
+                          dateString: _formatDate('M월 d일 EEEE', 'ko_KR'),
+                          currentWallpaper: _wallpaper,
+                          onOpenTemplate: _openTemplate,
+                          onOpenSettings: () => setState(() => _isSettingsOpen = true),
+                          onSignOut: _handleSignOut,
+                          onGoHome: () => context.go('/'),
+                          onSelectOs: _handleSelectOs,
+                        ),
+                      ),
+                      if (isDesktop && _isDesktopMobileFullScreen) _buildDesktopFullScreenOverlayBar('Apple iOS 18'),
+                    ],
                   ),
               ],
 
@@ -362,18 +386,12 @@ class _ConsolePageState extends State<ConsolePage> {
                           currentWindowsVersion: _windowsVersion,
                           currentMobileTheme: _mobileTheme,
                           currentWallpaper: _wallpaper,
-                          onPcThemeChanged: (val) {
-                            setState(() => _pcTheme = val);
-                            _saveCurrentOsSettings();
-                          },
+                          onPcThemeChanged: (val) => _handleSelectOs(val),
                           onWindowsVersionChanged: (val) {
                             setState(() => _windowsVersion = val);
-                            _saveCurrentOsSettings();
+                            _handleSelectOs('windows');
                           },
-                          onMobileThemeChanged: (val) {
-                            setState(() => _mobileTheme = val);
-                            _saveCurrentOsSettings();
-                          },
+                          onMobileThemeChanged: (val) => _handleSelectOs(val),
                           onWallpaperChanged: (val) {
                             setState(() => _wallpaper = val);
                             _saveCurrentOsSettings();
@@ -405,18 +423,12 @@ class _ConsolePageState extends State<ConsolePage> {
                                 currentWindowsVersion: _windowsVersion,
                                 currentMobileTheme: _mobileTheme,
                                 currentWallpaper: _wallpaper,
-                                onPcThemeChanged: (val) {
-                                  setState(() => _pcTheme = val);
-                                  _saveCurrentOsSettings();
-                                },
+                                onPcThemeChanged: (val) => _handleSelectOs(val),
                                 onWindowsVersionChanged: (val) {
                                   setState(() => _windowsVersion = val);
-                                  _saveCurrentOsSettings();
+                                  _handleSelectOs('windows');
                                 },
-                                onMobileThemeChanged: (val) {
-                                  setState(() => _mobileTheme = val);
-                                  _saveCurrentOsSettings();
-                                },
+                                onMobileThemeChanged: (val) => _handleSelectOs(val),
                                 onWallpaperChanged: (val) {
                                   setState(() => _wallpaper = val);
                                   _saveCurrentOsSettings();
@@ -432,7 +444,7 @@ class _ConsolePageState extends State<ConsolePage> {
                       ),
 
               // 4. 모바일 전체화면(Full Screen) 가상 스마트폰 앱 오버레이
-              if (!isDesktop && _activeMobileTemplateId != null)
+              if (_activeMobileTemplateId != null)
                 Positioned.fill(
                   child: _buildMobileFullScreenApp(_activeMobileTemplateId!),
                 ),
@@ -603,5 +615,160 @@ class _ConsolePageState extends State<ConsolePage> {
       default:
         return KakaoTalkScreen(config: KakaoRoomConfig.defaultPreset());
     }
+  }
+
+  List<Widget> _buildDesktopWindowsLayer({required bool isMacStyle}) {
+    return _activeFloatingWindows.where((w) => !w.isMinimized).map((win) {
+      final isFocused = _activeFloatingWindows.isNotEmpty && _activeFloatingWindows.last.id == win.id;
+      return ValueListenableBuilder<Offset>(
+        valueListenable: win.positionNotifier,
+        builder: (context, pos, child) {
+          return FloatingAppWindow(
+            key: ValueKey(win.id),
+            template: win.template,
+            position: pos,
+            size: win.size,
+            isFocused: isFocused,
+            isMacStyle: isMacStyle,
+            onFocus: () => _bringToFront(win.id),
+            onPositionChanged: (newPos) => win.position = newPos,
+            onSizeChanged: (newSize) => setState(() => win.size = newSize),
+            onMinimize: () => setState(() => win.isMinimized = true),
+            onClose: () => setState(() => _activeFloatingWindows.removeWhere((w) => w.id == win.id)),
+          );
+        },
+      );
+    }).toList();
+  }
+
+  Widget _buildDesktopPhoneContainer({required Widget child, required String title, required String osKey}) {
+    return Container(
+      color: const Color(0xFF090A0F),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.center,
+                  radius: 1.2,
+                  colors: [
+                    (osKey == 'galaxy' ? const Color(0xFF4F46E5) : const Color(0xFF2563EB)).withValues(alpha: 0.18),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 14,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.75),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 16)],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(CupertinoIcons.device_phone_portrait, color: osKey == 'galaxy' ? const Color(0xFF10B981) : const Color(0xFF38BDF8), size: 16),
+                    const SizedBox(width: 8),
+                    Text(title, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 14),
+                    Container(width: 1, height: 16, color: Colors.white24),
+                    const SizedBox(width: 10),
+                    _buildPhoneTopButton(label: '전체화면', icon: CupertinoIcons.arrow_up_left_arrow_down_right, onTap: () => setState(() => _isDesktopMobileFullScreen = true)),
+                    const SizedBox(width: 6),
+                    _buildPhoneTopButton(label: 'Windows 11', icon: CupertinoIcons.device_desktop, onTap: () => _handleSelectOs('windows')),
+                    const SizedBox(width: 6),
+                    _buildPhoneTopButton(label: 'macOS', icon: CupertinoIcons.device_laptop, onTap: () => _handleSelectOs('macos')),
+                    if (osKey != 'galaxy') ...[
+                      const SizedBox(width: 6),
+                      _buildPhoneTopButton(label: 'Galaxy (One UI 9)', icon: CupertinoIcons.device_phone_portrait, onTap: () => _handleSelectOs('galaxy')),
+                    ],
+                    if (osKey != 'ios') ...[
+                      const SizedBox(width: 6),
+                      _buildPhoneTopButton(label: 'iOS 18', icon: CupertinoIcons.device_phone_portrait, onTap: () => _handleSelectOs('ios')),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 56, bottom: 16),
+              child: Container(
+                width: 412,
+                constraints: const BoxConstraints(maxHeight: 890),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(44),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.22), width: 3.5),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.65), blurRadius: 40, spreadRadius: 4, offset: const Offset(0, 10)),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(40),
+                  child: child,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesktopFullScreenOverlayBar(String title) {
+    return Positioned(
+      top: 14,
+      right: 20,
+      child: InkWell(
+        onTap: () => setState(() => _isDesktopMobileFullScreen = false),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.72),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 10)],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(CupertinoIcons.arrow_down_right_arrow_up_left, size: 13, color: Colors.white),
+              const SizedBox(width: 6),
+              Text('$title 프레임으로 축소', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhoneTopButton({required String label, required IconData icon, required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 12, color: Colors.white70),
+            const SizedBox(width: 4),
+            Text(label, style: const TextStyle(color: Colors.white70, fontSize: 11)),
+          ],
+        ),
+      ),
+    );
   }
 }

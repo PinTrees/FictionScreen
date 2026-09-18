@@ -5,12 +5,91 @@ import 'package:flutter/material.dart';
 class SamsungSettingsWindow extends StatelessWidget {
   final VoidCallback onClose;
   final VoidCallback? onOpenSystemSettings;
+  final Function(String osKey)? onSelectOs;
 
   const SamsungSettingsWindow({
     super.key,
     required this.onClose,
     this.onOpenSystemSettings,
+    this.onSelectOs,
   });
+
+  void _showOsSelectionSheet(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext sheetContext) => CupertinoActionSheet(
+        title: const Text('운영체제 (OS) 전환', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        message: const Text('원하시는 모바일 또는 데스크톱 OS 환경으로 즉시 전환합니다.'),
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(sheetContext);
+              onClose();
+              onSelectOs?.call('galaxy');
+            },
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(CupertinoIcons.device_phone_portrait, size: 20),
+                SizedBox(width: 8),
+                Text('Samsung Galaxy (One UI 9 최신) ✓'),
+              ],
+            ),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(sheetContext);
+              onClose();
+              onSelectOs?.call('ios');
+            },
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(CupertinoIcons.device_phone_portrait, size: 20),
+                SizedBox(width: 8),
+                Text('Apple iOS 26 (리퀴드 글래스)'),
+              ],
+            ),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(sheetContext);
+              onClose();
+              onSelectOs?.call('windows');
+            },
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(CupertinoIcons.device_desktop, size: 20),
+                SizedBox(width: 8),
+                Text('Microsoft Windows 11'),
+              ],
+            ),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(sheetContext);
+              onClose();
+              onSelectOs?.call('macos');
+            },
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(CupertinoIcons.device_laptop, size: 20),
+                SizedBox(width: 8),
+                Text('Apple macOS Sequoia'),
+              ],
+            ),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () => Navigator.pop(sheetContext),
+          isDestructiveAction: true,
+          child: const Text('취소'),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +130,13 @@ class SamsungSettingsWindow extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 children: [
                   _buildSettingCard(
+                    title: '운영체제 (OS) 전환',
+                    subtitle: 'Galaxy, iOS, Windows, macOS 즉시 전환',
+                    icon: CupertinoIcons.arrow_2_circlepath,
+                    color: const Color(0xFF10B981),
+                    onTap: () => _showOsSelectionSheet(context),
+                  ),
+                  _buildSettingCard(
                     title: '연결',
                     subtitle: 'Wi-Fi, Bluetooth, 모바일 네트워크',
                     icon: CupertinoIcons.wifi,
@@ -70,7 +156,7 @@ class SamsungSettingsWindow extends StatelessWidget {
                   ),
                   _buildSettingCard(
                     title: '배경화면 및 스타일',
-                    subtitle: 'FictionScreen 전역 테마 및 OS 변경',
+                    subtitle: 'FictionScreen 전역 테마 및 OS 설정',
                     icon: CupertinoIcons.photo_fill_on_rectangle_fill,
                     color: const Color(0xFF8B5CF6),
                     onTap: onOpenSystemSettings,

@@ -15,34 +15,42 @@ class OneUi9WeatherCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF388BFD), Color(0xFF2563EB)]),
-          borderRadius: BorderRadius.circular(28),
-          boxShadow: [BoxShadow(color: const Color(0xFF2563EB).withValues(alpha: 0.35), blurRadius: 14, offset: const Offset(0, 5))],
+          borderRadius: BorderRadius.circular(26),
+          boxShadow: [BoxShadow(color: const Color(0xFF2563EB).withValues(alpha: 0.35), blurRadius: 12, offset: const Offset(0, 4))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Align(
               alignment: Alignment.topRight,
               child: SizedBox(
-                width: 44,
-                height: 34,
+                width: 40,
+                height: 30,
                 child: Stack(
                   children: [
-                    Positioned(right: 0, top: 0, child: Container(width: 22, height: 22, decoration: const BoxDecoration(color: Color(0xFFFBBF24), shape: BoxShape.circle))),
-                    Positioned(left: 0, bottom: 0, child: const Icon(CupertinoIcons.cloud_fill, color: Colors.white, size: 32)),
+                    Positioned(right: 0, top: 0, child: Container(width: 18, height: 18, decoration: const BoxDecoration(color: Color(0xFFFBBF24), shape: BoxShape.circle))),
+                    Positioned(left: 0, bottom: 0, child: const Icon(CupertinoIcons.cloud_fill, color: Colors.white, size: 28)),
                   ],
                 ),
               ),
             ),
-            const Spacer(),
-            const Text('31°', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: -1)),
-            const SizedBox(height: 2),
-            Text(
-              'Thunderstorms\npossible around 1...\nNew Delhi',
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 11, height: 1.2, fontWeight: FontWeight.w500),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('31°', style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold, letterSpacing: -1)),
+                const SizedBox(height: 2),
+                Text(
+                  'Thunderstorms\npossible around 1...\nNew Delhi',
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 10.5, height: 1.18, fontWeight: FontWeight.w500),
+                ),
+              ],
             ),
           ],
         ),
@@ -62,22 +70,29 @@ class OneUi9NowBriefCapsule extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(32),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 10, offset: const Offset(0, 3))],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 8, offset: const Offset(0, 2))],
         ),
         child: Row(
           children: [
             Container(
-              width: 38,
-              height: 38,
+              width: 36,
+              height: 36,
               decoration: const BoxDecoration(color: Color(0xFF2563EB), shape: BoxShape.circle),
               child: CustomPaint(painter: _NowBriefIconPainter()),
             ),
-            const SizedBox(width: 12),
-            const Text('Now brief', style: TextStyle(color: Color(0xFF1E293B), fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: -0.3)),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Text(
+                'Now brief',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Color(0xFF1E293B), fontSize: 14.5, fontWeight: FontWeight.w700, letterSpacing: -0.3),
+              ),
+            ),
           ],
         ),
       ),
@@ -88,12 +103,13 @@ class OneUi9NowBriefCapsule extends StatelessWidget {
 class _NowBriefIconPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
+    if (size.width <= 0 || size.height <= 0) return;
     final center = Offset(size.width / 2, size.height / 2);
     final paint = Paint()..color = Colors.white..style = PaintingStyle.fill;
-    canvas.drawArc(Rect.fromCircle(center: center.translate(0, 2), radius: 9), math.pi, math.pi, true, paint);
-    final linePaint = Paint()..color = Colors.white..strokeWidth = 2..strokeCap = StrokeCap.round;
-    canvas.drawLine(Offset(center.dx - 10, center.dy + 5), Offset(center.dx + 10, center.dy + 5), linePaint);
-    canvas.drawLine(Offset(center.dx - 6, center.dy + 9), Offset(center.dx + 6, center.dy + 9), linePaint);
+    canvas.drawArc(Rect.fromCircle(center: center.translate(0, 2), radius: 8), math.pi, math.pi, true, paint);
+    final linePaint = Paint()..color = Colors.white..strokeWidth = 1.8..strokeCap = StrokeCap.round;
+    canvas.drawLine(Offset(center.dx - 9, center.dy + 4), Offset(center.dx + 9, center.dy + 4), linePaint);
+    canvas.drawLine(Offset(center.dx - 5, center.dy + 8), Offset(center.dx + 5, center.dy + 8), linePaint);
   }
 
   @override
@@ -111,19 +127,25 @@ class OneUi9HealthStartCapsule extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(32),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 10, offset: const Offset(0, 3))],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 8, offset: const Offset(0, 2))],
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Start', style: TextStyle(color: Color(0xFF1E293B), fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: -0.3)),
+            const Expanded(
+              child: Text(
+                'Start',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Color(0xFF1E293B), fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: -0.3),
+              ),
+            ),
             SizedBox(
-              width: 44,
-              height: 38,
+              width: 40,
+              height: 36,
               child: CustomPaint(painter: _HealthHeartPainter()),
             ),
           ],
@@ -138,6 +160,7 @@ class _HealthHeartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
+    if (w <= 0 || h <= 0) return;
 
     Path createHeart(double scale, Offset center) {
       final path = Path();
@@ -154,10 +177,10 @@ class _HealthHeartPainter extends CustomPainter {
       return path;
     }
 
-    final c = Offset(w / 2 + 2, h / 2);
-    final pGreen = Paint()..color = const Color(0xFF22C55E)..style = PaintingStyle.stroke..strokeWidth = 3.5..strokeCap = StrokeCap.round;
-    final pBlue = Paint()..color = const Color(0xFF06B6D4)..style = PaintingStyle.stroke..strokeWidth = 3.2..strokeCap = StrokeCap.round;
-    final pPink = Paint()..color = const Color(0xFFEC4899)..style = PaintingStyle.stroke..strokeWidth = 3.0..strokeCap = StrokeCap.round;
+    final c = Offset(w / 2 + 1, h / 2);
+    final pGreen = Paint()..color = const Color(0xFF22C55E)..style = PaintingStyle.stroke..strokeWidth = 3.0..strokeCap = StrokeCap.round;
+    final pBlue = Paint()..color = const Color(0xFF06B6D4)..style = PaintingStyle.stroke..strokeWidth = 2.8..strokeCap = StrokeCap.round;
+    final pPink = Paint()..color = const Color(0xFFEC4899)..style = PaintingStyle.stroke..strokeWidth = 2.6..strokeCap = StrokeCap.round;
 
     canvas.drawPath(createHeart(0.95, c), pGreen);
     canvas.drawPath(createHeart(0.75, c), pBlue);
@@ -203,6 +226,7 @@ class OneUi9GoogleSearchCapsule extends StatelessWidget {
 class _GoogleLogoPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
+    if (size.width <= 0 || size.height <= 0) return;
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
     final rect = Rect.fromCircle(center: center, radius: radius);
@@ -229,6 +253,7 @@ class _GoogleLogoPainter extends CustomPainter {
 class _GoogleLensPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
+    if (size.width <= 0 || size.height <= 0) return;
     final rect = Rect.fromLTWH(2, 2, size.width - 4, size.height - 4);
     final paint = Paint()..color = const Color(0xFF4285F4)..style = PaintingStyle.stroke..strokeWidth = 2.2;
     canvas.drawRRect(RRect.fromRectAndRadius(rect, const Radius.circular(6)), paint);
@@ -316,27 +341,41 @@ class OneUi9GoogleFolderWidget extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(6),
+                  width: 58,
+                  height: 58,
+                  padding: const EdgeInsets.all(9),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.3),
+                    color: Colors.white.withValues(alpha: 0.28),
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 1.2),
                   ),
-                  child: GridView.count(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 3,
-                    crossAxisSpacing: 3,
-                    physics: const NeverScrollableScrollPhysics(),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildMiniDot(const Color(0xFF4285F4)),
-                      _buildMiniDot(const Color(0xFFEA4335)),
-                      _buildMiniDot(const Color(0xFFFBBC05)),
-                      _buildMiniDot(const Color(0xFF34A853)),
-                      _buildMiniDot(const Color(0xFFEA4335)),
-                      _buildMiniDot(const Color(0xFF4285F4)),
-                      _buildMiniDot(const Color(0xFFFF0000)),
-                      _buildMiniDot(const Color(0xFF10B981)),
-                      _buildMiniDot(const Color(0xFF6366F1)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildMiniDot(const Color(0xFF4285F4)),
+                          _buildMiniDot(const Color(0xFFEA4335)),
+                          _buildMiniDot(const Color(0xFFFBBC05)),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildMiniDot(const Color(0xFF34A853)),
+                          _buildMiniDot(const Color(0xFFEA4335)),
+                          _buildMiniDot(const Color(0xFF4285F4)),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildMiniDot(const Color(0xFFFF0000)),
+                          _buildMiniDot(const Color(0xFF10B981)),
+                          _buildMiniDot(const Color(0xFF6366F1)),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -360,7 +399,7 @@ class OneUi9GoogleFolderWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildMiniDot(Color color) => Container(decoration: BoxDecoration(color: color, shape: BoxShape.circle));
+  Widget _buildMiniDot(Color color) => Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle));
 }
 
 /// 7. Samsung Gallery 공식 꽃잎 로고 아이콘
@@ -391,6 +430,7 @@ class OneUi9GalleryIcon extends StatelessWidget {
 class _SamsungGalleryPetalsPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
+    if (size.width <= 0 || size.height <= 0) return;
     final center = Offset(size.width / 2, size.height / 2);
     final paint = Paint()..color = Colors.white..style = PaintingStyle.fill;
 
@@ -440,6 +480,7 @@ class _PlayStoreLogoPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
+    if (w <= 0 || h <= 0) return;
 
     final bluePath = Path()..moveTo(2, 2)..lineTo(w * 0.58, h * 0.5)..lineTo(2, h - 2)..close();
     canvas.drawPath(bluePath, Paint()..color = const Color(0xFF00C3FF));
@@ -556,6 +597,7 @@ class OneUi9InternetIcon extends StatelessWidget {
 class _SaturnPlanetPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
+    if (size.width <= 0 || size.height <= 0) return;
     final center = Offset(size.width / 2, size.height / 2);
     canvas.drawCircle(center, 9, Paint()..color = Colors.white);
     canvas.save();
