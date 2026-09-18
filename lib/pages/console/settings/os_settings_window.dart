@@ -291,8 +291,8 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
               Expanded(
                 child: _buildOsCard(
                   id: 'galaxy',
-                  title: 'Galaxy (One UI 7)',
-                  subtitle: '펀치홀 & 나우 바 & 스플릿 퀵세팅',
+                  title: 'Galaxy (One UI 9 최신)',
+                  subtitle: '좌우 슬라이드 & AI 나우 브리프',
                   icon: CupertinoIcons.slider_horizontal_3,
                   color: const Color(0xFF10B981),
                   isSelected: widget.currentMobileTheme == 'galaxy',

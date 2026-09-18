@@ -13,7 +13,7 @@ class UserOsSettings {
     this.pcTheme = 'windows',
     this.windowsVersion = '11',
     this.mobileTheme = 'ios',
-    this.galaxyVersion = '7',
+    this.galaxyVersion = '9',
     this.wallpaper = 'win10_hero',
   });
 
@@ -34,7 +34,7 @@ class UserOsSettings {
       pcTheme: map['pcTheme'] as String? ?? 'windows',
       windowsVersion: map['windowsVersion'] as String? ?? '11',
       mobileTheme: map['mobileTheme'] as String? ?? 'ios',
-      galaxyVersion: map['galaxyVersion'] as String? ?? '7',
+      galaxyVersion: map['galaxyVersion'] as String? ?? '9',
       wallpaper: map['wallpaper'] as String? ?? 'win10_hero',
     );
   }

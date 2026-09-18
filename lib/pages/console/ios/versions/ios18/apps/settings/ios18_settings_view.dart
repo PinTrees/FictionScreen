@@ -115,7 +115,7 @@ class _Ios18SettingsViewState extends State<Ios18SettingsView> {
               children: [
                 Icon(CupertinoIcons.device_phone_portrait, size: 20),
                 SizedBox(width: 8),
-                Text('Samsung Galaxy (One UI 7 최신)'),
+                Text('Samsung Galaxy (One UI 9 최신)'),
               ],
             ),
           ),

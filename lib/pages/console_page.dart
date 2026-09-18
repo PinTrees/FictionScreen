@@ -69,8 +69,8 @@ class _ConsolePageState extends State<ConsolePage> {
   String _windowsVersion = '11';
   // 모바일 OS: 'ios' vs 'galaxy'
   String _mobileTheme = 'ios';
-  // Galaxy 버전: '6', '7' (기본: '7')
-  String _galaxyVersion = '7';
+  // Galaxy 버전: '6', '7', '9' (기본: '9')
+  String _galaxyVersion = '9';
   // 전역 바탕화면 테마
   String _wallpaper = 'win10_hero';
 

@@ -44,3 +44,6 @@ flutter:
     - assets/images/ios/wallpapers/
     - assets/images/ios/icons/
     - assets/images/ios/icons26/
+    - assets/images/galaxy/
+    - assets/images/galaxy/wallpapers/
+    - assets/images/galaxy/icons/
