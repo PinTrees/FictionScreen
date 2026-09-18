@@ -9,6 +9,10 @@ import 'apps/file_explorer/file_explorer_window.dart';
 import 'apps/notepad/notepad_window.dart';
 import 'apps/paint/paint_window.dart';
 import 'apps/settings/settings_window.dart';
+import 'versions/win11/apps/calculator/win11_calculator_window.dart';
+import 'versions/win11/apps/file_explorer/win11_file_explorer_window.dart';
+import 'versions/win11/apps/notepad/win11_notepad_window.dart';
+import 'versions/win11/apps/settings/win11_settings_window.dart';
 import 'widgets/windows_context_menu.dart';
 import 'widgets/windows_desktop_icon_widget.dart';
 import 'widgets/windows_item_context_menu.dart';
@@ -76,6 +80,7 @@ class _WindowsViewState extends State<WindowsView> {
   int _highestZIndex = 1;
 
   bool _isQuickSettingsOpen = false;
+  String? _wallpaperOverride;
   Offset? _contextMenuPosition;
   Offset? _itemContextMenuPosition;
   DesktopIconItem? _contextMenuItem;
@@ -268,10 +273,22 @@ class _WindowsViewState extends State<WindowsView> {
       final initialPos = Offset(100.0 + (count * 28), 50.0 + (count * 22));
       Size defaultSize = const Size(760, 520);
 
-      if (appId == 'calculator') {
-        defaultSize = const Size(340, 480);
-      } else if (appId == 'cmd' || appId == 'notepad') {
-        defaultSize = const Size(680, 440);
+      if (widget.windowsVersion == '11') {
+        if (appId == 'file_explorer') {
+          defaultSize = const Size(860, 560);
+        } else if (appId == 'settings') {
+          defaultSize = const Size(880, 580);
+        } else if (appId == 'notepad') {
+          defaultSize = const Size(720, 480);
+        } else if (appId == 'calculator') {
+          defaultSize = const Size(340, 520);
+        }
+      } else {
+        if (appId == 'calculator') {
+          defaultSize = const Size(340, 480);
+        } else if (appId == 'cmd' || appId == 'notepad') {
+          defaultSize = const Size(680, 440);
+        }
       }
 
       final newWin = WindowsWindowData(
@@ -292,6 +309,91 @@ class _WindowsViewState extends State<WindowsView> {
   void _closeWindow(String windowId) {
     setState(() {
       _activeWindows.removeWhere((w) => w.id == windowId);
+    });
+  }
+
+  void _minimizeWindow(String windowId) {
+    setState(() {
+      final win = _activeWindows.firstWhere((w) => w.id == windowId);
+      win.isMinimized = true;
+    });
+  }
+
+  void _toggleMaximizeWindow(WindowsWindowData win) {
+    final media = MediaQuery.of(context).size;
+    final totalW = media.width;
+    final totalH = media.height - 48;
+
+    setState(() {
+      if (win.size.width >= totalW - 10 && win.size.height >= totalH - 10) {
+        win.position = const Offset(120, 70);
+        win.size = const Size(820, 540);
+      } else {
+        win.position = Offset.zero;
+        win.size = Size(totalW, totalH);
+      }
+      _bringToFront(win.id);
+    });
+  }
+
+  void _snapWindow(WindowsWindowData win, int layoutType, int zoneIndex) {
+    final media = MediaQuery.of(context).size;
+    final totalW = media.width;
+    final totalH = media.height - 48;
+
+    double newX = 0;
+    double newY = 0;
+    double newW = totalW;
+    double newH = totalH;
+
+    switch (layoutType) {
+      case 0:
+        newW = totalW * 0.5;
+        newH = totalH;
+        newX = zoneIndex == 0 ? 0 : totalW * 0.5;
+        newY = 0;
+        break;
+      case 1:
+        if (zoneIndex == 0) {
+          newW = totalW * 0.67;
+          newX = 0;
+        } else {
+          newW = totalW * 0.33;
+          newX = totalW * 0.67;
+        }
+        newH = totalH;
+        newY = 0;
+        break;
+      case 2:
+        if (zoneIndex == 0) {
+          newW = totalW * 0.5;
+          newH = totalH;
+          newX = 0;
+          newY = 0;
+        } else if (zoneIndex == 1) {
+          newW = totalW * 0.5;
+          newH = totalH * 0.5;
+          newX = totalW * 0.5;
+          newY = 0;
+        } else {
+          newW = totalW * 0.5;
+          newH = totalH * 0.5;
+          newX = totalW * 0.5;
+          newY = totalH * 0.5;
+        }
+        break;
+      case 3:
+        newW = totalW * 0.5;
+        newH = totalH * 0.5;
+        newX = (zoneIndex == 0 || zoneIndex == 2) ? 0 : totalW * 0.5;
+        newY = (zoneIndex == 0 || zoneIndex == 1) ? 0 : totalH * 0.5;
+        break;
+    }
+
+    setState(() {
+      win.position = Offset(newX, newY);
+      win.size = Size(newW, newH);
+      _bringToFront(win.id);
     });
   }
 
@@ -604,6 +706,19 @@ class _WindowsViewState extends State<WindowsView> {
   ) {
     switch (win.appId) {
       case 'file_explorer':
+        if (widget.windowsVersion == '11') {
+          return Win11FileExplorerWindow(
+            width: win.size.width,
+            height: win.size.height,
+            onClose: () => _closeWindow(win.id),
+            onMinimize: () => _minimizeWindow(win.id),
+            onMaximize: () => _toggleMaximizeWindow(win),
+            onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
+            onOpenTemplate: widget.onOpenTemplate,
+            onTitleDragStart: onDragStart,
+            onTitleDragUpdate: onDragUpdate,
+          );
+        }
         return WindowsFileExplorerWindow(
           width: win.size.width,
           height: win.size.height,
@@ -631,6 +746,21 @@ class _WindowsViewState extends State<WindowsView> {
           onTitleDragUpdate: onDragUpdate,
         );
       case 'settings':
+        if (widget.windowsVersion == '11') {
+          return Win11SettingsWindow(
+            width: win.size.width,
+            height: win.size.height,
+            onClose: () => _closeWindow(win.id),
+            onMinimize: () => _minimizeWindow(win.id),
+            onMaximize: () => _toggleMaximizeWindow(win),
+            onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
+            onOpenSystemSettings: widget.onOpenSettings,
+            onTitleDragStart: onDragStart,
+            onTitleDragUpdate: onDragUpdate,
+            currentWallpaper: _wallpaperOverride ?? widget.currentWallpaper,
+            onSelectWallpaper: (key) => setState(() => _wallpaperOverride = key),
+          );
+        }
         return WindowsSettingsWindow(
           width: win.size.width,
           height: win.size.height,
@@ -640,6 +770,18 @@ class _WindowsViewState extends State<WindowsView> {
           onTitleDragUpdate: onDragUpdate,
         );
       case 'calculator':
+        if (widget.windowsVersion == '11') {
+          return Win11CalculatorWindow(
+            width: win.size.width,
+            height: win.size.height,
+            onClose: () => _closeWindow(win.id),
+            onMinimize: () => _minimizeWindow(win.id),
+            onMaximize: () => _toggleMaximizeWindow(win),
+            onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
+            onTitleDragStart: onDragStart,
+            onTitleDragUpdate: onDragUpdate,
+          );
+        }
         return WindowsCalculatorWindow(
           width: win.size.width,
           height: win.size.height,
@@ -648,6 +790,18 @@ class _WindowsViewState extends State<WindowsView> {
           onTitleDragUpdate: onDragUpdate,
         );
       case 'notepad':
+        if (widget.windowsVersion == '11') {
+          return Win11NotepadWindow(
+            width: win.size.width,
+            height: win.size.height,
+            onClose: () => _closeWindow(win.id),
+            onMinimize: () => _minimizeWindow(win.id),
+            onMaximize: () => _toggleMaximizeWindow(win),
+            onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
+            onTitleDragStart: onDragStart,
+            onTitleDragUpdate: onDragUpdate,
+          );
+        }
         return WindowsNotepadWindow(
           width: win.size.width,
           height: win.size.height,
@@ -677,7 +831,9 @@ class _WindowsViewState extends State<WindowsView> {
   }
 
   Widget _buildWindowsWallpaper() {
-    if (widget.currentWallpaper == 'win10_hero') {
+    final activeWallpaper = _wallpaperOverride ?? widget.currentWallpaper;
+
+    if (activeWallpaper == 'win10_hero') {
       return Image.asset(
         'assets/images/win10_hero.webp',
         fit: BoxFit.cover,
@@ -685,7 +841,7 @@ class _WindowsViewState extends State<WindowsView> {
         height: double.infinity,
         filterQuality: FilterQuality.high,
       );
-    } else if (widget.currentWallpaper == 'win11_bloom') {
+    } else if (activeWallpaper == 'win11_bloom') {
       return Image.asset(
         'assets/images/win11_bloom.webp',
         fit: BoxFit.cover,
@@ -693,7 +849,49 @@ class _WindowsViewState extends State<WindowsView> {
         height: double.infinity,
         filterQuality: FilterQuality.high,
       );
-    } else if (widget.currentWallpaper == 'win7_harmony') {
+    } else if (activeWallpaper == 'win11_dark') {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'assets/images/win11_bloom.webp',
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+          ),
+          Container(color: Colors.black.withValues(alpha: 0.65)),
+        ],
+      );
+    } else if (activeWallpaper == 'glow') {
+      return Container(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment(0.2, -0.3),
+            radius: 1.2,
+            colors: [Color(0xFF3B1F70), Color(0xFF13092C), Color(0xFF070212)],
+          ),
+        ),
+      );
+    } else if (activeWallpaper == 'flow') {
+      return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF0F3E50), Color(0xFF13678A), Color(0xFF012030)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+      );
+    } else if (activeWallpaper == 'sunrise') {
+      return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF8B2635), Color(0xFF531253), Color(0xFF1A0A2A)],
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+          ),
+        ),
+      );
+    } else if (activeWallpaper == 'win7_harmony') {
       return Image.asset(
         'assets/images/win7_harmony.webp',
         fit: BoxFit.cover,
@@ -703,7 +901,7 @@ class _WindowsViewState extends State<WindowsView> {
       );
     }
 
-    switch (widget.currentWallpaper) {
+    switch (activeWallpaper) {
       case 'aurora':
         return Container(
           decoration: const BoxDecoration(
