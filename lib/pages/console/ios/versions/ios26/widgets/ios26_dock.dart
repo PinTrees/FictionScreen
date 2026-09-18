@@ -24,13 +24,14 @@ class Ios26Dock extends StatelessWidget {
         // Image 2 레퍼런스 기준: 화면 너비의 약 16.5%를 각 아이콘이 차지 (대형화)
         final dockIconSize = (availableWidth * 0.165).clamp(66.0, 82.0);
         final dockHeight = (dockIconSize + 26.0).clamp(94.0, 108.0);
-        final dockRadius = dockHeight / 2;
+        // iOS 26 순정 규격: 과도한 캡슐형 대신 정교한 34px 스쿼클 곡률 적용
+        const dockRadius = 34.0;
 
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 12),
           child: Ios26LiquidGlass(
             height: dockHeight,
-            borderRadius: dockRadius, // 완전한 알약(Stadium Pill) 형태
+            borderRadius: dockRadius,
             blurSigma: 32,
             hasCornerGlow: true,
             hasChromaticAberration: true,

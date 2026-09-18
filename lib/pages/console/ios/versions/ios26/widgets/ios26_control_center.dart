@@ -42,9 +42,14 @@ class _Ios26ControlCenterState extends State<Ios26ControlCenter> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.onClose,
+      onVerticalDragEnd: (details) {
+        if (details.primaryVelocity != null && details.primaryVelocity! < -80) {
+          widget.onClose();
+        }
+      },
       behavior: HitTestBehavior.translucent,
       child: Container(
-        color: Colors.black.withValues(alpha: 0.35),
+        color: Colors.transparent,
         child: SafeArea(
           bottom: true,
           child: Column(
@@ -81,32 +86,42 @@ class _Ios26ControlCenterState extends State<Ios26ControlCenter> {
               ),
               const SizedBox(height: 12),
 
-              // 2. 상단 상태 서브헤더 (안테나/Wi-Fi & 배터리 100%)
+              // 2. 상단 상태 서브헤더 (안테나/SKT LTE & 배터리 93%)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 26),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // 통신사 신호 + Wi-Fi
+                    // 통신사 신호 + SKT LTE
                     const Row(
                       children: [
                         Icon(CupertinoIcons.antenna_radiowaves_left_right, color: Colors.white, size: 14),
-                        SizedBox(width: 4),
-                        Icon(CupertinoIcons.wifi, color: Colors.white, size: 14),
+                        SizedBox(width: 5),
+                        Text(
+                          'SKT LTE',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
                       ],
                     ),
-                    // 배터리 100%
+                    // 잠금 + 배터리 93%
                     Row(
                       children: [
+                        Icon(CupertinoIcons.lock_fill, color: Colors.white.withValues(alpha: 0.85), size: 12),
+                        const SizedBox(width: 4),
                         const Text(
-                          '100%',
+                          '93%',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 5),
                         Container(
                           width: 22,
                           height: 11,
@@ -117,7 +132,7 @@ class _Ios26ControlCenterState extends State<Ios26ControlCenter> {
                           ),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: const Color(0xFF34C759),
                               borderRadius: BorderRadius.circular(1),
                             ),
                           ),
@@ -213,7 +228,7 @@ class _Ios26ControlCenterState extends State<Ios26ControlCenter> {
                                           const SizedBox(width: 10),
                                           const Expanded(
                                             child: Text(
-                                              'Focus',
+                                              '집중 모드',
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 14,
@@ -298,7 +313,31 @@ class _Ios26ControlCenterState extends State<Ios26ControlCenter> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 12),
+
+                        // Row 4: 2개 원형 퀵 토글 (QR 스캐너, 화면 녹화) - 레퍼런스 반영
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildSquareButton(
+                                icon: CupertinoIcons.qrcode_viewfinder,
+                                onTap: () {},
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildSquareButton(
+                                icon: Icons.radio_button_checked,
+                                onTap: () {},
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Spacer(),
+                            const SizedBox(width: 12),
+                            const Spacer(),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
                       ],
                     ),
                   ),
@@ -473,12 +512,12 @@ class _Ios26ControlCenterState extends State<Ios26ControlCenter> {
             ],
           ),
 
-          // 중앙: 곡명 & 아티스트
+          // 중앙: 상태 문구 (재생 중이 아님)
           const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Backseat Driver',
+                '재생 중이 아님',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -486,16 +525,6 @@ class _Ios26ControlCenterState extends State<Ios26ControlCenter> {
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
                   letterSpacing: -0.2,
-                ),
-              ),
-              SizedBox(height: 1),
-              Text(
-                'Kane Brown',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Colors.white60,
-                  fontSize: 11,
                 ),
               ),
             ],

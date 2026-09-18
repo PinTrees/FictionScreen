@@ -7,97 +7,115 @@ import 'ios26_dynamic_island.dart';
 class Ios26StatusBar extends StatelessWidget {
   final String timeString;
   final VoidCallback? onDynamicIslandTap;
-  final VoidCallback? onOpenControlCenter;
+  final GestureDragStartCallback? onLeftDragStart;
+  final GestureDragUpdateCallback? onLeftDragUpdate;
+  final GestureDragEndCallback? onLeftDragEnd;
+  final GestureDragStartCallback? onRightDragStart;
+  final GestureDragUpdateCallback? onRightDragUpdate;
+  final GestureDragEndCallback? onRightDragEnd;
 
   const Ios26StatusBar({
     super.key,
     required this.timeString,
     this.onDynamicIslandTap,
-    this.onOpenControlCenter,
+    this.onLeftDragStart,
+    this.onLeftDragUpdate,
+    this.onLeftDragEnd,
+    this.onRightDragStart,
+    this.onRightDragUpdate,
+    this.onRightDragEnd,
   });
 
   @override
   Widget build(BuildContext context) {
     final timeFormatted = timeString.length >= 5 ? timeString.substring(0, 5) : timeString;
 
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onVerticalDragEnd: (details) {
-        if (details.primaryVelocity != null && details.primaryVelocity! > 80) {
-          onOpenControlCenter?.call();
-        }
-      },
-      onVerticalDragUpdate: (details) {
-        if (details.primaryDelta != null && details.primaryDelta! > 6) {
-          onOpenControlCenter?.call();
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // 좌측 시간 (탭 시 노티피케이션/홈)
-                Padding(
-                  padding: const EdgeInsets.only(left: 4),
-                  child: Text(
-                    timeFormatted,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -0.4,
-                      fontFamily: '.SF Pro Text',
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Row(
+            children: [
+              // 좌측 절반: 아래로 드래그 시 알림 센터(Notification Center) 진입
+              Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onVerticalDragStart: onLeftDragStart,
+                  onVerticalDragUpdate: onLeftDragUpdate,
+                  onVerticalDragEnd: onLeftDragEnd,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10, top: 4, bottom: 4),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        timeFormatted,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -0.4,
+                          fontFamily: '.SF Pro Text',
+                        ),
+                      ),
                     ),
                   ),
                 ),
+              ),
 
-                // 우측 시스템 지표 (5G, WiFi, 배터리) - 탭하거나 아래로 내리면 제어 센터 오픈
-                GestureDetector(
-                  onTap: onOpenControlCenter,
+              // 다이내믹 아일랜드 영역 여백 확보 (중앙 126px)
+              const SizedBox(width: 126),
+
+              // 우측 절반: 아래로 드래그 시 제어 센터(Control Center) 진입
+              Expanded(
+                child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          _buildSignalBar(4),
-                          const SizedBox(width: 1.5),
-                          _buildSignalBar(6),
-                          const SizedBox(width: 1.5),
-                          _buildSignalBar(8),
-                          const SizedBox(width: 1.5),
-                          _buildSignalBar(10),
-                        ],
-                      ),
-                      const SizedBox(width: 5),
-                      const Text(
-                        '5G',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.3,
+                  onVerticalDragStart: onRightDragStart,
+                  onVerticalDragUpdate: onRightDragUpdate,
+                  onVerticalDragEnd: onRightDragEnd,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 10, top: 4, bottom: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            _buildSignalBar(4),
+                            const SizedBox(width: 1.5),
+                            _buildSignalBar(6),
+                            const SizedBox(width: 1.5),
+                            _buildSignalBar(8),
+                            const SizedBox(width: 1.5),
+                            _buildSignalBar(10),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      const Icon(CupertinoIcons.wifi, color: Colors.white, size: 15),
-                      const SizedBox(width: 6),
-                      _buildBatteryIndicator(),
-                    ],
+                        const SizedBox(width: 4),
+                        const Text(
+                          'LTE',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        const Icon(CupertinoIcons.wifi, color: Colors.white, size: 14),
+                        const SizedBox(width: 5),
+                        _buildBatteryIndicator(),
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
 
-            // 중앙 다이내믹 아일랜드
-            Ios26DynamicIsland(onTap: onDynamicIslandTap),
-          ],
-        ),
+          // 중앙 다이내믹 아일랜드 (상태바 중앙)
+          Ios26DynamicIsland(onTap: onDynamicIslandTap),
+        ],
       ),
     );
   }

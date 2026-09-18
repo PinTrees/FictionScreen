@@ -1,6 +1,7 @@
+import 'dart:math' as math;
+import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../ios18/apps/settings/ios18_settings_view.dart';
 import 'models/ios26_app_item.dart';
@@ -10,6 +11,7 @@ import 'widgets/ios26_dock.dart';
 import 'widgets/ios26_home_indicator.dart';
 import 'widgets/ios26_jiggle.dart';
 import 'widgets/ios26_liquid_glass.dart';
+import 'widgets/ios26_notification_center.dart';
 import 'widgets/ios26_reorderable_grid.dart';
 import 'widgets/ios26_status_bar.dart';
 import 'widgets/ios26_widget_card.dart';
@@ -45,13 +47,18 @@ class Ios26View extends StatefulWidget {
   State<Ios26View> createState() => _Ios26ViewState();
 }
 
-class _Ios26ViewState extends State<Ios26View> {
+class _Ios26ViewState extends State<Ios26View> with TickerProviderStateMixin {
   late String _activeWallpaper;
   String? _activeApp;
   late final PageController _pageController;
   int _currentPage = 0;
   bool _isEditMode = false;
-  bool _isControlCenterOpen = false;
+
+  late final AnimationController _controlCenterController;
+  late final AnimationController _notificationCenterController;
+
+  bool get _isControlCenterOpen => _controlCenterController.value > 0.05;
+  bool get _isNotificationCenterOpen => _notificationCenterController.value > 0.05;
 
   late List<Ios26AppItem> _page1Apps;
   late List<Ios26AppItem> _page2Apps;
@@ -63,6 +70,15 @@ class _Ios26ViewState extends State<Ios26View> {
         ? widget.currentWallpaper
         : 'ios26_dark';
     _pageController = PageController();
+
+    _controlCenterController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 320),
+    );
+    _notificationCenterController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 320),
+    );
 
     _page1Apps = [
       const Ios26AppItem(id: 'facetime', title: 'FaceTime', imageAsset: 'assets/images/ios/icons26/facetime.png'),
@@ -122,6 +138,8 @@ class _Ios26ViewState extends State<Ios26View> {
 
   @override
   void dispose() {
+    _controlCenterController.dispose();
+    _notificationCenterController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -142,10 +160,13 @@ class _Ios26ViewState extends State<Ios26View> {
     }
   }
 
-  void _toggleControlCenter(bool open) {
-    setState(() {
-      _isControlCenterOpen = open;
-    });
+  void _closeOverlays() {
+    if (_controlCenterController.value > 0) {
+      _controlCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+    }
+    if (_notificationCenterController.value > 0) {
+      _notificationCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+    }
   }
 
   void _onReorderPage1(int oldIndex, int newIndex) {
@@ -163,7 +184,7 @@ class _Ios26ViewState extends State<Ios26View> {
   }
 
   void _openApp(String appId) {
-    if (_isEditMode || _isControlCenterOpen) return;
+    if (_isEditMode || _isControlCenterOpen || _isNotificationCenterOpen) return;
 
     const creatorTemplates = {
       'kakaotalk',
@@ -263,162 +284,293 @@ class _Ios26ViewState extends State<Ios26View> {
   }
 
   Widget _buildPhoneScreen({required bool isFrame}) {
-    return Stack(
-      children: [
-        // 1. 공식 고화질 iOS 배경화면 (좌우 스와이프 제스처 지원)
-        Positioned.fill(
-          child: GestureDetector(
-            onTap: () {
-              if (_isControlCenterOpen) {
-                _toggleControlCenter(false);
-                return;
-              }
-              _exitEditMode();
-            },
-            onHorizontalDragEnd: (details) {
-              if (details.primaryVelocity != null) {
-                if (details.primaryVelocity! < -80 && _currentPage < 2) {
-                  _pageController.nextPage(
-                    duration: const Duration(milliseconds: 320),
-                    curve: Curves.easeOutCubic,
-                  );
-                } else if (details.primaryVelocity! > 80 && _currentPage > 0) {
-                  _pageController.previousPage(
-                    duration: const Duration(milliseconds: 320),
-                    curve: Curves.easeOutCubic,
-                  );
-                }
-              }
-            },
-            behavior: HitTestBehavior.translucent,
-            child: Image.asset(
-              _getWallpaperAsset(),
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-            ),
-          ),
-        ),
+    return AnimatedBuilder(
+      animation: Listenable.merge([_controlCenterController, _notificationCenterController]),
+      builder: (context, _) {
+        final ccVal = _controlCenterController.value;
+        final ncVal = _notificationCenterController.value;
+        final maxVal = math.max(ccVal, ncVal);
+        final isOverlayActive = maxVal > 0.001;
 
-        // 2. 홈 스크린 본체 콘텐츠 (웹뷰 & 모바일 동일 패딩 규격 적용)
-        Positioned.fill(
-          child: AnimatedScale(
-            scale: _isControlCenterOpen ? 0.93 : 1.0,
-            duration: const Duration(milliseconds: 320),
-            curve: Curves.easeOutCubic,
-            child: SafeArea(
-              top: !isFrame,
-              bottom: false,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  top: isFrame ? 12.0 : 0.0,
-                  bottom: isFrame ? 8.0 : (MediaQuery.of(context).padding.bottom > 0 ? 0.0 : 8.0),
-                ),
-                child: Column(
-                  children: [
-                    // 최상단 상태바 & 다이내믹 아일랜드 (드래그 다운 / 우측 탭 시 제어 센터 열림)
-                    Ios26StatusBar(
-                      timeString: widget.timeString,
-                      onOpenControlCenter: () => _toggleControlCenter(true),
-                    ),
-
-                    // 편집 모드 헤더
-                    AnimatedCrossFade(
-                      firstChild: const SizedBox(height: 8),
-                      secondChild: _buildEditModeHeader(),
-                      crossFadeState: _isEditMode
-                          ? CrossFadeState.showSecond
-                          : CrossFadeState.showFirst,
-                      duration: const Duration(milliseconds: 200),
-                    ),
-
-                    // 좌우 슬라이드 PageView (웹/모바일/마우스/터치 전방위 드래그 지원)
-                    Expanded(
-                      child: ScrollConfiguration(
-                        behavior: const Ios26ScrollBehavior(),
-                        child: PageView(
-                          controller: _pageController,
-                          physics: const BouncingScrollPhysics(),
-                          onPageChanged: (page) {
-                            setState(() {
-                              _currentPage = page;
-                            });
-                          },
-                          children: [
-                            _buildPage1(),
-                            _buildPage2(),
-                            _buildPage3AppLibrary(),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    // iOS 26 리퀴드 글래스 검색 캡슐 (Search Capsule)
-                    _buildSearchCapsule(),
-                    const SizedBox(height: 10),
-
-                  // 3. Apple 공식 리퀴드 글래스 독 (Dock)
-                  Ios26Dock(
-                    onOpenApp: _openApp,
-                    isEditMode: _isEditMode,
-                    onEnterEditMode: _enterEditMode,
-                  ),
-                  const SizedBox(height: 10),
-
-                  // 4. 하단 홈 인디케이터 바
-                  Ios26HomeIndicator(onHome: () {
-                    if (_isControlCenterOpen) {
-                      _toggleControlCenter(false);
-                      return;
-                    }
-                    if (_isEditMode) {
-                      _exitEditMode();
-                      return;
-                    }
-                    if (_currentPage != 0) {
-                      _pageController.animateToPage(
-                        0,
-                        duration: const Duration(milliseconds: 350),
+        return Stack(
+          children: [
+            // 1. 공식 고화질 iOS 배경화면 (좌우 스와이프 제스처 지원)
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () {
+                  if (isOverlayActive) {
+                    _closeOverlays();
+                    return;
+                  }
+                  _exitEditMode();
+                },
+                onHorizontalDragEnd: (details) {
+                  if (isOverlayActive) return;
+                  if (details.primaryVelocity != null) {
+                    if (details.primaryVelocity! < -80 && _currentPage < 2) {
+                      _pageController.nextPage(
+                        duration: const Duration(milliseconds: 320),
+                        curve: Curves.easeOutCubic,
+                      );
+                    } else if (details.primaryVelocity! > 80 && _currentPage > 0) {
+                      _pageController.previousPage(
+                        duration: const Duration(milliseconds: 320),
                         curve: Curves.easeOutCubic,
                       );
                     }
-                  }),
-                  const SizedBox(height: 6),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-
-        // 3. 앱 실행 오버레이
-        if (_activeApp != null)
-          Positioned.fill(
-            child: _buildAppOverlay(),
-          ),
-
-        // 4. iOS 26 공식 리퀴드 글래스 제어 센터 (슬라이드 다운 오버레이)
-        if (_isControlCenterOpen)
-          Positioned.fill(
-            child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: -1.0, end: 0.0),
-              duration: const Duration(milliseconds: 320),
-              curve: Curves.easeOutCubic,
-              builder: (context, offset, child) {
-                return FractionalTranslation(
-                  translation: Offset(0, offset),
-                  child: child,
-                );
-              },
-              child: Ios26ControlCenter(
-                onClose: () => _toggleControlCenter(false),
-                onOpenApp: (appId) {
-                  _toggleControlCenter(false);
-                  _openApp(appId);
+                  }
                 },
+                behavior: HitTestBehavior.translucent,
+                child: Image.asset(
+                  _getWallpaperAsset(),
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                ),
               ),
             ),
-          ),
-      ],
+
+            // 2. 홈 스크린 본체 콘텐츠 (웹뷰 & 모바일 동일 패딩 규격 적용)
+            Positioned.fill(
+              child: Transform.scale(
+                scale: 1.0 - (0.07 * maxVal),
+                alignment: Alignment.center,
+                child: SafeArea(
+                  top: !isFrame,
+                  bottom: false,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: isFrame ? 12.0 : 0.0,
+                      bottom: isFrame ? 8.0 : (MediaQuery.of(context).padding.bottom > 0 ? 0.0 : 8.0),
+                    ),
+                    child: Column(
+                      children: [
+                        // 최상단 상태바 (좌측 드래그: 알림센터, 우측 드래그: 제어센터)
+                        Ios26StatusBar(
+                          timeString: widget.timeString,
+                          onDynamicIslandTap: () {
+                            if (_isNotificationCenterOpen) {
+                              _closeOverlays();
+                            } else {
+                              _notificationCenterController.animateTo(1.0, curve: Curves.easeOutCubic);
+                            }
+                          },
+                          onLeftDragStart: (_) {},
+                          onLeftDragUpdate: (details) {
+                            if (_controlCenterController.value > 0) return;
+                            final delta = details.primaryDelta ?? 0;
+                            _notificationCenterController.value =
+                                (_notificationCenterController.value + delta / 420.0).clamp(0.0, 1.0);
+                          },
+                          onLeftDragEnd: (details) {
+                            final velocity = details.primaryVelocity ?? 0;
+                            if (velocity > 250) {
+                              _notificationCenterController.animateTo(1.0, curve: Curves.easeOutCubic);
+                            } else if (velocity < -250) {
+                              _notificationCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+                            } else {
+                              if (_notificationCenterController.value > 0.35) {
+                                _notificationCenterController.animateTo(1.0, curve: Curves.easeOutCubic);
+                              } else {
+                                _notificationCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+                              }
+                            }
+                          },
+                          onRightDragStart: (_) {},
+                          onRightDragUpdate: (details) {
+                            if (_notificationCenterController.value > 0) return;
+                            final delta = details.primaryDelta ?? 0;
+                            _controlCenterController.value =
+                                (_controlCenterController.value + delta / 420.0).clamp(0.0, 1.0);
+                          },
+                          onRightDragEnd: (details) {
+                            final velocity = details.primaryVelocity ?? 0;
+                            if (velocity > 250) {
+                              _controlCenterController.animateTo(1.0, curve: Curves.easeOutCubic);
+                            } else if (velocity < -250) {
+                              _controlCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+                            } else {
+                              if (_controlCenterController.value > 0.35) {
+                                _controlCenterController.animateTo(1.0, curve: Curves.easeOutCubic);
+                              } else {
+                                _controlCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+                              }
+                            }
+                          },
+                        ),
+
+                        // 편집 모드 헤더
+                        AnimatedCrossFade(
+                          firstChild: const SizedBox(height: 8),
+                          secondChild: _buildEditModeHeader(),
+                          crossFadeState: _isEditMode
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: const Duration(milliseconds: 200),
+                        ),
+
+                        // 좌우 슬라이드 PageView (웹/모바일/마우스/터치 전방위 드래그 지원)
+                        Expanded(
+                          child: ScrollConfiguration(
+                            behavior: const Ios26ScrollBehavior(),
+                            child: PageView(
+                              controller: _pageController,
+                              physics: const BouncingScrollPhysics(),
+                              onPageChanged: (page) {
+                                setState(() {
+                                  _currentPage = page;
+                                });
+                              },
+                              children: [
+                                _buildPage1(),
+                                _buildPage2(),
+                                _buildPage3AppLibrary(),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // iOS 26 리퀴드 글래스 검색 캡슐 (Search Capsule)
+                        _buildSearchCapsule(),
+                        const SizedBox(height: 10),
+
+                        // 3. Apple 공식 리퀴드 글래스 독 (Dock)
+                        Ios26Dock(
+                          onOpenApp: _openApp,
+                          isEditMode: _isEditMode,
+                          onEnterEditMode: _enterEditMode,
+                        ),
+                        const SizedBox(height: 10),
+
+                        // 4. 하단 홈 인디케이터 바
+                        Ios26HomeIndicator(onHome: () {
+                          if (isOverlayActive) {
+                            _closeOverlays();
+                            return;
+                          }
+                          if (_isEditMode) {
+                            _exitEditMode();
+                            return;
+                          }
+                          if (_currentPage != 0) {
+                            _pageController.animateToPage(
+                              0,
+                              duration: const Duration(milliseconds: 350),
+                              curve: Curves.easeOutCubic,
+                            );
+                          }
+                        }),
+                        const SizedBox(height: 6),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // 3. 점진적 배경 블러 (Progressive Backdrop Filter Blur)
+            if (isOverlayActive)
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: _closeOverlays,
+                  behavior: HitTestBehavior.opaque,
+                  child: ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: 28.0 * maxVal,
+                        sigmaY: 28.0 * maxVal,
+                      ),
+                      child: Container(
+                        color: Colors.black.withValues(alpha: 0.28 * maxVal),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+            // 4. 앱 실행 오버레이
+            if (_activeApp != null)
+              Positioned.fill(
+                child: _buildAppOverlay(),
+              ),
+
+            // 5. iOS 26 공식 알림 센터 (좌측 상태바 드래그 다운)
+            if (ncVal > 0.001)
+              Positioned.fill(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onVerticalDragUpdate: (details) {
+                    final delta = details.primaryDelta ?? 0;
+                    _notificationCenterController.value =
+                        (_notificationCenterController.value + delta / 420.0).clamp(0.0, 1.0);
+                  },
+                  onVerticalDragEnd: (details) {
+                    final velocity = details.primaryVelocity ?? 0;
+                    if (velocity < -150) {
+                      _notificationCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+                    } else if (velocity > 150) {
+                      _notificationCenterController.animateTo(1.0, curve: Curves.easeOutCubic);
+                    } else {
+                      if (_notificationCenterController.value > 0.5) {
+                        _notificationCenterController.animateTo(1.0, curve: Curves.easeOutCubic);
+                      } else {
+                        _notificationCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+                      }
+                    }
+                  },
+                  child: FractionalTranslation(
+                    translation: Offset(0, -1.0 + ncVal),
+                    child: Ios26NotificationCenter(
+                      timeString: widget.timeString,
+                      dateString: widget.dateString,
+                      onClose: () => _notificationCenterController.animateTo(0.0, curve: Curves.easeOutCubic),
+                      onOpenApp: (appId) {
+                        _notificationCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+                        _openApp(appId);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+
+            // 6. iOS 26 공식 리퀴드 글래스 제어 센터 (우측 상태바 드래그 다운)
+            if (ccVal > 0.001)
+              Positioned.fill(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onVerticalDragUpdate: (details) {
+                    final delta = details.primaryDelta ?? 0;
+                    _controlCenterController.value =
+                        (_controlCenterController.value + delta / 420.0).clamp(0.0, 1.0);
+                  },
+                  onVerticalDragEnd: (details) {
+                    final velocity = details.primaryVelocity ?? 0;
+                    if (velocity < -150) {
+                      _controlCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+                    } else if (velocity > 150) {
+                      _controlCenterController.animateTo(1.0, curve: Curves.easeOutCubic);
+                    } else {
+                      if (_controlCenterController.value > 0.5) {
+                        _controlCenterController.animateTo(1.0, curve: Curves.easeOutCubic);
+                      } else {
+                        _controlCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+                      }
+                    }
+                  },
+                  child: FractionalTranslation(
+                    translation: Offset(0, -1.0 + ccVal),
+                    child: Ios26ControlCenter(
+                      onClose: () => _controlCenterController.animateTo(0.0, curve: Curves.easeOutCubic),
+                      onOpenApp: (appId) {
+                        _controlCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+                        _openApp(appId);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 
@@ -744,7 +896,34 @@ class _Ios26ViewState extends State<Ios26View> {
             bottom: false,
             child: Ios26StatusBar(
               timeString: widget.timeString,
-              onOpenControlCenter: () => _toggleControlCenter(true),
+              onLeftDragUpdate: (details) {
+                if (_controlCenterController.value > 0) return;
+                final delta = details.primaryDelta ?? 0;
+                _notificationCenterController.value =
+                    (_notificationCenterController.value + delta / 420.0).clamp(0.0, 1.0);
+              },
+              onLeftDragEnd: (details) {
+                final velocity = details.primaryVelocity ?? 0;
+                if (velocity > 250 || _notificationCenterController.value > 0.35) {
+                  _notificationCenterController.animateTo(1.0, curve: Curves.easeOutCubic);
+                } else {
+                  _notificationCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+                }
+              },
+              onRightDragUpdate: (details) {
+                if (_notificationCenterController.value > 0) return;
+                final delta = details.primaryDelta ?? 0;
+                _controlCenterController.value =
+                    (_controlCenterController.value + delta / 420.0).clamp(0.0, 1.0);
+              },
+              onRightDragEnd: (details) {
+                final velocity = details.primaryVelocity ?? 0;
+                if (velocity > 250 || _controlCenterController.value > 0.35) {
+                  _controlCenterController.animateTo(1.0, curve: Curves.easeOutCubic);
+                } else {
+                  _controlCenterController.animateTo(0.0, curve: Curves.easeOutCubic);
+                }
+              },
             ),
           ),
         ),
