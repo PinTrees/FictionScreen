@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 /// iPhone iOS 하단 4칸 글래스 독 & 홈 인디케이터
 class IosDock extends StatelessWidget {
   final Function(String templateId) onOpenTemplate;
+  final Function(String appId) onOpenApp;
   final VoidCallback onOpenSettings;
 
   const IosDock({
     super.key,
     required this.onOpenTemplate,
+    required this.onOpenApp,
     required this.onOpenSettings,
   });
 
@@ -36,13 +38,13 @@ class IosDock extends StatelessWidget {
                 children: [
                   _buildDockIconButton(
                     icon: CupertinoIcons.phone_fill,
-                    bg: const Color(0xFF10B981),
-                    onTap: () {},
+                    bg: const Color(0xFF34C759),
+                    onTap: () => onOpenApp('phone'),
                   ),
                   _buildDockIconButton(
                     icon: CupertinoIcons.compass,
-                    bg: const Color(0xFF3B82F6),
-                    onTap: () {},
+                    bg: const Color(0xFF007AFF),
+                    onTap: () => onOpenApp('safari'),
                   ),
                   _buildDockIconButton(
                     icon: null,
@@ -53,8 +55,8 @@ class IosDock extends StatelessWidget {
                   ),
                   _buildDockIconButton(
                     icon: CupertinoIcons.gear_alt_fill,
-                    bg: const Color(0xFF64748B),
-                    onTap: onOpenSettings,
+                    bg: const Color(0xFF636366),
+                    onTap: () => onOpenApp('settings'),
                   ),
                 ],
               ),

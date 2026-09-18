@@ -1,11 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../common/os_app_item.dart';
+import 'apps/calculator/calculator_window.dart';
+import 'apps/messages/messages_window.dart';
+import 'apps/notes/notes_window.dart';
+import 'apps/phone/phone_window.dart';
+import 'apps/photos/photos_window.dart';
+import 'apps/safari/safari_window.dart';
+import 'apps/settings/settings_window.dart';
 import 'ios_dock.dart';
 import 'ios_statusbar.dart';
+import 'widgets/ios_control_center.dart';
 
-/// iPhone iOS 전용 모바일 홈스크린 뷰
-class IosView extends StatelessWidget {
+/// iPhone iOS 18 최신 스타일 모바일 홈스크린 뷰
+class IosView extends StatefulWidget {
   final String timeString;
   final String dateString;
   final String currentWallpaper;
@@ -26,23 +34,51 @@ class IosView extends StatelessWidget {
   });
 
   @override
+  State<IosView> createState() => _IosViewState();
+}
+
+class _IosViewState extends State<IosView> {
+  bool _isControlCenterOpen = false;
+  String? _activeIosApp;
+
+  void _openIosApp(String appId) {
+    setState(() {
+      _activeIosApp = appId;
+    });
+  }
+
+  void _closeIosApp() {
+    setState(() {
+      _activeIosApp = null;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // 1. iOS 배경화면
+        // 1. iOS 18 공식 고해상도 그래디언트 배경화면
         Positioned.fill(
           child: _buildIosWallpaper(),
         ),
 
-        // 2. 상단 상태바 & 다이내믹 아일랜드
+        // 2. 상단 상태바 & 다이내믹 아일랜드 (우측 드래그 시 제어센터)
         Positioned(
           top: 0,
           left: 0,
           right: 0,
-          child: IosStatusBar(timeString: timeString),
+          child: GestureDetector(
+            onVerticalDragUpdate: (details) {
+              if (details.primaryDelta != null && details.primaryDelta! > 6) {
+                setState(() => _isControlCenterOpen = true);
+              }
+            },
+            onTap: () => setState(() => _isControlCenterOpen = true),
+            child: IosStatusBar(timeString: widget.timeString),
+          ),
         ),
 
-        // 3. 홈 화면 콘텐츠 (시계 위젯 + 앱 그리드)
+        // 3. 홈 화면 콘텐츠 (시계 위젯 + iOS 18 앱 그리드)
         Positioned.fill(
           top: 70,
           bottom: 110,
@@ -50,32 +86,35 @@ class IosView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                // 시계 위젯
-                Column(
-                  children: [
-                    Text(
-                      dateString,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                // iOS 18 대표 모듈식 시계 위젯
+                GestureDetector(
+                  onTap: () => setState(() => _isControlCenterOpen = true),
+                  child: Column(
+                    children: [
+                      Text(
+                        widget.dateString,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      timeString,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 64,
-                        fontWeight: FontWeight.w200,
-                        letterSpacing: -2,
+                      const SizedBox(height: 2),
+                      Text(
+                        widget.timeString,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 64,
+                          fontWeight: FontWeight.w200,
+                          letterSpacing: -2,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 28),
 
-                // 앱 아이콘 그리드
+                // iOS 18 앱 아이콘 그리드 (기본 앱 + 템플릿 모조 스크린 앱)
                 Expanded(
                   child: GridView.count(
                     crossAxisCount: 4,
@@ -84,11 +123,46 @@ class IosView extends StatelessWidget {
                     childAspectRatio: 0.8,
                     physics: const BouncingScrollPhysics(),
                     children: [
+                      // iOS 기본 앱들
+                      OsAppItem(
+                        title: '전화',
+                        icon: CupertinoIcons.phone_fill,
+                        iconColor: Colors.white,
+                        backgroundColor: const Color(0xFF34C759),
+                        isDesktop: false,
+                        onTap: () => _openIosApp('phone'),
+                      ),
+                      OsAppItem(
+                        title: '메시지',
+                        icon: CupertinoIcons.chat_bubble_fill,
+                        iconColor: Colors.white,
+                        backgroundColor: const Color(0xFF34C759),
+                        isDesktop: false,
+                        onTap: () => _openIosApp('messages'),
+                      ),
+                      OsAppItem(
+                        title: '사진',
+                        icon: CupertinoIcons.photo_fill_on_rectangle_fill,
+                        iconColor: Colors.white,
+                        backgroundColor: const Color(0xFFFF9500),
+                        isDesktop: false,
+                        onTap: () => _openIosApp('photos'),
+                      ),
+                      OsAppItem(
+                        title: 'Safari',
+                        icon: CupertinoIcons.compass,
+                        iconColor: Colors.white,
+                        backgroundColor: const Color(0xFF007AFF),
+                        isDesktop: false,
+                        onTap: () => _openIosApp('safari'),
+                      ),
+
+                      // SNS & 메신저 모조 스크린 앱들
                       OsAppItem(
                         title: '카카오톡',
                         imageAsset: 'assets/images/kakaotalk_icon.webp',
                         isDesktop: false,
-                        onTap: () => onOpenTemplate('kakaotalk'),
+                        onTap: () => widget.onOpenTemplate('kakaotalk'),
                       ),
                       OsAppItem(
                         title: '토스 (Toss)',
@@ -96,13 +170,13 @@ class IosView extends StatelessWidget {
                         iconColor: Colors.white,
                         backgroundColor: const Color(0xFF0050FF),
                         isDesktop: false,
-                        onTap: () => onOpenTemplate('toss'),
+                        onTap: () => widget.onOpenTemplate('toss'),
                       ),
                       OsAppItem(
                         title: 'Instagram',
                         imageAsset: 'assets/images/instagram_icon.webp',
                         isDesktop: false,
-                        onTap: () => onOpenTemplate('instagram'),
+                        onTap: () => widget.onOpenTemplate('instagram'),
                       ),
                       OsAppItem(
                         title: 'X (Twitter)',
@@ -110,7 +184,7 @@ class IosView extends StatelessWidget {
                         iconColor: Colors.white,
                         backgroundColor: const Color(0xFF1D9BF0),
                         isDesktop: false,
-                        onTap: () => onOpenTemplate('x_twitter'),
+                        onTap: () => widget.onOpenTemplate('x_twitter'),
                       ),
                       OsAppItem(
                         title: 'YouTube',
@@ -118,7 +192,7 @@ class IosView extends StatelessWidget {
                         iconColor: Colors.white,
                         backgroundColor: const Color(0xFFFF0000),
                         isDesktop: false,
-                        onTap: () => onOpenTemplate('youtube'),
+                        onTap: () => widget.onOpenTemplate('youtube'),
                       ),
                       OsAppItem(
                         title: '핀터레스트',
@@ -126,7 +200,7 @@ class IosView extends StatelessWidget {
                         iconColor: Colors.white,
                         backgroundColor: const Color(0xFFE60023),
                         isDesktop: false,
-                        onTap: () => onOpenTemplate('pinterest'),
+                        onTap: () => widget.onOpenTemplate('pinterest'),
                       ),
                       OsAppItem(
                         title: '배달의민족',
@@ -134,15 +208,33 @@ class IosView extends StatelessWidget {
                         iconColor: Colors.white,
                         backgroundColor: const Color(0xFF2AC1BC),
                         isDesktop: false,
-                        onTap: () => onOpenTemplate('delivery'),
+                        onTap: () => widget.onOpenTemplate('delivery'),
+                      ),
+
+                      // 유틸리티 & 설정
+                      OsAppItem(
+                        title: '계산기',
+                        icon: CupertinoIcons.number,
+                        iconColor: Colors.white,
+                        backgroundColor: const Color(0xFFFF9500),
+                        isDesktop: false,
+                        onTap: () => _openIosApp('calculator'),
                       ),
                       OsAppItem(
-                        title: '시스템 설정',
+                        title: '메모',
+                        icon: CupertinoIcons.doc_plaintext,
+                        iconColor: Colors.white,
+                        backgroundColor: const Color(0xFFEAB308),
+                        isDesktop: false,
+                        onTap: () => _openIosApp('notes'),
+                      ),
+                      OsAppItem(
+                        title: '설정',
                         icon: CupertinoIcons.gear_alt_fill,
                         iconColor: Colors.white,
-                        backgroundColor: const Color(0xFF64748B),
+                        backgroundColor: const Color(0xFF636366),
                         isDesktop: false,
-                        onTap: onOpenSettings,
+                        onTap: () => _openIosApp('settings'),
                       ),
                       OsAppItem(
                         title: '랜딩 홈',
@@ -150,7 +242,7 @@ class IosView extends StatelessWidget {
                         iconColor: Colors.white,
                         backgroundColor: const Color(0xFF334155),
                         isDesktop: false,
-                        onTap: onGoHome,
+                        onTap: widget.onGoHome,
                       ),
                       OsAppItem(
                         title: '로그아웃',
@@ -158,7 +250,7 @@ class IosView extends StatelessWidget {
                         iconColor: Colors.white,
                         backgroundColor: const Color(0xFFEF4444),
                         isDesktop: false,
-                        onTap: onSignOut,
+                        onTap: widget.onSignOut,
                       ),
                     ],
                   ),
@@ -168,22 +260,63 @@ class IosView extends StatelessWidget {
           ),
         ),
 
-        // 4. 하단 독 & 홈 바
+        // 4. 하단 iOS 독 & 홈 바
         Positioned(
           bottom: 0,
           left: 0,
           right: 0,
           child: IosDock(
-            onOpenTemplate: onOpenTemplate,
-            onOpenSettings: onOpenSettings,
+            onOpenTemplate: widget.onOpenTemplate,
+            onOpenApp: _openIosApp,
+            onOpenSettings: widget.onOpenSettings,
           ),
         ),
+
+        // 5. iOS 기본 앱 전체화면 오버레이
+        if (_activeIosApp != null)
+          Positioned.fill(
+            child: _buildIosAppWidget(_activeIosApp!),
+          ),
+
+        // 6. iOS 18 Control Center (제어 센터) 오버레이
+        if (_isControlCenterOpen)
+          Positioned.fill(
+            child: IosControlCenter(
+              timeString: widget.timeString,
+              onClose: () => setState(() => _isControlCenterOpen = false),
+              onOpenSettings: widget.onOpenSettings,
+            ),
+          ),
       ],
     );
   }
 
+  Widget _buildIosAppWidget(String appId) {
+    switch (appId) {
+      case 'phone':
+        return IosPhoneWindow(onClose: _closeIosApp);
+      case 'messages':
+        return IosMessagesWindow(onClose: _closeIosApp);
+      case 'photos':
+        return IosPhotosWindow(onClose: _closeIosApp);
+      case 'settings':
+        return IosSettingsWindow(
+          onClose: _closeIosApp,
+          onOpenSystemSettings: widget.onOpenSettings,
+        );
+      case 'safari':
+        return IosSafariWindow(onClose: _closeIosApp);
+      case 'calculator':
+        return IosCalculatorWindow(onClose: _closeIosApp);
+      case 'notes':
+        return IosNotesWindow(onClose: _closeIosApp);
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
   Widget _buildIosWallpaper() {
-    switch (currentWallpaper) {
+    switch (widget.currentWallpaper) {
       case 'bloom':
         return Container(
           decoration: const BoxDecoration(
