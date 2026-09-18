@@ -38,6 +38,23 @@ class Macos27WindowData {
   set position(Offset newPos) => positionNotifier.value = newPos;
 }
 
+/// macOS 데스크톱 사용자 생성 아이템 모델
+class MacosDesktopItem {
+  final String id;
+  String title;
+  Offset position;
+  final String imageAsset;
+  final bool isFolder;
+
+  MacosDesktopItem({
+    required this.id,
+    required this.title,
+    required this.position,
+    required this.imageAsset,
+    this.isFolder = false,
+  });
+}
+
 /// macOS 27 Golden Gate 플래그십 데스크톱 뷰 레이아웃
 /// - Apple Silicon 전용 Liquid Glass 투명도 & 머티리얼 시스템
 /// - Siri AI & Spotlight "Search or Ask" 상단 메뉴바
@@ -77,6 +94,28 @@ class _Macos27ViewState extends State<Macos27View> {
   String _activeWallpaper = '';
   double _glassTransparency = 0.55;
   Offset? _contextMenuPos;
+  final List<MacosDesktopItem> _customFolders = [];
+
+  void _handleCreateNewFolder(Offset clickPos) {
+    final folderNum = _customFolders.length + 1;
+    final title = folderNum == 1 ? '무제 폴더' : '무제 폴더 $folderNum';
+    final size = MediaQuery.of(context).size;
+    final pos = Offset(
+      (clickPos.dx - 30).clamp(20.0, size.width - 120.0),
+      (clickPos.dy - 30).clamp(50.0, size.height - 180.0),
+    );
+    setState(() {
+      _customFolders.add(
+        MacosDesktopItem(
+          id: 'folder_${DateTime.now().millisecondsSinceEpoch}',
+          title: title,
+          position: pos,
+          imageAsset: 'assets/images/macos/folder.png',
+          isFolder: true,
+        ),
+      );
+    });
+  }
 
   @override
   void initState() {
@@ -181,6 +220,57 @@ class _Macos27ViewState extends State<Macos27View> {
           ),
         ),
 
+        // 2-1. 사용자 생성 데스크톱 폴더 (드래그 이동 & 더블클릭 Finder 열기)
+        ..._customFolders.map((folder) {
+          return Positioned(
+            left: folder.position.dx,
+            top: folder.position.dy,
+            child: GestureDetector(
+              onPanUpdate: (details) {
+                setState(() => folder.position += details.delta);
+              },
+              onTap: () => _openApp('finder'),
+              onSecondaryTapDown: (details) {
+                setState(() => _contextMenuPos = details.globalPosition);
+              },
+              child: Container(
+                width: 76,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
+                      folder.imageAsset,
+                      width: 54,
+                      height: 54,
+                      filterQuality: FilterQuality.high,
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.45),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        folder.title,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }),
+
         // 3. MDI 가상 floating 윈도우 창 레이어
         ..._activeWindows.map((win) {
           if (win.isMinimized) return const SizedBox.shrink();
@@ -213,6 +303,7 @@ class _Macos27ViewState extends State<Macos27View> {
             timeString: widget.timeString,
             glassTransparency: _glassTransparency,
             onOpenSettings: () => _openApp('settings'),
+            onOpenOsSwitch: () => _openApp('settings'),
             onSignOut: widget.onSignOut,
             onGoHome: widget.onGoHome,
             onToggleSpotlight: () => _openApp('finder'),
@@ -238,7 +329,7 @@ class _Macos27ViewState extends State<Macos27View> {
         if (_contextMenuPos != null)
           Macos27ContextMenu(
             position: _contextMenuPos!,
-            onNewFolder: () {},
+            onNewFolder: () => _handleCreateNewFolder(_contextMenuPos!),
             onOpenWallpaperSettings: () => _openApp('settings'),
             onOpenSettings: () => _openApp('settings'),
             onOpenOsSwitch: () => _openApp('settings'),

@@ -140,6 +140,8 @@ class _Macos27DockState extends State<Macos27Dock> {
     final scale = _getScale(index);
     final size = 48.0 * scale;
     final isRunning = appId != null && widget.activeAppIds.contains(appId);
+    final isDefaultApp = index < 12;
+    final imageScale = isDefaultApp ? 1.20 : 1.0;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hoveredIndex = index),
@@ -174,34 +176,43 @@ class _Macos27DockState extends State<Macos27Dock> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Container(
+                SizedBox(
                   width: size,
                   height: size,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(size * 0.224),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.28),
-                        blurRadius: 8 * scale,
-                        offset: Offset(0, 3 * scale),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(size * 0.224),
-                    child: imageAsset != null
-                        ? Image.asset(imageAsset, fit: BoxFit.cover, filterQuality: FilterQuality.high)
-                        : Container(
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF2563EB), Color(0xFF60CDFF)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(size * 0.224),
+                  child: Center(
+                    child: Transform.scale(
+                      scale: imageScale,
+                      child: Container(
+                        width: size,
+                        height: size,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(size * 0.224),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.28),
+                              blurRadius: 8 * scale,
+                              offset: Offset(0, 3 * scale),
                             ),
-                            child: Icon(icon ?? CupertinoIcons.app, color: Colors.white, size: size * 0.54),
-                          ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(size * 0.224),
+                          child: imageAsset != null
+                              ? Image.asset(imageAsset, fit: BoxFit.cover, filterQuality: FilterQuality.high)
+                              : Container(
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [Color(0xFF2563EB), Color(0xFF60CDFF)],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(size * 0.224),
+                                  ),
+                                  child: Icon(icon ?? CupertinoIcons.app, color: Colors.white, size: size * 0.54),
+                                ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 3),

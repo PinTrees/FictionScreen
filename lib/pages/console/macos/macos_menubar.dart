@@ -44,9 +44,15 @@ class MacosMenuBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   side: const BorderSide(color: Colors.white12),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4),
-                  child: Text('', style: TextStyle(color: Colors.white, fontSize: 16, height: 1)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                  child: Image.asset(
+                    'assets/images/apple_logo.webp',
+                    width: 14,
+                    height: 14,
+                    color: Colors.white,
+                    filterQuality: FilterQuality.high,
+                  ),
                 ),
                 onSelected: (val) {
                   if (val == 'settings') onOpenSettings();
