@@ -1,6 +1,8 @@
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../services/auth_service.dart';
 import '../models/delivery_model.dart';
 import '../models/kakaotalk_model.dart';
 import '../models/screen_template.dart';
@@ -233,27 +235,94 @@ class _HomePageState extends State<HomePage> {
                 ],
 
                 // Action CTA
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xFF0A0B10),
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                    minimumSize: const Size(0, 36),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  ),
-                  onPressed: () => context.push('/studio/kakaotalk'),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '스튜디오 열기',
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, letterSpacing: -0.2),
-                      ),
-                      SizedBox(width: 4),
-                      Icon(Icons.arrow_outward_rounded, size: 13),
-                    ],
-                  ),
+                StreamBuilder<User?>(
+                  stream: AuthService.authStateChanges,
+                  builder: (context, snapshot) {
+                    final user = snapshot.data ?? AuthService.currentUser;
+                    if (user != null) {
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircleAvatar(
+                            radius: 14,
+                            backgroundImage: user.photoURL != null ? NetworkImage(user.photoURL!) : null,
+                            backgroundColor: const Color(0xFF6366F1),
+                            child: user.photoURL == null
+                                ? Text(user.displayName?[0] ?? 'U', style: const TextStyle(color: Colors.white, fontSize: 11))
+                                : null,
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: const Color(0xFF0A0B10),
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+                              minimumSize: const Size(0, 36),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            ),
+                            onPressed: () => context.go('/console'),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('OS 콘솔 열기', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+                                SizedBox(width: 4),
+                                Icon(Icons.desktop_mac_rounded, size: 14),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                            minimumSize: const Size(0, 36),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          ),
+                          onPressed: () => context.go('/console'),
+                          child: const Text('콘솔 체험', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: const Color(0xFF0A0B10),
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+                            minimumSize: const Size(0, 36),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          ),
+                          onPressed: () async {
+                            try {
+                              await AuthService.signInWithGoogle();
+                              if (context.mounted) {
+                                context.go('/console');
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                context.go('/console');
+                              }
+                            }
+                          },
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('Google 로그인', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+                              SizedBox(width: 4),
+                              Icon(Icons.arrow_forward_rounded, size: 14),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
@@ -382,16 +451,16 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 18),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    onPressed: () => context.push('/studio/kakaotalk'),
+                    onPressed: () => context.go('/console'),
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '지금 제작 스튜디오 시작',
+                          'OS 콘솔 작업공간 입장',
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: -0.3),
                         ),
                         SizedBox(width: 8),
-                        Icon(Icons.arrow_forward_rounded, size: 16),
+                        Icon(Icons.desktop_windows_rounded, size: 18),
                       ],
                     ),
                   ),

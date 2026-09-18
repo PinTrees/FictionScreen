@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../pages/console_page.dart';
 import '../pages/home_page.dart';
 import '../pages/studio_page.dart';
 
@@ -16,6 +17,11 @@ class AppRouter {
         path: '/',
         name: 'home',
         builder: (context, state) => const HomePage(),
+      ),
+      GoRoute(
+        path: '/console',
+        name: 'console',
+        builder: (context, state) => const ConsolePage(),
       ),
       GoRoute(
         path: '/studio/:templateId',
