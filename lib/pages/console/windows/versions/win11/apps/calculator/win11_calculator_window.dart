@@ -13,6 +13,7 @@ class Win11CalculatorWindow extends StatefulWidget {
   final Function(DragUpdateDetails)? onTitleDragUpdate;
   final double width;
   final double height;
+  final bool isMaximized;
 
   const Win11CalculatorWindow({
     super.key,
@@ -24,6 +25,7 @@ class Win11CalculatorWindow extends StatefulWidget {
     this.onTitleDragUpdate,
     this.width = 340,
     this.height = 520,
+    this.isMaximized = false,
   });
 
   @override
@@ -235,6 +237,7 @@ class _Win11CalculatorWindowState extends State<Win11CalculatorWindow> {
       iconAsset: 'assets/images/windows/calc.png',
       width: widget.width,
       height: widget.height,
+      isMaximized: widget.isMaximized,
       onClose: widget.onClose,
       onMinimize: widget.onMinimize,
       onMaximize: widget.onMaximize,

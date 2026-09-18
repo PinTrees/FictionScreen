@@ -16,6 +16,7 @@ class Win11SettingsWindow extends StatefulWidget {
   final String currentWallpaper;
   final double width;
   final double height;
+  final bool isMaximized;
 
   const Win11SettingsWindow({
     super.key,
@@ -30,6 +31,7 @@ class Win11SettingsWindow extends StatefulWidget {
     this.currentWallpaper = 'win11_bloom',
     this.width = 880,
     this.height = 580,
+    this.isMaximized = false,
   });
 
   @override
@@ -180,12 +182,21 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
             TextField(
               controller: controller,
               style: const TextStyle(color: Colors.white, fontSize: 14),
+              cursorColor: const Color(0xFF60CDFF),
               decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xFF1E1E1E),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4),
                   borderSide: const BorderSide(color: Color(0xFF60CDFF)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: const BorderSide(color: Color(0xFF60CDFF), width: 1.5),
                 ),
               ),
             ),
@@ -263,6 +274,7 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
       iconAsset: 'assets/images/windows/settings/System.webp',
       width: widget.width,
       height: widget.height,
+      isMaximized: widget.isMaximized,
       onClose: widget.onClose,
       onMinimize: widget.onMinimize,
       onMaximize: widget.onMaximize,
@@ -373,34 +385,42 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
             ),
           ),
 
-          // 설정 검색창 (스크린샷과 동일하게 우측에 돋보기 아이콘)
+          // 설정 검색창 (스크린샷과 동일하게 우측에 돋보기 아이콘, Fluent 통합 디자인)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-            child: Container(
+            child: SizedBox(
               height: 32,
-              decoration: BoxDecoration(
-                color: const Color(0xFF2B2B2B),
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      style: const TextStyle(color: Colors.white, fontSize: 12.5),
-                      decoration: const InputDecoration(
-                        hintText: '설정 검색',
-                        hintStyle: TextStyle(color: Colors.white38, fontSize: 12),
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      onChanged: (val) => setState(() => _searchQuery = val.trim()),
-                    ),
+              child: TextField(
+                style: const TextStyle(color: Colors.white, fontSize: 12.5),
+                cursorColor: const Color(0xFF60CDFF),
+                cursorHeight: 14,
+                decoration: InputDecoration(
+                  isDense: true,
+                  filled: true,
+                  fillColor: const Color(0xFF282828),
+                  hoverColor: const Color(0xFF303030),
+                  hintText: '설정 검색',
+                  hintStyle: const TextStyle(color: Colors.white38, fontSize: 12),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4),
+                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.09)),
                   ),
-                  const Icon(CupertinoIcons.search, size: 13, color: Colors.white54),
-                ],
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4),
+                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.09)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4),
+                    borderSide: const BorderSide(color: Color(0xFF60CDFF), width: 1.5),
+                  ),
+                  suffixIcon: const Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: Icon(CupertinoIcons.search, size: 14, color: Colors.white54),
+                  ),
+                  suffixIconConstraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                ),
+                onChanged: (val) => setState(() => _searchQuery = val.trim()),
               ),
             ),
           ),

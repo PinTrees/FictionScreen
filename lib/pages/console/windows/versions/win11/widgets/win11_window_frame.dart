@@ -19,6 +19,7 @@ class Win11WindowFrame extends StatefulWidget {
   final double width;
   final double height;
   final Function(int layoutType, int zoneIndex)? onSnapLayout;
+  final bool isMaximized;
 
   const Win11WindowFrame({
     super.key,
@@ -36,6 +37,7 @@ class Win11WindowFrame extends StatefulWidget {
     this.width = 820,
     this.height = 540,
     this.onSnapLayout,
+    this.isMaximized = false,
   });
 
   @override
@@ -47,6 +49,10 @@ class _Win11WindowFrameState extends State<Win11WindowFrame> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final bool effectiveMaximized = widget.isMaximized ||
+        (widget.width >= screenSize.width - 5 && widget.height >= screenSize.height - 55);
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -55,28 +61,32 @@ class _Win11WindowFrameState extends State<Win11WindowFrame> {
           height: widget.height,
           decoration: BoxDecoration(
             color: const Color(0xFF202020).withValues(alpha: 0.94),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.16),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.55),
-                blurRadius: 36,
-                spreadRadius: 2,
-                offset: const Offset(0, 14),
-              ),
-            ],
+            borderRadius: effectiveMaximized ? BorderRadius.zero : BorderRadius.circular(12),
+            border: effectiveMaximized
+                ? null
+                : Border.all(
+                    color: Colors.white.withValues(alpha: 0.16),
+                    width: 1,
+                  ),
+            boxShadow: effectiveMaximized
+                ? const []
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.55),
+                      blurRadius: 36,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 14),
+                    ),
+                  ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: effectiveMaximized ? BorderRadius.zero : BorderRadius.circular(12),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 35, sigmaY: 35),
               child: Column(
                 children: [
                   // 1. Windows 11 상단 타이틀바
-                  _buildTitleBar(),
+                  _buildTitleBar(effectiveMaximized),
                   // 2. 창 내부 본문
                   Expanded(child: widget.child),
                 ],
@@ -105,7 +115,7 @@ class _Win11WindowFrameState extends State<Win11WindowFrame> {
     );
   }
 
-  Widget _buildTitleBar() {
+  Widget _buildTitleBar(bool isMaximized) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onPanStart: widget.onTitleDragStart,
@@ -146,7 +156,7 @@ class _Win11WindowFrameState extends State<Win11WindowFrame> {
               const Spacer(),
             ],
 
-            // 우측 3버튼 컨트롤 (—, □, ✕)
+            // 우측 3버튼 컨트롤 (—, □ / ❐, ✕)
             _buildWindowButton(
               icon: const Icon(CupertinoIcons.minus, size: 10, color: Colors.white),
               onTap: widget.onMinimize,
@@ -162,14 +172,7 @@ class _Win11WindowFrameState extends State<Win11WindowFrame> {
                 });
               },
               child: _buildWindowButton(
-                icon: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white, width: 1),
-                    borderRadius: BorderRadius.circular(1.5),
-                  ),
-                ),
+                icon: isMaximized ? _buildRestoreIcon() : _buildMaximizeIcon(),
                 onTap: widget.onMaximize,
               ),
             ),
@@ -180,6 +183,53 @@ class _Win11WindowFrameState extends State<Win11WindowFrame> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildMaximizeIcon() {
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white, width: 1),
+        borderRadius: BorderRadius.circular(1.5),
+      ),
+    );
+  }
+
+  Widget _buildRestoreIcon() {
+    return SizedBox(
+      width: 10,
+      height: 10,
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Container(
+              width: 7.5,
+              height: 7.5,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white, width: 1),
+                borderRadius: BorderRadius.circular(1),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            child: Container(
+              width: 7.5,
+              height: 7.5,
+              decoration: BoxDecoration(
+                color: const Color(0xFF202020),
+                border: Border.all(color: Colors.white, width: 1),
+                borderRadius: BorderRadius.circular(1),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

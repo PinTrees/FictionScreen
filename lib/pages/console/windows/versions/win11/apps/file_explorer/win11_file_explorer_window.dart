@@ -13,6 +13,7 @@ class Win11FileExplorerWindow extends StatefulWidget {
   final Function(DragUpdateDetails)? onTitleDragUpdate;
   final double width;
   final double height;
+  final bool isMaximized;
 
   const Win11FileExplorerWindow({
     super.key,
@@ -25,6 +26,7 @@ class Win11FileExplorerWindow extends StatefulWidget {
     this.onTitleDragUpdate,
     this.width = 860,
     this.height = 560,
+    this.isMaximized = false,
   });
 
   @override
@@ -43,7 +45,7 @@ class _Win11FileExplorerWindowState extends State<Win11FileExplorerWindow> {
     {'title': '문서', 'icon': 'assets/images/windows/docs.png', 'items': '58개 항목'},
     {'title': '사진', 'icon': 'assets/images/windows/pics.png', 'items': '142개 항목'},
     {'title': '음악', 'icon': 'assets/images/windows/music.png', 'items': '87개 항목'},
-    {'title': '동영상', 'icon': 'assets/images/windows/vid.png', 'items': '21개 항목'},
+    {'title': '동영상', 'icon': 'assets/images/windows/video.png', 'items': '29개 항목'},
   ];
 
   // 최근 사용한 파일 목록
@@ -63,6 +65,7 @@ class _Win11FileExplorerWindowState extends State<Win11FileExplorerWindow> {
       iconAsset: 'assets/images/windows/explorer.png',
       width: widget.width,
       height: widget.height,
+      isMaximized: widget.isMaximized,
       onClose: widget.onClose,
       onMinimize: widget.onMinimize,
       onMaximize: widget.onMaximize,
@@ -358,10 +361,15 @@ class _Win11FileExplorerWindowState extends State<Win11FileExplorerWindow> {
                   Expanded(
                     child: TextField(
                       style: const TextStyle(color: Colors.white, fontSize: 11),
+                      cursorColor: const Color(0xFF60CDFF),
                       decoration: const InputDecoration(
+                        filled: false,
+                        fillColor: Colors.transparent,
                         hintText: '내 PC 검색',
                         hintStyle: TextStyle(color: Colors.white30, fontSize: 11),
                         border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
                       ),

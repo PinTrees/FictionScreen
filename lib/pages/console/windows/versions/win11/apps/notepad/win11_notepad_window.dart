@@ -12,6 +12,7 @@ class Win11NotepadWindow extends StatefulWidget {
   final Function(DragUpdateDetails)? onTitleDragUpdate;
   final double width;
   final double height;
+  final bool isMaximized;
 
   const Win11NotepadWindow({
     super.key,
@@ -23,6 +24,7 @@ class Win11NotepadWindow extends StatefulWidget {
     this.onTitleDragUpdate,
     this.width = 720,
     this.height = 480,
+    this.isMaximized = false,
   });
 
   @override
@@ -59,6 +61,7 @@ class _Win11NotepadWindowState extends State<Win11NotepadWindow> {
       iconAsset: 'assets/images/windows/notepad.png',
       width: widget.width,
       height: widget.height,
+      isMaximized: widget.isMaximized,
       onClose: widget.onClose,
       onMinimize: widget.onMinimize,
       onMaximize: widget.onMaximize,
@@ -171,6 +174,10 @@ class _Win11NotepadWindowState extends State<Win11NotepadWindow> {
                 ),
                 decoration: const InputDecoration(
                   border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  filled: false,
+                  fillColor: Colors.transparent,
                   contentPadding: EdgeInsets.zero,
                 ),
               ),

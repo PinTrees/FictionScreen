@@ -40,27 +40,35 @@ class OsWindowFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final bool isMaximized = width >= screenSize.width - 5 && height >= screenSize.height - 55;
+    final borderRadius = isMaximized ? BorderRadius.zero : BorderRadius.circular(style == WindowStyle.macos ? 12 : 8);
+
     return Center(
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
           color: const Color(0xFF1E212B).withValues(alpha: 0.94),
-          borderRadius: BorderRadius.circular(style == WindowStyle.macos ? 12 : 8),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.15),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.55),
-              blurRadius: 40,
-              offset: const Offset(0, 16),
-            ),
-          ],
+          borderRadius: borderRadius,
+          border: isMaximized
+              ? null
+              : Border.all(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  width: 1,
+                ),
+          boxShadow: isMaximized
+              ? const []
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.55),
+                    blurRadius: 40,
+                    offset: const Offset(0, 16),
+                  ),
+                ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(style == WindowStyle.macos ? 12 : 8),
+          borderRadius: borderRadius,
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
             child: Column(

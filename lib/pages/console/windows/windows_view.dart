@@ -28,6 +28,9 @@ class WindowsWindowData {
   Size size;
   int zIndex;
   bool isMinimized;
+  bool isMaximized;
+  Offset? restorePosition;
+  Size? restoreSize;
 
   WindowsWindowData({
     required this.id,
@@ -36,6 +39,9 @@ class WindowsWindowData {
     required this.size,
     required this.zIndex,
     this.isMinimized = false,
+    this.isMaximized = false,
+    this.restorePosition,
+    this.restoreSize,
   }) : positionNotifier = ValueNotifier<Offset>(position);
 
   Offset get position => positionNotifier.value;
@@ -327,10 +333,17 @@ class _WindowsViewState extends State<WindowsView> {
     final totalH = media.height - 48;
 
     setState(() {
-      if (win.size.width >= totalW - 10 && win.size.height >= totalH - 10) {
-        win.position = const Offset(120, 70);
-        win.size = const Size(820, 540);
+      final bool currentlyMaximized = win.isMaximized ||
+          (win.size.width >= totalW - 10 && win.size.height >= totalH - 10);
+
+      if (currentlyMaximized) {
+        win.isMaximized = false;
+        win.position = win.restorePosition ?? const Offset(120, 70);
+        win.size = win.restoreSize ?? const Size(820, 540);
       } else {
+        win.restorePosition = win.position;
+        win.restoreSize = win.size;
+        win.isMaximized = true;
         win.position = Offset.zero;
         win.size = Size(totalW, totalH);
       }
@@ -393,6 +406,7 @@ class _WindowsViewState extends State<WindowsView> {
     }
 
     setState(() {
+      win.isMaximized = false;
       win.position = Offset(newX, newY);
       win.size = Size(newW, newH);
       _bringToFront(win.id);
@@ -715,6 +729,7 @@ class _WindowsViewState extends State<WindowsView> {
           return Win11FileExplorerWindow(
             width: win.size.width,
             height: win.size.height,
+            isMaximized: win.isMaximized,
             onClose: () => _closeWindow(win.id),
             onMinimize: () => _minimizeWindow(win.id),
             onMaximize: () => _toggleMaximizeWindow(win),
@@ -755,6 +770,7 @@ class _WindowsViewState extends State<WindowsView> {
           return Win11SettingsWindow(
             width: win.size.width,
             height: win.size.height,
+            isMaximized: win.isMaximized,
             onClose: () => _closeWindow(win.id),
             onMinimize: () => _minimizeWindow(win.id),
             onMaximize: () => _toggleMaximizeWindow(win),
@@ -779,6 +795,7 @@ class _WindowsViewState extends State<WindowsView> {
           return Win11CalculatorWindow(
             width: win.size.width,
             height: win.size.height,
+            isMaximized: win.isMaximized,
             onClose: () => _closeWindow(win.id),
             onMinimize: () => _minimizeWindow(win.id),
             onMaximize: () => _toggleMaximizeWindow(win),
@@ -799,6 +816,7 @@ class _WindowsViewState extends State<WindowsView> {
           return Win11NotepadWindow(
             width: win.size.width,
             height: win.size.height,
+            isMaximized: win.isMaximized,
             onClose: () => _closeWindow(win.id),
             onMinimize: () => _minimizeWindow(win.id),
             onMaximize: () => _toggleMaximizeWindow(win),
@@ -971,7 +989,18 @@ class _WindowsMdiWindowWrapperState extends State<_WindowsMdiWindowWrapper> {
 
   void _handleDragStart(DragStartDetails details) {
     widget.onTapFocus();
-    _dragStartOffset = details.globalPosition - widget.windowData.position;
+    if (widget.windowData.isMaximized) {
+      final restoreW = widget.windowData.restoreSize?.width ?? 820.0;
+      final restoreH = widget.windowData.restoreSize?.height ?? 540.0;
+      widget.windowData.isMaximized = false;
+      widget.windowData.size = Size(restoreW, restoreH);
+      final newX = (details.globalPosition.dx - restoreW / 2).clamp(0.0, 3000.0);
+      widget.windowData.position = Offset(newX, details.globalPosition.dy - 20);
+      _dragStartOffset = details.globalPosition - widget.windowData.position;
+      setState(() {});
+    } else {
+      _dragStartOffset = details.globalPosition - widget.windowData.position;
+    }
   }
 
   void _handleDragUpdate(DragUpdateDetails details) {
@@ -990,39 +1019,40 @@ class _WindowsMdiWindowWrapperState extends State<_WindowsMdiWindowWrapper> {
             Positioned.fill(
               child: widget.builder(_handleDragStart, _handleDragUpdate),
             ),
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: GestureDetector(
-                onPanStart: (_) => widget.onTapFocus(),
-                onPanUpdate: (details) {
-                  setState(() {
-                    final newWidth = (widget.windowData.size.width + details.delta.dx).clamp(320.0, 1400.0);
-                    final newHeight = (widget.windowData.size.height + details.delta.dy).clamp(320.0, 900.0);
-                    widget.windowData.size = Size(newWidth, newHeight);
-                  });
-                },
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.resizeUpLeftDownRight,
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    color: Colors.transparent,
-                    child: const Align(
-                      alignment: Alignment.bottomRight,
-                      child: Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Icon(
-                          CupertinoIcons.arrow_down_right,
-                          size: 11,
-                          color: Colors.white38,
+            if (!widget.windowData.isMaximized)
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: GestureDetector(
+                  onPanStart: (_) => widget.onTapFocus(),
+                  onPanUpdate: (details) {
+                    setState(() {
+                      final newWidth = (widget.windowData.size.width + details.delta.dx).clamp(320.0, 1400.0);
+                      final newHeight = (widget.windowData.size.height + details.delta.dy).clamp(320.0, 900.0);
+                      widget.windowData.size = Size(newWidth, newHeight);
+                    });
+                  },
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.resizeUpLeftDownRight,
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      color: Colors.transparent,
+                      child: const Align(
+                        alignment: Alignment.bottomRight,
+                        child: Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Icon(
+                            CupertinoIcons.arrow_down_right,
+                            size: 11,
+                            color: Colors.white38,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),
