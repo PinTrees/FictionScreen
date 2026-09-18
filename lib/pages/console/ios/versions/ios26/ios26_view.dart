@@ -58,84 +58,35 @@ class _Ios26ViewState extends State<Ios26View> {
   @override
   void initState() {
     super.initState();
-    _activeWallpaper = widget.currentWallpaper.startsWith('ios')
+    _activeWallpaper = widget.currentWallpaper.startsWith('ios26')
         ? widget.currentWallpaper
-        : 'ios18_dark';
+        : 'ios26_dark';
     _pageController = PageController();
 
     _page1Apps = [
-      const Ios26AppItem(id: 'facetime', title: 'FaceTime', imageAsset: 'assets/images/ios/icons/facetime.png'),
-      const Ios26AppItem(id: 'photos', title: '사진', imageAsset: 'assets/images/ios/icons/photos.png'),
-      const Ios26AppItem(id: 'camera', title: '카메라', imageAsset: 'assets/images/ios/icons/camera.png'),
-      const Ios26AppItem(id: 'mail', title: '메일', imageAsset: 'assets/images/ios/icons/mail.png', badgeCount: 14),
-      const Ios26AppItem(id: 'clock', title: '시계', imageAsset: 'assets/images/ios/icons/clock.png'),
-      const Ios26AppItem(id: 'maps', title: '지도', imageAsset: 'assets/images/ios/icons/maps.png'),
-      const Ios26AppItem(id: 'notes', title: '메모', imageAsset: 'assets/images/ios/icons/notes.png'),
-      const Ios26AppItem(id: 'calculator', title: '계산기', imageAsset: 'assets/images/ios/icons/calculator.png'),
-      const Ios26AppItem(id: 'files', title: '파일', imageAsset: 'assets/images/ios/icons/files.png'),
-      const Ios26AppItem(id: 'health', title: '건강', imageAsset: 'assets/images/ios/icons/health.png'),
-      const Ios26AppItem(id: 'wallet', title: '지갑', imageAsset: 'assets/images/ios/icons/wallet.png'),
-      const Ios26AppItem(id: 'settings', title: '설정', imageAsset: 'assets/images/ios/icons/settings.png'),
+      const Ios26AppItem(id: 'facetime', title: 'FaceTime', imageAsset: 'assets/images/ios/icons26/facetime.png'),
+      const Ios26AppItem(id: 'photos', title: '사진', imageAsset: 'assets/images/ios/icons26/photos.png'),
+      const Ios26AppItem(id: 'camera', title: '카메라', imageAsset: 'assets/images/ios/icons26/camera.png'),
+      const Ios26AppItem(id: 'mail', title: '메일', imageAsset: 'assets/images/ios/icons26/mail.png', badgeCount: 14),
+      const Ios26AppItem(id: 'clock', title: '시계', imageAsset: 'assets/images/ios/icons26/clock.png'),
+      const Ios26AppItem(id: 'maps', title: '지도', imageAsset: 'assets/images/ios/icons26/maps.png'),
+      const Ios26AppItem(id: 'notes', title: '메모', imageAsset: 'assets/images/ios/icons26/notes.png'),
+      const Ios26AppItem(id: 'calculator', title: '계산기', imageAsset: 'assets/images/ios/icons26/calculator.png'),
+      const Ios26AppItem(id: 'files', title: '파일', imageAsset: 'assets/images/ios/icons26/files.png'),
+      const Ios26AppItem(id: 'health', title: '건강', imageAsset: 'assets/images/ios/icons26/health.png'),
+      const Ios26AppItem(id: 'wallet', title: '지갑', imageAsset: 'assets/images/ios/icons26/wallet.png'),
+      const Ios26AppItem(id: 'settings', title: '설정', imageAsset: 'assets/images/ios/icons26/settings.png'),
     ];
 
     _page2Apps = [
-      const Ios26AppItem(id: 'appstore', title: 'App Store', imageAsset: 'assets/images/ios/icons/appstore.png'),
-      Ios26AppItem(
-        id: 'books',
-        title: '도서',
-        customIcon: Container(
-          color: const Color(0xFFFF9500),
-          child: const Icon(CupertinoIcons.book_fill, color: Colors.white, size: 28),
-        ),
-      ),
-      Ios26AppItem(
-        id: 'podcasts',
-        title: '팟캐스트',
-        customIcon: Container(
-          color: const Color(0xFFAF52DE),
-          child: const Icon(CupertinoIcons.mic_fill, color: Colors.white, size: 28),
-        ),
-      ),
-      Ios26AppItem(
-        id: 'stocks',
-        title: '주식',
-        customIcon: Container(
-          color: const Color(0xFF1C1C1E),
-          child: const Icon(CupertinoIcons.chart_bar_alt_fill, color: Color(0xFF30D158), size: 28),
-        ),
-      ),
-      Ios26AppItem(
-        id: 'reminders',
-        title: '미리알림',
-        customIcon: Container(
-          color: Colors.white,
-          child: const Icon(CupertinoIcons.list_bullet, color: Color(0xFF007AFF), size: 28),
-        ),
-      ),
-      Ios26AppItem(
-        id: 'fitness',
-        title: '피트니스',
-        customIcon: Container(
-          color: Colors.black,
-          child: const Icon(CupertinoIcons.flame_fill, color: Color(0xFFFF2D55), size: 28),
-        ),
-      ),
-      Ios26AppItem(
-        id: 'translate',
-        title: '번역',
-        customIcon: Container(
-          color: const Color(0xFF007AFF),
-          child: const Icon(CupertinoIcons.globe, color: Colors.white, size: 28),
-        ),
-      ),
-      Ios26AppItem(
-        id: 'shortcuts',
-        title: '단축어',
-        customIcon: Container(
-          color: const Color(0xFF5856D6),
-          child: const Icon(CupertinoIcons.bolt_horizontal_fill, color: Colors.white, size: 28),
-        ),
-      ),
+      const Ios26AppItem(id: 'appstore', title: 'App Store', imageAsset: 'assets/images/ios/icons26/appstore.png'),
+      const Ios26AppItem(id: 'books', title: '도서', imageAsset: 'assets/images/ios/icons26/books.png'),
+      const Ios26AppItem(id: 'podcasts', title: '팟캐스트', imageAsset: 'assets/images/ios/icons26/podcasts.png'),
+      const Ios26AppItem(id: 'stocks', title: '주식', imageAsset: 'assets/images/ios/icons26/stocks.png'),
+      const Ios26AppItem(id: 'reminders', title: '미리알림', imageAsset: 'assets/images/ios/icons26/reminders.png'),
+      const Ios26AppItem(id: 'fitness', title: '피트니스', imageAsset: 'assets/images/ios/icons26/fitness.png'),
+      const Ios26AppItem(id: 'translate', title: '번역', imageAsset: 'assets/images/ios/icons26/translate.png'),
+      const Ios26AppItem(id: 'shortcuts', title: '단축어', imageAsset: 'assets/images/ios/icons26/shortcuts.png'),
       const Ios26AppItem(id: 'kakaotalk', title: '카카오톡', imageAsset: 'assets/images/kakaotalk_icon.webp', badgeCount: 99),
       const Ios26AppItem(id: 'instagram', title: 'Instagram', imageAsset: 'assets/images/instagram_icon.webp', badgeCount: 5),
       Ios26AppItem(
@@ -242,6 +193,8 @@ class _Ios26ViewState extends State<Ios26View> {
 
   String _getWallpaperAsset() {
     switch (_activeWallpaper) {
+      case 'ios26_light':
+        return 'assets/images/ios/wallpapers/ios26_light.jpg';
       case 'ios18_light':
         return 'assets/images/ios/wallpapers/ios18_light.png';
       case 'ios18_blue':
@@ -250,9 +203,9 @@ class _Ios26ViewState extends State<Ios26View> {
         return 'assets/images/ios/wallpapers/ios18_purple.jpg';
       case 'ios18_yellow':
         return 'assets/images/ios/wallpapers/ios18_yellow.jpg';
-      case 'ios18_dark':
+      case 'ios26_dark':
       default:
-        return 'assets/images/ios/wallpapers/ios18_dark.png';
+        return 'assets/images/ios/wallpapers/ios26_dark.jpg';
     }
   }
 
@@ -374,8 +327,8 @@ class _Ios26ViewState extends State<Ios26View> {
                     ),
                   ),
 
-                  // iOS 26 리퀴드 글래스 페이지 인디케이터 도트 & 검색 캡슐
-                  _buildPageIndicator(),
+                  // iOS 26 리퀴드 글래스 검색 캡슐 (Search Capsule)
+                  _buildSearchCapsule(),
                   const SizedBox(height: 10),
 
                   // 3. Apple 공식 리퀴드 글래스 독 (Dock)
@@ -596,28 +549,28 @@ class _Ios26ViewState extends State<Ios26View> {
               physics: const BouncingScrollPhysics(),
               children: [
                 _buildCategoryFolder('추천', [
-                  {'id': 'phone', 'image': 'assets/images/ios/icons/phone.png'},
-                  {'id': 'safari', 'image': 'assets/images/ios/icons/safari.png'},
-                  {'id': 'messages', 'image': 'assets/images/ios/icons/messages.png', 'badge': 3},
+                  {'id': 'phone', 'image': 'assets/images/ios/icons26/phone.png'},
+                  {'id': 'safari', 'image': 'assets/images/ios/icons26/safari.png'},
+                  {'id': 'messages', 'image': 'assets/images/ios/icons26/messages.png', 'badge': 3},
                   {'id': 'kakaotalk', 'image': 'assets/images/kakaotalk_icon.webp', 'badge': 99},
                 ]),
                 _buildCategoryFolder('소셜', [
                   {'id': 'instagram', 'image': 'assets/images/instagram_icon.webp', 'badge': 5},
-                  {'id': 'facetime', 'image': 'assets/images/ios/icons/facetime.png'},
-                  {'id': 'mail', 'image': 'assets/images/ios/icons/mail.png', 'badge': 14},
-                  {'id': 'messages', 'image': 'assets/images/ios/icons/messages.png'},
+                  {'id': 'facetime', 'image': 'assets/images/ios/icons26/facetime.png'},
+                  {'id': 'mail', 'image': 'assets/images/ios/icons26/mail.png', 'badge': 14},
+                  {'id': 'messages', 'image': 'assets/images/ios/icons26/messages.png'},
                 ]),
                 _buildCategoryFolder('엔터테인먼트', [
                   {'id': 'youtube', 'custom': Container(color: Colors.red, child: const Icon(CupertinoIcons.play_arrow_solid, color: Colors.white, size: 20))},
                   {'id': 'netflix', 'image': 'assets/images/netflix_icon.webp'},
-                  {'id': 'music', 'image': 'assets/images/ios/icons/music.png'},
-                  {'id': 'photos', 'image': 'assets/images/ios/icons/photos.png'},
+                  {'id': 'music', 'image': 'assets/images/ios/icons26/music.png'},
+                  {'id': 'photos', 'image': 'assets/images/ios/icons26/photos.png'},
                 ]),
                 _buildCategoryFolder('유틸리티', [
-                  {'id': 'settings', 'image': 'assets/images/ios/icons/settings.png'},
-                  {'id': 'calculator', 'image': 'assets/images/ios/icons/calculator.png'},
-                  {'id': 'clock', 'image': 'assets/images/ios/icons/clock.png'},
-                  {'id': 'files', 'image': 'assets/images/ios/icons/files.png'},
+                  {'id': 'settings', 'image': 'assets/images/ios/icons26/settings.png'},
+                  {'id': 'calculator', 'image': 'assets/images/ios/icons26/calculator.png'},
+                  {'id': 'clock', 'image': 'assets/images/ios/icons26/clock.png'},
+                  {'id': 'files', 'image': 'assets/images/ios/icons26/files.png'},
                 ]),
               ],
             ),
@@ -669,7 +622,9 @@ class _Ios26ViewState extends State<Ios26View> {
     );
   }
 
-  Widget _buildPageIndicator() {
+  /// Apple iOS 26 공식 리퀴드 글래스 검색 (Search) 캡슐
+  /// - media_1789742479750.png 1:1 일치
+  Widget _buildSearchCapsule() {
     return GestureDetector(
       onTap: () {
         final nextPage = (_currentPage + 1) % 3;
@@ -680,55 +635,30 @@ class _Ios26ViewState extends State<Ios26View> {
         );
       },
       child: Ios26LiquidGlass(
-        height: 28,
-        borderRadius: 14,
+        height: 30,
+        borderRadius: 15,
         blurSigma: 24,
         hasCornerGlow: false,
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Row(
+        hasChromaticAberration: false,
+        tintColor: const Color(0xFF0F3A6E),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               CupertinoIcons.search,
-              size: 11,
-              color: Colors.white70,
+              size: 13,
+              color: Colors.white,
             ),
-            const SizedBox(width: 4),
-            const Text(
-              '검색',
+            SizedBox(width: 5),
+            Text(
+              'Search',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 11,
+                fontSize: 12.5,
                 fontWeight: FontWeight.w600,
                 letterSpacing: -0.2,
               ),
-            ),
-            const SizedBox(width: 8),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(3, (index) {
-                final isActive = _currentPage == index;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
-                  width: isActive ? 6.0 : 4.5,
-                  height: isActive ? 6.0 : 4.5,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isActive
-                        ? Colors.white
-                        : Colors.white.withValues(alpha: 0.35),
-                    boxShadow: isActive
-                        ? [
-                            BoxShadow(
-                              color: Colors.white.withValues(alpha: 0.7),
-                              blurRadius: 4,
-                            ),
-                          ]
-                        : null,
-                  ),
-                );
-              }),
             ),
           ],
         ),

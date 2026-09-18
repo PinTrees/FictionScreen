@@ -51,57 +51,67 @@ class _Ios26AppIconState extends State<Ios26AppIcon> {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
-                width: widget.size,
-                height: widget.size,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(widget.size * 0.23),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.28),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                    BoxShadow(
-                      color: Colors.white.withValues(alpha: 0.12),
-                      blurRadius: 1,
-                      spreadRadius: 0.5,
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(widget.size * 0.23),
-                  child: Stack(
-                    children: [
-                      // 아이콘 본체 이미지
-                      Positioned.fill(
-                        child: widget.customIcon ??
-                            (widget.imageAsset != null
-                                ? Image.asset(widget.imageAsset!, fit: BoxFit.cover)
-                                : Container(color: const Color(0xFF1E293B))),
+              widget.imageAsset != null && widget.imageAsset!.contains('icons26')
+                  ? SizedBox(
+                      width: widget.size,
+                      height: widget.size,
+                      child: Image.asset(
+                        widget.imageAsset!,
+                        fit: BoxFit.contain,
+                        filterQuality: FilterQuality.high,
                       ),
-
-                      // iOS 26 리퀴드 글래스 표면 광택 오버레이
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.white.withValues(alpha: 0.22),
-                                Colors.white.withValues(alpha: 0.0),
-                                Colors.white.withValues(alpha: 0.08),
-                              ],
-                              stops: const [0.0, 0.45, 1.0],
-                            ),
+                    )
+                  : Container(
+                      width: widget.size,
+                      height: widget.size,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(widget.size * 0.23),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.28),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
+                          BoxShadow(
+                            color: Colors.white.withValues(alpha: 0.12),
+                            blurRadius: 1,
+                            spreadRadius: 0.5,
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(widget.size * 0.23),
+                        child: Stack(
+                          children: [
+                            // 아이콘 본체 이미지
+                            Positioned.fill(
+                              child: widget.customIcon ??
+                                  (widget.imageAsset != null
+                                      ? Image.asset(widget.imageAsset!, fit: BoxFit.cover)
+                                      : Container(color: const Color(0xFF1E293B))),
+                            ),
+
+                            // iOS 26 리퀴드 글래스 표면 광택 오버레이
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Colors.white.withValues(alpha: 0.22),
+                                      Colors.white.withValues(alpha: 0.0),
+                                      Colors.white.withValues(alpha: 0.08),
+                                    ],
+                                    stops: const [0.0, 0.45, 1.0],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
 
               // 빨간색 알림 배지 (일반 모드일 때만 노출)
               if (!widget.isEditMode &&

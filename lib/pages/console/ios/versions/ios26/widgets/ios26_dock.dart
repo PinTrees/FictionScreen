@@ -21,20 +21,22 @@ class Ios26Dock extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Ios26LiquidGlass(
-        height: 92,
-        borderRadius: 38,
-        blurSigma: 42,
+        height: 94,
+        borderRadius: 47, // 완전한 알약(Stadium Pill) 형태
+        blurSigma: 32,
         hasCornerGlow: true,
         hasChromaticAberration: true,
+        tintColor: const Color(0xFF0F3A6E),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 18),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Ios26AppIcon(
                   title: '',
-                  imageAsset: 'assets/images/ios/icons/phone.png',
+                  size: 62.0,
+                  imageAsset: 'assets/images/ios/icons26/phone.png',
                   isEditMode: isEditMode,
                   index: 100,
                   onTap: () => onOpenApp('phone'),
@@ -42,7 +44,8 @@ class Ios26Dock extends StatelessWidget {
                 ),
                 Ios26AppIcon(
                   title: '',
-                  imageAsset: 'assets/images/ios/icons/safari.png',
+                  size: 62.0,
+                  imageAsset: 'assets/images/ios/icons26/safari.png',
                   isEditMode: isEditMode,
                   index: 101,
                   onTap: () => onOpenApp('safari'),
@@ -50,7 +53,8 @@ class Ios26Dock extends StatelessWidget {
                 ),
                 Ios26AppIcon(
                   title: '',
-                  imageAsset: 'assets/images/ios/icons/messages.png',
+                  size: 62.0,
+                  imageAsset: 'assets/images/ios/icons26/messages.png',
                   badgeCount: 3,
                   isEditMode: isEditMode,
                   index: 102,
@@ -59,7 +63,8 @@ class Ios26Dock extends StatelessWidget {
                 ),
                 Ios26AppIcon(
                   title: '',
-                  imageAsset: 'assets/images/ios/icons/music.png',
+                  size: 62.0,
+                  imageAsset: 'assets/images/ios/icons26/music.png',
                   isEditMode: isEditMode,
                   index: 103,
                   onTap: () => onOpenApp('music'),
