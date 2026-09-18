@@ -1,4 +1,4 @@
-﻿import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../data/kakaobank_model.dart';
 
@@ -41,7 +41,7 @@ class _KakaoBankEditDialogState extends State<KakaoBankEditDialog> {
     _accountNumCtrl = TextEditingController(text: widget.config.accountNumber);
     _balanceCtrl = TextEditingController(text: widget.config.balance.toString());
     _safeBoxCtrl = TextEditingController(text: widget.config.safeBoxBalance.toString());
-    _savingsCtrl = TextEditingController(text: widget.config.savingsBalance.toString());
+    _savingsCtrl = TextEditingController(text: widget.config.savings26.totalSaved.toString());
   }
 
   @override
@@ -61,7 +61,7 @@ class _KakaoBankEditDialogState extends State<KakaoBankEditDialog> {
     widget.config.accountNumber = _accountNumCtrl.text.trim();
     widget.config.balance = int.tryParse(_balanceCtrl.text.replaceAll(',', '').trim()) ?? widget.config.balance;
     widget.config.safeBoxBalance = int.tryParse(_safeBoxCtrl.text.replaceAll(',', '').trim()) ?? widget.config.safeBoxBalance;
-    widget.config.savingsBalance = int.tryParse(_savingsCtrl.text.replaceAll(',', '').trim()) ?? widget.config.savingsBalance;
+    widget.config.savings26.totalSaved = int.tryParse(_savingsCtrl.text.replaceAll(',', '').trim()) ?? widget.config.savings26.totalSaved;
     widget.onSave(widget.config);
     Navigator.of(context).pop();
   }

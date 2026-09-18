@@ -24,8 +24,8 @@ class KakaoBankBottomNav extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildNavItem(0, '홈', CupertinoIcons.house_fill),
-          _buildNavItem(1, '상품몰', CupertinoIcons.square_grid_2x2_fill),
-          _buildNavItem(2, '알림', CupertinoIcons.bell_fill),
+          _buildNavItem(1, '상품/서비스', CupertinoIcons.square_grid_2x2_fill),
+          _buildNavItem(2, '혜택', CupertinoIcons.gift_fill),
           _buildNavItem(3, '전체', CupertinoIcons.ellipsis_circle_fill),
         ],
       ),
