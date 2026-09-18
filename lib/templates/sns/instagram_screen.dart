@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../models/instagram_model.dart';
 
@@ -55,7 +56,7 @@ class InstagramScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.more_vert, size: 20, color: Colors.black87),
+                const Icon(CupertinoIcons.ellipsis_vertical, size: 18, color: Colors.black87),
               ],
             ),
           ),
@@ -71,7 +72,7 @@ class InstagramScreen extends StatelessWidget {
               ),
             ),
             child: const Center(
-              child: Icon(Icons.image_rounded, size: 72, color: Colors.white70),
+              child: Icon(CupertinoIcons.photo, size: 72, color: Colors.white70),
             ),
           ),
 
@@ -81,17 +82,17 @@ class InstagramScreen extends StatelessWidget {
             child: Row(
               children: [
                 Icon(
-                  config.isLiked ? Icons.favorite : Icons.favorite_border,
+                  config.isLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
                   color: config.isLiked ? Colors.red : Colors.black87,
                   size: 26,
                 ),
                 const SizedBox(width: 14),
-                const Icon(Icons.mode_comment_outlined, size: 24, color: Colors.black87),
+                const Icon(CupertinoIcons.chat_bubble, size: 24, color: Colors.black87),
                 const SizedBox(width: 14),
-                const Icon(Icons.send_outlined, size: 24, color: Colors.black87),
+                const Icon(CupertinoIcons.paperplane, size: 24, color: Colors.black87),
                 const Spacer(),
                 Icon(
-                  config.isSaved ? Icons.bookmark : Icons.bookmark_border,
+                  config.isSaved ? CupertinoIcons.bookmark_fill : CupertinoIcons.bookmark,
                   color: Colors.black87,
                   size: 26,
                 ),

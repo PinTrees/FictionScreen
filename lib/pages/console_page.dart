@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -208,42 +209,42 @@ class _ConsolePageState extends State<ConsolePage> {
         children: [
           _buildDesktopIcon(
             title: '카카오톡',
-            icon: Icons.chat_bubble_rounded,
+            icon: CupertinoIcons.chat_bubble_2_fill,
             color: const Color(0xFFFEE500),
             onTap: () => _openTemplate('kakaotalk'),
           ),
           const SizedBox(height: 18),
           _buildDesktopIcon(
             title: '블루스크린',
-            icon: Icons.desktop_windows_rounded,
+            icon: CupertinoIcons.device_desktop,
             color: const Color(0xFF0078D7),
             onTap: () => _openTemplate('windows_bsod'),
           ),
           const SizedBox(height: 18),
           _buildDesktopIcon(
             title: 'YouTube',
-            icon: Icons.play_arrow_rounded,
+            icon: CupertinoIcons.play_arrow_solid,
             color: const Color(0xFFFF0000),
             onTap: () => _openTemplate('youtube'),
           ),
           const SizedBox(height: 18),
           _buildDesktopIcon(
             title: 'Instagram',
-            icon: Icons.camera_alt_rounded,
+            icon: CupertinoIcons.camera_fill,
             color: const Color(0xFFE1306C),
             onTap: () => _openTemplate('instagram'),
           ),
           const SizedBox(height: 18),
           _buildDesktopIcon(
             title: '배달의민족',
-            icon: Icons.two_wheeler_rounded,
+            icon: CupertinoIcons.bag_fill,
             color: const Color(0xFF2AC1BC),
             onTap: () => _openTemplate('delivery'),
           ),
           const SizedBox(height: 18),
           _buildDesktopIcon(
             title: '랜딩 홈',
-            icon: Icons.home_rounded,
+            icon: CupertinoIcons.house_fill,
             color: Colors.white70,
             onTap: () => context.go('/'),
           ),
@@ -327,7 +328,7 @@ class _ConsolePageState extends State<ConsolePage> {
                 // 좌측 날씨 위젯
                 const Row(
                   children: [
-                    Icon(Icons.wb_sunny_rounded, color: Colors.amber, size: 18),
+                    Icon(CupertinoIcons.sun_max_fill, color: Colors.amber, size: 18),
                     SizedBox(width: 8),
                     Text('24°C 맑음', style: TextStyle(color: Colors.white70, fontSize: 12)),
                   ],
@@ -342,18 +343,18 @@ class _ConsolePageState extends State<ConsolePage> {
                     IconButton(
                       tooltip: '시작',
                       icon: Icon(
-                        Icons.grid_view_rounded,
+                        CupertinoIcons.square_grid_2x2_fill,
                         color: _isStartMenuOpen ? const Color(0xFF60A5FA) : Colors.white,
                         size: 22,
                       ),
                       onPressed: () => setState(() => _isStartMenuOpen = !_isStartMenuOpen),
                     ),
                     const SizedBox(width: 4),
-                    _buildTaskbarAppIcon(Icons.chat_bubble_rounded, const Color(0xFFFEE500), () => _openTemplate('kakaotalk')),
-                    _buildTaskbarAppIcon(Icons.desktop_windows_rounded, const Color(0xFF0078D7), () => _openTemplate('windows_bsod')),
-                    _buildTaskbarAppIcon(Icons.play_arrow_rounded, const Color(0xFFFF0000), () => _openTemplate('youtube')),
-                    _buildTaskbarAppIcon(Icons.camera_alt_rounded, const Color(0xFFE1306C), () => _openTemplate('instagram')),
-                    _buildTaskbarAppIcon(Icons.two_wheeler_rounded, const Color(0xFF2AC1BC), () => _openTemplate('delivery')),
+                    _buildTaskbarAppIcon(CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), () => _openTemplate('kakaotalk')),
+                    _buildTaskbarAppIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), () => _openTemplate('windows_bsod')),
+                    _buildTaskbarAppIcon(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), () => _openTemplate('youtube')),
+                    _buildTaskbarAppIcon(CupertinoIcons.camera_fill, const Color(0xFFE1306C), () => _openTemplate('instagram')),
+                    _buildTaskbarAppIcon(CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), () => _openTemplate('delivery')),
                   ],
                 ),
 
@@ -362,11 +363,11 @@ class _ConsolePageState extends State<ConsolePage> {
                 // 우측 시스템 트레이
                 Row(
                   children: [
-                    const Icon(Icons.wifi, size: 16, color: Colors.white70),
+                    const Icon(CupertinoIcons.wifi, size: 16, color: Colors.white70),
                     const SizedBox(width: 8),
-                    const Icon(Icons.volume_up_rounded, size: 16, color: Colors.white70),
+                    const Icon(CupertinoIcons.volume_up, size: 16, color: Colors.white70),
                     const SizedBox(width: 8),
-                    const Icon(Icons.battery_charging_full_rounded, size: 16, color: Colors.white70),
+                    const Icon(CupertinoIcons.battery_charging, size: 16, color: Colors.white70),
                     const SizedBox(width: 12),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -429,7 +430,7 @@ class _ConsolePageState extends State<ConsolePage> {
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.search_rounded, size: 18, color: Colors.white60),
+                      Icon(CupertinoIcons.search, size: 18, color: Colors.white60),
                       SizedBox(width: 10),
                       Text('앱, 가상 템플릿 검색...', style: TextStyle(color: Colors.white54, fontSize: 13)),
                     ],
@@ -448,12 +449,12 @@ class _ConsolePageState extends State<ConsolePage> {
                     mainAxisSpacing: 10,
                     crossAxisSpacing: 10,
                     children: [
-                      _buildStartMenuAppItem('카카오톡 채팅', Icons.chat_bubble_rounded, const Color(0xFFFEE500), () => _openTemplate('kakaotalk')),
-                      _buildStartMenuAppItem('Windows 블루스크린', Icons.desktop_windows_rounded, const Color(0xFF0078D7), () => _openTemplate('windows_bsod')),
-                      _buildStartMenuAppItem('유튜브 비디오/댓글', Icons.play_arrow_rounded, const Color(0xFFFF0000), () => _openTemplate('youtube')),
-                      _buildStartMenuAppItem('인스타그램 피드', Icons.camera_alt_rounded, const Color(0xFFE1306C), () => _openTemplate('instagram')),
-                      _buildStartMenuAppItem('배달의민족 배송', Icons.two_wheeler_rounded, const Color(0xFF2AC1BC), () => _openTemplate('delivery')),
-                      _buildStartMenuAppItem('홈 랜딩 페이지', Icons.home_rounded, Colors.white70, () => context.go('/')),
+                      _buildStartMenuAppItem('카카오톡 채팅', CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), () => _openTemplate('kakaotalk')),
+                      _buildStartMenuAppItem('Windows 블루스크린', CupertinoIcons.device_desktop, const Color(0xFF0078D7), () => _openTemplate('windows_bsod')),
+                      _buildStartMenuAppItem('유튜브 비디오/댓글', CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), () => _openTemplate('youtube')),
+                      _buildStartMenuAppItem('인스타그램 피드', CupertinoIcons.camera_fill, const Color(0xFFE1306C), () => _openTemplate('instagram')),
+                      _buildStartMenuAppItem('배달의민족 배송', CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), () => _openTemplate('delivery')),
+                      _buildStartMenuAppItem('홈 랜딩 페이지', CupertinoIcons.house_fill, Colors.white70, () => context.go('/')),
                     ],
                   ),
                 ),
@@ -484,7 +485,7 @@ class _ConsolePageState extends State<ConsolePage> {
                     ),
                     IconButton(
                       tooltip: '로그아웃',
-                      icon: const Icon(Icons.power_settings_new_rounded, color: Colors.white70, size: 20),
+                      icon: const Icon(CupertinoIcons.power, color: Colors.white70, size: 20),
                       onPressed: _handleSignOut,
                     ),
                   ],
@@ -532,7 +533,7 @@ class _ConsolePageState extends State<ConsolePage> {
           filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
           child: Row(
             children: [
-              const Icon(Icons.apple, color: Colors.white, size: 16),
+              const Text('', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(width: 14),
               const Text('FictionScreen', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
               const SizedBox(width: 16),
@@ -546,11 +547,11 @@ class _ConsolePageState extends State<ConsolePage> {
 
               const Spacer(),
 
-              const Icon(Icons.battery_full_rounded, color: Colors.white70, size: 16),
+              const Icon(CupertinoIcons.battery_full, color: Colors.white70, size: 16),
               const SizedBox(width: 10),
-              const Icon(Icons.wifi, color: Colors.white70, size: 14),
+              const Icon(CupertinoIcons.wifi, color: Colors.white70, size: 14),
               const SizedBox(width: 10),
-              const Icon(Icons.tune_rounded, color: Colors.white70, size: 14),
+              const Icon(CupertinoIcons.slider_horizontal_3, color: Colors.white70, size: 14),
               const SizedBox(width: 12),
               Text(timeStr, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500)),
               const SizedBox(width: 12),
@@ -584,18 +585,18 @@ class _ConsolePageState extends State<ConsolePage> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildDockItem(Icons.chat_bubble_rounded, const Color(0xFFFEE500), '카카오톡', () => _openTemplate('kakaotalk')),
-                _buildDockItem(Icons.desktop_windows_rounded, const Color(0xFF0078D7), '블루스크린', () => _openTemplate('windows_bsod')),
-                _buildDockItem(Icons.play_arrow_rounded, const Color(0xFFFF0000), 'YouTube', () => _openTemplate('youtube')),
-                _buildDockItem(Icons.camera_alt_rounded, const Color(0xFFE1306C), 'Instagram', () => _openTemplate('instagram')),
-                _buildDockItem(Icons.two_wheeler_rounded, const Color(0xFF2AC1BC), '배달의민족', () => _openTemplate('delivery')),
+                _buildDockItem(CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), '카카오톡', () => _openTemplate('kakaotalk')),
+                _buildDockItem(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => _openTemplate('windows_bsod')),
+                _buildDockItem(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), 'YouTube', () => _openTemplate('youtube')),
+                _buildDockItem(CupertinoIcons.camera_fill, const Color(0xFFE1306C), 'Instagram', () => _openTemplate('instagram')),
+                _buildDockItem(CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), '배달의민족', () => _openTemplate('delivery')),
                 Container(
                   width: 1,
                   height: 32,
                   color: Colors.white24,
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                 ),
-                _buildDockItem(Icons.home_rounded, Colors.white70, '홈', () => context.go('/')),
+                _buildDockItem(CupertinoIcons.house_fill, Colors.white70, '홈', () => context.go('/')),
               ],
             ),
           ),
@@ -682,13 +683,13 @@ class _ConsolePageState extends State<ConsolePage> {
                     mainAxisSpacing: 20,
                     crossAxisSpacing: 16,
                     children: [
-                      _buildMobileAppIcon('카카오톡', Icons.chat_bubble_rounded, const Color(0xFFFEE500), Colors.black, () => _openTemplate('kakaotalk')),
-                      _buildMobileAppIcon('블루스크린', Icons.desktop_windows_rounded, const Color(0xFF0078D7), Colors.white, () => _openTemplate('windows_bsod')),
-                      _buildMobileAppIcon('YouTube', Icons.play_arrow_rounded, const Color(0xFFFF0000), Colors.white, () => _openTemplate('youtube')),
-                      _buildMobileAppIcon('Instagram', Icons.camera_alt_rounded, const Color(0xFFE1306C), Colors.white, () => _openTemplate('instagram')),
-                      _buildMobileAppIcon('배달의민족', Icons.two_wheeler_rounded, const Color(0xFF2AC1BC), Colors.white, () => _openTemplate('delivery')),
-                      _buildMobileAppIcon('랜딩 홈', Icons.home_rounded, const Color(0xFF334155), Colors.white, () => context.go('/')),
-                      _buildMobileAppIcon('로그아웃', Icons.logout_rounded, const Color(0xFFEF4444), Colors.white, _handleSignOut),
+                      _buildMobileAppIcon('카카오톡', CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), Colors.black, () => _openTemplate('kakaotalk')),
+                      _buildMobileAppIcon('블루스크린', CupertinoIcons.device_desktop, const Color(0xFF0078D7), Colors.white, () => _openTemplate('windows_bsod')),
+                      _buildMobileAppIcon('YouTube', CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), Colors.white, () => _openTemplate('youtube')),
+                      _buildMobileAppIcon('Instagram', CupertinoIcons.camera_fill, const Color(0xFFE1306C), Colors.white, () => _openTemplate('instagram')),
+                      _buildMobileAppIcon('배달의민족', CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), Colors.white, () => _openTemplate('delivery')),
+                      _buildMobileAppIcon('랜딩 홈', CupertinoIcons.house_fill, const Color(0xFF334155), Colors.white, () => context.go('/')),
+                      _buildMobileAppIcon('로그아웃', CupertinoIcons.square_arrow_right, const Color(0xFFEF4444), Colors.white, _handleSignOut),
                     ],
                   ),
                 ),
@@ -764,11 +765,11 @@ class _ConsolePageState extends State<ConsolePage> {
               ),
             const Row(
               children: [
-                Icon(Icons.signal_cellular_alt_rounded, color: Colors.white, size: 15),
+                Icon(CupertinoIcons.antenna_radiowaves_left_right, color: Colors.white, size: 14),
                 SizedBox(width: 4),
-                Icon(Icons.wifi, color: Colors.white, size: 15),
+                Icon(CupertinoIcons.wifi, color: Colors.white, size: 15),
                 SizedBox(width: 4),
-                Icon(Icons.battery_full_rounded, color: Colors.white, size: 16),
+                Icon(CupertinoIcons.battery_full, color: Colors.white, size: 16),
               ],
             ),
           ],
@@ -867,10 +868,10 @@ class _ConsolePageState extends State<ConsolePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildDockIconButton(Icons.phone_rounded, const Color(0xFF10B981), () {}),
-                    _buildDockIconButton(Icons.chat_bubble_rounded, const Color(0xFFFEE500), () => _openTemplate('kakaotalk')),
-                    _buildDockIconButton(Icons.camera_alt_rounded, const Color(0xFFE1306C), () => _openTemplate('instagram')),
-                    _buildDockIconButton(Icons.explore_rounded, const Color(0xFF38BDF8), () => context.go('/')),
+                    _buildDockIconButton(CupertinoIcons.phone_fill, const Color(0xFF10B981), () {}),
+                    _buildDockIconButton(CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), () => _openTemplate('kakaotalk')),
+                    _buildDockIconButton(CupertinoIcons.camera_fill, const Color(0xFFE1306C), () => _openTemplate('instagram')),
+                    _buildDockIconButton(CupertinoIcons.compass, const Color(0xFF38BDF8), () => context.go('/')),
                   ],
                 ),
               ),
@@ -988,7 +989,7 @@ class _ConsolePageState extends State<ConsolePage> {
           value: 'home',
           child: Row(
             children: [
-              Icon(Icons.home_rounded, size: 16, color: Colors.white70),
+              Icon(CupertinoIcons.house_fill, size: 16, color: Colors.white70),
               SizedBox(width: 8),
               Text('랜딩 홈으로 이동', style: TextStyle(color: Colors.white, fontSize: 13)),
             ],
@@ -998,7 +999,7 @@ class _ConsolePageState extends State<ConsolePage> {
           value: 'signout',
           child: Row(
             children: [
-              Icon(Icons.logout_rounded, size: 16, color: Color(0xFFEF4444)),
+              Icon(CupertinoIcons.square_arrow_right, size: 16, color: Color(0xFFEF4444)),
               SizedBox(width: 8),
               Text('로그아웃', style: TextStyle(color: Color(0xFFEF4444), fontSize: 13)),
             ],

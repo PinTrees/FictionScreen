@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../models/kakaotalk_model.dart';
@@ -75,7 +76,7 @@ class KakaoTalkScreen extends StatelessWidget {
           ),
           Row(
             children: [
-              Icon(Icons.signal_cellular_alt, size: 15, color: textColor),
+              Icon(CupertinoIcons.antenna_radiowaves_left_right, size: 14, color: textColor),
               const SizedBox(width: 4),
               Text(
                 config.networkType,
@@ -86,7 +87,7 @@ class KakaoTalkScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 6),
-              Icon(Icons.wifi, size: 15, color: textColor),
+              Icon(CupertinoIcons.wifi, size: 15, color: textColor),
               const SizedBox(width: 6),
               Row(
                 children: [
@@ -99,7 +100,7 @@ class KakaoTalkScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 3),
-                  Icon(Icons.battery_full_rounded, size: 16, color: textColor),
+                  Icon(CupertinoIcons.battery_full, size: 16, color: textColor),
                 ],
               ),
             ],
@@ -116,7 +117,7 @@ class KakaoTalkScreen extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: textColor),
+            icon: Icon(CupertinoIcons.back, size: 18, color: textColor),
             onPressed: () {},
           ),
           const SizedBox(width: 4),
@@ -149,11 +150,11 @@ class KakaoTalkScreen extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.search_rounded, size: 22, color: textColor),
+            icon: Icon(CupertinoIcons.search, size: 20, color: textColor),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.menu_rounded, size: 22, color: textColor),
+            icon: Icon(CupertinoIcons.bars, size: 20, color: textColor),
             onPressed: () {},
           ),
         ],
@@ -373,7 +374,7 @@ class KakaoTalkScreen extends StatelessWidget {
         child: Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.add_circle_outline_rounded, color: Color(0xFF757575), size: 24),
+              icon: const Icon(CupertinoIcons.plus_circle, color: Color(0xFF757575), size: 24),
               onPressed: () {},
             ),
             Expanded(
@@ -394,13 +395,13 @@ class KakaoTalkScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Icon(Icons.sentiment_satisfied_alt_rounded, color: Color(0xFF757575), size: 20),
+                    Icon(CupertinoIcons.smiley, color: Color(0xFF757575), size: 20),
                   ],
                 ),
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.tag_rounded, color: Color(0xFF757575), size: 24),
+              icon: const Icon(CupertinoIcons.number, color: Color(0xFF757575), size: 22),
               onPressed: () {},
             ),
           ],

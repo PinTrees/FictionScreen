@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../models/delivery_model.dart';
 import '../../style/app_colors.dart';
@@ -21,7 +22,7 @@ class DeliveryScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.arrow_back, color: Colors.white),
+                const Icon(CupertinoIcons.back, color: Colors.white),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -73,7 +74,7 @@ class DeliveryScreen extends StatelessWidget {
                               ),
                             ),
                             const Spacer(),
-                            const Icon(Icons.access_time_rounded, size: 16, color: Colors.black54),
+                            const Icon(CupertinoIcons.time, size: 16, color: Colors.black54),
                             const SizedBox(width: 4),
                             Text(
                               config.estimatedTime,
@@ -157,7 +158,7 @@ class DeliveryScreen extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.info_outline, size: 16, color: Colors.black45),
+                              const Icon(CupertinoIcons.info, size: 16, color: Colors.black45),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -187,7 +188,7 @@ class DeliveryScreen extends StatelessWidget {
           radius: 12,
           backgroundColor: isActive ? AppColors.baeminMint : const Color(0xFFE5E7EB),
           child: Icon(
-            Icons.check,
+            CupertinoIcons.check_mark,
             size: 14,
             color: isActive ? Colors.white : Colors.black26,
           ),

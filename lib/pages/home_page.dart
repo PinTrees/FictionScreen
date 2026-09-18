@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../services/auth_service.dart';
@@ -206,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Center(
-                        child: Icon(Icons.layers_rounded, color: Colors.white, size: 16),
+                        child: Icon(CupertinoIcons.square_stack_3d_up_fill, color: Colors.white, size: 16),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -267,7 +268,7 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 Text('OS 콘솔 열기', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
                                 SizedBox(width: 4),
-                                Icon(Icons.desktop_mac_rounded, size: 14),
+                                Icon(CupertinoIcons.device_desktop, size: 14),
                               ],
                             ),
                           ),
@@ -316,7 +317,7 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Text('Google 로그인', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
                               SizedBox(width: 4),
-                              Icon(Icons.arrow_forward_rounded, size: 14),
+                              Icon(CupertinoIcons.arrow_right, size: 14),
                             ],
                           ),
                         ),
@@ -460,7 +461,7 @@ class _HomePageState extends State<HomePage> {
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: -0.3),
                         ),
                         SizedBox(width: 8),
-                        Icon(Icons.desktop_windows_rounded, size: 18),
+                        Icon(CupertinoIcons.device_desktop, size: 18),
                       ],
                     ),
                   ),
@@ -479,7 +480,7 @@ class _HomePageState extends State<HomePage> {
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.dashboard_customize_rounded, size: 16, color: Color(0xFF94A3B8)),
+                      Icon(CupertinoIcons.square_grid_2x2, size: 16, color: Color(0xFF94A3B8)),
                       SizedBox(width: 8),
                       Text(
                         '전체 템플릿 탐색',
@@ -524,7 +525,7 @@ class _HomePageState extends State<HomePage> {
               // Deck Top Bar
               Row(
                 children: [
-                  const Icon(Icons.play_circle_filled_rounded, color: Color(0xFF6366F1), size: 18),
+                  const Icon(CupertinoIcons.play_circle_fill, color: Color(0xFF6366F1), size: 18),
                   const SizedBox(width: 8),
                   const Text(
                     'LIVE INTERACTIVE DECK',
@@ -537,7 +538,7 @@ class _HomePageState extends State<HomePage> {
                       foregroundColor: const Color(0xFF818CF8),
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                     ),
-                    icon: const Icon(Icons.edit_square, size: 14),
+                    icon: const Icon(CupertinoIcons.pencil_ellipsis_rectangle, size: 14),
                     label: const Text('현재 화면 스튜디오에서 편집', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                     onPressed: () => context.push('/studio/$_activeHeroTab'),
                   ),
@@ -550,10 +551,10 @@ class _HomePageState extends State<HomePage> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildDeckTab(id: 'kakaotalk', label: '카카오톡 채팅방', icon: Icons.chat_bubble_rounded),
-                    _buildDeckTab(id: 'windows_bsod', label: 'Windows 블루스크린', icon: Icons.desktop_windows_rounded),
-                    _buildDeckTab(id: 'youtube', label: '유튜브 플레이어', icon: Icons.play_arrow_rounded),
-                    _buildDeckTab(id: 'delivery', label: '배달 플랫폼', icon: Icons.two_wheeler_rounded),
+                    _buildDeckTab(id: 'kakaotalk', label: '카카오톡 채팅방', icon: CupertinoIcons.chat_bubble_2_fill),
+                    _buildDeckTab(id: 'windows_bsod', label: 'Windows 블루스크린', icon: CupertinoIcons.device_desktop),
+                    _buildDeckTab(id: 'youtube', label: '유튜브 플레이어', icon: CupertinoIcons.play_arrow_solid),
+                    _buildDeckTab(id: 'delivery', label: '배달 플랫폼', icon: CupertinoIcons.bag_fill),
                   ],
                 ),
               ),
@@ -701,28 +702,28 @@ class _HomePageState extends State<HomePage> {
                       _buildBentoCard(
                         title: '0.1mm 오차 없는 타이포그래피',
                         description: '카카오톡, iOS San Francisco, Windows Segoe UI, Android Roboto 시스템 글꼴의 자간과 굵기를 정밀 재현합니다.',
-                        icon: Icons.text_fields_rounded,
+                        icon: CupertinoIcons.textformat,
                         accentColor: const Color(0xFF6366F1),
                       ),
                       const SizedBox(height: 16),
                       _buildBentoCard(
                         title: '무손실 4K 스크린 캡처',
                         description: '확대해도 깨지지 않는 2.5x ~ 4.0x 슈퍼 샘플링 래스터라이징으로 고화질 영상 소스로 즉각 사용 가능합니다.',
-                        icon: Icons.high_quality_rounded,
+                        icon: CupertinoIcons.sparkles,
                         accentColor: const Color(0xFF38BDF8),
                       ),
                       const SizedBox(height: 16),
                       _buildBentoCard(
                         title: '프레임 & 화면 독립 분리',
                         description: '실제 스마트폰 디바이스 베젤을 씌우거나, 순수 화면 사각형만 잘라내는 전환을 1초 만에 완료합니다.',
-                        icon: Icons.smartphone_rounded,
+                        icon: CupertinoIcons.device_phone_portrait,
                         accentColor: const Color(0xFFEC4899),
                       ),
                       const SizedBox(height: 16),
                       _buildBentoCard(
                         title: '워터마크 제로 · 상업적 무제한',
                         description: '상업적 영상, 웹드라마 소품, 썰툰, 방송 등 어디서든 표기 의무 없이 자유롭게 활용할 수 있습니다.',
-                        icon: Icons.verified_user_rounded,
+                        icon: CupertinoIcons.shield_fill,
                         accentColor: const Color(0xFF10B981),
                       ),
                     ],
@@ -739,7 +740,7 @@ class _HomePageState extends State<HomePage> {
                           _buildBentoCard(
                             title: '0.1mm 오차 없는 타이포그래피',
                             description: '카카오톡 말풍선의 곡률과 꼬리 위치, 1 안읽음 숫자 위치, 통신사 상태바까지 현존 최고 수준의 싱크로율을 자랑합니다.',
-                            icon: Icons.text_fields_rounded,
+                            icon: CupertinoIcons.textformat,
                             accentColor: const Color(0xFF6366F1),
                             minHeight: 220,
                           ),
@@ -747,7 +748,7 @@ class _HomePageState extends State<HomePage> {
                           _buildBentoCard(
                             title: '워터마크 제로 · 상업적 무제한 라이선스',
                             description: '방송, 유튜브 숏폼, 릴스, 웹드라마 어디든 워터마크 없이 깨끗한 결과물을 상업적으로 사용할 수 있습니다.',
-                            icon: Icons.verified_user_rounded,
+                            icon: CupertinoIcons.shield_fill,
                             accentColor: const Color(0xFF10B981),
                             minHeight: 180,
                           ),
@@ -762,7 +763,7 @@ class _HomePageState extends State<HomePage> {
                           _buildBentoCard(
                             title: '무손실 4K 스크린 캡처',
                             description: '고해상도 캔버스 캡처로 숏폼(1080x1920) 및 데스크톱 영상(16:9) 제작 시 깨짐 없는 무손실 품질을 보장합니다.',
-                            icon: Icons.high_quality_rounded,
+                            icon: CupertinoIcons.sparkles,
                             accentColor: const Color(0xFF38BDF8),
                             minHeight: 180,
                           ),
@@ -770,7 +771,7 @@ class _HomePageState extends State<HomePage> {
                           _buildBentoCard(
                             title: '프레임 유무 자유 토글',
                             description: '아이폰/모니터 외형 프레임 캡처 또는 순수 화면 전용 캡처를 한 번의 클릭으로 스위칭하세요.',
-                            icon: Icons.smartphone_rounded,
+                            icon: CupertinoIcons.device_phone_portrait,
                             accentColor: const Color(0xFFEC4899),
                             minHeight: 220,
                           ),
@@ -1031,7 +1032,7 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.white.withValues(alpha: 0.05),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_forward_rounded, size: 14, color: Colors.white70),
+                  child: const Icon(CupertinoIcons.arrow_right, size: 14, color: Colors.white70),
                 ),
               ],
             ),
@@ -1069,7 +1070,7 @@ class _HomePageState extends State<HomePage> {
                           gradient: const LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF38BDF8)]),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Icon(Icons.layers_rounded, color: Colors.white, size: 14),
+                        child: const Icon(CupertinoIcons.square_stack_3d_up_fill, color: Colors.white, size: 14),
                       ),
                       const SizedBox(width: 8),
                       const Text(

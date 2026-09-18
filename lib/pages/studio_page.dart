@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
 import '../managers/export_manager.dart';
@@ -142,7 +143,7 @@ class _StudioPageState extends State<StudioPage> {
           // 프레임 토글
           IconButton(
             tooltip: _showFrame ? '프레임 숨기기 (화면만)' : '기기 프레임 씌우기',
-            icon: Icon(_showFrame ? Icons.smartphone_rounded : Icons.crop_free_rounded),
+            icon: Icon(_showFrame ? CupertinoIcons.device_phone_portrait : CupertinoIcons.viewfinder),
             onPressed: () => setState(() => _showFrame = !_showFrame),
           ),
           const SizedBox(width: 4),
@@ -159,7 +160,7 @@ class _StudioPageState extends State<StudioPage> {
               ),
               icon: _isExporting
                   ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Icon(Icons.download_rounded, size: 18),
+                  : const Icon(CupertinoIcons.arrow_down_doc_fill, size: 18),
               label: const Text('PNG 캡처 저장', style: TextStyle(fontWeight: FontWeight.bold)),
               onPressed: _isExporting ? null : _exportScreen,
             ),
@@ -226,8 +227,8 @@ class _StudioPageState extends State<StudioPage> {
             labelColor: AppColors.primaryLight,
             unselectedLabelColor: AppColors.textMuted,
             tabs: [
-              Tab(icon: Icon(Icons.remove_red_eye_rounded), text: '실시간 프리뷰'),
-              Tab(icon: Icon(Icons.edit_note_rounded), text: '화면 편집하기'),
+              Tab(icon: Icon(CupertinoIcons.eye_fill), text: '실시간 프리뷰'),
+              Tab(icon: Icon(CupertinoIcons.pencil_ellipsis_rectangle), text: '화면 편집하기'),
             ],
           ),
           Expanded(
@@ -275,7 +276,7 @@ class _StudioPageState extends State<StudioPage> {
         children: [
           if (_template.id == 'kakaotalk') ...[
             TextButton.icon(
-              icon: const Icon(Icons.play_arrow_rounded, color: AppColors.kakaoYellow, size: 18),
+              icon: const Icon(CupertinoIcons.play_arrow_solid, color: AppColors.kakaoYellow, size: 18),
               label: const Text('대화 애니메이션', style: TextStyle(color: Colors.white, fontSize: 12)),
               onPressed: _triggerKakaoAnimation,
             ),
@@ -283,7 +284,7 @@ class _StudioPageState extends State<StudioPage> {
           ],
           if (_template.id == 'windows_bsod') ...[
             TextButton.icon(
-              icon: const Icon(Icons.refresh_rounded, color: AppColors.accent, size: 18),
+              icon: const Icon(CupertinoIcons.arrow_counterclockwise, color: AppColors.accent, size: 18),
               label: const Text('% 카운트 시뮬레이션', style: TextStyle(color: Colors.white, fontSize: 12)),
               onPressed: _triggerBsodAnimation,
             ),
@@ -433,7 +434,7 @@ class _StudioPageState extends State<StudioPage> {
           decoration: InputDecoration(
             hintText: '메시지 내용을 입력하세요',
             suffixIcon: IconButton(
-              icon: const Icon(Icons.send_rounded, color: AppColors.primary),
+              icon: const Icon(CupertinoIcons.paperplane_fill, color: AppColors.primary),
               onPressed: () {
                 if (_msgInputController.text.trim().isEmpty) return;
                 setState(() {
@@ -501,7 +502,7 @@ class _StudioPageState extends State<StudioPage> {
               title: Text(msg.text, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
               subtitle: Text('${msg.time} · 1 표시: ${msg.unreadCount > 0 ? "O" : "X"}', style: const TextStyle(fontSize: 11)),
               trailing: IconButton(
-                icon: const Icon(Icons.close_rounded, size: 16, color: AppColors.textMuted),
+                icon: const Icon(CupertinoIcons.xmark, size: 14, color: AppColors.textMuted),
                 onPressed: () => setState(() => _kakaoConfig.messages.removeAt(idx)),
               ),
             ),
@@ -558,7 +559,7 @@ class _StudioPageState extends State<StudioPage> {
             padding: const EdgeInsets.all(14),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
-          icon: const Icon(Icons.play_circle_fill_rounded),
+          icon: const Icon(CupertinoIcons.play_circle_fill),
           label: const Text('실시간 카운트업 시뮬레이션 시작'),
           onPressed: _triggerBsodAnimation,
         ),

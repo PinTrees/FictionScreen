@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../models/youtube_model.dart';
 
@@ -29,7 +30,7 @@ class YoutubeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 64),
+                const Icon(CupertinoIcons.play_arrow_solid, color: Colors.white, size: 64),
                 // 하단 진행바
                 Positioned(
                   bottom: 0,
@@ -178,14 +179,14 @@ class YoutubeScreen extends StatelessWidget {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.thumb_up_outlined, size: 14, color: Colors.black54),
+                    const Icon(CupertinoIcons.hand_thumbsup, size: 14, color: Colors.black54),
                     const SizedBox(width: 4),
                     Text(comment.likes, style: const TextStyle(color: Colors.black54, fontSize: 11)),
                     const SizedBox(width: 16),
-                    const Icon(Icons.thumb_down_outlined, size: 14, color: Colors.black54),
+                    const Icon(CupertinoIcons.hand_thumbsdown, size: 14, color: Colors.black54),
                     if (comment.isHearted) ...[
                       const SizedBox(width: 14),
-                      const Icon(Icons.favorite, size: 14, color: Colors.red),
+                      const Icon(CupertinoIcons.heart_fill, size: 14, color: Colors.red),
                     ],
                   ],
                 ),
