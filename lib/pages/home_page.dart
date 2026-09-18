@@ -3,17 +3,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../apps/delivery/data/delivery_model.dart';
+import '../apps/delivery/delivery_screen.dart';
+import '../apps/instagram/data/instagram_model.dart';
+import '../apps/instagram/instagram_screen.dart';
+import '../apps/kakaotalk/data/kakaotalk_model.dart';
+import '../apps/kakaotalk/kakaotalk_screen.dart';
+import '../apps/toss/data/toss_model.dart';
+import '../apps/toss/toss_screen.dart';
+import '../apps/pinterest/data/pinterest_model.dart';
+import '../apps/pinterest/pinterest_screen.dart';
+import '../apps/screen_template.dart';
+import '../apps/windows_bsod/data/windows_bsod_model.dart';
+import '../apps/windows_bsod/windows_bsod_screen.dart';
+import '../apps/x_twitter/data/x_twitter_model.dart';
+import '../apps/x_twitter/x_twitter_screen.dart';
+import '../apps/youtube/data/youtube_model.dart';
+import '../apps/youtube/youtube_screen.dart';
 import '../services/auth_service.dart';
-import '../models/delivery_model.dart';
-import '../models/kakaotalk_model.dart';
-import '../models/screen_template.dart';
-import '../models/windows_bsod_model.dart';
-import '../models/youtube_model.dart';
-import '../style/app_colors.dart';
-import '../templates/lifestyle/delivery_screen.dart';
-import '../templates/messenger/kakaotalk_screen.dart';
-import '../templates/os/windows_bsod_screen.dart';
-import '../templates/sns/youtube_screen.dart';
 import '../widgets/common/device_frame_preview.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,20 +31,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // 히어로 인터랙티브 프리뷰 탭
+  // 메인 프리뷰 선택 탭
   String _activeHeroTab = 'kakaotalk';
   TemplateCategory? _selectedCategory;
 
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _catalogKey = GlobalKey();
-  final GlobalKey _specsKey = GlobalKey();
+  final GlobalKey _featuresKey = GlobalKey();
 
-  void _scrollToSection(GlobalKey key) {
-    Scrollable.ensureVisible(
-      key.currentContext!,
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeInOutCubic,
-    );
+  void _scrollToKey(GlobalKey key) {
+    if (key.currentContext != null) {
+      Scrollable.ensureVisible(
+        key.currentContext!,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   @override
@@ -52,33 +61,33 @@ class _HomePageState extends State<HomePage> {
     final isMobile = screenWidth < 768;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF08090D),
+      backgroundColor: const Color(0xFF090A0F),
       body: Stack(
         children: [
-          // 1. 2027 앰비언트 글로우 배경
-          _buildAmbientBackground(),
+          // 1. 은은하고 고급스러운 배경 오로라
+          _buildBackgroundGlow(),
 
-          // 2. 메인 스크롤 콘텐츠
+          // 2. 메인 스크롤뷰
           CustomScrollView(
             controller: _scrollController,
             slivers: [
-              const SliverToBoxAdapter(child: SizedBox(height: 100)), // 네비바 공간
+              const SliverToBoxAdapter(child: SizedBox(height: 90)),
 
               // Hero Section
               SliverToBoxAdapter(
                 child: _buildHeroSection(isMobile),
               ),
 
-              // Live Interactive Deck Section
+              // Interactive Preview Deck Section
               SliverToBoxAdapter(
                 child: _buildInteractiveShowcaseDeck(isMobile),
               ),
 
-              // Bento Grid Engine Features Section
+              // Features Section
               SliverToBoxAdapter(
                 child: Container(
-                  key: _specsKey,
-                  child: _buildBentoGridSection(isMobile),
+                  key: _featuresKey,
+                  child: _buildCoreFeaturesSection(isMobile),
                 ),
               ),
 
@@ -90,16 +99,16 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-              // Minimalist Footer
+              // Footer
               SliverToBoxAdapter(
                 child: _buildFooter(),
               ),
             ],
           ),
 
-          // 3. Floating Island Navigation Bar
+          // 3. 플로팅 내비게이션 바
           Positioned(
-            top: 18,
+            top: 16,
             left: 0,
             right: 0,
             child: Center(
@@ -112,50 +121,31 @@ class _HomePageState extends State<HomePage> {
   }
 
   // ==========================================
-  // 배경 앰비언트 오로라
+  // 배경 디자인
   // ==========================================
-  Widget _buildAmbientBackground() {
+  Widget _buildBackgroundGlow() {
     return Positioned.fill(
       child: IgnorePointer(
         child: Stack(
           children: [
-            // 상단 은은한 림 라이트
             Positioned(
-              top: -160,
+              top: -120,
               left: 0,
               right: 0,
               child: Center(
                 child: Container(
-                  width: 900,
-                  height: 480,
+                  width: 800,
+                  height: 400,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        const Color(0xFF4F46E5).withValues(alpha: 0.14),
-                        const Color(0xFF2563EB).withValues(alpha: 0.06),
+                        const Color(0xFF6366F1).withValues(alpha: 0.12),
+                        const Color(0xFF3B82F6).withValues(alpha: 0.05),
                         Colors.transparent,
                       ],
                       stops: const [0.0, 0.5, 1.0],
                     ),
-                  ),
-                ),
-              ),
-            ),
-            // 하단 우측 메탈릭 사이언 라이트
-            Positioned(
-              top: 1200,
-              right: -100,
-              child: Container(
-                width: 600,
-                height: 600,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      const Color(0xFF06B6D4).withValues(alpha: 0.05),
-                      Colors.transparent,
-                    ],
                   ),
                 ),
               ),
@@ -167,34 +157,34 @@ class _HomePageState extends State<HomePage> {
   }
 
   // ==========================================
-  // Floating Island Navigation
+  // Floating Navigation Bar
   // ==========================================
   Widget _buildFloatingNav(bool isMobile) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      constraints: const BoxConstraints(maxWidth: 960),
-      height: 56,
+      constraints: const BoxConstraints(maxWidth: 920),
+      height: 52,
       decoration: BoxDecoration(
-        color: const Color(0xFF10121A).withValues(alpha: 0.75),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08), width: 1),
+        color: const Color(0xFF12141D).withValues(alpha: 0.8),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.45),
-            blurRadius: 28,
-            offset: const Offset(0, 10),
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(26),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                // Brand Logo
+                // 브랜드 로고
                 Row(
                   children: [
                     Container(
@@ -207,7 +197,7 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Center(
-                        child: Icon(CupertinoIcons.square_stack_3d_up_fill, color: Colors.white, size: 16),
+                        child: Icon(CupertinoIcons.square_stack_3d_up_fill, color: Colors.white, size: 15),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -217,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.white,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        letterSpacing: -0.4,
+                        letterSpacing: -0.3,
                       ),
                     ),
                   ],
@@ -225,103 +215,61 @@ class _HomePageState extends State<HomePage> {
 
                 const Spacer(),
 
-                // Desktop Menu Links
+                // 메뉴
                 if (!isMobile) ...[
-                  _buildNavLink('라이브 덱', () => _scrollController.animateTo(400, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut)),
-                  const SizedBox(width: 22),
-                  _buildNavLink('엔진 스펙', () => _scrollToSection(_specsKey)),
-                  const SizedBox(width: 22),
-                  _buildNavLink('템플릿 카탈로그', () => _scrollToSection(_catalogKey)),
+                  _buildNavTextButton('실시간 미리보기', () => _scrollController.animateTo(380, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut)),
+                  const SizedBox(width: 20),
+                  _buildNavTextButton('주요 기능', () => _scrollToKey(_featuresKey)),
+                  const SizedBox(width: 20),
+                  _buildNavTextButton('앱 카탈로그', () => _scrollToKey(_catalogKey)),
                   const SizedBox(width: 24),
                 ],
 
-                // Action CTA
+                // 액션 버튼
                 StreamBuilder<User?>(
                   stream: AuthService.authStateChanges,
                   builder: (context, snapshot) {
                     final user = snapshot.data ?? AuthService.currentUser;
                     if (user != null) {
-                      return Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircleAvatar(
-                            radius: 14,
-                            backgroundImage: user.photoURL != null ? NetworkImage(user.photoURL!) : null,
-                            backgroundColor: const Color(0xFF6366F1),
-                            child: user.photoURL == null
-                                ? Text(user.displayName?[0] ?? 'U', style: const TextStyle(color: Colors.white, fontSize: 11))
-                                : null,
-                          ),
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: const Color(0xFF0A0B10),
-                              elevation: 0,
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
-                              minimumSize: const Size(0, 36),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                            ),
-                            onPressed: () => context.go('/console'),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text('OS 콘솔 열기', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
-                                SizedBox(width: 4),
-                                Icon(CupertinoIcons.device_desktop, size: 14),
-                              ],
-                            ),
-                          ),
-                        ],
+                      return ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+                          minimumSize: const Size(0, 34),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                        ),
+                        onPressed: () => context.go('/console'),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('OS 콘솔 실행', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+                            SizedBox(width: 4),
+                            Icon(CupertinoIcons.device_desktop, size: 14),
+                          ],
+                        ),
                       );
                     }
 
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                            minimumSize: const Size(0, 36),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          ),
-                          onPressed: () => context.go('/console'),
-                          child: const Text('콘솔 체험', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF0A0B10),
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
-                            minimumSize: const Size(0, 36),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          ),
-                          onPressed: () async {
-                            try {
-                              await AuthService.signInWithGoogle();
-                              if (context.mounted) {
-                                context.go('/console');
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                context.go('/console');
-                              }
-                            }
-                          },
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('Google 로그인', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
-                              SizedBox(width: 4),
-                              Icon(CupertinoIcons.arrow_right, size: 14),
-                            ],
-                          ),
-                        ),
-                      ],
+                    return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF6366F1),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+                        minimumSize: const Size(0, 34),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      ),
+                      onPressed: () => context.go('/console'),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('콘솔 시작하기', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                          SizedBox(width: 4),
+                          Icon(CupertinoIcons.arrow_right, size: 13),
+                        ],
+                      ),
                     );
                   },
                 ),
@@ -333,17 +281,16 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildNavLink(String title, VoidCallback onTap) {
+  Widget _buildNavTextButton(String title, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       hoverColor: Colors.transparent,
       child: Text(
         title,
         style: TextStyle(
-          color: Colors.white.withValues(alpha: 0.7),
+          color: Colors.white.withValues(alpha: 0.75),
           fontSize: 13,
           fontWeight: FontWeight.w500,
-          letterSpacing: -0.2,
         ),
       ),
     );
@@ -354,484 +301,430 @@ class _HomePageState extends State<HomePage> {
   // ==========================================
   Widget _buildHeroSection(bool isMobile) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: isMobile ? 24 : 40, vertical: isMobile ? 36 : 64),
-      alignment: Alignment.center,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 880),
-        child: Column(
-          children: [
-            // Status Tag
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF131520),
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 7,
-                    height: 7,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF10B981),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    '2027 REAL-TIME MOCK ENGINE · ZERO WATERMARK',
-                    style: TextStyle(
-                      color: Color(0xFF94A3B8),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.6,
-                    ),
-                  ),
-                ],
-              ),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 40,
+        vertical: isMobile ? 30 : 50,
+      ),
+      child: Column(
+        children: [
+          // 뱃지
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+            decoration: BoxDecoration(
+              color: const Color(0xFF6366F1).withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFF6366F1).withValues(alpha: 0.3)),
             ),
-            const SizedBox(height: 24),
-
-            // Editorial Main Heading
-            Text(
-              '상상한 화면을\n완벽한 현실의 프레임으로.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: isMobile ? 38 : 64,
-                fontWeight: FontWeight.w800,
-                height: 1.15,
-                letterSpacing: isMobile ? -1.2 : -2.2,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Refined Subtitle
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 640),
-              child: Text(
-                '유튜브 숏폼, 웹드라마 소품, 썰툰, 미디어 콘텐츠를 위한 고품질 가상 인터페이스.\n'
-                '카카오톡·인스타그램·유튜브·배달앱·OS 오류 화면을 1:1 무손실 벡터로 렌더링하고 내보내세요.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: const Color(0xFF94A3B8),
-                  fontSize: isMobile ? 14 : 17,
-                  height: 1.6,
-                  letterSpacing: -0.3,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-            const SizedBox(height: 36),
-
-            // Primary CTAs
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              alignment: WrapAlignment.center,
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Glow Launch CTA
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF6366F1).withValues(alpha: 0.35),
-                        blurRadius: 24,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6366F1),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 18),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    onPressed: () => context.go('/console'),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'OS 콘솔 작업공간 입장',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: -0.3),
-                        ),
-                        SizedBox(width: 8),
-                        Icon(CupertinoIcons.device_desktop, size: 18),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Secondary Scroll CTA
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFE2E8F0),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                    side: BorderSide(color: Colors.white.withValues(alpha: 0.14), width: 1),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    backgroundColor: const Color(0xFF10121A).withValues(alpha: 0.5),
-                  ),
-                  onPressed: () => _scrollToSection(_catalogKey),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(CupertinoIcons.square_grid_2x2, size: 16, color: Color(0xFF94A3B8)),
-                      SizedBox(width: 8),
-                      Text(
-                        '전체 템플릿 탐색',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: -0.3),
-                      ),
-                    ],
+                Icon(CupertinoIcons.sparkles, color: Color(0xFF818CF8), size: 13),
+                SizedBox(width: 6),
+                Text(
+                  '웹툰 • 방송 • 연출가를 위한 픽셀 정밀 스튜디오',
+                  style: TextStyle(
+                    color: Color(0xFFA5B4FC),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ==========================================
-  // Live Interactive Showcase Deck
-  // ==========================================
-  Widget _buildInteractiveShowcaseDeck(bool isMobile) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 40, vertical: 24),
-      alignment: Alignment.center,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1020),
-        child: Container(
-          padding: EdgeInsets.all(isMobile ? 16 : 28),
-          decoration: BoxDecoration(
-            color: const Color(0xFF0F111A),
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.6),
-                blurRadius: 40,
-                offset: const Offset(0, 20),
-              ),
-            ],
           ),
-          child: Column(
-            children: [
-              // Deck Top Bar
-              Row(
-                children: [
-                  const Icon(CupertinoIcons.play_circle_fill, color: Color(0xFF6366F1), size: 18),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'LIVE INTERACTIVE DECK',
-                    style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.5),
-                  ),
-                  const Spacer(),
-                  // Studio Jump Shortcut
-                  TextButton.icon(
-                    style: TextButton.styleFrom(
-                      foregroundColor: const Color(0xFF818CF8),
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                    ),
-                    icon: const Icon(CupertinoIcons.pencil_ellipsis_rectangle, size: 14),
-                    label: const Text('현재 화면 스튜디오에서 편집', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                    onPressed: () => context.push('/studio/$_activeHeroTab'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
-              // Interactive Selector Tabs
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
+          // 메인 타이틀
+          Text(
+            '실제 앱과 구별할 수 없는\n가짜 화면을 단 몇 초만에.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: isMobile ? 32 : 48,
+              fontWeight: FontWeight.w800,
+              height: 1.18,
+              letterSpacing: -1.0,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // 서브 타이틀
+          Container(
+            constraints: const BoxConstraints(maxWidth: 620),
+            child: Text(
+              '카카오톡, 인스타그램, 유튜브부터 Windows 블루스크린까지.\n글꼴과 디테일이 완벽히 일치하는 고화질 픽션 화면을 만들고 내보내세요.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.65),
+                fontSize: isMobile ? 14 : 16,
+                height: 1.55,
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
+
+          // CTA 버튼군
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            alignment: WrapAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF6366F1),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
+                onPressed: () => context.go('/console'),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildDeckTab(id: 'kakaotalk', label: '카카오톡 채팅방', icon: CupertinoIcons.chat_bubble_2_fill),
-                    _buildDeckTab(id: 'windows_bsod', label: 'Windows 블루스크린', icon: CupertinoIcons.device_desktop),
-                    _buildDeckTab(id: 'youtube', label: '유튜브 플레이어', icon: CupertinoIcons.play_arrow_solid),
-                    _buildDeckTab(id: 'delivery', label: '배달 플랫폼', icon: CupertinoIcons.bag_fill),
+                    Text('가상 OS 콘솔 체험', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                    SizedBox(width: 6),
+                    Icon(CupertinoIcons.arrow_right, size: 16),
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
-
-              // Embedded Interactive Frame
-              Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: _buildSelectedHeroScreen(isMobile),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDeckTab({required String id, required String label, required IconData icon}) {
-    final isSelected = _activeHeroTab == id;
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => setState(() => _activeHeroTab = id),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF1E2130) : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected ? const Color(0xFF6366F1).withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.05),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 15, color: isSelected ? const Color(0xFF818CF8) : const Color(0xFF64748B)),
-              const SizedBox(width: 7),
-              Text(
-                label,
-                style: TextStyle(
-                  color: isSelected ? Colors.white : const Color(0xFF94A3B8),
-                  fontSize: 13,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  letterSpacing: -0.2,
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: () => _scrollToKey(_catalogKey),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(CupertinoIcons.square_grid_2x2, size: 16),
+                    SizedBox(width: 6),
+                    Text('템플릿 둘러보기', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+                  ],
                 ),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 36),
+
+          // 신뢰 요약 메트릭
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildMetricItem('100%', '픽셀 정밀도'),
+              _buildMetricDivider(),
+              _buildMetricItem('PNG', '워터마크 프리 내보내기'),
+              _buildMetricDivider(),
+              _buildMetricItem('4가지', '가상 OS 인터페이스'),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSelectedHeroScreen(bool isMobile) {
-    final scale = isMobile ? 0.78 : 0.88;
+  Widget _buildMetricItem(String value, String label) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.5),
+            fontSize: 11,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMetricDivider() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      height: 20,
+      width: 1,
+      color: Colors.white.withValues(alpha: 0.12),
+    );
+  }
+
+  // ==========================================
+  // Interactive Live Showcase Deck Section
+  // ==========================================
+  Widget _buildInteractiveShowcaseDeck(bool isMobile) {
+    return Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: isMobile ? 16 : 40,
+        vertical: 20,
+      ),
+      padding: EdgeInsets.all(isMobile ? 16 : 28),
+      decoration: BoxDecoration(
+        color: const Color(0xFF11131C),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+      child: Column(
+        children: [
+          // 헤더 & 탭
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '실시간 미리보기',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '원하는 앱 탭을 선택하여 렌더링 상태를 확인하세요.',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // 앱 선택 탭
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildTabChip('kakaotalk', '카카오톡', CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500)),
+                _buildTabChip('toss', '토스', CupertinoIcons.money_dollar_circle_fill, const Color(0xFF0050FF)),
+                _buildTabChip('x_twitter', 'X (트위터)', CupertinoIcons.conversation_bubble, const Color(0xFF1D9BF0)),
+                _buildTabChip('pinterest', '핀터레스트', CupertinoIcons.sparkles, const Color(0xFFE60023)),
+                _buildTabChip('windows_bsod', 'Windows BSOD', CupertinoIcons.device_desktop, const Color(0xFF0078D7)),
+                _buildTabChip('youtube', '유튜브', CupertinoIcons.play_circle_fill, const Color(0xFFFF0000)),
+                _buildTabChip('instagram', '인스타그램', CupertinoIcons.camera_fill, const Color(0xFFE1306C)),
+                _buildTabChip('delivery', '배달 플랫폼', CupertinoIcons.bag_fill, const Color(0xFF2AC1BC)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // 프레임 미리보기
+          SizedBox(
+            height: isMobile ? 480 : 540,
+            child: Center(
+              child: DeviceFramePreview(
+                isDesktop: _activeHeroTab == 'windows_bsod',
+                child: _buildActivePreviewWidget(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // 편집하기 버튼
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white.withValues(alpha: 0.08),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+              ),
+            ),
+            onPressed: () => context.go('/studio/$_activeHeroTab'),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(CupertinoIcons.slider_horizontal_3, size: 15),
+                const SizedBox(width: 8),
+                Text('$_activeHeroTab 스튜디오에서 직접 편집하기', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabChip(String id, String label, IconData icon, Color color) {
+    final isActive = _activeHeroTab == id;
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: ChoiceChip(
+        selected: isActive,
+        showCheckmark: false,
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: isActive ? (color == const Color(0xFFFEE500) ? Colors.black : Colors.white) : color),
+            const SizedBox(width: 6),
+            Text(label),
+          ],
+        ),
+        labelStyle: TextStyle(
+          color: isActive ? (color == const Color(0xFFFEE500) ? Colors.black : Colors.white) : Colors.white70,
+          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+          fontSize: 12,
+        ),
+        selectedColor: color,
+        backgroundColor: const Color(0xFF1A1C28),
+        side: BorderSide(
+          color: isActive ? color : Colors.white.withValues(alpha: 0.08),
+        ),
+        onSelected: (selected) {
+          if (selected) {
+            setState(() {
+              _activeHeroTab = id;
+            });
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildActivePreviewWidget() {
     switch (_activeHeroTab) {
       case 'kakaotalk':
-        return DeviceFramePreview(
-          showFrame: true,
-          scale: scale,
-          child: KakaoTalkScreen(
-            config: KakaoRoomConfig.defaultPreset(),
-            isAnimated: false,
-          ),
-        );
+        return KakaoTalkScreen(config: KakaoRoomConfig.defaultPreset());
+      case 'toss':
+        return TossScreen(config: TossConfig.defaultPreset());
+      case 'x_twitter':
+        return XTwitterScreen(config: XTwitterConfig.defaultPreset());
+      case 'pinterest':
+        return PinterestScreen(config: PinterestConfig.defaultPreset());
       case 'windows_bsod':
-        return DeviceFramePreview(
-          showFrame: true,
-          isDesktop: true,
-          scale: isMobile ? 0.5 : 0.8,
-          child: WindowsBsodScreen(
-            config: WindowsBsodConfig.defaultPreset(),
-            currentPercentage: 84,
-          ),
-        );
+        return WindowsBsodScreen(config: WindowsBsodConfig.defaultPreset());
       case 'youtube':
-        return DeviceFramePreview(
-          showFrame: true,
-          scale: scale,
-          child: YoutubeScreen(config: YoutubeConfig.defaultPreset()),
-        );
+        return YoutubeScreen(config: YoutubeConfig.defaultPreset());
+      case 'instagram':
+        return InstagramScreen(config: InstagramConfig.defaultPreset());
       case 'delivery':
-        return DeviceFramePreview(
-          showFrame: true,
-          scale: scale,
-          child: DeliveryScreen(config: DeliveryConfig.defaultPreset()),
-        );
+        return DeliveryScreen(config: DeliveryConfig.defaultPreset());
       default:
-        return DeviceFramePreview(
-          showFrame: true,
-          scale: scale,
-          child: KakaoTalkScreen(config: KakaoRoomConfig.defaultPreset()),
-        );
+        return KakaoTalkScreen(config: KakaoRoomConfig.defaultPreset());
     }
   }
 
   // ==========================================
-  // Bento Grid Section (Engine Specifications)
+  // Core Features Section
   // ==========================================
-  Widget _buildBentoGridSection(bool isMobile) {
+  Widget _buildCoreFeaturesSection(bool isMobile) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 40, vertical: 60),
-      alignment: Alignment.center,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1040),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Section Header
-            const Text(
-              'ENGINE SPECIFICATIONS',
-              style: TextStyle(
-                color: Color(0xFF6366F1),
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.2,
-              ),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 40,
+        vertical: 40,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '왜 FictionScreen인가요?',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 10),
-            Text(
-              '어떤 영상에서도 어색함이 없는 이유.',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: isMobile ? 26 : 38,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -1.0,
-              ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '콘텐츠 제작 환경에 최적화된 핵심 기능들을 확인하세요.',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.5),
+              fontSize: 13,
             ),
-            const SizedBox(height: 12),
-            const Text(
-              '단순한 이미지가 아닙니다. 네이티브 픽셀 단위 렌더링 엔진으로 오차 없는 싱크로율을 제공합니다.',
-              style: TextStyle(color: Color(0xFF94A3B8), fontSize: 15),
-            ),
-            const SizedBox(height: 36),
+          ),
+          const SizedBox(height: 24),
 
-            // Bento Grid
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final isNarrow = constraints.maxWidth < 740;
-                if (isNarrow) {
-                  return Column(
-                    children: [
-                      _buildBentoCard(
-                        title: '0.1mm 오차 없는 타이포그래피',
-                        description: '카카오톡, iOS San Francisco, Windows Segoe UI, Android Roboto 시스템 글꼴의 자간과 굵기를 정밀 재현합니다.',
-                        icon: CupertinoIcons.textformat,
-                        accentColor: const Color(0xFF6366F1),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildBentoCard(
-                        title: '무손실 4K 스크린 캡처',
-                        description: '확대해도 깨지지 않는 2.5x ~ 4.0x 슈퍼 샘플링 래스터라이징으로 고화질 영상 소스로 즉각 사용 가능합니다.',
-                        icon: CupertinoIcons.sparkles,
-                        accentColor: const Color(0xFF38BDF8),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildBentoCard(
-                        title: '프레임 & 화면 독립 분리',
-                        description: '실제 스마트폰 디바이스 베젤을 씌우거나, 순수 화면 사각형만 잘라내는 전환을 1초 만에 완료합니다.',
-                        icon: CupertinoIcons.device_phone_portrait,
-                        accentColor: const Color(0xFFEC4899),
-                      ),
-                      const SizedBox(height: 16),
-                      _buildBentoCard(
-                        title: '워터마크 제로 · 상업적 무제한',
-                        description: '상업적 영상, 웹드라마 소품, 썰툰, 방송 등 어디서든 표기 의무 없이 자유롭게 활용할 수 있습니다.',
-                        icon: CupertinoIcons.shield_fill,
-                        accentColor: const Color(0xFF10B981),
-                      ),
-                    ],
-                  );
-                }
-
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 6,
-                      child: Column(
-                        children: [
-                          _buildBentoCard(
-                            title: '0.1mm 오차 없는 타이포그래피',
-                            description: '카카오톡 말풍선의 곡률과 꼬리 위치, 1 안읽음 숫자 위치, 통신사 상태바까지 현존 최고 수준의 싱크로율을 자랑합니다.',
-                            icon: CupertinoIcons.textformat,
-                            accentColor: const Color(0xFF6366F1),
-                            minHeight: 220,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildBentoCard(
-                            title: '워터마크 제로 · 상업적 무제한 라이선스',
-                            description: '방송, 유튜브 숏폼, 릴스, 웹드라마 어디든 워터마크 없이 깨끗한 결과물을 상업적으로 사용할 수 있습니다.',
-                            icon: CupertinoIcons.shield_fill,
-                            accentColor: const Color(0xFF10B981),
-                            minHeight: 180,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      flex: 5,
-                      child: Column(
-                        children: [
-                          _buildBentoCard(
-                            title: '무손실 4K 스크린 캡처',
-                            description: '고해상도 캔버스 캡처로 숏폼(1080x1920) 및 데스크톱 영상(16:9) 제작 시 깨짐 없는 무손실 품질을 보장합니다.',
-                            icon: CupertinoIcons.sparkles,
-                            accentColor: const Color(0xFF38BDF8),
-                            minHeight: 180,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildBentoCard(
-                            title: '프레임 유무 자유 토글',
-                            description: '아이폰/모니터 외형 프레임 캡처 또는 순수 화면 전용 캡처를 한 번의 클릭으로 스위칭하세요.',
-                            icon: CupertinoIcons.device_phone_portrait,
-                            accentColor: const Color(0xFFEC4899),
-                            minHeight: 220,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
+          // 2x2 기능 카드
+          GridView.count(
+            crossAxisCount: isMobile ? 1 : 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: isMobile ? 2.2 : 2.5,
+            children: [
+              _buildFeatureCard(
+                icon: CupertinoIcons.sparkles,
+                title: '100% 픽셀 및 글꼴 정밀도',
+                description: 'Pretendard, San Francisco, Segoe UI 등 실제 서비스의 원본 글꼴과 상단바, 말풍선 곡률, 안읽음 카운트를 고해상도로 재현합니다.',
+              ),
+              _buildFeatureCard(
+                icon: CupertinoIcons.device_desktop,
+                title: '가상 OS 콘솔 지원',
+                description: 'Windows 11, macOS, iOS, Galaxy 중 원하는 바탕화면 환경 위에서 앱 화면을 구성하고 자연스러운 연출이 가능합니다.',
+              ),
+              _buildFeatureCard(
+                icon: CupertinoIcons.slider_horizontal_3,
+                title: '실시간 커스텀 데이터',
+                description: '프로필, 대화 내역, 시각, 배터리 잔량, 신호 세기, 댓글 수 등 모든 요소를 즉시 수정하고 조합할 수 있습니다.',
+              ),
+              _buildFeatureCard(
+                icon: CupertinoIcons.arrow_down_doc_fill,
+                title: '고화질 워터마크 프리 내보내기',
+                description: '웹툰 원고나 영상 편집 프로그램에 바로 배치할 수 있도록 투명하고 깔끔한 PNG 이미지를 즉시 생성합니다.',
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildBentoCard({
+  Widget _buildFeatureCard({
+    required IconData icon,
     required String title,
     required String description,
-    required IconData icon,
-    required Color accentColor,
-    double minHeight = 160,
   }) {
     return Container(
-      constraints: BoxConstraints(minHeight: minHeight),
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F111A),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+        color: const Color(0xFF12141D),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: accentColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
+              color: const Color(0xFF6366F1).withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: accentColor, size: 22),
+            child: Icon(icon, color: const Color(0xFF818CF8), size: 20),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             title,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.4,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            description,
-            style: const TextStyle(
-              color: Color(0xFF94A3B8),
-              fontSize: 13,
-              height: 1.5,
+          const SizedBox(height: 6),
+          Expanded(
+            child: Text(
+              description,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.6),
+                fontSize: 12,
+                height: 1.45,
+              ),
             ),
           ),
         ],
@@ -848,196 +741,207 @@ class _HomePageState extends State<HomePage> {
         : ScreenTemplate.allTemplates.where((t) => t.category == _selectedCategory).toList();
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 40, vertical: 60),
-      alignment: Alignment.center,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1040),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'TEMPLATES LIBRARY',
-                        style: TextStyle(color: Color(0xFF6366F1), fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 1.2),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 40,
+        vertical: 40,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '앱 템플릿 카탈로그',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '제작할 가상 화면을 선택하세요.',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: isMobile ? 24 : 34,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -1.0,
-                        ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '필요한 픽션 앱을 선택하여 바로 커스텀을 시작하세요.',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        fontSize: 13,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          // 카테고리 필터
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildCategoryFilterChip(null, '전체 보기'),
+                ...TemplateCategory.values.map((cat) => _buildCategoryFilterChip(cat, cat.label)),
               ],
             ),
-            const SizedBox(height: 20),
+          ),
+          const SizedBox(height: 24),
 
-            // Category Filter
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildCatalogFilterChip(null, '전체 템플릿'),
-                  ...TemplateCategory.values.map((cat) => _buildCatalogFilterChip(cat, cat.label)),
-                ],
-              ),
+          // 그리드 목록
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: templates.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: isMobile ? 1 : (MediaQuery.of(context).size.width > 1200 ? 3 : 2),
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              mainAxisExtent: 150,
             ),
-            const SizedBox(height: 28),
-
-            // Cards Grid
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final count = constraints.maxWidth > 720 ? 2 : 1;
-                return GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: count,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    mainAxisExtent: 155,
-                  ),
-                  itemCount: templates.length,
-                  itemBuilder: (context, index) {
-                    final t = templates[index];
-                    return _buildModernTemplateCard(t);
-                  },
-                );
-              },
-            ),
-          ],
-        ),
+            itemBuilder: (context, index) {
+              final template = templates[index];
+              return _buildCatalogCard(template);
+            },
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildCatalogFilterChip(TemplateCategory? category, String label) {
+  Widget _buildCategoryFilterChip(TemplateCategory? category, String label) {
     final isSelected = _selectedCategory == category;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () => setState(() => _selectedCategory = category),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.white : const Color(0xFF131520),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.08),
-            ),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.black : const Color(0xFF94A3B8),
-              fontSize: 12,
-              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-            ),
-          ),
+      child: FilterChip(
+        selected: isSelected,
+        showCheckmark: false,
+        label: Text(label),
+        labelStyle: TextStyle(
+          color: isSelected ? Colors.white : Colors.white60,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          fontSize: 12,
         ),
+        selectedColor: const Color(0xFF6366F1),
+        backgroundColor: const Color(0xFF12141D),
+        side: BorderSide(
+          color: isSelected ? const Color(0xFF6366F1) : Colors.white.withValues(alpha: 0.08),
+        ),
+        onSelected: (_) {
+          setState(() {
+            _selectedCategory = category;
+          });
+        },
       ),
     );
   }
 
-  Widget _buildModernTemplateCard(ScreenTemplate template) {
+  Widget _buildCatalogCard(ScreenTemplate template) {
     return Container(
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F111A),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+        color: const Color(0xFF12141D),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          hoverColor: Colors.white.withValues(alpha: 0.02),
-          onTap: () => context.push('/studio/${template.id}'),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                // Icon
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: template.themeColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: template.themeColor.withValues(alpha: 0.25)),
-                  ),
-                  child: Center(
-                    child: Icon(template.icon, color: template.themeColor, size: 24),
-                  ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: template.themeColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                const SizedBox(width: 18),
-
-                // Info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
+                child: Center(
+                  child: Icon(template.icon, color: template.themeColor, size: 18),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          template.title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        if (template.badge.isNotEmpty) ...[
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF6366F1).withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
                             child: Text(
-                              template.title,
-                              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
-                              overflow: TextOverflow.ellipsis,
+                              template.badge,
+                              style: const TextStyle(
+                                color: Color(0xFFA5B4FC),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          if (template.badge.isNotEmpty) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.secondary.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                template.badge,
-                                style: const TextStyle(color: AppColors.secondary, fontSize: 10, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
                         ],
+                      ],
+                    ),
+                    Text(
+                      template.category.label,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.4),
+                        fontSize: 11,
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        template.description,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12, height: 1.35),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-
-                // Arrow
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(CupertinoIcons.arrow_right, size: 14, color: Colors.white70),
-                ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            template.description,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.6),
+              fontSize: 12,
+              height: 1.35,
             ),
           ),
-        ),
+          const Spacer(),
+          Align(
+            alignment: Alignment.centerRight,
+            child: InkWell(
+              onTap: () => context.go('/studio/${template.id}'),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '스튜디오 열기',
+                    style: TextStyle(
+                      color: Color(0xFF818CF8),
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  Icon(CupertinoIcons.chevron_forward, size: 12, color: Color(0xFF818CF8)),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1047,74 +951,61 @@ class _HomePageState extends State<HomePage> {
   // ==========================================
   Widget _buildFooter() {
     return Container(
-      margin: const EdgeInsets.only(top: 80),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
       decoration: BoxDecoration(
-        color: const Color(0xFF07080C),
+        color: const Color(0xFF0C0D13),
         border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.06))),
       ),
       child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 960),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF38BDF8)]),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Icon(CupertinoIcons.square_stack_3d_up_fill, color: Colors.white, size: 14),
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'FictionScreen',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                      ),
-                    ],
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF6366F1), Color(0xFF38BDF8)],
+                    ),
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                  const Text(
-                    'Next-Gen Mock UI Studio',
-                    style: TextStyle(color: Color(0xFF64748B), fontSize: 12),
+                  child: const Center(
+                    child: Icon(CupertinoIcons.square_stack_3d_up_fill, color: Colors.white, size: 13),
                   ),
-                ],
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'FictionScreen',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              '크리에이터 및 콘텐츠 제작자를 위한 픽션 스크린 시뮬레이터 프로젝트입니다.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.4),
+                fontSize: 12,
               ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    '© 2027 FictionScreen. Built for Creators.',
-                    style: TextStyle(color: Color(0xFF64748B), fontSize: 11),
-                  ),
-                  Row(
-                    children: [
-                      _buildFooterLink('이용약관'),
-                      const SizedBox(width: 14),
-                      _buildFooterLink('개인정보처리방침'),
-                      const SizedBox(width: 14),
-                      _buildFooterLink('라이선스'),
-                    ],
-                  ),
-                ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '© 2026 FictionScreen. All rights reserved.',
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.25),
+                fontSize: 11,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _buildFooterLink(String label) {
-    return Text(
-      label,
-      style: const TextStyle(color: Color(0xFF64748B), fontSize: 11),
     );
   }
 }

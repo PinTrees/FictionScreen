@@ -1,12 +1,20 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../common/os_app_item.dart';
+import 'apps/finder_window.dart';
+import 'apps/mail_window.dart';
+import 'apps/maps_window.dart';
+import 'apps/messages_window.dart';
+import 'apps/music_window.dart';
+import 'apps/notes_window.dart';
+import 'apps/photos_window.dart';
+import 'apps/safari_window.dart';
+import 'apps/terminal_window.dart';
 import 'macos_dock.dart';
 import 'macos_menubar.dart';
 
 /// macOS 전용 데스크톱 뷰 레이아웃
-class MacosView extends StatelessWidget {
+class MacosView extends StatefulWidget {
   final User? user;
   final String timeString;
   final String currentWallpaper;
@@ -27,15 +35,34 @@ class MacosView extends StatelessWidget {
   });
 
   @override
+  State<MacosView> createState() => _MacosViewState();
+}
+
+class _MacosViewState extends State<MacosView> {
+  String? _activeAppId;
+
+  void _openApp(String appId) {
+    setState(() {
+      _activeAppId = appId;
+    });
+  }
+
+  void _closeApp() {
+    setState(() {
+      _activeAppId = null;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // 1. 배경화면
+        // 1. 2K 고해상도 배경화면
         Positioned.fill(
           child: _buildMacWallpaper(),
         ),
 
-        // 2. 바탕화면 디스크 & 파일 아이콘 (우측 상단)
+        // 2. 바탕화면 디스크 & 시스템 설정 아이콘 (우측 상단)
         Positioned(
           top: 46,
           right: 20,
@@ -46,15 +73,13 @@ class MacosView extends StatelessWidget {
                 imageAsset: 'assets/images/apple_logo.webp',
                 iconColor: Colors.white,
                 backgroundColor: Colors.white.withValues(alpha: 0.18),
-                onTap: () {},
+                onTap: () => _openApp('finder'),
               ),
               const SizedBox(height: 12),
               OsAppItem(
                 title: '시스템 설정',
-                icon: CupertinoIcons.gear_alt_fill,
-                iconColor: Colors.white,
-                backgroundColor: const Color(0xFF64748B).withValues(alpha: 0.4),
-                onTap: onOpenSettings,
+                imageAsset: 'assets/images/macos/settings.webp',
+                onTap: widget.onOpenSettings,
               ),
             ],
           ),
@@ -66,40 +91,85 @@ class MacosView extends StatelessWidget {
           left: 0,
           right: 0,
           child: MacosMenuBar(
-            user: user,
-            timeString: timeString,
-            onOpenSettings: onOpenSettings,
-            onSignOut: onSignOut,
-            onGoHome: onGoHome,
+            user: widget.user,
+            timeString: widget.timeString,
+            onOpenSettings: widget.onOpenSettings,
+            onSignOut: widget.onSignOut,
+            onGoHome: widget.onGoHome,
           ),
         ),
 
-        // 4. 하단 플로팅 글래스 독
+        // 4. 활성화된 기본 앱 창 (오버레이 모달)
+        if (_activeAppId != null)
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: _closeApp,
+              behavior: HitTestBehavior.translucent,
+              child: Container(
+                color: Colors.black.withValues(alpha: 0.25),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () {}, // 창 내부 클릭 시 닫힘 방지
+                    child: _buildActiveAppWindow(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+        // 5. 하단 플로팅 글래스 독
         Positioned(
           bottom: 0,
           left: 0,
           right: 0,
           child: MacosDock(
-            onOpenTemplate: onOpenTemplate,
-            onOpenSettings: onOpenSettings,
-            onGoHome: onGoHome,
+            onOpenTemplate: widget.onOpenTemplate,
+            onOpenApp: _openApp,
+            onOpenSettings: widget.onOpenSettings,
+            onGoHome: widget.onGoHome,
           ),
         ),
       ],
     );
   }
 
+  Widget _buildActiveAppWindow() {
+    switch (_activeAppId) {
+      case 'finder':
+        return FinderWindow(onClose: _closeApp, onOpenTemplate: widget.onOpenTemplate);
+      case 'safari':
+        return SafariWindow(onClose: _closeApp, onOpenTemplate: widget.onOpenTemplate);
+      case 'terminal':
+        return TerminalWindow(onClose: _closeApp);
+      case 'messages':
+        return MessagesWindow(onClose: _closeApp);
+      case 'notes':
+        return NotesWindow(onClose: _closeApp);
+      case 'mail':
+        return MailWindow(onClose: _closeApp);
+      case 'photos':
+        return PhotosWindow(onClose: _closeApp);
+      case 'music':
+        return MusicWindow(onClose: _closeApp);
+      case 'maps':
+        return MapsWindow(onClose: _closeApp);
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
   Widget _buildMacWallpaper() {
-    if (currentWallpaper == 'macos_golden_gate' || currentWallpaper == 'golden_gate') {
+    if (widget.currentWallpaper == 'macos_golden_gate' || widget.currentWallpaper == 'golden_gate') {
       return Image.asset(
         'assets/images/macos_golden_gate.webp',
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
+        filterQuality: FilterQuality.high,
       );
     }
 
-    switch (currentWallpaper) {
+    switch (widget.currentWallpaper) {
       case 'bloom':
         return Container(
           decoration: const BoxDecoration(

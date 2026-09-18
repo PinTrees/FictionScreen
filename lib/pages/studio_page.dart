@@ -1,20 +1,26 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:screenshot/screenshot.dart';
+import '../apps/delivery/data/delivery_model.dart';
+import '../apps/delivery/delivery_screen.dart';
+import '../apps/instagram/data/instagram_model.dart';
+import '../apps/instagram/instagram_screen.dart';
+import '../apps/kakaotalk/data/kakaotalk_model.dart';
+import '../apps/kakaotalk/kakaotalk_screen.dart';
+import '../apps/pinterest/data/pinterest_model.dart';
+import '../apps/pinterest/pinterest_screen.dart';
+import '../apps/screen_template.dart';
+import '../apps/toss/data/toss_model.dart';
+import '../apps/toss/toss_screen.dart';
+import '../apps/windows_bsod/data/windows_bsod_model.dart';
+import '../apps/windows_bsod/windows_bsod_screen.dart';
+import '../apps/x_twitter/data/x_twitter_model.dart';
+import '../apps/x_twitter/x_twitter_screen.dart';
+import '../apps/youtube/data/youtube_model.dart';
+import '../apps/youtube/youtube_screen.dart';
 import '../managers/export_manager.dart';
-import '../models/delivery_model.dart';
-import '../models/instagram_model.dart';
-import '../models/kakaotalk_model.dart';
-import '../models/screen_template.dart';
-import '../models/windows_bsod_model.dart';
-import '../models/youtube_model.dart';
-import '../style/app_colors.dart';
-import '../templates/lifestyle/delivery_screen.dart';
-import '../templates/messenger/kakaotalk_screen.dart';
-import '../templates/os/windows_bsod_screen.dart';
-import '../templates/sns/instagram_screen.dart';
-import '../templates/sns/youtube_screen.dart';
 import '../widgets/common/device_frame_preview.dart';
 
 class StudioPage extends StatefulWidget {
@@ -31,25 +37,18 @@ class _StudioPageState extends State<StudioPage> {
 
   late ScreenTemplate _template;
   bool _showFrame = true;
-  double _previewScale = 0.95;
+  bool _showAdvancedPanel = false; // 기본은 상세 에디터 패널 비활성화 (실제 앱 뷰 중심)
   bool _isExporting = false;
 
-  // 템플릿별 상태값들
+  // 각 앱별 데이터 Config
   late KakaoRoomConfig _kakaoConfig;
+  late TossConfig _tossConfig;
+  late XTwitterConfig _twitterConfig;
+  late PinterestConfig _pinterestConfig;
   late WindowsBsodConfig _bsodConfig;
   late YoutubeConfig _youtubeConfig;
   late InstagramConfig _instaConfig;
   late DeliveryConfig _deliveryConfig;
-
-  // 애니메이션 관련
-  bool _isKakaoAnimated = false;
-  int _bsodAnimatedPercent = 67;
-  Timer? _bsodTimer;
-
-  // 새 메시지 입력용 컨트롤러 (카톡)
-  final TextEditingController _msgInputController = TextEditingController();
-  bool _msgIsMe = true;
-  int _msgUnread = 1;
 
   @override
   void initState() {
@@ -60,58 +59,20 @@ class _StudioPageState extends State<StudioPage> {
     );
 
     _kakaoConfig = KakaoRoomConfig.defaultPreset();
+    _tossConfig = TossConfig.defaultPreset();
+    _twitterConfig = XTwitterConfig.defaultPreset();
+    _pinterestConfig = PinterestConfig.defaultPreset();
     _bsodConfig = WindowsBsodConfig.defaultPreset();
     _youtubeConfig = YoutubeConfig.defaultPreset();
     _instaConfig = InstagramConfig.defaultPreset();
     _deliveryConfig = DeliveryConfig.defaultPreset();
-    _bsodAnimatedPercent = _bsodConfig.percentage;
-
-    if (_template.isDesktop) {
-      _previewScale = 0.85;
-    }
-  }
-
-  @override
-  void dispose() {
-    _bsodTimer?.cancel();
-    _msgInputController.dispose();
-    super.dispose();
-  }
-
-  void _triggerBsodAnimation() {
-    _bsodTimer?.cancel();
-    setState(() {
-      _bsodAnimatedPercent = 0;
-    });
-
-    _bsodTimer = Timer.periodic(const Duration(milliseconds: 60), (timer) {
-      if (_bsodAnimatedPercent >= 100) {
-        timer.cancel();
-      } else {
-        setState(() {
-          _bsodAnimatedPercent += 2;
-          if (_bsodAnimatedPercent > 100) _bsodAnimatedPercent = 100;
-        });
-      }
-    });
-  }
-
-  void _triggerKakaoAnimation() {
-    setState(() {
-      _isKakaoAnimated = false;
-    });
-    Future.delayed(const Duration(milliseconds: 50), () {
-      setState(() {
-        _isKakaoAnimated = true;
-      });
-    });
   }
 
   Future<void> _exportScreen() async {
     setState(() => _isExporting = true);
     final success = await ExportManager.captureAndDownload(
       controller: _screenshotController,
-      filename: '${_template.id}_mock_${DateTime.now().millisecondsSinceEpoch}.png',
+      filename: '${_template.id}_fiction_${DateTime.now().millisecondsSinceEpoch}.png',
     );
     setState(() => _isExporting = false);
 
@@ -119,596 +80,780 @@ class _StudioPageState extends State<StudioPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(success ? '이미지가 성공적으로 저장되었습니다!' : '캡처 저장에 실패했습니다.'),
-          backgroundColor: success ? AppColors.success : AppColors.danger,
-          behavior: SnackBarBehavior.floating,
+          backgroundColor: success ? const Color(0xFF10B981) : Colors.red,
         ),
       );
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width > 900;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Icon(_template.icon, color: _template.themeColor, size: 20),
-            const SizedBox(width: 8),
-            Text(_template.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-          ],
-        ),
-        actions: [
-          // 프레임 토글
-          IconButton(
-            tooltip: _showFrame ? '프레임 숨기기 (화면만)' : '기기 프레임 씌우기',
-            icon: Icon(_showFrame ? CupertinoIcons.device_phone_portrait : CupertinoIcons.viewfinder),
-            onPressed: () => setState(() => _showFrame = !_showFrame),
+  // ==========================================
+  // Quick Edit Dialog Helper
+  // ==========================================
+  void _openQuickEditDialog({
+    required String title,
+    required List<Widget> children,
+    VoidCallback? onConfirm,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1E202C),
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: [
+              const Icon(CupertinoIcons.pencil_circle_fill, color: Color(0xFF818CF8), size: 22),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
-          const SizedBox(width: 4),
-
-          // 캡처 다운로드 버튼
-          Padding(
-            padding: const EdgeInsets.only(right: 14),
-            child: ElevatedButton.icon(
+          content: SingleChildScrollView(
+            child: SizedBox(
+              width: 360,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: children,
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('취소', style: TextStyle(color: Colors.white54)),
+            ),
+            ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: const Color(0xFF6366F1),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              icon: _isExporting
-                  ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Icon(CupertinoIcons.arrow_down_doc_fill, size: 18),
-              label: const Text('PNG 캡처 저장', style: TextStyle(fontWeight: FontWeight.bold)),
-              onPressed: _isExporting ? null : _exportScreen,
+              onPressed: () {
+                onConfirm?.call();
+                Navigator.pop(context);
+                setState(() {});
+              },
+              child: const Text('적용하기', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDialogInput(String label, TextEditingController controller, {int maxLines = 1, TextInputType type = TextInputType.text}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 6),
+          TextField(
+            controller: controller,
+            maxLines: maxLines,
+            keyboardType: type,
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: const Color(0xFF12141D),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color(0xFF6366F1)),
+              ),
             ),
           ),
         ],
       ),
-      body: isWide ? _buildWideLayout() : _buildCompactLayout(),
     );
   }
 
-  Widget _buildWideLayout() {
-    return Row(
+  // ==========================================
+  // App Specific Handlers (Direct Touch Modals)
+  // ==========================================
+  void _editTossHeader() {
+    final nameCtrl = TextEditingController(text: _tossConfig.userName);
+    _openQuickEditDialog(
+      title: '토스 사용자 정보 수정',
       children: [
-        // 왼쪽: 에디터 툴패널
-        SizedBox(
-          width: 380,
-          child: Container(
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
-              border: Border(right: BorderSide(color: AppColors.border)),
-            ),
-            child: _buildEditorPanel(),
-          ),
-        ),
+        _buildDialogInput('사용자 이름', nameCtrl),
+      ],
+      onConfirm: () {
+        _tossConfig.userName = nameCtrl.text;
+      },
+    );
+  }
 
-        // 오른쪽: 실시간 프리뷰 영역
-        Expanded(
-          child: Container(
-            color: AppColors.background,
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildPreviewControls(),
-                    const SizedBox(height: 16),
-                    Screenshot(
-                      controller: _screenshotController,
-                      child: DeviceFramePreview(
-                        showFrame: _showFrame,
-                        isDesktop: _template.isDesktop,
-                        scale: _previewScale,
-                        child: _renderCurrentScreen(),
+  void _editTossSendCard() {
+    final msgCtrl = TextEditingController(text: _tossConfig.completionMessage);
+    final receiverCtrl = TextEditingController(text: _tossConfig.receiverName);
+    final amountCtrl = TextEditingController(text: _tossConfig.sendAmount.toString());
+    final timeCtrl = TextEditingController(text: _tossConfig.transactionTime);
+
+    _openQuickEditDialog(
+      title: '송금 완료 내역 수정',
+      children: [
+        _buildDialogInput('송금 완료 메시지', msgCtrl),
+        _buildDialogInput('받으시는 분 이름', receiverCtrl),
+        _buildDialogInput('보낸 금액 (원)', amountCtrl, type: TextInputType.number),
+        _buildDialogInput('거래 일시', timeCtrl),
+      ],
+      onConfirm: () {
+        _tossConfig.completionMessage = msgCtrl.text;
+        _tossConfig.receiverName = receiverCtrl.text;
+        _tossConfig.sendAmount = int.tryParse(amountCtrl.text) ?? _tossConfig.sendAmount;
+        _tossConfig.transactionTime = timeCtrl.text;
+      },
+    );
+  }
+
+  void _editTossBalanceCard() {
+    final bankCtrl = TextEditingController(text: _tossConfig.bankName);
+    final accCtrl = TextEditingController(text: _tossConfig.accountNumber);
+    final balanceCtrl = TextEditingController(text: _tossConfig.balance.toString());
+
+    _openQuickEditDialog(
+      title: '계좌 및 잔액 수정',
+      children: [
+        _buildDialogInput('통장/계좌 이름', bankCtrl),
+        _buildDialogInput('계좌번호', accCtrl),
+        _buildDialogInput('현재 잔액 (원)', balanceCtrl, type: TextInputType.number),
+      ],
+      onConfirm: () {
+        _tossConfig.bankName = bankCtrl.text;
+        _tossConfig.accountNumber = accCtrl.text;
+        _tossConfig.balance = int.tryParse(balanceCtrl.text) ?? _tossConfig.balance;
+      },
+    );
+  }
+
+  void _editTossHistoryItem(TossTransaction item) {
+    final titleCtrl = TextEditingController(text: item.title);
+    final timeCtrl = TextEditingController(text: item.time);
+    final amountCtrl = TextEditingController(text: item.amount.toString());
+
+    _openQuickEditDialog(
+      title: '거래 내역 항목 수정',
+      children: [
+        _buildDialogInput('거래처 / 이름', titleCtrl),
+        _buildDialogInput('거래 일시', timeCtrl),
+        _buildDialogInput('금액 (음수는 차감, 양수는 입금)', amountCtrl, type: TextInputType.number),
+      ],
+      onConfirm: () {
+        item.title = titleCtrl.text;
+        item.time = timeCtrl.text;
+        item.amount = int.tryParse(amountCtrl.text) ?? item.amount;
+      },
+    );
+  }
+
+  void _editKakaoHeader() {
+    final titleCtrl = TextEditingController(text: _kakaoConfig.roomTitle);
+    final memberCtrl = TextEditingController(text: _kakaoConfig.memberCount.toString());
+    final statusTimeCtrl = TextEditingController(text: _kakaoConfig.statusBarTime);
+    final batteryCtrl = TextEditingController(text: _kakaoConfig.batteryLevel.toString());
+
+    _openQuickEditDialog(
+      title: '카카오톡 상단바 & 방 정보 수정',
+      children: [
+        _buildDialogInput('대화방 제목', titleCtrl),
+        _buildDialogInput('참여 인원수 (1:1은 0 입력)', memberCtrl, type: TextInputType.number),
+        _buildDialogInput('상단바 시각', statusTimeCtrl),
+        _buildDialogInput('배터리 잔량 (%)', batteryCtrl, type: TextInputType.number),
+      ],
+      onConfirm: () {
+        _kakaoConfig.roomTitle = titleCtrl.text;
+        _kakaoConfig.memberCount = int.tryParse(memberCtrl.text) ?? _kakaoConfig.memberCount;
+        _kakaoConfig.statusBarTime = statusTimeCtrl.text;
+        _kakaoConfig.batteryLevel = int.tryParse(batteryCtrl.text) ?? _kakaoConfig.batteryLevel;
+      },
+    );
+  }
+
+  void _addOrEditKakaoMessage([KakaoMessage? existingMsg]) {
+    final isEdit = existingMsg != null;
+    final senderCtrl = TextEditingController(text: isEdit ? existingMsg.senderName : '상대방');
+    final textCtrl = TextEditingController(text: isEdit ? existingMsg.text : '');
+    final timeCtrl = TextEditingController(text: isEdit ? existingMsg.time : '오후 2:35');
+    bool isMe = isEdit ? existingMsg.isMe : false;
+    int unread = isEdit ? existingMsg.unreadCount : 1;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF1E202C),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: Text(
+                isEdit ? '메시지 수정' : '새 메시지 추가',
+                style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+              ),
+              content: SingleChildScrollView(
+                child: SizedBox(
+                  width: 360,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          ChoiceChip(
+                            label: const Text('상대방 메시지'),
+                            selected: !isMe,
+                            onSelected: (val) => setDialogState(() => isMe = !val),
+                          ),
+                          const SizedBox(width: 8),
+                          ChoiceChip(
+                            label: const Text('내 메시지'),
+                            selected: isMe,
+                            onSelected: (val) => setDialogState(() => isMe = val),
+                          ),
+                        ],
                       ),
+                      const SizedBox(height: 12),
+                      if (!isMe) _buildDialogInput('발신자 이름', senderCtrl),
+                      _buildDialogInput('메시지 내용', textCtrl, maxLines: 3),
+                      _buildDialogInput('시각', timeCtrl),
+                      Row(
+                        children: [
+                          const Text('안읽음 표시 (1):', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                          const SizedBox(width: 8),
+                          Switch(
+                            value: unread == 1,
+                            onChanged: (val) => setDialogState(() => unread = val ? 1 : 0),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                if (isEdit)
+                  TextButton(
+                    onPressed: () {
+                      _kakaoConfig.messages.removeWhere((m) => m.id == existingMsg.id);
+                      Navigator.pop(context);
+                      setState(() {});
+                    },
+                    child: const Text('삭제', style: TextStyle(color: Colors.redAccent)),
+                  ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('취소', style: TextStyle(color: Colors.white54)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6366F1)),
+                  onPressed: () {
+                    if (isEdit) {
+                      existingMsg.senderName = senderCtrl.text;
+                      existingMsg.text = textCtrl.text;
+                      existingMsg.time = timeCtrl.text;
+                      existingMsg.isMe = isMe;
+                      existingMsg.unreadCount = unread;
+                    } else {
+                      _kakaoConfig.messages.add(
+                        KakaoMessage(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          senderName: senderCtrl.text,
+                          isMe: isMe,
+                          text: textCtrl.text,
+                          time: timeCtrl.text,
+                          unreadCount: unread,
+                        ),
+                      );
+                    }
+                    Navigator.pop(context);
+                    setState(() {});
+                  },
+                  child: const Text('저장', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _editInstagram() {
+    final userCtrl = TextEditingController(text: _instaConfig.username);
+    final locCtrl = TextEditingController(text: _instaConfig.location);
+    final likesCtrl = TextEditingController(text: _instaConfig.likes);
+    final captionCtrl = TextEditingController(text: _instaConfig.caption);
+    final timeCtrl = TextEditingController(text: _instaConfig.timeAgo);
+
+    _openQuickEditDialog(
+      title: '인스타그램 피드 수정',
+      children: [
+        _buildDialogInput('사용자 ID', userCtrl),
+        _buildDialogInput('위치 태그', locCtrl),
+        _buildDialogInput('좋아요 수', likesCtrl),
+        _buildDialogInput('게시물 캡션 글', captionCtrl, maxLines: 3),
+        _buildDialogInput('업로드 시간', timeCtrl),
+      ],
+      onConfirm: () {
+        _instaConfig.username = userCtrl.text;
+        _instaConfig.location = locCtrl.text;
+        _instaConfig.likes = likesCtrl.text;
+        _instaConfig.caption = captionCtrl.text;
+        _instaConfig.timeAgo = timeCtrl.text;
+      },
+    );
+  }
+
+  void _editYoutube() {
+    final titleCtrl = TextEditingController(text: _youtubeConfig.title);
+    final channelCtrl = TextEditingController(text: _youtubeConfig.channelName);
+    final subCtrl = TextEditingController(text: _youtubeConfig.subscriberCount);
+    final viewCtrl = TextEditingController(text: _youtubeConfig.viewCount);
+    final timeCtrl = TextEditingController(text: _youtubeConfig.uploadTime);
+
+    _openQuickEditDialog(
+      title: '유튜브 비디오 정보 수정',
+      children: [
+        _buildDialogInput('동영상 제목', titleCtrl, maxLines: 2),
+        _buildDialogInput('채널 이름', channelCtrl),
+        _buildDialogInput('구독자 수', subCtrl),
+        _buildDialogInput('조회수', viewCtrl),
+        _buildDialogInput('업로드 일자', timeCtrl),
+      ],
+      onConfirm: () {
+        _youtubeConfig.title = titleCtrl.text;
+        _youtubeConfig.channelName = channelCtrl.text;
+        _youtubeConfig.subscriberCount = subCtrl.text;
+        _youtubeConfig.viewCount = viewCtrl.text;
+        _youtubeConfig.uploadTime = timeCtrl.text;
+      },
+    );
+  }
+
+  void _editDelivery() {
+    final storeCtrl = TextEditingController(text: _deliveryConfig.storeName);
+    final orderNumCtrl = TextEditingController(text: _deliveryConfig.orderNumber);
+    final timeCtrl = TextEditingController(text: _deliveryConfig.estimatedTime);
+    final menuCtrl = TextEditingController(text: _deliveryConfig.menuSummary);
+    final priceCtrl = TextEditingController(text: _deliveryConfig.totalPrice.toString());
+
+    _openQuickEditDialog(
+      title: '배달 플랫폼 정보 수정',
+      children: [
+        _buildDialogInput('가게 이름', storeCtrl),
+        _buildDialogInput('주문 번호', orderNumCtrl),
+        _buildDialogInput('예상 도착 시간', timeCtrl),
+        _buildDialogInput('메뉴 요약', menuCtrl, maxLines: 2),
+        _buildDialogInput('총 결제금액 (원)', priceCtrl, type: TextInputType.number),
+      ],
+      onConfirm: () {
+        _deliveryConfig.storeName = storeCtrl.text;
+        _deliveryConfig.orderNumber = orderNumCtrl.text;
+        _deliveryConfig.estimatedTime = timeCtrl.text;
+        _deliveryConfig.menuSummary = menuCtrl.text;
+        _deliveryConfig.totalPrice = int.tryParse(priceCtrl.text) ?? _deliveryConfig.totalPrice;
+      },
+    );
+  }
+
+  void _editTwitter() {
+    final nameCtrl = TextEditingController(text: _twitterConfig.displayName);
+    final userCtrl = TextEditingController(text: _twitterConfig.username);
+    final textCtrl = TextEditingController(text: _twitterConfig.tweetText);
+    final timeCtrl = TextEditingController(text: _twitterConfig.postTime);
+    final viewsCtrl = TextEditingController(text: _twitterConfig.views);
+    final likesCtrl = TextEditingController(text: _twitterConfig.likes);
+
+    _openQuickEditDialog(
+      title: 'X (트위터) 포스트 수정',
+      children: [
+        _buildDialogInput('닉네임', nameCtrl),
+        _buildDialogInput('아이디 (@handle)', userCtrl),
+        _buildDialogInput('포스트 본문', textCtrl, maxLines: 3),
+        _buildDialogInput('작성 시간 & 날짜', timeCtrl),
+        _buildDialogInput('조회수', viewsCtrl),
+        _buildDialogInput('좋아요 수', likesCtrl),
+      ],
+      onConfirm: () {
+        _twitterConfig.displayName = nameCtrl.text;
+        _twitterConfig.username = userCtrl.text;
+        _twitterConfig.tweetText = textCtrl.text;
+        _twitterConfig.postTime = timeCtrl.text;
+        _twitterConfig.views = viewsCtrl.text;
+        _twitterConfig.likes = likesCtrl.text;
+      },
+    );
+  }
+
+  void _editPinterest() {
+    final titleCtrl = TextEditingController(text: _pinterestConfig.pinTitle);
+    final creatorCtrl = TextEditingController(text: _pinterestConfig.creatorName);
+    final descCtrl = TextEditingController(text: _pinterestConfig.description);
+    final savedCtrl = TextEditingController(text: _pinterestConfig.savedCount);
+
+    _openQuickEditDialog(
+      title: '핀터레스트 핀 수정',
+      children: [
+        _buildDialogInput('핀 제목', titleCtrl, maxLines: 2),
+        _buildDialogInput('크리에이터 이름', creatorCtrl),
+        _buildDialogInput('핀 설명', descCtrl, maxLines: 3),
+        _buildDialogInput('저장 수', savedCtrl),
+      ],
+      onConfirm: () {
+        _pinterestConfig.pinTitle = titleCtrl.text;
+        _pinterestConfig.creatorName = creatorCtrl.text;
+        _pinterestConfig.description = descCtrl.text;
+        _pinterestConfig.savedCount = savedCtrl.text;
+      },
+    );
+  }
+
+  void _editBsod() {
+    final percentCtrl = TextEditingController(text: _bsodConfig.percentage.toString());
+    final stopCodeCtrl = TextEditingController(text: _bsodConfig.stopCode);
+    final failedCtrl = TextEditingController(text: _bsodConfig.whatFailed);
+
+    _openQuickEditDialog(
+      title: 'Windows BSOD 오류 화면 수정',
+      children: [
+        _buildDialogInput('진행률 퍼센트 (%)', percentCtrl, type: TextInputType.number),
+        _buildDialogInput('중지 코드 (Stop Code)', stopCodeCtrl),
+        _buildDialogInput('실패 항목 (whatFailed)', failedCtrl),
+      ],
+      onConfirm: () {
+        _bsodConfig.percentage = int.tryParse(percentCtrl.text) ?? _bsodConfig.percentage;
+        _bsodConfig.stopCode = stopCodeCtrl.text;
+        _bsodConfig.whatFailed = failedCtrl.text;
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0B0C10),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // 1. 상단 미니 컨트롤 오버레이 바
+            _buildTopOverlayBar(),
+
+            // 2. 메인 프론트엔드 뷰 영역 (실제 앱 뷰)
+            Expanded(
+              child: Stack(
+                children: [
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                      child: Screenshot(
+                        controller: _screenshotController,
+                        child: _showFrame
+                            ? DeviceFramePreview(
+                                isDesktop: _template.isDesktop,
+                                child: _buildInteractiveAppScreen(),
+                              )
+                            : Container(
+                                constraints: BoxConstraints(
+                                  maxWidth: _template.isDesktop ? 960 : 400,
+                                  maxHeight: _template.isDesktop ? 600 : 780,
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(_template.isDesktop ? 12 : 32),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.5),
+                                      blurRadius: 30,
+                                    ),
+                                  ],
+                                ),
+                                child: _buildInteractiveAppScreen(),
+                              ),
+                      ),
+                    ),
+                  ),
+
+                  // 오른쪽 슬라이딩 보조 에디터 패널 (옵션)
+                  if (_showAdvancedPanel)
+                    Positioned(
+                      top: 0,
+                      bottom: 0,
+                      right: 0,
+                      width: 340,
+                      child: _buildAdvancedInspectorPanel(),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ==========================================
+  // Top Overlay Bar
+  // ==========================================
+  Widget _buildTopOverlayBar() {
+    return Container(
+      height: 56,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF12141D),
+        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(CupertinoIcons.arrow_left, color: Colors.white, size: 20),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/console');
+              }
+            },
+          ),
+          const SizedBox(width: 8),
+          Icon(_template.icon, color: _template.themeColor, size: 18),
+          const SizedBox(width: 8),
+          Text(
+            _template.title,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+          const SizedBox(width: 12),
+
+          // 💡 안내 뱃지
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6366F1).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFF6366F1).withValues(alpha: 0.3)),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(CupertinoIcons.hand_point_right_fill, color: Color(0xFFA5B4FC), size: 13),
+                    SizedBox(width: 6),
+                    Text(
+                      '화면의 텍스트나 항목을 터치하면 바로 수정할 수 있습니다',
+                      style: TextStyle(color: Color(0xFFA5B4FC), fontSize: 11, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
               ),
             ),
           ),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildCompactLayout() {
-    return DefaultTabController(
-      length: 2,
-      child: Column(
-        children: [
-          const TabBar(
-            indicatorColor: AppColors.primary,
-            labelColor: AppColors.primaryLight,
-            unselectedLabelColor: AppColors.textMuted,
-            tabs: [
-              Tab(icon: Icon(CupertinoIcons.eye_fill), text: '실시간 프리뷰'),
-              Tab(icon: Icon(CupertinoIcons.pencil_ellipsis_rectangle), text: '화면 편집하기'),
-            ],
+          const SizedBox(width: 12),
+
+          // 디바이스 프레임 토글
+          IconButton(
+            tooltip: '디바이스 프레임 토글',
+            icon: Icon(
+              _showFrame ? CupertinoIcons.device_phone_portrait : CupertinoIcons.square,
+              color: Colors.white70,
+              size: 20,
+            ),
+            onPressed: () => setState(() => _showFrame = !_showFrame),
           ),
-          Expanded(
-            child: TabBarView(
-              children: [
-                // 프리뷰 탭
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
+
+          // 상세 에디터 패널 토글
+          IconButton(
+            tooltip: '상세 에디터 패널',
+            icon: Icon(
+              CupertinoIcons.slider_horizontal_3,
+              color: _showAdvancedPanel ? const Color(0xFF818CF8) : Colors.white70,
+              size: 20,
+            ),
+            onPressed: () => setState(() => _showAdvancedPanel = !_showAdvancedPanel),
+          ),
+
+          const SizedBox(width: 8),
+
+          // 내보내기 버튼
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF6366F1),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: _isExporting ? null : _exportScreen,
+            child: _isExporting
+                ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                : const Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildPreviewControls(),
-                      const SizedBox(height: 12),
-                      Screenshot(
-                        controller: _screenshotController,
-                        child: DeviceFramePreview(
-                          showFrame: _showFrame,
-                          isDesktop: _template.isDesktop,
-                          scale: _previewScale * 0.9,
-                          child: _renderCurrentScreen(),
-                        ),
-                      ),
+                      Icon(CupertinoIcons.arrow_down_doc_fill, size: 14),
+                      SizedBox(width: 6),
+                      Text('PNG 캡처 저장', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                     ],
                   ),
-                ),
-                // 에디터 탭
-                _buildEditorPanel(),
-              ],
-            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPreviewControls() {
+  // ==========================================
+  // Render Interactive Front-End App Screen
+  // ==========================================
+  Widget _buildInteractiveAppScreen() {
+    switch (_template.id) {
+      case 'toss':
+        return TossScreen(
+          config: _tossConfig,
+          onTapHeader: _editTossHeader,
+          onTapSendCard: _editTossSendCard,
+          onTapBalance: _editTossBalanceCard,
+          onTapHistoryItem: _editTossHistoryItem,
+        );
+      case 'x_twitter':
+        return GestureDetector(
+          onTap: _editTwitter,
+          child: XTwitterScreen(config: _twitterConfig),
+        );
+      case 'pinterest':
+        return GestureDetector(
+          onTap: _editPinterest,
+          child: PinterestScreen(config: _pinterestConfig),
+        );
+      case 'kakaotalk':
+        return GestureDetector(
+          onTap: _editKakaoHeader,
+          child: KakaoTalkScreen(
+            config: _kakaoConfig,
+          ),
+        );
+      case 'instagram':
+        return GestureDetector(
+          onTap: _editInstagram,
+          child: InstagramScreen(config: _instaConfig),
+        );
+      case 'youtube':
+        return GestureDetector(
+          onTap: _editYoutube,
+          child: YoutubeScreen(config: _youtubeConfig),
+        );
+      case 'delivery':
+        return GestureDetector(
+          onTap: _editDelivery,
+          child: DeliveryScreen(config: _deliveryConfig),
+        );
+      case 'windows_bsod':
+        return GestureDetector(
+          onTap: _editBsod,
+          child: WindowsBsodScreen(config: _bsodConfig),
+        );
+      default:
+        return TossScreen(config: _tossConfig);
+    }
+  }
+
+  // ==========================================
+  // Optional Advanced Inspector Panel (Drawer)
+  // ==========================================
+  Widget _buildAdvancedInspectorPanel() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (_template.id == 'kakaotalk') ...[
-            TextButton.icon(
-              icon: const Icon(CupertinoIcons.play_arrow_solid, color: AppColors.kakaoYellow, size: 18),
-              label: const Text('대화 애니메이션', style: TextStyle(color: Colors.white, fontSize: 12)),
-              onPressed: _triggerKakaoAnimation,
-            ),
-            const SizedBox(width: 8),
-          ],
-          if (_template.id == 'windows_bsod') ...[
-            TextButton.icon(
-              icon: const Icon(CupertinoIcons.arrow_counterclockwise, color: AppColors.accent, size: 18),
-              label: const Text('% 카운트 시뮬레이션', style: TextStyle(color: Colors.white, fontSize: 12)),
-              onPressed: _triggerBsodAnimation,
-            ),
-            const SizedBox(width: 8),
-          ],
-          const Text('배율:', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-          const SizedBox(width: 6),
-          DropdownButton<double>(
-            value: _previewScale,
-            dropdownColor: AppColors.surfaceLight,
-            underline: const SizedBox(),
-            isDense: true,
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-            items: const [
-              DropdownMenuItem(value: 0.75, child: Text('75%')),
-              DropdownMenuItem(value: 0.85, child: Text('85%')),
-              DropdownMenuItem(value: 0.95, child: Text('95%')),
-              DropdownMenuItem(value: 1.0, child: Text('100%')),
-            ],
-            onChanged: (val) {
-              if (val != null) setState(() => _previewScale = val);
-            },
+        color: const Color(0xFF12141D),
+        border: Border(left: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.5),
+            blurRadius: 20,
           ),
         ],
       ),
-    );
-  }
-
-  Widget _renderCurrentScreen() {
-    switch (_template.id) {
-      case 'kakaotalk':
-        return KakaoTalkScreen(
-          config: _kakaoConfig,
-          isAnimated: _isKakaoAnimated,
-        );
-      case 'windows_bsod':
-        return WindowsBsodScreen(
-          config: _bsodConfig,
-          currentPercentage: _bsodAnimatedPercent,
-        );
-      case 'youtube':
-        return YoutubeScreen(config: _youtubeConfig);
-      case 'instagram':
-        return InstagramScreen(config: _instaConfig);
-      case 'delivery':
-        return DeliveryScreen(config: _deliveryConfig);
-      default:
-        return KakaoTalkScreen(config: _kakaoConfig);
-    }
-  }
-
-  Widget _buildEditorPanel() {
-    switch (_template.id) {
-      case 'kakaotalk':
-        return _buildKakaoEditor();
-      case 'windows_bsod':
-        return _buildBsodEditor();
-      case 'youtube':
-        return _buildYoutubeEditor();
-      case 'instagram':
-        return _buildInstaEditor();
-      case 'delivery':
-        return _buildDeliveryEditor();
-      default:
-        return const Center(child: Text('에디터 준비 중'));
-    }
-  }
-
-  // ========== 1. 카카오톡 에디터 ==========
-  Widget _buildKakaoEditor() {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const Text('기본 설정', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        const SizedBox(height: 12),
-        TextFormField(
-          initialValue: _kakaoConfig.roomTitle,
-          decoration: const InputDecoration(labelText: '채팅방 / 상대방 이름'),
-          onChanged: (v) => setState(() => _kakaoConfig.roomTitle = v),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                initialValue: _kakaoConfig.statusBarTime,
-                decoration: const InputDecoration(labelText: '상단바 시간'),
-                onChanged: (v) => setState(() => _kakaoConfig.statusBarTime = v),
-              ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
             ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: TextFormField(
-                initialValue: '${_kakaoConfig.batteryLevel}',
-                decoration: const InputDecoration(labelText: '배터리 (%)'),
-                keyboardType: TextInputType.number,
-                onChanged: (v) {
-                  final n = int.tryParse(v);
-                  if (n != null) setState(() => _kakaoConfig.batteryLevel = n);
-                },
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: const Text('다크 테마 모드', style: TextStyle(fontSize: 14)),
-          value: _kakaoConfig.isDarkTheme,
-          onChanged: (val) => setState(() => _kakaoConfig.isDarkTheme = val),
-        ),
-        const Divider(height: 28),
-
-        // 메시지 추가하기 폼
-        const Text('새 메시지 추가', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            ChoiceChip(
-              label: const Text('나 (노랑)'),
-              selected: _msgIsMe,
-              selectedColor: AppColors.primary,
-              onSelected: (val) => setState(() => _msgIsMe = true),
-            ),
-            const SizedBox(width: 8),
-            ChoiceChip(
-              label: const Text('상대방 (흰색)'),
-              selected: !_msgIsMe,
-              selectedColor: AppColors.primary,
-              onSelected: (val) => setState(() => _msgIsMe = false),
-            ),
-            const Spacer(),
-            Row(
+            child: Row(
               children: [
-                const Text('1 표시:', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                Checkbox(
-                  value: _msgUnread == 1,
-                  onChanged: (val) => setState(() => _msgUnread = (val == true) ? 1 : 0),
+                const Text('상세 에디터 패널', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(CupertinoIcons.xmark, color: Colors.white70, size: 16),
+                  onPressed: () => setState(() => _showAdvancedPanel = false),
                 ),
               ],
             ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _msgInputController,
-          decoration: InputDecoration(
-            hintText: '메시지 내용을 입력하세요',
-            suffixIcon: IconButton(
-              icon: const Icon(CupertinoIcons.paperplane_fill, color: AppColors.primary),
-              onPressed: () {
-                if (_msgInputController.text.trim().isEmpty) return;
-                setState(() {
-                  _kakaoConfig.messages.add(
-                    KakaoMessage(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      senderName: _kakaoConfig.roomTitle,
-                      isMe: _msgIsMe,
-                      text: _msgInputController.text.trim(),
-                      time: _kakaoConfig.statusBarTime,
-                      unreadCount: _msgUnread,
-                    ),
-                  );
-                  _msgInputController.clear();
-                });
-              },
-            ),
           ),
-          onSubmitted: (_) {
-            if (_msgInputController.text.trim().isEmpty) return;
-            setState(() {
-              _kakaoConfig.messages.add(
-                KakaoMessage(
-                  id: DateTime.now().millisecondsSinceEpoch.toString(),
-                  senderName: _kakaoConfig.roomTitle,
-                  isMe: _msgIsMe,
-                  text: _msgInputController.text.trim(),
-                  time: _kakaoConfig.statusBarTime,
-                  unreadCount: _msgUnread,
-                ),
-              );
-              _msgInputController.clear();
-            });
-          },
-        ),
-        const SizedBox(height: 18),
-
-        // 메시지 리스트 관리
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('대화 목록 (${_kakaoConfig.messages.length}개)', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-            TextButton(
-              onPressed: () => setState(() => _kakaoConfig.messages.clear()),
-              child: const Text('전체 삭제', style: TextStyle(color: AppColors.danger, fontSize: 12)),
-            ),
-          ],
-        ),
-        ..._kakaoConfig.messages.asMap().entries.map((entry) {
-          final idx = entry.key;
-          final msg = entry.value;
-          return Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            color: AppColors.surfaceLight,
-            child: ListTile(
-              dense: true,
-              leading: CircleAvatar(
-                radius: 12,
-                backgroundColor: msg.isMe ? AppColors.kakaoYellow : Colors.grey.shade400,
-                child: Text(
-                  msg.isMe ? '나' : '상',
-                  style: const TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-              ),
-              title: Text(msg.text, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
-              subtitle: Text('${msg.time} · 1 표시: ${msg.unreadCount > 0 ? "O" : "X"}', style: const TextStyle(fontSize: 11)),
-              trailing: IconButton(
-                icon: const Icon(CupertinoIcons.xmark, size: 14, color: AppColors.textMuted),
-                onPressed: () => setState(() => _kakaoConfig.messages.removeAt(idx)),
-              ),
-            ),
-          );
-        }),
-      ],
-    );
-  }
-
-  // ========== 2. 윈도우 블루스크린 에디터 ==========
-  Widget _buildBsodEditor() {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const Text('블루스크린 설정', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        const SizedBox(height: 12),
-        TextFormField(
-          initialValue: _bsodConfig.stopCode,
-          decoration: const InputDecoration(labelText: '중지 코드 (Stop Code)'),
-          onChanged: (v) => setState(() => _bsodConfig.stopCode = v),
-        ),
-        const SizedBox(height: 10),
-        TextFormField(
-          initialValue: _bsodConfig.whatFailed,
-          decoration: const InputDecoration(labelText: '실패한 내용 (선택, 예: nvlddmkm.sys)'),
-          onChanged: (v) => setState(() => _bsodConfig.whatFailed = v),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                initialValue: '${_bsodConfig.percentage}',
-                decoration: const InputDecoration(labelText: '완료 퍼센트 (%)'),
-                keyboardType: TextInputType.number,
-                onChanged: (v) {
-                  final n = int.tryParse(v);
-                  if (n != null) {
-                    setState(() {
-                      _bsodConfig.percentage = n;
-                      _bsodAnimatedPercent = n;
-                    });
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 18),
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.windowsBlue,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.all(14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-          icon: const Icon(CupertinoIcons.play_circle_fill),
-          label: const Text('실시간 카운트업 시뮬레이션 시작'),
-          onPressed: _triggerBsodAnimation,
-        ),
-      ],
-    );
-  }
-
-  // ========== 3. 유튜브 에디터 ==========
-  Widget _buildYoutubeEditor() {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const Text('유튜브 영상 정보', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        const SizedBox(height: 12),
-        TextFormField(
-          initialValue: _youtubeConfig.title,
-          decoration: const InputDecoration(labelText: '영상 제목'),
-          onChanged: (v) => setState(() => _youtubeConfig.title = v),
-        ),
-        const SizedBox(height: 10),
-        TextFormField(
-          initialValue: _youtubeConfig.channelName,
-          decoration: const InputDecoration(labelText: '채널명'),
-          onChanged: (v) => setState(() => _youtubeConfig.channelName = v),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                initialValue: _youtubeConfig.viewCount,
-                decoration: const InputDecoration(labelText: '조회수'),
-                onChanged: (v) => setState(() => _youtubeConfig.viewCount = v),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: TextFormField(
-                initialValue: _youtubeConfig.uploadTime,
-                decoration: const InputDecoration(labelText: '게시일 (예: 3일 전)'),
-                onChanged: (v) => setState(() => _youtubeConfig.uploadTime = v),
-              ),
-            ),
-          ],
-        ),
-        const Divider(height: 28),
-        const Text('베스트 댓글', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        const SizedBox(height: 10),
-        ..._youtubeConfig.comments.map((c) {
-          return Card(
-            color: AppColors.surfaceLight,
-            margin: const EdgeInsets.only(bottom: 8),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextFormField(
-                    initialValue: c.author,
-                    decoration: const InputDecoration(labelText: '댓글 작성자 닉네임', isDense: true),
-                    onChanged: (v) => setState(() => c.author = v),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 44),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
-                  const SizedBox(height: 6),
-                  TextFormField(
-                    initialValue: c.text,
-                    decoration: const InputDecoration(labelText: '댓글 내용', isDense: true),
-                    onChanged: (v) => setState(() => c.text = v),
+                  icon: const Icon(CupertinoIcons.pencil, size: 16),
+                  label: const Text('항목 전체 편집 다이얼로그 열기', style: TextStyle(fontWeight: FontWeight.bold)),
+                  onPressed: () {
+                    switch (_template.id) {
+                      case 'toss':
+                        _editTossSendCard();
+                        break;
+                      case 'kakaotalk':
+                        _editKakaoHeader();
+                        break;
+                      case 'instagram':
+                        _editInstagram();
+                        break;
+                      case 'youtube':
+                        _editYoutube();
+                        break;
+                      case 'delivery':
+                        _editDelivery();
+                        break;
+                      case 'windows_bsod':
+                        _editBsod();
+                        break;
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                if (_template.id == 'kakaotalk') ...[
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 40),
+                    side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                  ),
+                    icon: const Icon(CupertinoIcons.plus, size: 16),
+                    label: const Text('새 카카오톡 메시지 추가'),
+                    onPressed: () => _addOrEditKakaoMessage(),
                   ),
                 ],
-              ),
+              ],
             ),
-          );
-        }),
-      ],
-    );
-  }
-
-  // ========== 4. 인스타그램 에디터 ==========
-  Widget _buildInstaEditor() {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const Text('인스타그램 게시물 정보', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        const SizedBox(height: 12),
-        TextFormField(
-          initialValue: _instaConfig.username,
-          decoration: const InputDecoration(labelText: '계정 아이디'),
-          onChanged: (v) => setState(() => _instaConfig.username = v),
-        ),
-        const SizedBox(height: 10),
-        TextFormField(
-          initialValue: _instaConfig.location,
-          decoration: const InputDecoration(labelText: '위치 정보'),
-          onChanged: (v) => setState(() => _instaConfig.location = v),
-        ),
-        const SizedBox(height: 10),
-        TextFormField(
-          initialValue: _instaConfig.likes,
-          decoration: const InputDecoration(labelText: '좋아요 수 (예: 1,420)'),
-          onChanged: (v) => setState(() => _instaConfig.likes = v),
-        ),
-        const SizedBox(height: 10),
-        TextFormField(
-          initialValue: _instaConfig.caption,
-          decoration: const InputDecoration(labelText: '본문 캡션 내용'),
-          maxLines: 3,
-          onChanged: (v) => setState(() => _instaConfig.caption = v),
-        ),
-      ],
-    );
-  }
-
-  // ========== 5. 배달 플랫폼 에디터 ==========
-  Widget _buildDeliveryEditor() {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const Text('배달 주문 정보', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        const SizedBox(height: 12),
-        TextFormField(
-          initialValue: _deliveryConfig.storeName,
-          decoration: const InputDecoration(labelText: '가게 상호명'),
-          onChanged: (v) => setState(() => _deliveryConfig.storeName = v),
-        ),
-        const SizedBox(height: 10),
-        DropdownButtonFormField<DeliveryStatus>(
-          initialValue: _deliveryConfig.status,
-          decoration: const InputDecoration(labelText: '배달 진행 단계'),
-          dropdownColor: AppColors.surfaceLight,
-          items: DeliveryStatus.values.map((s) {
-            return DropdownMenuItem(value: s, child: Text(s.title));
-          }).toList(),
-          onChanged: (val) {
-            if (val != null) setState(() => _deliveryConfig.status = val);
-          },
-        ),
-        const SizedBox(height: 10),
-        TextFormField(
-          initialValue: _deliveryConfig.estimatedTime,
-          decoration: const InputDecoration(labelText: '예상 시간 (예: 15~25분 후 도착 예정)'),
-          onChanged: (v) => setState(() => _deliveryConfig.estimatedTime = v),
-        ),
-        const SizedBox(height: 10),
-        TextFormField(
-          initialValue: _deliveryConfig.menuSummary,
-          decoration: const InputDecoration(labelText: '주문 메뉴 요약'),
-          onChanged: (v) => setState(() => _deliveryConfig.menuSummary = v),
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 /// macOS 하단 플로팅 글래스 독(Dock)
 class MacosDock extends StatefulWidget {
   final Function(String templateId) onOpenTemplate;
+  final Function(String appId)? onOpenApp;
   final VoidCallback onOpenSettings;
   final VoidCallback onGoHome;
 
   const MacosDock({
     super.key,
     required this.onOpenTemplate,
+    this.onOpenApp,
     required this.onOpenSettings,
     required this.onGoHome,
   });
@@ -51,105 +53,66 @@ class _MacosDockState extends State<MacosDock> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                // 1. macOS 기본 앱들
+                // 1. macOS 기본 앱들 (공식 WebP 아이콘 & 창 열기 연동)
                 _buildDockApp(
                   index: 0,
                   tooltip: 'Finder',
-                  icon: CupertinoIcons.sparkles,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF38BDF8), Color(0xFF2563EB)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  onTap: () {},
+                  imageAsset: 'assets/images/macos/finder.webp',
+                  onTap: () => widget.onOpenApp?.call('finder'),
                 ),
                 _buildDockApp(
                   index: 1,
                   tooltip: 'Safari',
-                  icon: CupertinoIcons.compass,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF60A5FA), Color(0xFF1D4ED8)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  onTap: () {},
+                  imageAsset: 'assets/images/macos/safari.webp',
+                  onTap: () => widget.onOpenApp?.call('safari'),
                 ),
                 _buildDockApp(
                   index: 2,
-                  tooltip: 'Mail',
-                  icon: CupertinoIcons.mail_solid,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF38BDF8), Color(0xFF0284C7)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  onTap: () {},
+                  tooltip: 'Messages',
+                  imageAsset: 'assets/images/macos/messages.webp',
+                  onTap: () => widget.onOpenApp?.call('messages'),
                 ),
                 _buildDockApp(
                   index: 3,
-                  tooltip: 'Messages',
-                  icon: CupertinoIcons.chat_bubble_fill,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF34D399), Color(0xFF059669)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  onTap: () {},
+                  tooltip: 'Mail',
+                  imageAsset: 'assets/images/macos/mail.webp',
+                  onTap: () => widget.onOpenApp?.call('mail'),
                 ),
                 _buildDockApp(
                   index: 4,
                   tooltip: 'Maps',
-                  icon: CupertinoIcons.map_fill,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFBBF24), Color(0xFFF59E0B)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  onTap: () {},
+                  imageAsset: 'assets/images/macos/maps.webp',
+                  onTap: () => widget.onOpenApp?.call('maps'),
                 ),
                 _buildDockApp(
                   index: 5,
                   tooltip: 'Photos',
-                  icon: CupertinoIcons.photo_fill_on_rectangle_fill,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFB7185), Color(0xFFE11D48)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  onTap: () {},
+                  imageAsset: 'assets/images/macos/photos.webp',
+                  onTap: () => widget.onOpenApp?.call('photos'),
                 ),
                 _buildDockApp(
                   index: 6,
-                  tooltip: 'Music',
-                  icon: CupertinoIcons.music_note_2,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFF43F5E), Color(0xFFBE123C)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  onTap: () {},
+                  tooltip: 'Notes',
+                  imageAsset: 'assets/images/macos/notes.webp',
+                  onTap: () => widget.onOpenApp?.call('notes'),
                 ),
                 _buildDockApp(
                   index: 7,
-                  tooltip: '시스템 설정 (OS 변경 / 배경화면)',
-                  icon: CupertinoIcons.gear_alt_fill,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF64748B), Color(0xFF334155)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  onTap: widget.onOpenSettings,
+                  tooltip: 'Music',
+                  imageAsset: 'assets/images/macos/music.webp',
+                  onTap: () => widget.onOpenApp?.call('music'),
                 ),
                 _buildDockApp(
                   index: 8,
+                  tooltip: '시스템 설정 (OS 변경 / 배경화면)',
+                  imageAsset: 'assets/images/macos/settings.webp',
+                  onTap: widget.onOpenSettings,
+                ),
+                _buildDockApp(
+                  index: 9,
                   tooltip: 'Terminal',
-                  icon: CupertinoIcons.chevron_left_slash_chevron_right,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  onTap: () {},
+                  imageAsset: 'assets/images/macos/terminal.webp',
+                  onTap: () => widget.onOpenApp?.call('terminal'),
                 ),
 
                 // 구분선
@@ -157,7 +120,7 @@ class _MacosDockState extends State<MacosDock> {
 
                 // 2. FictionScreen 스튜디오 앱들
                 _buildDockApp(
-                  index: 9,
+                  index: 10,
                   tooltip: '카카오톡 채팅 에디터',
                   imageAsset: 'assets/images/kakaotalk_icon.webp',
                   onTap: () => widget.onOpenTemplate('kakaotalk'),

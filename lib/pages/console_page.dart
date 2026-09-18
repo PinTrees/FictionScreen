@@ -3,14 +3,34 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../apps/screen_template.dart';
 import '../services/auth_service.dart';
 import 'console/android/galaxy_view.dart';
+import 'console/common/floating_app_window.dart';
 import 'console/ios/ios_view.dart';
 import 'console/macos/macos_view.dart';
 import 'console/settings/os_settings_window.dart';
 import 'console/windows/windows_view.dart';
 
-/// 가상 OS 콘솔 메인 페이지 (오케스트레이터)
+class FloatingWindowData {
+  final String id;
+  final ScreenTemplate template;
+  Offset position;
+  Size size;
+  bool isMinimized;
+  int zIndex;
+
+  FloatingWindowData({
+    required this.id,
+    required this.template,
+    required this.position,
+    required this.size,
+    this.isMinimized = false,
+    this.zIndex = 0,
+  });
+}
+
+/// 가상 OS 콘솔 메인 페이지 (오케스트레이터 & MDI 창 관리자)
 class ConsolePage extends StatefulWidget {
   const ConsolePage({super.key});
 
@@ -25,11 +45,16 @@ class _ConsolePageState extends State<ConsolePage> {
   String _windowsVersion = '11';
   // 모바일 OS: 'ios' vs 'galaxy'
   String _mobileTheme = 'ios';
-  // 전역 바탕화면 테마 (기본: 사용자가 업로드한 win10_hero)
+  // 전역 바탕화면 테마
   String _wallpaper = 'win10_hero';
 
   bool _isStartMenuOpen = false;
   bool _isSettingsOpen = false;
+
+  // MDI 열린 가상 창 관리
+  final List<FloatingWindowData> _activeFloatingWindows = [];
+  int _highestZIndex = 1;
+
   late Timer _clockTimer;
   DateTime _now = DateTime.now();
 
@@ -51,12 +76,60 @@ class _ConsolePageState extends State<ConsolePage> {
     super.dispose();
   }
 
+  void _bringToFront(String windowId) {
+    setState(() {
+      _highestZIndex++;
+      final win = _activeFloatingWindows.firstWhere((w) => w.id == windowId);
+      win.zIndex = _highestZIndex;
+      win.isMinimized = false;
+      _activeFloatingWindows.sort((a, b) => a.zIndex.compareTo(b.zIndex));
+    });
+  }
+
   void _openTemplate(String templateId) {
     setState(() {
       _isStartMenuOpen = false;
       _isSettingsOpen = false;
     });
-    context.push('/studio/$templateId');
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth >= 768;
+
+    if (isDesktop) {
+      final existingIndex = _activeFloatingWindows.indexWhere((w) => w.template.id == templateId);
+
+      if (existingIndex != -1) {
+        // 이미 생성되어 열린 창이면 최상단으로 포커스 & 최소화 해제
+        _bringToFront(_activeFloatingWindows[existingIndex].id);
+      } else {
+        // 새 MDI 가상 창 생성
+        final template = ScreenTemplate.allTemplates.firstWhere(
+          (t) => t.id == templateId,
+          orElse: () => ScreenTemplate.allTemplates.first,
+        );
+
+        final count = _activeFloatingWindows.length;
+        final initialPos = Offset(100.0 + (count * 30), 50.0 + (count * 25));
+        final initialSize = template.isDesktop ? const Size(720, 480) : const Size(380, 680);
+
+        _highestZIndex++;
+        final newWin = FloatingWindowData(
+          id: '${templateId}_${DateTime.now().millisecondsSinceEpoch}',
+          template: template,
+          position: initialPos,
+          size: initialSize,
+          zIndex: _highestZIndex,
+        );
+
+        setState(() {
+          _activeFloatingWindows.add(newWin);
+          _activeFloatingWindows.sort((a, b) => a.zIndex.compareTo(b.zIndex));
+        });
+      }
+    } else {
+      // 모바일 기기 접속 시 스튜디오 페이지로 이동
+      context.push('/studio/$templateId');
+    }
   }
 
   Future<void> _handleSignOut() async {
@@ -91,7 +164,7 @@ class _ConsolePageState extends State<ConsolePage> {
 
           return Stack(
             children: [
-              // 1. 선택된 가상 OS 메인 뷰
+              // 1. 가상 OS 메인 뷰 (Windows / macOS)
               if (isDesktop) ...[
                 if (_pcTheme == 'macos')
                   MacosView(
@@ -120,6 +193,29 @@ class _ConsolePageState extends State<ConsolePage> {
                     onSignOut: _handleSignOut,
                     onGoHome: () => context.go('/'),
                   ),
+
+                // 2. MDI (Multiple Document Interface) 가상 창 레이어 모음
+                ..._activeFloatingWindows.where((w) => !w.isMinimized).map((win) {
+                  final isFocused = _activeFloatingWindows.isNotEmpty && _activeFloatingWindows.last.id == win.id;
+
+                  return FloatingAppWindow(
+                    key: ValueKey(win.id),
+                    template: win.template,
+                    position: win.position,
+                    size: win.size,
+                    isFocused: isFocused,
+                    isMacStyle: _pcTheme == 'macos',
+                    onFocus: () => _bringToFront(win.id),
+                    onPositionChanged: (newPos) => setState(() => win.position = newPos),
+                    onSizeChanged: (newSize) => setState(() => win.size = newSize),
+                    onMinimize: () => setState(() => win.isMinimized = true),
+                    onClose: () {
+                      setState(() {
+                        _activeFloatingWindows.removeWhere((w) => w.id == win.id);
+                      });
+                    },
+                  );
+                }),
               ] else ...[
                 if (_mobileTheme == 'ios')
                   IosView(
@@ -143,7 +239,7 @@ class _ConsolePageState extends State<ConsolePage> {
                   ),
               ],
 
-              // 2. 시스템 설정(Settings) 모달 창
+              // 3. 시스템 설정 창
               if (_isSettingsOpen)
                 GestureDetector(
                   onTap: () => setState(() => _isSettingsOpen = false),
@@ -151,7 +247,7 @@ class _ConsolePageState extends State<ConsolePage> {
                   child: Container(
                     color: Colors.black.withValues(alpha: 0.35),
                     child: GestureDetector(
-                      onTap: () {}, // 창 내부 클릭 시 닫힘 방지
+                      onTap: () {},
                       child: OsSettingsWindow(
                         currentPcTheme: _pcTheme,
                         currentWindowsVersion: _windowsVersion,
