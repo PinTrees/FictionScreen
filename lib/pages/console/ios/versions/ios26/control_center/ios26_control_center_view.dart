@@ -6,7 +6,7 @@ import 'widgets/ios26_now_playing_card.dart';
 import 'widgets/ios26_quick_toggles.dart';
 import 'widgets/ios26_vertical_slider.dart';
 
-/// Apple iOS 26 공식 리퀴드 글래스 (Liquid Glass) 제어 센터 (Control Center) 모듈형 뷰
+/// Apple iOS 26 공식 리퀴드 글래스 (Liquid Glass) 제어 센터 모듈형 뷰
 class Ios26ControlCenterView extends StatefulWidget {
   final VoidCallback onClose;
   final Function(String appId) onOpenApp;
@@ -18,12 +18,11 @@ class Ios26ControlCenterView extends StatefulWidget {
 }
 
 class _Ios26ControlCenterViewState extends State<Ios26ControlCenterView> {
-  bool _isRotationLocked = false;
-  bool _isSilentMode = true;
+  bool _isRotationLocked = true; // 스크린샷 레퍼런스: 회전 잠금 활성화(흰색바탕+빨간락)
   bool _isFocusMode = false;
   bool _isFlashlightOn = false;
-  double _brightness = 0.65;
-  double _volume = 0.72;
+  double _brightness = 0.45;
+  double _volume = 0.52;
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +36,11 @@ class _Ios26ControlCenterViewState extends State<Ios26ControlCenterView> {
         bottom: true,
         child: Column(
           children: [
-            // 1. 상단 바 & 통신사/배터리 헤더
+            // 1. 상단 바 (+ 및 ⏻ 유틸리티 버튼 & SKT LTE 4바 + 93% 배터리)
             Ios26CcHeader(onClose: widget.onClose),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
-            // 2. 메인 모듈 그리드 + 우측 iOS 26 레일 탭
+            // 2. 메인 모듈 그리드 + 우측 세로 레일 탭
             Expanded(
               child: GestureDetector(
                 onTap: () {},
@@ -49,13 +48,13 @@ class _Ios26ControlCenterViewState extends State<Ios26ControlCenterView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(width: 14),
-                    // 메인 모듈 스크롤 영역
+                    // 중앙 메인 스크롤 모듈
                     Expanded(
                       child: SingleChildScrollView(
                         physics: const BouncingScrollPhysics(),
                         child: Column(
                           children: [
-                            // Row 1: 연결성 2x2 카드 + 지금 재생 중 2x2 미디어 카드
+                            // Row 1: 연결성 2x2 카드 + 지금 재생 중 2x2 카드
                             const Row(
                               children: [
                                 Expanded(child: Ios26ConnectivityCard()),
@@ -65,7 +64,7 @@ class _Ios26ControlCenterViewState extends State<Ios26ControlCenterView> {
                             ),
                             const SizedBox(height: 14),
 
-                            // Row 2: 회전잠금/무음/집중모드 + 수직 밝기 & 음량 슬라이더
+                            // Row 2: 회전잠금/화면미러링/집중모드 + 수직 밝기 & 볼륨 슬라이더
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -73,13 +72,9 @@ class _Ios26ControlCenterViewState extends State<Ios26ControlCenterView> {
                                   flex: 11,
                                   child: Ios26QuickTogglesSection(
                                     isRotationLocked: _isRotationLocked,
-                                    isSilentMode: _isSilentMode,
                                     isFocusMode: _isFocusMode,
-                                    isFlashlightOn: _isFlashlightOn,
                                     onToggleRotation: (v) => setState(() => _isRotationLocked = v),
-                                    onToggleSilent: (v) => setState(() => _isSilentMode = v),
                                     onToggleFocus: (v) => setState(() => _isFocusMode = v),
-                                    onToggleFlashlight: (v) => setState(() => _isFlashlightOn = v),
                                     onOpenApp: widget.onOpenApp,
                                   ),
                                 ),
@@ -99,7 +94,7 @@ class _Ios26ControlCenterViewState extends State<Ios26ControlCenterView> {
                                   child: Ios26VerticalSlider(
                                     value: _volume,
                                     icon: CupertinoIcons.speaker_2_fill,
-                                    iconColor: const Color(0xFF007AFF),
+                                    iconColor: const Color(0xFF2C2C2E),
                                     onChanged: (v) => setState(() => _volume = v),
                                   ),
                                 ),
@@ -107,19 +102,19 @@ class _Ios26ControlCenterViewState extends State<Ios26ControlCenterView> {
                             ),
                             const SizedBox(height: 14),
 
-                            // Row 3 & 4: 원형 퀵 액션 토글 (손전등, 타이머, 계산기, 카메라, QR, 화면녹화)
+                            // Row 3 & 4: 6개 완전한 정원형 리퀴드 퀵 토글
                             Ios26BottomActionsGrid(
                               isFlashlightOn: _isFlashlightOn,
                               onToggleFlashlight: () => setState(() => _isFlashlightOn = !_isFlashlightOn),
                               onOpenApp: widget.onOpenApp,
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 24),
                           ],
                         ),
                       ),
                     ),
 
-                    // 우측 iOS 26 페이지 스위처 레일 (하트, 음악, 무선 안테나) - 스크린샷 레퍼런스 일치
+                    // 우측 세로 레일 인디케이터 (하트, 음악, 무선) - 스크린샷 100% 일치
                     Padding(
                       padding: const EdgeInsets.only(top: 172, right: 6, left: 4),
                       child: Column(
@@ -138,12 +133,12 @@ class _Ios26ControlCenterViewState extends State<Ios26ControlCenterView> {
               ),
             ),
 
-            // 3. 하단 닫기 핸들 바
+            // 3. 하단 홈 인디케이터 닫기 핸들 바
             GestureDetector(
               onTap: widget.onClose,
               child: Container(
                 width: 120,
-                height: 18,
+                height: 16,
                 alignment: Alignment.center,
                 color: Colors.transparent,
                 child: Container(
