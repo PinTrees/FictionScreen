@@ -419,25 +419,25 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
       {
         'id': 'macos_golden_gate',
         'title': 'macOS Golden Gate (기본)',
-        'desc': '골든 게이트 브리지 석양 공식 배경화면',
+        'desc': '골든 게이트 브리지 석양 2K WebP 배경화면',
         'asset': 'assets/images/macos_golden_gate.webp',
       },
       {
         'id': 'win10_hero',
         'title': 'Windows 10 Hero (기본)',
-        'desc': '창문 빛 레이저 공식 배경화면',
+        'desc': '창문 빛 레이저 2K WebP 배경화면',
         'asset': 'assets/images/win10_hero.webp',
       },
       {
         'id': 'win11_bloom',
         'title': 'Windows 11 Bloom',
-        'desc': '블루 페탈 공식 배경화면',
+        'desc': '블루 페탈 2K WebP 배경화면',
         'asset': 'assets/images/win11_bloom.webp',
       },
       {
         'id': 'win7_harmony',
         'title': 'Windows 7 Harmony',
-        'desc': '클래식 하모니 2K 배경화면',
+        'desc': '클래식 하모니 2K WebP 배경화면',
         'asset': 'assets/images/win7_harmony.webp',
       },
       {
@@ -509,7 +509,7 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
                         ),
                         clipBehavior: Clip.antiAlias,
                         child: assetPath != null
-                            ? Image.asset(assetPath, fit: BoxFit.cover)
+                            ? Image.asset(assetPath, fit: BoxFit.cover, filterQuality: FilterQuality.medium)
                             : null,
                       ),
                       const SizedBox(height: 8),

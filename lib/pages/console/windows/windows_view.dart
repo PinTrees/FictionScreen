@@ -168,6 +168,7 @@ class WindowsView extends StatelessWidget {
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
+        filterQuality: FilterQuality.high,
       );
     } else if (currentWallpaper == 'win11_bloom') {
       return Image.asset(
@@ -175,6 +176,7 @@ class WindowsView extends StatelessWidget {
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
+        filterQuality: FilterQuality.high,
       );
     } else if (currentWallpaper == 'win7_harmony') {
       return Image.asset(
@@ -182,6 +184,7 @@ class WindowsView extends StatelessWidget {
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
+        filterQuality: FilterQuality.high,
       );
     }
 
@@ -210,12 +213,13 @@ class WindowsView extends StatelessWidget {
           ),
         );
       default:
-        // 기본 윈도우 배경: 사용자가 업로드한 win10_hero.webp
+        // 기본 윈도우 배경: 사용자가 업로드한 2K win10_hero.webp
         return Image.asset(
           'assets/images/win10_hero.webp',
           fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
+          filterQuality: FilterQuality.high,
         );
     }
   }
