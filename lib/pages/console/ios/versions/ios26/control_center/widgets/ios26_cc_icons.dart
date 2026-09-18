@@ -388,9 +388,7 @@ class _ScreenMirrorPainter extends CustomPainter {
     final backRect = RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.24, h * 0.10, w * 0.66, h * 0.54), r);
     canvas.drawRRect(backRect, stroke);
 
-    final clearPaint = Paint()..color = Colors.black.withValues(alpha: 0.8)..style = PaintingStyle.fill;
     final frontRect = RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.10, h * 0.36, w * 0.66, h * 0.54), r);
-    canvas.drawRRect(frontRect, clearPaint);
     canvas.drawRRect(frontRect, stroke);
   }
 

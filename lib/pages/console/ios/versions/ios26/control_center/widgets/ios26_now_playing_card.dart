@@ -26,8 +26,8 @@ class _Ios26NowPlayingCardState extends State<Ios26NowPlayingCard> {
       width: size,
       height: size,
       borderRadius: size * 0.20,
-      blurSigma: 36,
-      tintColor: const Color(0xFF0F2644),
+      blurSigma: 32,
+      tintColor: Colors.white,
       padding: EdgeInsets.all(pad),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

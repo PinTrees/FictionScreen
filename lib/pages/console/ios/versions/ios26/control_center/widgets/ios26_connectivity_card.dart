@@ -24,14 +24,14 @@ class _Ios26ConnectivityCardState extends State<Ios26ConnectivityCard> {
     final pad = size * (14.0 / 180.0);
     final innerGap = size * (10.0 / 180.0);
     final btnSize = (size - 2 * pad - innerGap) / 2.0;
-    final miniBtnSize = (btnSize - 7.0) / 2.0;
+    final miniBtnSize = (btnSize - 6.0) / 2.0;
 
     return Ios26LiquidGlass(
       width: size,
       height: size,
       borderRadius: size * 0.20,
-      blurSigma: 36,
-      tintColor: const Color(0xFF0F2644),
+      blurSigma: 32,
+      tintColor: Colors.white,
       padding: EdgeInsets.all(pad),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -57,7 +57,7 @@ class _Ios26ConnectivityCardState extends State<Ios26ConnectivityCard> {
             ],
           ),
 
-          // Row 2: Wi-Fi + 4단 미니 클러스터
+          // Row 2: Wi-Fi + 4단 미니 클러스터 (뒷배경 패널 제거 - 원본 동일 렌더링)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -90,20 +90,26 @@ class _Ios26ConnectivityCardState extends State<Ios26ConnectivityCard> {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: isActive ? activeColor : Colors.white.withValues(alpha: 0.16),
-          boxShadow: isActive ? [BoxShadow(color: activeColor.withValues(alpha: 0.45), blurRadius: 8, spreadRadius: 1)] : null,
+          color: isActive ? activeColor : Colors.white.withValues(alpha: 0.22),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.16), width: 0.7),
+          boxShadow: [
+            BoxShadow(
+              color: isActive ? activeColor.withValues(alpha: 0.40) : Colors.black.withValues(alpha: 0.12),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Center(child: child),
       ),
     );
   }
 
+  // 4단 미니 클러스터: 원본처럼 별도 배경 패널 없이 4개 원형 아이콘 직접 배치
   Widget _buildMiniCluster({required double size, required double miniSize}) {
-    return Container(
+    return SizedBox(
       width: size,
       height: size,
-      padding: const EdgeInsets.all(2.5),
-      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(size * 0.32)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -118,7 +124,7 @@ class _Ios26ConnectivityCardState extends State<Ios26ConnectivityCard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildMiniIcon(size: miniSize, child: Ios26HotspotIcon(size: miniSize * 0.56), isActive: false, activeColor: const Color(0xFF34C759), onTap: () {}),
-              _buildMiniIcon(size: miniSize, child: Ios26GlobeIcon(size: miniSize * 0.56), isActive: true, activeColor: const Color(0xFF007AFF), onTap: () {}),
+              _buildMiniIcon(size: miniSize, child: Ios26GlobeIcon(size: miniSize * 0.56), isActive: false, activeColor: const Color(0xFF007AFF), onTap: () {}),
             ],
           ),
         ],
@@ -132,7 +138,18 @@ class _Ios26ConnectivityCardState extends State<Ios26ConnectivityCard> {
       child: Container(
         width: size,
         height: size,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: isActive ? activeColor : Colors.white.withValues(alpha: 0.15)),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isActive ? activeColor : Colors.white.withValues(alpha: 0.18),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.14), width: 0.6),
+          boxShadow: [
+            BoxShadow(
+              color: isActive ? activeColor.withValues(alpha: 0.35) : Colors.black.withValues(alpha: 0.08),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
         child: Center(child: child),
       ),
     );

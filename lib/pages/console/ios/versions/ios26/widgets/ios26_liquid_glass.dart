@@ -57,17 +57,11 @@ class Ios26LiquidGlass extends StatelessWidget {
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
-          // 3. 외곽 코스틱 빛 번짐 림
-          BoxShadow(
-            color: const Color(0xFF80D8FF).withValues(alpha: 0.16),
-            blurRadius: 2,
-            spreadRadius: 0.5,
-          ),
         ],
-        // 굴절 테두리 (상단 림 하이라이트)
+        // 극미세 리퀴드 글래스 투명 굴절 테두리
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.38),
-          width: 1.1,
+          color: Colors.white.withValues(alpha: 0.20),
+          width: 0.8,
         ),
       ),
       child: ClipRRect(

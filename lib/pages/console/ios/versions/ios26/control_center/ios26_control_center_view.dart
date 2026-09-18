@@ -25,8 +25,8 @@ class _Ios26ControlCenterViewState extends State<Ios26ControlCenterView> {
   bool _isRotationLocked = true; // 스크린샷 레퍼런스: 회전 잠금 활성화(흰색바탕+빨간락)
   bool _isFocusMode = false;
   bool _isFlashlightOn = false;
-  double _brightness = 0.38; // 레퍼런스: 약 38% 하단 필링
-  double _volume = 0.32; // 레퍼런스: 약 32% 하단 필링
+  double _brightness = 0.30; // 레퍼런스: 약 30% 하단 필링
+  double _volume = 0.12; // 레퍼런스: 약 12% 하단 필링
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +52,11 @@ class _Ios26ControlCenterViewState extends State<Ios26ControlCenterView> {
           behavior: HitTestBehavior.translucent,
           child: Stack(
             children: [
-              // 1. 전체 화면 초고굴절 배경 가우시안 블러 오버레이
+              // 1. 배경 가우시안 블러 오버레이 (어두운 배경색 제거)
               Positioned.fill(
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 36, sigmaY: 36),
-                  child: Container(color: Colors.black.withValues(alpha: 0.24)),
+                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                  child: const SizedBox.expand(),
                 ),
               ),
 
@@ -127,7 +127,7 @@ class _Ios26ControlCenterViewState extends State<Ios26ControlCenterView> {
                                     value: _volume,
                                     iconBuilder: (isOnFill) => Ios26SpeakerIcon(
                                       size: unitSize * 0.36,
-                                      color: isOnFill ? const Color(0xFF2C2C2E) : Colors.white70,
+                                      color: isOnFill ? const Color(0xFF2C2C2E) : Colors.white,
                                     ),
                                     onChanged: (v) => setState(() => _volume = v),
                                   ),
