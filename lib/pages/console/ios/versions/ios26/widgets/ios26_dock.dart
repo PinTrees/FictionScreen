@@ -35,7 +35,7 @@ class Ios26Dock extends StatelessWidget {
               children: [
                 Ios26AppIcon(
                   title: '',
-                  size: 62.0,
+                  size: 65.0,
                   imageAsset: 'assets/images/ios/icons26/phone.png',
                   isEditMode: isEditMode,
                   index: 100,
@@ -44,7 +44,7 @@ class Ios26Dock extends StatelessWidget {
                 ),
                 Ios26AppIcon(
                   title: '',
-                  size: 62.0,
+                  size: 65.0,
                   imageAsset: 'assets/images/ios/icons26/safari.png',
                   isEditMode: isEditMode,
                   index: 101,
@@ -53,7 +53,7 @@ class Ios26Dock extends StatelessWidget {
                 ),
                 Ios26AppIcon(
                   title: '',
-                  size: 62.0,
+                  size: 65.0,
                   imageAsset: 'assets/images/ios/icons26/messages.png',
                   badgeCount: 3,
                   isEditMode: isEditMode,
@@ -63,7 +63,7 @@ class Ios26Dock extends StatelessWidget {
                 ),
                 Ios26AppIcon(
                   title: '',
-                  size: 62.0,
+                  size: 65.0,
                   imageAsset: 'assets/images/ios/icons26/music.png',
                   isEditMode: isEditMode,
                   index: 103,

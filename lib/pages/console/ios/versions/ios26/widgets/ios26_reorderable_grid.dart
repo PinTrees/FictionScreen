@@ -14,6 +14,7 @@ class Ios26ReorderableGrid extends StatelessWidget {
   final double mainAxisSpacing;
   final double crossAxisSpacing;
   final double childAspectRatio;
+  final double iconSize;
   final ScrollPhysics physics;
 
   const Ios26ReorderableGrid({
@@ -25,9 +26,10 @@ class Ios26ReorderableGrid extends StatelessWidget {
     required this.onEnterEditMode,
     this.onDeleteItem,
     this.crossAxisCount = 4,
-    this.mainAxisSpacing = 14,
+    this.mainAxisSpacing = 16,
     this.crossAxisSpacing = 14,
-    this.childAspectRatio = 0.74,
+    this.childAspectRatio = 0.80,
+    this.iconSize = 64.0,
     this.physics = const BouncingScrollPhysics(),
   });
 
@@ -60,6 +62,7 @@ class Ios26ReorderableGrid extends StatelessWidget {
             final normalIcon = Ios26AppIcon(
               key: ValueKey(item.id),
               title: item.title,
+              size: iconSize,
               imageAsset: item.imageAsset,
               customIcon: item.customIcon,
               badgeCount: item.badgeCount,
@@ -78,6 +81,7 @@ class Ios26ReorderableGrid extends StatelessWidget {
                   opacity: 0.95,
                   child: Ios26AppIcon(
                     title: item.title,
+                    size: iconSize,
                     imageAsset: item.imageAsset,
                     customIcon: item.customIcon,
                     badgeCount: item.badgeCount,

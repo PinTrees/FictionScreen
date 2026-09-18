@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../ios18/apps/settings/ios18_settings_view.dart';
 import 'models/ios26_app_item.dart';
@@ -227,8 +228,8 @@ class _Ios26ViewState extends State<Ios26View> {
   }
 
   Widget _buildIphoneDeviceFrame(double screenHeight) {
-    final double targetHeight = (screenHeight * 0.94).clamp(680.0, 920.0);
-    final double targetWidth = targetHeight * (393.0 / 852.0);
+    final double targetHeight = (screenHeight * 0.94).clamp(720.0, 920.0);
+    final double targetWidth = (targetHeight * (393.0 / 852.0)).clamp(385.0, 440.0);
 
     return Container(
       width: targetWidth,
@@ -264,7 +265,7 @@ class _Ios26ViewState extends State<Ios26View> {
   Widget _buildPhoneScreen({required bool isFrame}) {
     return Stack(
       children: [
-        // 1. 공식 고화질 iOS 배경화면
+        // 1. 공식 고화질 iOS 배경화면 (좌우 스와이프 제스처 지원)
         Positioned.fill(
           child: GestureDetector(
             onTap: () {
@@ -273,6 +274,21 @@ class _Ios26ViewState extends State<Ios26View> {
                 return;
               }
               _exitEditMode();
+            },
+            onHorizontalDragEnd: (details) {
+              if (details.primaryVelocity != null) {
+                if (details.primaryVelocity! < -80 && _currentPage < 2) {
+                  _pageController.nextPage(
+                    duration: const Duration(milliseconds: 320),
+                    curve: Curves.easeOutCubic,
+                  );
+                } else if (details.primaryVelocity! > 80 && _currentPage > 0) {
+                  _pageController.previousPage(
+                    duration: const Duration(milliseconds: 320),
+                    curve: Curves.easeOutCubic,
+                  );
+                }
+              }
             },
             behavior: HitTestBehavior.translucent,
             child: Image.asset(
@@ -283,53 +299,62 @@ class _Ios26ViewState extends State<Ios26View> {
           ),
         ),
 
-        // 2. 홈 스크린 본체 콘텐츠 (직접 Stack의 Positioned.fill 자식)
+        // 2. 홈 스크린 본체 콘텐츠 (웹뷰 & 모바일 동일 패딩 규격 적용)
         Positioned.fill(
           child: AnimatedScale(
             scale: _isControlCenterOpen ? 0.93 : 1.0,
             duration: const Duration(milliseconds: 320),
             curve: Curves.easeOutCubic,
             child: SafeArea(
+              top: !isFrame,
               bottom: false,
-              child: Column(
-                children: [
-                  // 최상단 상태바 & 다이내믹 아일랜드 (드래그 다운 / 우측 탭 시 제어 센터 열림)
-                  Ios26StatusBar(
-                    timeString: widget.timeString,
-                    onOpenControlCenter: () => _toggleControlCenter(true),
-                  ),
-
-                  // 편집 모드 헤더
-                  AnimatedCrossFade(
-                    firstChild: const SizedBox(height: 10),
-                    secondChild: _buildEditModeHeader(),
-                    crossFadeState: _isEditMode
-                        ? CrossFadeState.showSecond
-                        : CrossFadeState.showFirst,
-                    duration: const Duration(milliseconds: 200),
-                  ),
-
-                  // 좌우 슬라이드 PageView
-                  Expanded(
-                    child: PageView(
-                      controller: _pageController,
-                      physics: const BouncingScrollPhysics(),
-                      onPageChanged: (page) {
-                        setState(() {
-                          _currentPage = page;
-                        });
-                      },
-                      children: [
-                        _buildPage1(),
-                        _buildPage2(),
-                        _buildPage3AppLibrary(),
-                      ],
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: isFrame ? 12.0 : 0.0,
+                  bottom: isFrame ? 8.0 : (MediaQuery.of(context).padding.bottom > 0 ? 0.0 : 8.0),
+                ),
+                child: Column(
+                  children: [
+                    // 최상단 상태바 & 다이내믹 아일랜드 (드래그 다운 / 우측 탭 시 제어 센터 열림)
+                    Ios26StatusBar(
+                      timeString: widget.timeString,
+                      onOpenControlCenter: () => _toggleControlCenter(true),
                     ),
-                  ),
 
-                  // iOS 26 리퀴드 글래스 검색 캡슐 (Search Capsule)
-                  _buildSearchCapsule(),
-                  const SizedBox(height: 10),
+                    // 편집 모드 헤더
+                    AnimatedCrossFade(
+                      firstChild: const SizedBox(height: 8),
+                      secondChild: _buildEditModeHeader(),
+                      crossFadeState: _isEditMode
+                          ? CrossFadeState.showSecond
+                          : CrossFadeState.showFirst,
+                      duration: const Duration(milliseconds: 200),
+                    ),
+
+                    // 좌우 슬라이드 PageView (웹/모바일/마우스/터치 전방위 드래그 지원)
+                    Expanded(
+                      child: ScrollConfiguration(
+                        behavior: const Ios26ScrollBehavior(),
+                        child: PageView(
+                          controller: _pageController,
+                          physics: const BouncingScrollPhysics(),
+                          onPageChanged: (page) {
+                            setState(() {
+                              _currentPage = page;
+                            });
+                          },
+                          children: [
+                            _buildPage1(),
+                            _buildPage2(),
+                            _buildPage3AppLibrary(),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // iOS 26 리퀴드 글래스 검색 캡슐 (Search Capsule)
+                    _buildSearchCapsule(),
+                    const SizedBox(height: 10),
 
                   // 3. Apple 공식 리퀴드 글래스 독 (Dock)
                   Ios26Dock(
@@ -363,6 +388,7 @@ class _Ios26ViewState extends State<Ios26View> {
             ),
           ),
         ),
+      ),
 
         // 3. 앱 실행 오버레이
         if (_activeApp != null)
@@ -442,7 +468,7 @@ class _Ios26ViewState extends State<Ios26View> {
   // Page 1: 상단 리퀴드 위젯 + 드래그 앤 드롭 앱 그리드
   Widget _buildPage1() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
           Row(
@@ -456,7 +482,7 @@ class _Ios26ViewState extends State<Ios26View> {
                   ),
                 ),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 12),
               Expanded(
                 child: Ios26Jiggle(
                   isJiggling: _isEditMode,
@@ -468,12 +494,13 @@ class _Ios26ViewState extends State<Ios26View> {
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
 
           Expanded(
             child: Ios26ReorderableGrid(
               items: _page1Apps,
               isEditMode: _isEditMode,
+              iconSize: 64.0,
               onReorder: _onReorderPage1,
               onOpenApp: _openApp,
               onEnterEditMode: _enterEditMode,
@@ -493,10 +520,11 @@ class _Ios26ViewState extends State<Ios26View> {
   // Page 2: 4행 x 4열 드래그 앤 드롭 앱 그리드
   Widget _buildPage2() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Ios26ReorderableGrid(
         items: _page2Apps,
         isEditMode: _isEditMode,
+        iconSize: 64.0,
         onReorder: _onReorderPage2,
         onOpenApp: _openApp,
         onEnterEditMode: _enterEditMode,
@@ -513,7 +541,7 @@ class _Ios26ViewState extends State<Ios26View> {
   // Page 3: iOS 26 앱 보관함 (App Library)
   Widget _buildPage3AppLibrary() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
           Ios26LiquidGlass(
@@ -597,7 +625,7 @@ class _Ios26ViewState extends State<Ios26View> {
             children: apps.take(4).map((app) {
               return Ios26AppIcon(
                 title: '',
-                size: 42,
+                size: 46,
                 imageAsset: app['image'] as String?,
                 customIcon: app['custom'] as Widget?,
                 badgeCount: app['badge'] as int?,
@@ -730,3 +758,18 @@ class _Ios26ViewState extends State<Ios26View> {
     );
   }
 }
+
+/// 웹(Chrome, Edge 등) 및 모바일 환경에서 마우스 드래그, 터치, 트랙패드 스와이프를 모두 지원하는 스크롤 비헤이비어
+class Ios26ScrollBehavior extends MaterialScrollBehavior {
+  const Ios26ScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.trackpad,
+        PointerDeviceKind.stylus,
+        PointerDeviceKind.unknown,
+      };
+}
+
