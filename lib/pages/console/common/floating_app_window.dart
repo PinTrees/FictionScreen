@@ -24,6 +24,8 @@ import '../../../apps/upbit/data/upbit_model.dart';
 import '../../../apps/upbit/upbit_screen.dart';
 import '../../../apps/blind/data/blind_model.dart';
 import '../../../apps/blind/blind_screen.dart';
+import '../../../apps/discord/data/discord_model.dart';
+import '../../../apps/discord/discord_screen.dart';
 import '../../../apps/yanolja/data/yanolja_model.dart';
 import '../../../apps/yanolja/yanolja_screen.dart';
 import '../../../apps/coupang/data/coupang_model.dart';
@@ -91,6 +93,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   late YanoljaConfig _yanoljaConfig;
   late UpbitConfig _upbitConfig;
   late BlindConfig _blindConfig;
+  late DiscordConfig _discordConfig;
 
   @override
   void initState() {
@@ -111,6 +114,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     _yanoljaConfig = YanoljaConfig.defaultPreset();
     _upbitConfig = UpbitConfig.defaultPreset();
     _blindConfig = BlindConfig.defaultPreset();
+    _discordConfig = DiscordConfig.defaultPreset();
   }
 
   @override
@@ -365,6 +369,11 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
         return BlindScreen(
           config: _blindConfig,
           onConfigChanged: (cfg) => setState(() => _blindConfig = cfg),
+        );
+      case 'discord':
+        return DiscordScreen(
+          config: _discordConfig,
+          onConfigChanged: (cfg) => setState(() => _discordConfig = cfg),
         );
       case 'windows_bsod':
         return WindowsBsodScreen(config: _bsodConfig);

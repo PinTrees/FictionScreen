@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
 import '../apps/blind/data/blind_model.dart';
+import '../apps/discord/data/discord_model.dart';
 import '../apps/coupang/data/coupang_model.dart';
 import '../apps/daangn/data/daangn_model.dart';
 import '../apps/delivery/data/delivery_model.dart';
@@ -56,6 +57,7 @@ class _StudioPageState extends State<StudioPage> {
   late YanoljaConfig _yanoljaConfig;
   late UpbitConfig _upbitConfig;
   late BlindConfig _blindConfig;
+  late DiscordConfig _discordConfig;
 
   @override
   void initState() {
@@ -78,6 +80,7 @@ class _StudioPageState extends State<StudioPage> {
     _yanoljaConfig = YanoljaConfig.defaultPreset();
     _upbitConfig = UpbitConfig.defaultPreset();
     _blindConfig = BlindConfig.defaultPreset();
+    _discordConfig = DiscordConfig.defaultPreset();
   }
 
   Future<void> _exportScreen() async {
@@ -158,6 +161,7 @@ class _StudioPageState extends State<StudioPage> {
       yanoljaConfig: _yanoljaConfig,
       upbitConfig: _upbitConfig,
       blindConfig: _blindConfig,
+      discordConfig: _discordConfig,
       onKakaoBankChanged: (cfg) => setState(() => _kakaobankConfig = cfg),
       onDaangnChanged: (cfg) => setState(() => _daangnConfig = cfg),
       onYoutubeChanged: (cfg) => setState(() => _youtubeConfig = cfg),
@@ -167,6 +171,7 @@ class _StudioPageState extends State<StudioPage> {
       onYanoljaChanged: (cfg) => setState(() => _yanoljaConfig = cfg),
       onUpbitChanged: (cfg) => setState(() => _upbitConfig = cfg),
       onBlindChanged: (cfg) => setState(() => _blindConfig = cfg),
+      onDiscordChanged: (cfg) => setState(() => _discordConfig = cfg),
     );
   }
 }

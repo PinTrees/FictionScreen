@@ -59,6 +59,7 @@ class _Macos27SpotlightState extends State<Macos27Spotlight> with SingleTickerPr
     {'title': '야놀자(NOL) 에디터', 'desc': '호텔·모텔·펜션 예약 및 숙소 검색 조작', 'icon': 'assets/images/yanolja_icon.webp', 'templateId': 'yanolja'},
     {'title': '업비트(Upbit) 에디터', 'desc': '비트코인 시세, 호가창, 보유자산 및 수익률 조작', 'icon': 'assets/images/upbit_icon.webp', 'templateId': 'upbit'},
     {'title': '블라인드(Blind) 에디터', 'desc': '직장인 익명 커뮤니티, 회사 인증 뱃지, 실시간 투표 및 댓글 조작', 'icon': 'assets/images/blind_icon.webp', 'templateId': 'blind'},
+    {'title': '디스코드(Discord) 에디터', 'desc': '게이머 & 개발자 음성/채팅 서버, 봇 메시지, 역할 컬러 연출', 'icon': 'assets/images/discord_icon.webp', 'templateId': 'discord'},
   ];
 
   @override

@@ -203,5 +203,16 @@ class ScreenTemplate {
       badge: '인기',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'discord',
+      title: '디스코드 (Discord)',
+      description: '게이머 & 개발자 음성/채팅 서버, 봇 메시지, 역할 컬러, 음성 통화 연출',
+      category: TemplateCategory.sns,
+      icon: CupertinoIcons.game_controller_solid,
+      imageAsset: 'assets/images/discord_icon.webp',
+      themeColor: Color(0xFF5865F2),
+      badge: 'HOT',
+      isDesktop: true,
+    ),
   ];
 }
