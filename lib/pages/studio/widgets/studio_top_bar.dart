@@ -10,7 +10,6 @@ class StudioTopBar extends StatelessWidget {
   final bool isExporting;
   final VoidCallback onToggleFrame;
   final VoidCallback onExport;
-  final VoidCallback? onEditYoutube;
 
   const StudioTopBar({
     super.key,
@@ -19,7 +18,6 @@ class StudioTopBar extends StatelessWidget {
     required this.isExporting,
     required this.onToggleFrame,
     required this.onExport,
-    this.onEditYoutube,
   });
 
   @override
@@ -67,12 +65,6 @@ class StudioTopBar extends StatelessWidget {
           ),
           const SizedBox(width: 12),
 
-          if (template.id == 'youtube' && onEditYoutube != null)
-            IconButton(
-              tooltip: '유튜브 영상/정보 변경',
-              icon: const Icon(CupertinoIcons.play_circle_fill, color: Color(0xFFFF3333), size: 22),
-              onPressed: onEditYoutube,
-            ),
 
           // 디바이스 프레임 토글 버튼
           IconButton(

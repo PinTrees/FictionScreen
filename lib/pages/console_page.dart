@@ -17,6 +17,8 @@ import '../apps/pinterest/pinterest_screen.dart';
 import '../apps/screen_template.dart';
 import '../apps/toss/data/toss_model.dart';
 import '../apps/toss/toss_screen.dart';
+import '../apps/kakaobank/data/kakaobank_model.dart';
+import '../apps/kakaobank/kakaobank_screen.dart';
 import '../apps/windows_bsod/data/windows_bsod_model.dart';
 import '../apps/windows_bsod/windows_bsod_screen.dart';
 import '../apps/windows_update/data/windows_update_model.dart';
@@ -638,6 +640,8 @@ class _ConsolePageState extends State<ConsolePage> {
         return InstagramScreen(config: InstagramConfig.defaultPreset());
       case 'toss':
         return TossScreen(config: TossConfig.defaultPreset());
+      case 'kakaobank':
+        return KakaoBankScreen(config: KakaoBankConfig.defaultPreset());
       case 'x_twitter':
         return XTwitterScreen(config: XTwitterConfig.defaultPreset());
       case 'pinterest':

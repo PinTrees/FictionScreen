@@ -55,6 +55,15 @@ class ScreenTemplate {
       badge: '신규',
     ),
     const ScreenTemplate(
+      id: 'kakaobank',
+      title: '카카오뱅크 통장 & 이체',
+      description: '카카오뱅크 옐로우 입출금 통장, 계좌 잔액, 세이프박스, 이체 내역 연출',
+      category: TemplateCategory.finance,
+      icon: CupertinoIcons.creditcard_fill,
+      themeColor: Color(0xFFFEE500),
+      badge: '신규',
+    ),
+    const ScreenTemplate(
       id: 'x_twitter',
       title: 'X (구 트위터) 포스트',
       description: 'X (트위터) 게시글, 블루 틱, 리포스트, 좋아요, 북마크 커스텀',

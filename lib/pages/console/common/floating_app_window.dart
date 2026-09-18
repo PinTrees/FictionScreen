@@ -14,6 +14,8 @@ import '../../../apps/pinterest/pinterest_screen.dart';
 import '../../../apps/screen_template.dart';
 import '../../../apps/toss/data/toss_model.dart';
 import '../../../apps/toss/toss_screen.dart';
+import '../../../apps/kakaobank/data/kakaobank_model.dart';
+import '../../../apps/kakaobank/kakaobank_screen.dart';
 import '../../../apps/windows_bsod/data/windows_bsod_model.dart';
 import '../../../apps/windows_bsod/windows_bsod_screen.dart';
 import '../../../apps/x_twitter/data/x_twitter_model.dart';
@@ -76,6 +78,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   late InstagramConfig _instaConfig;
   late DeliveryConfig _deliveryConfig;
   late DaangnConfig _daangnConfig;
+  late KakaoBankConfig _kakaobankConfig;
   late CoupangConfig _coupangConfig;
   late NetflixConfig _netflixConfig;
   late LotteryConfig _lotteryConfig;
@@ -85,6 +88,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     super.initState();
     _kakaoConfig = KakaoRoomConfig.defaultPreset();
     _tossConfig = TossConfig.defaultPreset();
+    _kakaobankConfig = KakaoBankConfig.defaultPreset();
     _twitterConfig = XTwitterConfig.defaultPreset();
     _pinterestConfig = PinterestConfig.defaultPreset();
     _bsodConfig = WindowsBsodConfig.defaultPreset();
@@ -295,6 +299,8 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     switch (widget.template.id) {
       case 'toss':
         return TossScreen(config: _tossConfig);
+      case 'kakaobank':
+        return KakaoBankScreen(config: _kakaobankConfig);
       case 'kakaotalk':
         return KakaoTalkScreen(config: _kakaoConfig);
       case 'x_twitter':

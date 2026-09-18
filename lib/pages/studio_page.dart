@@ -5,6 +5,7 @@ import '../apps/coupang/data/coupang_model.dart';
 import '../apps/daangn/data/daangn_model.dart';
 import '../apps/delivery/data/delivery_model.dart';
 import '../apps/instagram/data/instagram_model.dart';
+import '../apps/kakaobank/data/kakaobank_model.dart';
 import '../apps/kakaotalk/data/kakaotalk_model.dart';
 import '../apps/lottery/data/lottery_model.dart';
 import '../apps/netflix/data/netflix_model.dart';
@@ -17,8 +18,6 @@ import '../apps/x_twitter/data/x_twitter_model.dart';
 import '../apps/youtube/data/youtube_model.dart';
 import '../managers/export_manager.dart';
 import '../widgets/common/device_frame_preview.dart';
-import 'studio/dialogs/studio_quick_dialogs.dart';
-import 'studio/widgets/studio_advanced_panel.dart';
 import 'studio/widgets/studio_preview_dispatcher.dart';
 import 'studio/widgets/studio_top_bar.dart';
 
@@ -35,9 +34,9 @@ class _StudioPageState extends State<StudioPage> {
   final ScreenshotController _screenshotController = ScreenshotController();
   late ScreenTemplate _template;
   bool _showFrame = true;
-  bool _showAdvancedPanel = false;
   bool _isExporting = false;
 
+  late KakaoBankConfig _kakaobankConfig;
   late KakaoRoomConfig _kakaoConfig;
   late TossConfig _tossConfig;
   late XTwitterConfig _twitterConfig;
@@ -56,6 +55,7 @@ class _StudioPageState extends State<StudioPage> {
   void initState() {
     super.initState();
     _template = ScreenTemplate.allTemplates.firstWhere((t) => t.id == widget.templateId, orElse: () => ScreenTemplate.allTemplates.first);
+    _kakaobankConfig = KakaoBankConfig.defaultPreset();
     _kakaoConfig = KakaoRoomConfig.defaultPreset();
     _tossConfig = TossConfig.defaultPreset();
     _twitterConfig = XTwitterConfig.defaultPreset();
@@ -88,23 +88,6 @@ class _StudioPageState extends State<StudioPage> {
     }
   }
 
-  void _openAdvancedDialog() {
-    switch (_template.id) {
-      case 'toss': StudioQuickDialogs.editTossSendCard(context, _tossConfig, () => setState(() {})); break;
-      case 'kakaotalk': StudioQuickDialogs.editKakaoHeader(context, _kakaoConfig, () => setState(() {})); break;
-      case 'instagram': StudioQuickDialogs.editInstagram(context, _instaConfig, () => setState(() {})); break;
-      case 'youtube': StudioQuickDialogs.editYoutube(context, _youtubeConfig, (cfg) => setState(() => _youtubeConfig = cfg)); break;
-      case 'delivery': StudioQuickDialogs.editDelivery(context, _deliveryConfig, () => setState(() {})); break;
-      case 'daangn': StudioQuickDialogs.editDaangn(context, _daangnConfig, () => setState(() {})); break;
-      case 'windows_bsod': StudioQuickDialogs.editBsod(context, _bsodConfig, () => setState(() {})); break;
-      case 'windows_update': StudioQuickDialogs.editWindowsUpdate(context, _winUpdateConfig, () => setState(() {})); break;
-      case 'coupang': StudioQuickDialogs.editCoupang(context, _coupangConfig, (cfg) => setState(() => _coupangConfig = cfg)); break;
-      case 'netflix': StudioQuickDialogs.editNetflix(context, _netflixConfig, (cfg) => setState(() => _netflixConfig = cfg)); break;
-      case 'pinterest': StudioQuickDialogs.editPinterest(context, _pinterestConfig, () => setState(() {})); break;
-      case 'x_twitter': StudioQuickDialogs.editTwitter(context, _twitterConfig, () => setState(() {})); break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,44 +101,26 @@ class _StudioPageState extends State<StudioPage> {
               isExporting: _isExporting,
               onToggleFrame: () => setState(() => _showFrame = !_showFrame),
               onExport: _exportScreen,
-              onEditYoutube: _template.id == 'youtube' ? () => StudioQuickDialogs.editYoutube(context, _youtubeConfig, (cfg) => setState(() => _youtubeConfig = cfg)) : null,
             ),
             Expanded(
-              child: Stack(
-                children: [
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                      child: Screenshot(
-                        controller: _screenshotController,
-                        child: _showFrame
-                            ? DeviceFramePreview(isDesktop: _template.isDesktop, child: _buildPreview())
-                            : Container(
-                                constraints: BoxConstraints(maxWidth: _template.isDesktop ? 960 : 400, maxHeight: _template.isDesktop ? 600 : 780),
-                                clipBehavior: Clip.antiAlias,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(_template.isDesktop ? 12 : 32),
-                                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 30)],
-                                ),
-                                child: _buildPreview(),
-                              ),
-                      ),
-                    ),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                  child: Screenshot(
+                    controller: _screenshotController,
+                    child: _showFrame
+                        ? DeviceFramePreview(isDesktop: _template.isDesktop, child: _buildPreview())
+                        : Container(
+                            constraints: BoxConstraints(maxWidth: _template.isDesktop ? 960 : 400, maxHeight: _template.isDesktop ? 600 : 780),
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(_template.isDesktop ? 12 : 32),
+                              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 30)],
+                            ),
+                            child: _buildPreview(),
+                          ),
                   ),
-                  if (_showAdvancedPanel)
-                    Positioned(
-                      top: 0,
-                      bottom: 0,
-                      right: 0,
-                      width: 340,
-                      child: StudioAdvancedPanel(
-                        templateId: _template.id,
-                        onClose: () => setState(() => _showAdvancedPanel = false),
-                        onOpenEditDialog: _openAdvancedDialog,
-                        onAddKakaoMessage: () => StudioQuickDialogs.addOrEditKakaoMessage(context, _kakaoConfig, () => setState(() {})),
-                      ),
-                    ),
-                ],
+                ),
               ),
             ),
           ],
@@ -168,6 +133,7 @@ class _StudioPageState extends State<StudioPage> {
     return StudioPreviewDispatcher(
       templateId: _template.id,
       tossConfig: _tossConfig,
+      kakaobankConfig: _kakaobankConfig,
       kakaoConfig: _kakaoConfig,
       twitterConfig: _twitterConfig,
       pinterestConfig: _pinterestConfig,
@@ -180,18 +146,6 @@ class _StudioPageState extends State<StudioPage> {
       coupangConfig: _coupangConfig,
       netflixConfig: _netflixConfig,
       lotteryConfig: _lotteryConfig,
-      onTapTossHeader: () => StudioQuickDialogs.editTossHeader(context, _tossConfig, () => setState(() {})),
-      onTapTossSendCard: () => StudioQuickDialogs.editTossSendCard(context, _tossConfig, () => setState(() {})),
-      onTapTossBalance: () => StudioQuickDialogs.editTossBalanceCard(context, _tossConfig, () => setState(() {})),
-      onTapTossHistoryItem: (it) => StudioQuickDialogs.editTossHistoryItem(context, it, () => setState(() {})),
-      onTapKakaoHeader: () => StudioQuickDialogs.editKakaoHeader(context, _kakaoConfig, () => setState(() {})),
-      onTapTwitter: () => StudioQuickDialogs.editTwitter(context, _twitterConfig, () => setState(() {})),
-      onTapPinterest: () => StudioQuickDialogs.editPinterest(context, _pinterestConfig, () => setState(() {})),
-      onTapInstagram: () => StudioQuickDialogs.editInstagram(context, _instaConfig, () => setState(() {})),
-      onTapDelivery: () => StudioQuickDialogs.editDelivery(context, _deliveryConfig, () => setState(() {})),
-      onTapDaangn: () => StudioQuickDialogs.editDaangn(context, _daangnConfig, () => setState(() {})),
-      onTapBsod: () => StudioQuickDialogs.editBsod(context, _bsodConfig, () => setState(() {})),
-      onTapWindowsUpdate: () => StudioQuickDialogs.editWindowsUpdate(context, _winUpdateConfig, () => setState(() {})),
       onYoutubeChanged: (cfg) => setState(() => _youtubeConfig = cfg),
       onCoupangChanged: (cfg) => setState(() => _coupangConfig = cfg),
       onNetflixChanged: (cfg) => setState(() => _netflixConfig = cfg),
