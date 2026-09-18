@@ -213,9 +213,12 @@ class WindowsView extends StatelessWidget {
           ),
         );
       default:
-        // 기본 윈도우 배경: 사용자가 업로드한 2K win10_hero.webp
+        // 기본 윈도우 배경: windowsVersion에 맞춰 기본 2K WebP 배경 제공
+        final defaultAsset = windowsVersion == '11'
+            ? 'assets/images/win11_bloom.webp'
+            : (windowsVersion == '7' ? 'assets/images/win7_harmony.webp' : 'assets/images/win10_hero.webp');
         return Image.asset(
-          'assets/images/win10_hero.webp',
+          defaultAsset,
           fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
