@@ -11,14 +11,10 @@ import '../../apps/settings/settings_window.dart';
 import 'widgets/oneui9_app_drawer.dart';
 import 'widgets/oneui9_brief_page.dart';
 import 'widgets/oneui9_home_widgets.dart';
-import 'widgets/oneui9_now_bar.dart';
 import 'widgets/oneui9_quick_settings.dart';
 import 'widgets/oneui9_status_bar.dart';
 
-/// Samsung Galaxy One UI 9 플래그십 모바일 홈스크린 뷰
-/// - 실시간 드래그 다운/업 퀵 세팅 패널 연동 (media_1789750829725.png 디자인 적용)
-/// - 좌우 멀티페이지 슬라이드 (PageView)
-/// - 깃허브 공식 One UI 아이콘 및 고해상도 배경화면 탑재
+/// Samsung Galaxy One UI 9 플래그십 모바일 홈스크린 뷰 (media_1789750911144.png 1:1 레퍼런스 싱크)
 class OneUi9View extends StatefulWidget {
   final String timeString;
   final String dateString;
@@ -80,104 +76,133 @@ class _OneUi9ViewState extends State<OneUi9View> with SingleTickerProviderStateM
 
     return Stack(
       children: [
-        // 1. One UI 9 공식 고해상도 배경화면
+        // 1. One UI 9 바이올렛 커브드 시그니처 배경화면
         Positioned.fill(child: _buildGalaxyWallpaper()),
 
-        // 2. 메인 홈스크린 및 슬라이드 콘텐츠
+        // 2. 메인 홈스크린 UI (상태바, 위젯, 앱, 도크, 3버튼 내비게이션)
         Positioned.fill(
-          child: Column(
-            children: [
-              // 상단 상태바 & 실시간 드래그 다운 제스처 연동
-              OneUi9StatusBar(
-                timeString: widget.timeString,
-                onVerticalDragStart: (_) {},
-                onVerticalDragUpdate: (details) {
-                  if (screenHeight > 0) {
-                    _panelController.value = (_panelController.value + (details.primaryDelta! / screenHeight) * 1.6).clamp(0.0, 1.0);
-                  }
-                },
-                onVerticalDragEnd: (details) {
-                  if (details.primaryVelocity != null && details.primaryVelocity! > 250) {
-                    _panelController.forward();
-                  } else if (details.primaryVelocity != null && details.primaryVelocity! < -250) {
-                    _panelController.reverse();
-                  } else if (_panelController.value > 0.25) {
-                    _panelController.forward();
-                  } else {
-                    _panelController.reverse();
-                  }
-                },
-                onTap: _openQuickPanel,
-              ),
-              const SizedBox(height: 4),
-
-              // One UI 9 라이브 Now Bar 캡슐 (탭 시 퀵 패널 오픈)
-              OneUi9NowBar(onTap: _openQuickPanel),
-              const SizedBox(height: 6),
-
-              // 좌우 슬라이드 PageView 영역 (Now Brief -> 메인 홈 -> 서브 페이지)
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  physics: const BouncingScrollPhysics(),
-                  onPageChanged: (page) => setState(() => _currentPage = page),
-                  children: [
-                    OneUi9BriefPage(dateString: widget.dateString, onOpenTemplate: () => widget.onOpenTemplate('kakaotalk')),
-                    _buildMainHomePage(),
-                    _buildSecondaryAppsPage(),
-                  ],
+          child: SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                // 상단 상태바 (실시간 드래그 다운 제스처 연동)
+                OneUi9StatusBar(
+                  timeString: widget.timeString,
+                  onVerticalDragStart: (_) {},
+                  onVerticalDragUpdate: (details) {
+                    if (screenHeight > 0) {
+                      _panelController.value = (_panelController.value + (details.primaryDelta! / screenHeight) * 1.6).clamp(0.0, 1.0);
+                    }
+                  },
+                  onVerticalDragEnd: (details) {
+                    if (details.primaryVelocity != null && details.primaryVelocity! > 250) {
+                      _panelController.forward();
+                    } else if (details.primaryVelocity != null && details.primaryVelocity! < -250) {
+                      _panelController.reverse();
+                    } else if (_panelController.value > 0.25) {
+                      _panelController.forward();
+                    } else {
+                      _panelController.reverse();
+                    }
+                  },
+                  onTap: _openQuickPanel,
                 ),
-              ),
 
-              // 페이지 인디케이터 (좌우 슬라이드 위치 표시 점)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildPageDot(0),
-                    const SizedBox(width: 6),
-                    _buildPageDot(1),
-                    const SizedBox(width: 6),
-                    _buildPageDot(2),
-                  ],
+                // 좌우 슬라이드 PageView 영역 (Now Brief -> 메인 1:1 홈 -> 서브 페이지)
+                Expanded(
+                  child: PageView(
+                    controller: _pageController,
+                    physics: const BouncingScrollPhysics(),
+                    onPageChanged: (page) => setState(() => _currentPage = page),
+                    children: [
+                      OneUi9BriefPage(dateString: widget.dateString, onOpenTemplate: () => widget.onOpenTemplate('kakaotalk')),
+                      _buildMainHomePage(),
+                      _buildSecondaryAppsPage(),
+                    ],
+                  ),
                 ),
-              ),
 
-              // 3. 하단 고정 도크 (5대 핵심 앱)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildDockIcon('전화', CupertinoIcons.phone_fill, const Color(0xFF10B981), () => _openGalaxyApp('phone')),
-                    _buildDockIcon('메시지', null, const Color(0xFF3B82F6), () => _openGalaxyApp('messages'), image: 'assets/images/galaxy/icons/messages.png'),
-                    _buildDockIcon('인터넷', null, const Color(0xFF6366F1), () => _openGalaxyApp('internet'), image: 'assets/images/galaxy/icons/internet.png'),
-                    _buildDockIcon('갤러리', CupertinoIcons.photo_fill_on_rectangle_fill, const Color(0xFFF59E0B), () => _openGalaxyApp('gallery')),
-                    _buildDockIcon('설정', CupertinoIcons.gear_alt_fill, const Color(0xFF475569), () => _openGalaxyApp('settings')),
-                  ],
+                // 페이지 인디케이터 (3개 점: 가운데 활성화)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildPageDot(0),
+                      const SizedBox(width: 7),
+                      _buildPageDot(1),
+                      const SizedBox(width: 7),
+                      _buildPageDot(2),
+                    ],
+                  ),
                 ),
-              ),
 
-              // 하단 제스처 내비게이션 인디케이터 바 (탭/위로 스와이프 시 앱 서랍 열림)
-              GestureDetector(
-                onTap: () => setState(() => _isAppDrawerOpen = true),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  width: 120,
-                  height: 5,
-                  decoration: BoxDecoration(color: Colors.white70, borderRadius: BorderRadius.circular(5)),
+                // 3. 하단 도크 (4대 핵심 앱: 전화, 메시지, 인터넷, 카메라)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildDockButton(_buildPhoneDockIcon(), () => _openGalaxyApp('phone')),
+                      _buildDockButton(_buildMessagesDockIcon(), () => _openGalaxyApp('messages')),
+                      _buildDockButton(const OneUi9InternetIcon(), () => _openGalaxyApp('internet')),
+                      _buildDockButton(const OneUi9CameraIcon(), () => _openGalaxyApp('gallery')),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+
+                // 4. 하단 3버튼 내비게이션 바 (||| , O , <)
+                Container(
+                  height: 46,
+                  padding: const EdgeInsets.symmetric(horizontal: 48),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: () => setState(() => _isAppDrawerOpen = true),
+                        icon: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _NavLine(), SizedBox(width: 3.5),
+                            _NavLine(), SizedBox(width: 3.5),
+                            _NavLine(),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          if (_currentPage != 1) {
+                            _pageController.animateToPage(1, duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+                          }
+                        },
+                        icon: Container(
+                          width: 15,
+                          height: 15,
+                          decoration: BoxDecoration(border: Border.all(color: Colors.white70, width: 2), borderRadius: BorderRadius.circular(5)),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          if (_currentPage > 0) {
+                            _pageController.animateToPage(_currentPage - 1, duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+                          }
+                        },
+                        icon: const Icon(CupertinoIcons.chevron_left, color: Colors.white70, size: 19),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
+              ],
+            ),
           ),
         ),
 
-        // 4. 삼성 기본 앱 전체화면 오버레이
+        // 5. 삼성 기본 앱 전체화면 오버레이
         if (_activeGalaxyApp != null)
           Positioned.fill(child: _buildGalaxyAppWidget(_activeGalaxyApp!)),
 
-        // 5. One UI 9 최신 퀵 세팅 패널 (상단에서 실시간 드래그 다운 / 업 제스처 연동)
+        // 6. One UI 9 최신 퀵 세팅 패널 (실시간 드래그 다운 연동)
         AnimatedBuilder(
           animation: _panelAnimation,
           builder: (context, child) {
@@ -215,7 +240,7 @@ class _OneUi9ViewState extends State<OneUi9View> with SingleTickerProviderStateM
           ),
         ),
 
-        // 6. One UI 9 전체 앱 서랍 (App Drawer)
+        // 7. One UI 9 전체 앱 서랍 (App Drawer)
         if (_isAppDrawerOpen)
           Positioned.fill(
             child: OneUi9AppDrawer(
@@ -230,47 +255,57 @@ class _OneUi9ViewState extends State<OneUi9View> with SingleTickerProviderStateM
     );
   }
 
+  /// media_1789750911144.png 1:1 완벽 홈 화면 구현
   Widget _buildMainHomePage() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            OneUi9WeatherClockCard(timeString: widget.timeString, dateString: widget.dateString, onTap: _openQuickPanel),
-            const SizedBox(height: 10),
-            const OneUi9BatteryWidget(),
-            const SizedBox(height: 12),
-            OneUi9GalaxyAiSearchBar(onSearchTap: () => setState(() => _isAppDrawerOpen = true), onAiTap: () => setState(() => _isAppDrawerOpen = true)),
-            const SizedBox(height: 16),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 4,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 10,
-              childAspectRatio: 0.8,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          const SizedBox(height: 12),
+          // 1. 상단 2열 위젯 섹션 (좌: 날씨 2x2 카드, 우: Now brief + Start 헬스 필)
+          SizedBox(
+            height: 148,
+            child: Row(
               children: [
-                OsAppItem(title: '카카오톡', imageAsset: 'assets/images/kakaotalk_icon.webp', backgroundColor: const Color(0xFFFEE500), isDesktop: false, onTap: () => widget.onOpenTemplate('kakaotalk')),
-                OsAppItem(title: '토스 (Toss)', icon: CupertinoIcons.money_dollar_circle_fill, iconColor: Colors.white, backgroundColor: const Color(0xFF0050FF), isDesktop: false, onTap: () => widget.onOpenTemplate('toss')),
-                OsAppItem(title: 'Instagram', imageAsset: 'assets/images/instagram_icon.webp', isDesktop: false, onTap: () => widget.onOpenTemplate('instagram')),
-                OsAppItem(title: 'YouTube', icon: CupertinoIcons.play_arrow_solid, iconColor: Colors.white, backgroundColor: const Color(0xFFFF0000), isDesktop: false, onTap: () => widget.onOpenTemplate('youtube')),
-                OsAppItem(title: '쿠팡', imageAsset: 'assets/images/coupang_icon.webp', isDesktop: false, onTap: () => widget.onOpenTemplate('coupang')),
-                OsAppItem(title: 'Netflix', imageAsset: 'assets/images/netflix_icon.webp', isDesktop: false, onTap: () => widget.onOpenTemplate('netflix')),
-                OsAppItem(title: '배달의민족', icon: CupertinoIcons.bag_fill, iconColor: Colors.white, backgroundColor: const Color(0xFF2AC1BC), isDesktop: false, onTap: () => widget.onOpenTemplate('delivery')),
-                OsAppItem(title: '카메라', icon: CupertinoIcons.camera_fill, iconColor: Colors.white, backgroundColor: const Color(0xFF1E293B), isDesktop: false, onTap: () => _openGalaxyApp('gallery')),
+                Expanded(child: OneUi9WeatherCard(onTap: _openQuickPanel)),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      OneUi9NowBriefCapsule(onTap: () => widget.onOpenTemplate('kakaotalk')),
+                      OneUi9HealthStartCapsule(onTap: () => widget.onOpenTemplate('toss')),
+                    ],
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 12),
-          ],
-        ),
+          ),
+          const SizedBox(height: 16),
+
+          // 2. Google 검색 캡슐 바
+          OneUi9GoogleSearchCapsule(onTap: () => setState(() => _isAppDrawerOpen = true)),
+          const SizedBox(height: 28),
+
+          // 3. 홈 화면 1열 메인 앱 (Store, Gallery, Play Store, Google 폴더)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              OneUi9AppItem(label: 'Store', iconWidget: const OneUi9StoreIcon(), onTap: () => setState(() => _isAppDrawerOpen = true)),
+              OneUi9AppItem(label: 'Gallery', iconWidget: const OneUi9GalleryIcon(), onTap: () => _openGalaxyApp('gallery')),
+              OneUi9AppItem(label: 'Play Store', iconWidget: const OneUi9PlayStoreIcon(), badgeCount: 2, onTap: () => widget.onOpenTemplate('kakaotalk')),
+              OneUi9GoogleFolderWidget(badgeCount: 1, onTap: () => setState(() => _isAppDrawerOpen = true)),
+            ],
+          ),
+          const Spacer(),
+        ],
       ),
     );
   }
 
   Widget _buildSecondaryAppsPage() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(
@@ -279,9 +314,9 @@ class _OneUi9ViewState extends State<OneUi9View> with SingleTickerProviderStateM
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                color: Colors.white.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
               ),
               child: Row(
                 children: [
@@ -292,7 +327,7 @@ class _OneUi9ViewState extends State<OneUi9View> with SingleTickerProviderStateM
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Galaxy AI & 삼성 스토어', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
-                        Text('최신 AI 기능과 전용 테마를 확인하세요', style: TextStyle(color: Colors.white60, fontSize: 11)),
+                        Text('One UI 9 맞춤 테마와 앱을 다운로드하세요', style: TextStyle(color: Colors.white70, fontSize: 11)),
                       ],
                     ),
                   ),
@@ -308,14 +343,16 @@ class _OneUi9ViewState extends State<OneUi9View> with SingleTickerProviderStateM
               crossAxisSpacing: 10,
               childAspectRatio: 0.8,
               children: [
+                OsAppItem(title: '카카오톡', imageAsset: 'assets/images/kakaotalk_icon.webp', backgroundColor: const Color(0xFFFEE500), isDesktop: false, onTap: () => widget.onOpenTemplate('kakaotalk')),
+                OsAppItem(title: '토스', icon: CupertinoIcons.money_dollar_circle_fill, iconColor: Colors.white, backgroundColor: const Color(0xFF0050FF), isDesktop: false, onTap: () => widget.onOpenTemplate('toss')),
+                OsAppItem(title: 'Instagram', imageAsset: 'assets/images/instagram_icon.webp', isDesktop: false, onTap: () => widget.onOpenTemplate('instagram')),
+                OsAppItem(title: 'YouTube', icon: CupertinoIcons.play_arrow_solid, iconColor: Colors.white, backgroundColor: const Color(0xFFFF0000), isDesktop: false, onTap: () => widget.onOpenTemplate('youtube')),
+                OsAppItem(title: '쿠팡', imageAsset: 'assets/images/coupang_icon.webp', isDesktop: false, onTap: () => widget.onOpenTemplate('coupang')),
+                OsAppItem(title: 'Netflix', imageAsset: 'assets/images/netflix_icon.webp', isDesktop: false, onTap: () => widget.onOpenTemplate('netflix')),
                 OsAppItem(title: 'Samsung Notes', imageAsset: 'assets/images/galaxy/icons/notes.png', backgroundColor: const Color(0xFFEA580C), isDesktop: false, onTap: () => _openGalaxyApp('messages')),
-                OsAppItem(title: 'Health', imageAsset: 'assets/images/galaxy/icons/health.png', backgroundColor: const Color(0xFF10B981), isDesktop: false, onTap: () {}),
-                OsAppItem(title: 'Bixby', imageAsset: 'assets/images/galaxy/icons/bixby.png', backgroundColor: const Color(0xFF3B82F6), isDesktop: false, onTap: () {}),
-                OsAppItem(title: 'Galaxy Store', imageAsset: 'assets/images/galaxy/icons/galaxy_store.png', backgroundColor: const Color(0xFFEC4899), isDesktop: false, onTap: () {}),
                 OsAppItem(title: '계산기', icon: CupertinoIcons.number, iconColor: Colors.white, backgroundColor: const Color(0xFF059669), isDesktop: false, onTap: () => _openGalaxyApp('calculator')),
                 OsAppItem(title: '내 파일', icon: CupertinoIcons.folder_fill, iconColor: Colors.white, backgroundColor: const Color(0xFFD97706), isDesktop: false, onTap: () => _openGalaxyApp('my_files')),
-                OsAppItem(title: 'X (Twitter)', icon: CupertinoIcons.conversation_bubble, iconColor: Colors.white, backgroundColor: const Color(0xFF1D9BF0), isDesktop: false, onTap: () => widget.onOpenTemplate('x_twitter')),
-                OsAppItem(title: '동행복권', imageAsset: 'assets/images/lottery_icon.webp', isDesktop: false, onTap: () => widget.onOpenTemplate('lottery')),
+                OsAppItem(title: '설정', icon: CupertinoIcons.gear_alt_fill, iconColor: Colors.white, backgroundColor: const Color(0xFF475569), isDesktop: false, onTap: () => _openGalaxyApp('settings')),
                 OsAppItem(title: '랜딩 홈', icon: CupertinoIcons.house_fill, iconColor: Colors.white, backgroundColor: const Color(0xFF334155), isDesktop: false, onTap: widget.onGoHome),
                 OsAppItem(title: '로그아웃', icon: CupertinoIcons.square_arrow_right, iconColor: Colors.white, backgroundColor: const Color(0xFFEF4444), isDesktop: false, onTap: widget.onSignOut),
               ],
@@ -333,32 +370,43 @@ class _OneUi9ViewState extends State<OneUi9View> with SingleTickerProviderStateM
       onTap: () => _pageController.animateToPage(pageIndex, duration: const Duration(milliseconds: 300), curve: Curves.easeOutCubic),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: isSelected ? 18 : 6,
-        height: 6,
+        width: isSelected ? 7 : 5,
+        height: isSelected ? 7 : 5,
         decoration: BoxDecoration(
           color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.35),
-          borderRadius: BorderRadius.circular(3),
+          shape: BoxShape.circle,
         ),
       ),
     );
   }
 
-  Widget _buildDockIcon(String title, IconData? icon, Color color, VoidCallback onTap, {String? image}) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        width: 54,
-        height: 54,
-        decoration: BoxDecoration(
-          color: image != null ? null : color,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [BoxShadow(color: (image != null ? Colors.black : color).withValues(alpha: 0.35), blurRadius: 10, offset: const Offset(0, 4))],
-        ),
-        child: image != null
-            ? Padding(padding: const EdgeInsets.all(4), child: Image.asset(image, fit: BoxFit.contain))
-            : Icon(icon, color: Colors.white, size: 26),
+  Widget _buildDockButton(Widget child, VoidCallback onTap) {
+    return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(18), child: child);
+  }
+
+  Widget _buildPhoneDockIcon() {
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        color: const Color(0xFF22C55E),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: const Color(0xFF22C55E).withValues(alpha: 0.35), blurRadius: 8, offset: const Offset(0, 3))],
       ),
+      child: const Center(child: Icon(CupertinoIcons.phone_fill, color: Colors.white, size: 28)),
+    );
+  }
+
+  Widget _buildMessagesDockIcon() {
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 8, offset: const Offset(0, 3))],
+      ),
+      child: const Center(child: Icon(CupertinoIcons.chat_bubble_fill, color: Color(0xFF2563EB), size: 28)),
     );
   }
 
@@ -376,18 +424,56 @@ class _OneUi9ViewState extends State<OneUi9View> with SingleTickerProviderStateM
   }
 
   Widget _buildGalaxyWallpaper() {
-    switch (widget.currentWallpaper) {
-      case 'sapphire': return Image.asset('assets/images/galaxy/wallpapers/oneui_sapphire.webp', fit: BoxFit.cover);
-      case 'emerald': return Image.asset('assets/images/galaxy/wallpapers/oneui_emerald.webp', fit: BoxFit.cover);
-      case 'bloom':
-        return Container(
-          decoration: const BoxDecoration(
-            gradient: RadialGradient(center: Alignment(0.0, -0.2), radius: 1.2, colors: [Color(0xFF193256), Color(0xFF0F1E38), Color(0xFF090E1A)]),
-          ),
-        );
-      case 'titanium':
-      default:
-        return Image.asset('assets/images/galaxy/wallpapers/oneui_titanium.webp', fit: BoxFit.cover);
-    }
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF6342E8), Color(0xFF5331D8), Color(0xFF4320C2)],
+        ),
+      ),
+      child: CustomPaint(painter: _OneUi9SignatureCurvesPainter()),
+    );
+  }
+}
+
+/// One UI 9 시그니처 바이올렛 커브드 곡선 페인터 (media_1789750911144.png 1:1 싱크)
+class _OneUi9SignatureCurvesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+
+    // 상단 라벤더 발광 구체
+    final topCirclePaint = Paint()
+      ..shader = RadialGradient(
+        colors: [const Color(0xFF8B6DF8).withValues(alpha: 0.45), const Color(0xFF6342E8).withValues(alpha: 0.0)],
+      ).createShader(Rect.fromCircle(center: Offset(w * 0.5, h * 0.35), radius: w * 0.48));
+    canvas.drawCircle(Offset(w * 0.5, h * 0.35), w * 0.48, topCirclePaint);
+
+    // 하단 라벤더 발광 구체
+    final bottomCirclePaint = Paint()
+      ..shader = RadialGradient(
+        colors: [const Color(0xFF9070FA).withValues(alpha: 0.4), const Color(0xFF4320C2).withValues(alpha: 0.0)],
+      ).createShader(Rect.fromCircle(center: Offset(w * 0.5, h * 0.65), radius: w * 0.52));
+    canvas.drawCircle(Offset(w * 0.5, h * 0.65), w * 0.52, bottomCirclePaint);
+
+    // 부드러운 우측 백라이트 하이라이트
+    final edgeGlow = Paint()
+      ..shader = RadialGradient(
+        colors: [const Color(0xFFA78BFA).withValues(alpha: 0.25), Colors.transparent],
+      ).createShader(Rect.fromCircle(center: Offset(w, h * 0.4), radius: w * 0.6));
+    canvas.drawRect(Rect.fromLTWH(0, 0, w, h), edgeGlow);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _NavLine extends StatelessWidget {
+  const _NavLine();
+  @override
+  Widget build(BuildContext context) {
+    return Container(width: 2.2, height: 14, decoration: BoxDecoration(color: Colors.white70, borderRadius: BorderRadius.circular(1.5)));
   }
 }

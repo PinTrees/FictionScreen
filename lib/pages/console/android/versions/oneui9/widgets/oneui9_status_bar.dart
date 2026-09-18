@@ -31,57 +31,38 @@ class OneUi9StatusBar extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // 좌측 영역 (시각, AI 나우 인디케이터)
             Padding(
-              padding: const EdgeInsets.only(left: 18),
-              child: Row(
-                children: [
-                  Text(timeString, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: -0.2)),
-                  const SizedBox(width: 8),
-                  Container(width: 6, height: 6, decoration: const BoxDecoration(color: Color(0xFF818CF8), shape: BoxShape.circle)),
-                ],
-              ),
+              padding: const EdgeInsets.only(left: 20),
+              child: Text(timeString, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: -0.2)),
             ),
-
             const Spacer(),
-
-            // 중앙 펀치홀 카메라 컷아웃
             Container(
               width: 13,
               height: 13,
               decoration: BoxDecoration(
                 color: Colors.black,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 0.8),
-                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.8), blurRadius: 4, spreadRadius: 0.5)],
+                border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 0.6),
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.6), blurRadius: 3)],
               ),
             ),
-
             const Spacer(),
-
-            // 우측 영역 (VoLTE, 5G, Wi-Fi, 74% 배터리)
             Padding(
               padding: const EdgeInsets.only(right: 18),
               child: Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                    decoration: BoxDecoration(border: Border.all(color: Colors.white70, width: 0.8), borderRadius: BorderRadius.circular(3)),
-                    child: const Text('5G', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
-                  ),
-                  const SizedBox(width: 5),
-                  const Icon(CupertinoIcons.wifi, size: 14, color: Colors.white),
+                  const Icon(CupertinoIcons.wifi, size: 16, color: Colors.white),
                   const SizedBox(width: 6),
+                  _buildSignalBars(),
+                  const SizedBox(width: 7),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.25), borderRadius: BorderRadius.circular(6)),
-                    child: const Row(
-                      children: [
-                        Text('74', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                        SizedBox(width: 2),
-                        Icon(CupertinoIcons.bolt_fill, size: 9, color: Color(0xFF10B981)),
-                      ],
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.28),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 0.8),
                     ),
+                    child: const Text('100', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, height: 1.0)),
                   ),
                 ],
               ),
@@ -89,6 +70,21 @@ class OneUi9StatusBar extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSignalBars() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Container(width: 2.2, height: 4, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(1))),
+        const SizedBox(width: 1.5),
+        Container(width: 2.2, height: 6.5, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(1))),
+        const SizedBox(width: 1.5),
+        Container(width: 2.2, height: 9, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(1))),
+        const SizedBox(width: 1.5),
+        Container(width: 2.2, height: 11.5, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(1))),
+      ],
     );
   }
 }
