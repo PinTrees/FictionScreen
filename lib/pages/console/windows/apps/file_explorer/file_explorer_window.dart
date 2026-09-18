@@ -44,6 +44,7 @@ class _WindowsFileExplorerWindowState extends State<WindowsFileExplorerWindow> {
     {'title': 'Windows_블루스크린_에디터', 'type': 'windows_bsod', 'size': '45 MB', 'icon': CupertinoIcons.device_desktop, 'color': Color(0xFF0078D7)},
     {'title': '배달의민족_배송현황_템플릿', 'type': 'delivery', 'size': '84 MB', 'icon': CupertinoIcons.bag_fill, 'color': Color(0xFF2AC1BC)},
     {'title': '야놀자_숙소예약_템플릿', 'type': 'yanolja', 'size': '76 MB', 'icon': CupertinoIcons.bed_double_fill, 'color': Color(0xFFFF3478)},
+    {'title': '업비트_가상자산_템플릿', 'type': 'upbit', 'size': '92 MB', 'icon': CupertinoIcons.chart_bar_alt_fill, 'color': Color(0xFF093687)},
   ];
 
   @override

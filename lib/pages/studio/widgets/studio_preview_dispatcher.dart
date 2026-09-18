@@ -19,6 +19,8 @@ import '../../../apps/pinterest/data/pinterest_model.dart';
 import '../../../apps/pinterest/pinterest_screen.dart';
 import '../../../apps/toss/data/toss_model.dart';
 import '../../../apps/toss/toss_screen.dart';
+import '../../../apps/upbit/data/upbit_model.dart';
+import '../../../apps/upbit/upbit_screen.dart';
 import '../../../apps/windows_bsod/data/windows_bsod_model.dart';
 import '../../../apps/windows_bsod/windows_bsod_screen.dart';
 import '../../../apps/windows_update/data/windows_update_model.dart';
@@ -48,6 +50,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final NetflixConfig netflixConfig;
   final LotteryConfig lotteryConfig;
   final YanoljaConfig yanoljaConfig;
+  final UpbitConfig upbitConfig;
   final ValueChanged<KakaoBankConfig>? onKakaoBankChanged;
   final ValueChanged<DaangnConfig>? onDaangnChanged;
   final ValueChanged<YoutubeConfig>? onYoutubeChanged;
@@ -55,6 +58,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final ValueChanged<NetflixConfig>? onNetflixChanged;
   final ValueChanged<LotteryConfig>? onLotteryChanged;
   final ValueChanged<YanoljaConfig>? onYanoljaChanged;
+  final ValueChanged<UpbitConfig>? onUpbitChanged;
 
   const StudioPreviewDispatcher({
     super.key,
@@ -74,6 +78,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
     required this.netflixConfig,
     required this.lotteryConfig,
     required this.yanoljaConfig,
+    required this.upbitConfig,
     this.onKakaoBankChanged,
     this.onDaangnChanged,
     this.onYoutubeChanged,
@@ -81,6 +86,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
     this.onNetflixChanged,
     this.onLotteryChanged,
     this.onYanoljaChanged,
+    this.onUpbitChanged,
   });
 
   @override
@@ -101,6 +107,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
       case 'netflix': return NetflixScreen(config: netflixConfig, onConfigChanged: onNetflixChanged);
       case 'lottery': return LotteryScreen(config: lotteryConfig, onConfigChanged: onLotteryChanged);
       case 'yanolja': return YanoljaScreen(config: yanoljaConfig, onConfigChanged: onYanoljaChanged);
+      case 'upbit': return UpbitScreen(config: upbitConfig, onConfigChanged: onUpbitChanged);
       default: return TossScreen(config: tossConfig);
     }
   }

@@ -57,6 +57,7 @@ class _Macos27SpotlightState extends State<Macos27Spotlight> with SingleTickerPr
     {'title': 'YouTube 동영상 에디터', 'desc': '동영상 재생 및 댓글', 'icon': 'assets/images/youtube_icon.webp', 'templateId': 'youtube'},
     {'title': '배달의민족 배송 에디터', 'desc': '주문 및 배달 완료 화면', 'icon': 'assets/images/baemin_icon.webp', 'templateId': 'delivery'},
     {'title': '야놀자(NOL) 에디터', 'desc': '호텔·모텔·펜션 예약 및 숙소 검색 조작', 'icon': null, 'iconData': CupertinoIcons.bed_double_fill, 'color': const Color(0xFFFF3478), 'templateId': 'yanolja'},
+    {'title': '업비트(Upbit) 에디터', 'desc': '비트코인 시세, 호가창, 보유자산 및 수익률 조작', 'icon': null, 'iconData': CupertinoIcons.chart_bar_alt_fill, 'color': const Color(0xFF093687), 'templateId': 'upbit'},
   ];
 
   @override

@@ -178,5 +178,15 @@ class ScreenTemplate {
       badge: '신규',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'upbit',
+      title: '업비트 (Upbit)',
+      description: '비트코인/알트코인 실시간 시세, 호가창, 캔들 차트, 내 보유자산 & 수익률 연출',
+      category: TemplateCategory.finance,
+      icon: CupertinoIcons.chart_bar_alt_fill,
+      themeColor: Color(0xFF093687),
+      badge: 'HOT',
+      isDesktop: true,
+    ),
   ];
 }
