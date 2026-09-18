@@ -866,23 +866,19 @@ class _WindowsViewState extends State<WindowsView> {
       );
     } else if (activeWallpaper == 'win11_bloom') {
       return Image.asset(
-        'assets/images/win11_bloom.webp',
+        'assets/images/win11_bloom_light.jpg',
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
         filterQuality: FilterQuality.high,
       );
     } else if (activeWallpaper == 'win11_dark') {
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            'assets/images/win11_bloom.webp',
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-          ),
-          Container(color: Colors.black.withValues(alpha: 0.65)),
-        ],
+      return Image.asset(
+        'assets/images/win11_bloom_dark.jpg',
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        filterQuality: FilterQuality.high,
       );
     } else if (activeWallpaper == 'glow') {
       return Container(
@@ -949,7 +945,7 @@ class _WindowsViewState extends State<WindowsView> {
         );
       default:
         final defaultAsset = widget.windowsVersion == '11'
-            ? 'assets/images/win11_bloom.webp'
+            ? 'assets/images/win11_bloom_dark.jpg'
             : (widget.windowsVersion == '7' ? 'assets/images/win7_harmony.webp' : 'assets/images/win10_hero.webp');
         return Image.asset(
           defaultAsset,

@@ -1058,7 +1058,7 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
               image: const DecorationImage(
-                image: AssetImage('assets/images/win11_bloom.webp'),
+                image: AssetImage('assets/images/win11_bloom_dark.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -1189,10 +1189,15 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
                   color: previewColor,
                   image: key == 'win11_bloom'
                       ? const DecorationImage(
-                          image: AssetImage('assets/images/win11_bloom.webp'),
+                          image: AssetImage('assets/images/win11_bloom_light.jpg'),
                           fit: BoxFit.cover,
                         )
-                      : null,
+                      : (key == 'win11_dark'
+                          ? const DecorationImage(
+                              image: AssetImage('assets/images/win11_bloom_dark.jpg'),
+                              fit: BoxFit.cover,
+                            )
+                          : null),
                 ),
               ),
               Container(
