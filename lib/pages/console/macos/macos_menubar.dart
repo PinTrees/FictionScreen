@@ -56,7 +56,7 @@ class MacosMenuBar extends StatelessWidget {
                 itemBuilder: (context) => [
                   const PopupMenuItem(
                     value: 'about',
-                    child: Text('이 Mac에 관하여 (FictionScreen)', style: TextStyle(color: Colors.white, fontSize: 12)),
+                    child: Text('이 Mac에 관하여 (macOS Golden Gate)', style: TextStyle(color: Colors.white, fontSize: 12)),
                   ),
                   const PopupMenuDivider(),
                   const PopupMenuItem(

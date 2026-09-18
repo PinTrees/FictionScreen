@@ -90,6 +90,15 @@ class MacosView extends StatelessWidget {
   }
 
   Widget _buildMacWallpaper() {
+    if (currentWallpaper == 'macos_golden_gate' || currentWallpaper == 'golden_gate') {
+      return Image.asset(
+        'assets/images/macos_golden_gate.webp',
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    }
+
     switch (currentWallpaper) {
       case 'bloom':
         return Container(
@@ -114,7 +123,6 @@ class MacosView extends StatelessWidget {
           ),
         );
       case 'aurora':
-      default:
         return Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -161,6 +169,13 @@ class MacosView extends StatelessWidget {
               ),
             ],
           ),
+        );
+      default:
+        return Image.asset(
+          'assets/images/macos_golden_gate.webp',
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
         );
     }
   }

@@ -246,14 +246,14 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
           // macOS 카드
           _buildOsCard(
             id: 'macos',
-            title: 'macOS Sequoia',
-            subtitle: '상단 Apple 메뉴바 & 블러 플로팅 독(Dock)',
+            title: 'macOS Golden Gate (기본)',
+            subtitle: '골든 게이트 브리지 공식 배경화면 & 글래스 독',
             icon: CupertinoIcons.compass,
             color: const Color(0xFFA855F7),
             isSelected: widget.currentPcTheme == 'macos',
             onTap: () {
               widget.onPcThemeChanged('macos');
-              widget.onWallpaperChanged('aurora');
+              widget.onWallpaperChanged('macos_golden_gate');
             },
           ),
 
@@ -416,6 +416,12 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
   // 2. 바탕화면 탭
   Widget _buildWallpaperTab() {
     final wallpapers = [
+      {
+        'id': 'macos_golden_gate',
+        'title': 'macOS Golden Gate (기본)',
+        'desc': '골든 게이트 브리지 석양 공식 배경화면',
+        'asset': 'assets/images/macos_golden_gate.webp',
+      },
       {
         'id': 'win10_hero',
         'title': 'Windows 10 Hero (기본)',
