@@ -45,6 +45,8 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final CoupangConfig coupangConfig;
   final NetflixConfig netflixConfig;
   final LotteryConfig lotteryConfig;
+  final ValueChanged<KakaoBankConfig>? onKakaoBankChanged;
+  final ValueChanged<DaangnConfig>? onDaangnChanged;
   final ValueChanged<YoutubeConfig>? onYoutubeChanged;
   final ValueChanged<CoupangConfig>? onCoupangChanged;
   final ValueChanged<NetflixConfig>? onNetflixChanged;
@@ -67,6 +69,8 @@ class StudioPreviewDispatcher extends StatelessWidget {
     required this.coupangConfig,
     required this.netflixConfig,
     required this.lotteryConfig,
+    this.onKakaoBankChanged,
+    this.onDaangnChanged,
     this.onYoutubeChanged,
     this.onCoupangChanged,
     this.onNetflixChanged,
@@ -77,14 +81,14 @@ class StudioPreviewDispatcher extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (templateId) {
       case 'toss': return TossScreen(config: tossConfig);
-      case 'kakaobank': return KakaoBankScreen(config: kakaobankConfig);
+      case 'kakaobank': return KakaoBankScreen(config: kakaobankConfig, onConfigChanged: onKakaoBankChanged);
       case 'x_twitter': return XTwitterScreen(config: twitterConfig);
       case 'pinterest': return PinterestScreen(config: pinterestConfig);
       case 'kakaotalk': return KakaoTalkScreen(config: kakaoConfig);
       case 'instagram': return InstagramScreen(config: instaConfig);
       case 'youtube': return YoutubeScreen(config: youtubeConfig, onConfigChanged: onYoutubeChanged);
       case 'delivery': return DeliveryScreen(config: deliveryConfig);
-      case 'daangn': return DaangnScreen(config: daangnConfig);
+      case 'daangn': return DaangnScreen(config: daangnConfig, onConfigChanged: onDaangnChanged);
       case 'windows_bsod': return WindowsBsodScreen(config: bsodConfig);
       case 'windows_update': return WindowsUpdateScreen(config: winUpdateConfig);
       case 'coupang': return CoupangScreen(config: coupangConfig, onConfigChanged: onCoupangChanged);

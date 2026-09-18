@@ -211,11 +211,15 @@ class _DaangnChatPageState extends State<DaangnChatPage> {
                           radius: 16,
                           backgroundColor: const Color(0xFFFF6F0F),
                           child: Text(
-                            widget.config.sellerName[0],
+                            widget.config.sellerName.isNotEmpty ? widget.config.sellerName[0] : '당',
                             style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
                           ),
                         ),
                         const SizedBox(width: 8),
+                      ],
+                      if (msg.isMe) ...[
+                        Text(msg.time, style: const TextStyle(color: Colors.black38, fontSize: 10)),
+                        const SizedBox(width: 6),
                       ],
                       Flexible(
                         child: Container(
@@ -241,11 +245,10 @@ class _DaangnChatPageState extends State<DaangnChatPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        msg.time,
-                        style: const TextStyle(color: Colors.black38, fontSize: 10),
-                      ),
+                      if (!msg.isMe) ...[
+                        const SizedBox(width: 6),
+                        Text(msg.time, style: const TextStyle(color: Colors.black38, fontSize: 10)),
+                      ],
                     ],
                   ),
                 );

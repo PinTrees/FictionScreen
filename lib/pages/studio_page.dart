@@ -146,6 +146,8 @@ class _StudioPageState extends State<StudioPage> {
       coupangConfig: _coupangConfig,
       netflixConfig: _netflixConfig,
       lotteryConfig: _lotteryConfig,
+      onKakaoBankChanged: (cfg) => setState(() => _kakaobankConfig = cfg),
+      onDaangnChanged: (cfg) => setState(() => _daangnConfig = cfg),
       onYoutubeChanged: (cfg) => setState(() => _youtubeConfig = cfg),
       onCoupangChanged: (cfg) => setState(() => _coupangConfig = cfg),
       onNetflixChanged: (cfg) => setState(() => _netflixConfig = cfg),

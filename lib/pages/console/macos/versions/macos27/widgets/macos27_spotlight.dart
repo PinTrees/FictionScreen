@@ -49,6 +49,8 @@ class _Macos27SpotlightState extends State<Macos27Spotlight> with SingleTickerPr
 
   final List<Map<String, dynamic>> _allTemplates = [
     {'title': '카카오톡 채팅 에디터', 'desc': 'FictionScreen 대화방 조작', 'icon': 'assets/images/kakaotalk_icon.webp', 'templateId': 'kakaotalk'},
+    {'title': '카카오뱅크 에디터', 'desc': '통장 잔액, 세이프박스, 거래 내역', 'icon': null, 'iconData': CupertinoIcons.creditcard_fill, 'color': Color(0xFFFEE500), 'templateId': 'kakaobank'},
+    {'title': '당근마켓 채팅 에디터', 'desc': '중고거래 채팅 및 매너온도 조작', 'icon': null, 'iconData': CupertinoIcons.chat_bubble_text_fill, 'color': Color(0xFFFF6F0F), 'templateId': 'daangn'},
     {'title': 'Instagram 에디터', 'desc': '피드, 릴스, 스토리 제작', 'icon': 'assets/images/instagram_icon.webp', 'templateId': 'instagram'},
     {'title': 'Toss 송금 에디터', 'desc': '금융 거래내역 시뮬레이션', 'icon': 'assets/images/toss_icon.webp', 'templateId': 'toss'},
     {'title': 'X (Twitter) 에디터', 'desc': '트윗 및 타임라인 생성', 'icon': 'assets/images/x_twitter_icon.webp', 'templateId': 'x_twitter'},
@@ -272,7 +274,9 @@ class _Macos27SpotlightState extends State<Macos27Spotlight> with SingleTickerPr
                                 ...filteredTemplates.map((t) => _buildResultTile(
                                   title: t['title'] as String,
                                   desc: t['desc'] as String,
-                                  imageAsset: t['icon'] as String,
+                                  imageAsset: t['icon'] as String?,
+                                  iconData: t['iconData'] as IconData?,
+                                  iconColor: t['color'] as Color?,
                                   onTap: () {
                                     widget.onOpenTemplate(t['templateId'] as String);
                                     widget.onClose();
@@ -304,7 +308,9 @@ class _Macos27SpotlightState extends State<Macos27Spotlight> with SingleTickerPr
   Widget _buildResultTile({
     required String title,
     required String desc,
-    required String imageAsset,
+    String? imageAsset,
+    IconData? iconData,
+    Color? iconColor,
     required VoidCallback onTap,
   }) {
     return Material(
@@ -316,7 +322,18 @@ class _Macos27SpotlightState extends State<Macos27Spotlight> with SingleTickerPr
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             children: [
-              Image.asset(imageAsset, width: 28, height: 28, filterQuality: FilterQuality.high),
+              if (imageAsset != null)
+                Image.asset(imageAsset, width: 28, height: 28, filterQuality: FilterQuality.high)
+              else
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: (iconColor ?? Colors.white).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Icon(iconData ?? CupertinoIcons.app, size: 18, color: iconColor ?? Colors.white),
+                ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(

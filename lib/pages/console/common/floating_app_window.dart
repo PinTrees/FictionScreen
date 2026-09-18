@@ -300,7 +300,10 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
       case 'toss':
         return TossScreen(config: _tossConfig);
       case 'kakaobank':
-        return KakaoBankScreen(config: _kakaobankConfig);
+        return KakaoBankScreen(
+          config: _kakaobankConfig,
+          onConfigChanged: (cfg) => setState(() => _kakaobankConfig = cfg),
+        );
       case 'kakaotalk':
         return KakaoTalkScreen(config: _kakaoConfig);
       case 'x_twitter':
@@ -317,7 +320,10 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
       case 'delivery':
         return DeliveryScreen(config: _deliveryConfig);
       case 'daangn':
-        return DaangnScreen(config: _daangnConfig);
+        return DaangnScreen(
+          config: _daangnConfig,
+          onConfigChanged: (cfg) => setState(() => _daangnConfig = cfg),
+        );
       case 'coupang':
         return CoupangScreen(
           config: _coupangConfig,

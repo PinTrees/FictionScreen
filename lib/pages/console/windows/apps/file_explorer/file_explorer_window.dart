@@ -35,6 +35,8 @@ class _WindowsFileExplorerWindowState extends State<WindowsFileExplorerWindow> {
 
   final List<Map<String, dynamic>> _templateFiles = [
     {'title': '카카오톡_채팅방_템플릿', 'type': 'kakaotalk', 'size': '64 MB', 'icon': CupertinoIcons.chat_bubble_2_fill, 'color': Color(0xFFFEE500)},
+    {'title': '카카오뱅크_통장_템플릿', 'type': 'kakaobank', 'size': '48 MB', 'icon': CupertinoIcons.creditcard_fill, 'color': Color(0xFFFEE500)},
+    {'title': '당근마켓_채팅_템플릿', 'type': 'daangn', 'size': '52 MB', 'icon': CupertinoIcons.chat_bubble_text_fill, 'color': Color(0xFFFF6F0F)},
     {'title': '토스_송금완료_템플릿', 'type': 'toss', 'size': '42 MB', 'icon': CupertinoIcons.money_dollar_circle_fill, 'color': Color(0xFF0050FF)},
     {'title': '인스타그램_피드_템플릿', 'type': 'instagram', 'size': '98 MB', 'icon': CupertinoIcons.camera_fill, 'color': Color(0xFFE1306C)},
     {'title': 'X_트위터_포스트_템플릿', 'type': 'x_twitter', 'size': '38 MB', 'icon': CupertinoIcons.conversation_bubble, 'color': Color(0xFF1D9BF0)},
