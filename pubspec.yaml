@@ -38,3 +38,4 @@ flutter:
   assets:
     - assets/images/
     - assets/images/macos/
+    - assets/images/windows/

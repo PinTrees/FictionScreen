@@ -10,33 +10,11 @@ import 'apps/notepad/notepad_window.dart';
 import 'apps/paint/paint_window.dart';
 import 'apps/settings/settings_window.dart';
 import 'widgets/windows_context_menu.dart';
+import 'widgets/windows_desktop_icon_widget.dart';
+import 'widgets/windows_item_context_menu.dart';
 import 'widgets/windows_quick_settings.dart';
 import 'windows_start_menu.dart';
 import 'windows_taskbar.dart';
-import '../common/os_app_item.dart';
-
-/// 바탕화면 격자 그리드 아이콘 데이터 모델
-class DesktopIconItem {
-  final String id;
-  final String title;
-  final IconData? icon;
-  final String? imageAsset;
-  final Color iconColor;
-  int gridX; // 열 인덱스 (0, 1, 2, ...)
-  int gridY; // 행 인덱스 (0, 1, 2, ...)
-  final VoidCallback onTap;
-
-  DesktopIconItem({
-    required this.id,
-    required this.title,
-    this.icon,
-    this.imageAsset,
-    this.iconColor = const Color(0xFF60A5FA),
-    required this.gridX,
-    required this.gridY,
-    required this.onTap,
-  });
-}
 
 /// Windows MDI 가상 창 데이터 모델
 class WindowsWindowData {
@@ -99,6 +77,10 @@ class _WindowsViewState extends State<WindowsView> {
 
   bool _isQuickSettingsOpen = false;
   Offset? _contextMenuPosition;
+  Offset? _itemContextMenuPosition;
+  DesktopIconItem? _contextMenuItem;
+  String? _selectedItemId;
+  String? _renamingItemId;
 
   // 바탕화면 그리드 규격
   static const double cellWidth = 92.0;
@@ -119,36 +101,47 @@ class _WindowsViewState extends State<WindowsView> {
       DesktopIconItem(
         id: 'pc',
         title: widget.windowsVersion == '7' ? '컴퓨터' : '내 PC',
-        icon: CupertinoIcons.device_desktop,
-        iconColor: const Color(0xFF60A5FA),
+        imageAsset: 'assets/images/windows/this_pc.png',
         gridX: 0,
         gridY: 0,
+        isSystemApp: true,
         onTap: () => _openWinApp('file_explorer'),
       ),
       DesktopIconItem(
         id: 'edge',
         title: 'Edge',
-        icon: CupertinoIcons.globe,
-        iconColor: const Color(0xFF0078D7),
+        imageAsset: 'assets/images/windows/edge.png',
         gridX: 0,
         gridY: 1,
+        isSystemApp: true,
         onTap: () => _openWinApp('edge'),
       ),
       DesktopIconItem(
         id: 'chrome',
         title: 'Chrome',
-        icon: CupertinoIcons.globe,
-        iconColor: const Color(0xFFEA4335),
+        imageAsset: 'assets/images/windows/chrome.png',
         gridX: 0,
         gridY: 2,
+        isSystemApp: true,
         onTap: () => _openWinApp('chrome'),
+      ),
+      DesktopIconItem(
+        id: 'folder_sample',
+        title: '새 폴더',
+        imageAsset: 'assets/images/windows/folder.png',
+        gridX: 0,
+        gridY: 3,
+        isSystemApp: false,
+        isFolder: true,
+        onTap: () => _openWinApp('file_explorer'),
       ),
       DesktopIconItem(
         id: 'kakaotalk',
         title: '카카오톡',
         imageAsset: 'assets/images/kakaotalk_icon.webp',
         gridX: 0,
-        gridY: 3,
+        gridY: 4,
+        isSystemApp: true,
         onTap: () => widget.onOpenTemplate('kakaotalk'),
       ),
       DesktopIconItem(
@@ -156,8 +149,9 @@ class _WindowsViewState extends State<WindowsView> {
         title: 'YouTube',
         icon: CupertinoIcons.play_arrow_solid,
         iconColor: const Color(0xFFFF0000),
-        gridX: 0,
-        gridY: 4,
+        gridX: 1,
+        gridY: 0,
+        isSystemApp: true,
         onTap: () => widget.onOpenTemplate('youtube'),
       ),
       DesktopIconItem(
@@ -165,7 +159,8 @@ class _WindowsViewState extends State<WindowsView> {
         title: 'Instagram',
         imageAsset: 'assets/images/instagram_icon.webp',
         gridX: 1,
-        gridY: 0,
+        gridY: 1,
+        isSystemApp: true,
         onTap: () => widget.onOpenTemplate('instagram'),
       ),
       DesktopIconItem(
@@ -173,7 +168,8 @@ class _WindowsViewState extends State<WindowsView> {
         title: '쿠팡',
         imageAsset: 'assets/images/coupang_icon.webp',
         gridX: 1,
-        gridY: 1,
+        gridY: 2,
+        isSystemApp: true,
         onTap: () => widget.onOpenTemplate('coupang'),
       ),
       DesktopIconItem(
@@ -181,7 +177,8 @@ class _WindowsViewState extends State<WindowsView> {
         title: 'Netflix',
         imageAsset: 'assets/images/netflix_icon.webp',
         gridX: 1,
-        gridY: 2,
+        gridY: 3,
+        isSystemApp: true,
         onTap: () => widget.onOpenTemplate('netflix'),
       ),
       DesktopIconItem(
@@ -190,70 +187,62 @@ class _WindowsViewState extends State<WindowsView> {
         icon: CupertinoIcons.bag_fill,
         iconColor: const Color(0xFF2AC1BC),
         gridX: 1,
-        gridY: 3,
-        onTap: () => widget.onOpenTemplate('delivery'),
-      ),
-      DesktopIconItem(
-        id: 'bsod',
-        title: '블루스크린',
-        icon: CupertinoIcons.device_desktop,
-        iconColor: const Color(0xFF0078D7),
-        gridX: 1,
         gridY: 4,
-        onTap: () => widget.onOpenTemplate('windows_bsod'),
-      ),
-      DesktopIconItem(
-        id: 'win_update',
-        title: '가짜 업데이트',
-        icon: CupertinoIcons.arrow_clockwise,
-        iconColor: const Color(0xFF60A5FA),
-        gridX: 2,
-        gridY: 0,
-        onTap: () => widget.onOpenTemplate('windows_update'),
+        isSystemApp: true,
+        onTap: () => widget.onOpenTemplate('delivery'),
       ),
       DesktopIconItem(
         id: 'notepad',
         title: '메모장',
-        icon: CupertinoIcons.doc_plaintext,
-        iconColor: Colors.white70,
+        imageAsset: 'assets/images/windows/notepad.png',
         gridX: 2,
-        gridY: 1,
+        gridY: 0,
+        isSystemApp: true,
         onTap: () => _openWinApp('notepad'),
       ),
       DesktopIconItem(
         id: 'calculator',
         title: '계산기',
-        icon: CupertinoIcons.number,
-        iconColor: const Color(0xFF10B981),
+        imageAsset: 'assets/images/windows/calc.png',
         gridX: 2,
-        gridY: 2,
+        gridY: 1,
+        isSystemApp: true,
         onTap: () => _openWinApp('calculator'),
       ),
       DesktopIconItem(
         id: 'paint',
         title: '그림판',
-        icon: CupertinoIcons.paintbrush_fill,
-        iconColor: const Color(0xFFF59E0B),
+        imageAsset: 'assets/images/windows/mspaint.png',
         gridX: 2,
-        gridY: 3,
+        gridY: 2,
+        isSystemApp: true,
         onTap: () => _openWinApp('paint'),
       ),
       DesktopIconItem(
         id: 'settings',
         title: '설정',
-        icon: CupertinoIcons.gear_alt_fill,
-        iconColor: Colors.white70,
+        imageAsset: 'assets/images/windows/settings.png',
+        gridX: 2,
+        gridY: 3,
+        isSystemApp: true,
+        onTap: () => _openWinApp('settings'),
+      ),
+      DesktopIconItem(
+        id: 'cmd',
+        title: '명령 프롬프트',
+        imageAsset: 'assets/images/windows/cmd.png',
         gridX: 2,
         gridY: 4,
-        onTap: () => _openWinApp('settings'),
+        isSystemApp: true,
+        onTap: () => _openWinApp('cmd'),
       ),
       DesktopIconItem(
         id: 'trash',
         title: '휴지통',
-        icon: CupertinoIcons.trash_fill,
-        iconColor: Colors.white70,
+        imageAsset: 'assets/images/windows/recycle_bin.png',
         gridX: 3,
         gridY: 0,
+        isSystemApp: true,
         onTap: () {},
       ),
     ];
@@ -307,17 +296,73 @@ class _WindowsViewState extends State<WindowsView> {
     });
   }
 
-  /// 마우스 드롭 좌표를 격자 그리드(Snap-to-Grid)로 스냅 정렬
-  void _snapIconToGrid(DesktopIconItem item, Offset globalPos) {
-    final double relativeX = (globalPos.dx - gridPaddingLeft).clamp(0.0, 2000.0);
-    final double relativeY = (globalPos.dy - gridPaddingTop).clamp(0.0, 1500.0);
+  /// 마우스 드래그 완료 시 격자 그리드(Snap-to-Grid)로 스냅 정렬
+  void _onIconDragEnd(DesktopIconItem item, Offset totalDelta) {
+    final double currentX = gridPaddingLeft + (item.gridX * cellWidth);
+    final double currentY = gridPaddingTop + (item.gridY * cellHeight);
+    final double droppedX = currentX + totalDelta.dx;
+    final double droppedY = currentY + totalDelta.dy;
 
-    final int newGridX = (relativeX / cellWidth).round().clamp(0, 12);
-    final int newGridY = (relativeY / cellHeight).round().clamp(0, 10);
+    final double relativeX = (droppedX - gridPaddingLeft).clamp(0.0, 2000.0);
+    final double relativeY = (droppedY - gridPaddingTop).clamp(0.0, 1500.0);
+
+    final int newGridX = (relativeX / cellWidth).round().clamp(0, 15);
+    final int newGridY = (relativeY / cellHeight).round().clamp(0, 8);
 
     setState(() {
       item.gridX = newGridX;
       item.gridY = newGridY;
+    });
+  }
+
+  /// 바탕화면 우클릭 -> '새로 만들기' -> 새 폴더 생성 및 즉시 이름 변경 모드 활성화
+  void _handleCreateNewFolder() {
+    final existingTitles = _desktopIcons.map((e) => e.title).toSet();
+    String folderTitle = '새 폴더';
+    if (existingTitles.contains(folderTitle)) {
+      int index = 2;
+      while (existingTitles.contains('새 폴더 ($index)')) {
+        index++;
+      }
+      folderTitle = '새 폴더 ($index)';
+    }
+
+    final occupiedPositions = _desktopIcons.map((e) => '${e.gridX}_${e.gridY}').toSet();
+    int newGridX = 0;
+    int newGridY = 0;
+    bool found = false;
+
+    for (int col = 0; col < 15; col++) {
+      for (int row = 0; row < 7; row++) {
+        if (!occupiedPositions.contains('${col}_$row')) {
+          newGridX = col;
+          newGridY = row;
+          found = true;
+          break;
+        }
+      }
+      if (found) break;
+    }
+
+    final newFolderId = 'folder_${DateTime.now().millisecondsSinceEpoch}';
+    final newFolder = DesktopIconItem(
+      id: newFolderId,
+      title: folderTitle,
+      imageAsset: 'assets/images/windows/folder.png',
+      gridX: newGridX,
+      gridY: newGridY,
+      isSystemApp: false,
+      isFolder: true,
+      onTap: () => _openWinApp('file_explorer'),
+    );
+
+    setState(() {
+      _desktopIcons.add(newFolder);
+      _selectedItemId = newFolderId;
+      _renamingItemId = newFolderId;
+      _contextMenuPosition = null;
+      _itemContextMenuPosition = null;
+      _contextMenuItem = null;
     });
   }
 
@@ -343,13 +388,19 @@ class _WindowsViewState extends State<WindowsView> {
     return GestureDetector(
       onSecondaryTapUp: (details) {
         setState(() {
+          _itemContextMenuPosition = null;
+          _contextMenuItem = null;
           _contextMenuPosition = details.globalPosition;
         });
       },
       onTap: () {
-        if (_contextMenuPosition != null) {
-          setState(() => _contextMenuPosition = null);
-        }
+        setState(() {
+          _contextMenuPosition = null;
+          _itemContextMenuPosition = null;
+          _contextMenuItem = null;
+          _selectedItemId = null;
+          _renamingItemId = null;
+        });
       },
       child: Stack(
         children: [
@@ -358,7 +409,7 @@ class _WindowsViewState extends State<WindowsView> {
             child: _buildWindowsWallpaper(),
           ),
 
-          // 2. 바탕화면 격자 그리드 맞춤(Snap-to-Grid) 드래그 가능한 아이콘들
+          // 2. 바탕화면 격자 그리드 맞춤 투명 Windows 아이콘들 (마우스 추적 120fps 부드러운 드래그)
           ..._desktopIcons.map((item) {
             final double posX = gridPaddingLeft + (item.gridX * cellWidth);
             final double posY = gridPaddingTop + (item.gridY * cellHeight);
@@ -366,10 +417,48 @@ class _WindowsViewState extends State<WindowsView> {
             return Positioned(
               left: posX,
               top: posY,
-              child: _DraggableGridIcon(
+              child: WindowsDesktopIconWidget(
                 key: ValueKey(item.id),
                 item: item,
-                onDragEnd: (globalPos) => _snapIconToGrid(item, globalPos),
+                isSelected: _selectedItemId == item.id,
+                isRenaming: _renamingItemId == item.id,
+                onTap: () {
+                  setState(() {
+                    _contextMenuPosition = null;
+                    _itemContextMenuPosition = null;
+                    _contextMenuItem = null;
+                    _selectedItemId = item.id;
+                    _renamingItemId = null;
+                  });
+                },
+                onDoubleTap: () {
+                  setState(() {
+                    _contextMenuPosition = null;
+                    _itemContextMenuPosition = null;
+                    _contextMenuItem = null;
+                  });
+                  item.onTap();
+                },
+                onSecondaryTapUp: (details) {
+                  setState(() {
+                    _contextMenuPosition = null;
+                    _selectedItemId = item.id;
+                    _contextMenuItem = item;
+                    _itemContextMenuPosition = details.globalPosition;
+                  });
+                },
+                onRenameSubmitted: (newName) {
+                  setState(() {
+                    item.title = newName;
+                    _renamingItemId = null;
+                  });
+                },
+                onCancelRename: () {
+                  setState(() {
+                    _renamingItemId = null;
+                  });
+                },
+                onDragEnd: (totalDelta) => _onIconDragEnd(item, totalDelta),
               ),
             );
           }),
@@ -454,16 +543,45 @@ class _WindowsViewState extends State<WindowsView> {
               ),
             ),
 
-          // 7. Windows 스타일 우클릭 컨텍스트 드롭다운 메뉴
+          // 7. Windows 스타일 바탕화면 우클릭 컨텍스트 드롭다운 메뉴
           if (_contextMenuPosition != null)
             WindowsContextMenu(
               position: _contextMenuPosition!,
               onRefresh: () => setState(() {}),
-              onNewFolder: () {},
+              onNewFolder: _handleCreateNewFolder,
               onNewNote: () => _openWinApp('notepad'),
               onOpenSettings: widget.onOpenSettings,
               onClose: () => setState(() => _contextMenuPosition = null),
               onSort: (_) => _sortIconsByName(),
+            ),
+
+          // 8. 개별 아이콘 우클릭 컨텍스트 메뉴 (열기, 이름 바꾸기, 삭제)
+          if (_itemContextMenuPosition != null && _contextMenuItem != null)
+            WindowsItemContextMenu(
+              position: _itemContextMenuPosition!,
+              item: _contextMenuItem!,
+              onOpen: () => _contextMenuItem!.onTap(),
+              onRename: () {
+                setState(() {
+                  _renamingItemId = _contextMenuItem!.id;
+                  _selectedItemId = _contextMenuItem!.id;
+                });
+              },
+              onDelete: () {
+                setState(() {
+                  _desktopIcons.removeWhere((i) => i.id == _contextMenuItem!.id);
+                  if (_selectedItemId == _contextMenuItem!.id) {
+                    _selectedItemId = null;
+                  }
+                  if (_renamingItemId == _contextMenuItem!.id) {
+                    _renamingItemId = null;
+                  }
+                });
+              },
+              onClose: () => setState(() {
+                _itemContextMenuPosition = null;
+                _contextMenuItem = null;
+              }),
             ),
         ],
       ),
@@ -611,56 +729,6 @@ class _WindowsViewState extends State<WindowsView> {
           filterQuality: FilterQuality.high,
         );
     }
-  }
-}
-
-/// 그리드 상에서 드래그 및 착! 스냅 정렬되는 아이콘 위젯
-class _DraggableGridIcon extends StatefulWidget {
-  final DesktopIconItem item;
-  final Function(Offset globalPos) onDragEnd;
-
-  const _DraggableGridIcon({
-    super.key,
-    required this.item,
-    required this.onDragEnd,
-  });
-
-  @override
-  State<_DraggableGridIcon> createState() => _DraggableGridIconState();
-}
-
-class _DraggableGridIconState extends State<_DraggableGridIcon> {
-  Offset? _dragPos;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onPanStart: (details) {
-        setState(() {
-          _dragPos = details.globalPosition;
-        });
-      },
-      onPanUpdate: (details) {
-        setState(() {
-          _dragPos = details.globalPosition;
-        });
-      },
-      onPanEnd: (details) {
-        if (_dragPos != null) {
-          widget.onDragEnd(_dragPos!);
-          setState(() {
-            _dragPos = null;
-          });
-        }
-      },
-      child: OsAppItem(
-        title: widget.item.title,
-        icon: widget.item.icon,
-        imageAsset: widget.item.imageAsset,
-        iconColor: widget.item.iconColor,
-        onTap: widget.item.onTap,
-      ),
-    );
   }
 }
 
