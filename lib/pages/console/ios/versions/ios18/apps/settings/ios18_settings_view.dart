@@ -2,11 +2,14 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fiction_screen/services/auth_service.dart';
+import 'package:fiction_screen/services/user_settings_service.dart';
 
 /// Apple iOS 18/26 공식 설정 앱
 /// - 레퍼런스(media_1789748743696.png) 1:1 픽셀 퍼펙트 구현
-/// - 좌측 상단 대형 '설정' 타이틀
-/// - 이진교 Apple 계정 프로필 카드 (그라데이션 모노그램 + Apple 계정 제안 레드 배지)
+/// - 상단 스크롤 시 쉐이더 마스크(ShaderMask) 페이드아웃 + 백드롭 블러(BackdropFilter)
+/// - 실제 로그인된 사용자 이름 및 이메일, 모노그램 아바타 반영
+/// - OS 시스템 전환 (iOS, Galaxy One UI, Windows 11, macOS) 기능 탑재
 /// - 시스템 연결성 그룹 (에어플레인 모드, Wi-Fi, Bluetooth, 셀룰러, 개인용 핫스팟, 배터리, VPN)
 /// - 일반, 배경화면 실시간 교체, 홈 이동, 로그아웃 액션
 /// - 하단 플로팅 글래스 검색 캡슐 바 (음성 마이크 아이콘 포함)
@@ -17,6 +20,7 @@ class Ios18SettingsView extends StatefulWidget {
   final VoidCallback onSignOut;
   final VoidCallback onGoHome;
   final VoidCallback onClose;
+  final Function(String osKey)? onSelectOs;
 
   const Ios18SettingsView({
     super.key,
@@ -26,6 +30,7 @@ class Ios18SettingsView extends StatefulWidget {
     required this.onSignOut,
     required this.onGoHome,
     required this.onClose,
+    this.onSelectOs,
   });
 
   @override
@@ -46,13 +51,112 @@ class _Ios18SettingsViewState extends State<Ios18SettingsView> {
     super.dispose();
   }
 
-  String _getMonogram() {
-    final name = widget.user?.displayName;
-    if (name != null && name.trim().isNotEmpty) {
-      final clean = name.trim();
-      return clean.length >= 2 ? clean.substring(clean.length - 2) : clean;
+  String _getUserName() {
+    final u = widget.user ?? AuthService.currentUser;
+    if (u?.displayName != null && u!.displayName!.trim().isNotEmpty) {
+      return u.displayName!.trim();
     }
-    return '진교';
+    if (u?.email != null && u!.email!.isNotEmpty) {
+      final prefix = u.email!.split('@').first;
+      if (prefix.isNotEmpty) return prefix;
+    }
+    return '사용자';
+  }
+
+  String _getUserSubtitle() {
+    final u = widget.user ?? AuthService.currentUser;
+    if (u?.email != null && u!.email!.isNotEmpty) {
+      return u.email!;
+    }
+    return 'Apple 계정, iCloud 등';
+  }
+
+  String _getMonogram() {
+    final name = _getUserName();
+    if (name.length >= 2) {
+      return name.substring(name.length - 2);
+    }
+    return name;
+  }
+
+  void _showOsSelectionSheet(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext sheetContext) => CupertinoActionSheet(
+        title: const Text(
+          '운영체제 (OS) 전환',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        message: const Text('원하시는 모바일 또는 데스크톱 OS 환경으로 즉시 전환합니다.'),
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(sheetContext);
+              widget.onSelectOs?.call('ios');
+              UserSettingsService.saveOsSettings(UserOsSettings(mobileTheme: 'ios'));
+            },
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(CupertinoIcons.device_phone_portrait, size: 20),
+                SizedBox(width: 8),
+                Text('Apple iOS 26 (리퀴드 글래스) ✓'),
+              ],
+            ),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(sheetContext);
+              widget.onSelectOs?.call('galaxy');
+              UserSettingsService.saveOsSettings(UserOsSettings(mobileTheme: 'galaxy'));
+            },
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(CupertinoIcons.device_phone_portrait, size: 20),
+                SizedBox(width: 8),
+                Text('Samsung Galaxy (One UI)'),
+              ],
+            ),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(sheetContext);
+              widget.onSelectOs?.call('windows');
+              UserSettingsService.saveOsSettings(UserOsSettings(pcTheme: 'windows', windowsVersion: '11'));
+            },
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(CupertinoIcons.device_desktop, size: 20),
+                SizedBox(width: 8),
+                Text('Microsoft Windows 11'),
+              ],
+            ),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(sheetContext);
+              widget.onSelectOs?.call('macos');
+              UserSettingsService.saveOsSettings(UserOsSettings(pcTheme: 'macos'));
+            },
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(CupertinoIcons.device_laptop, size: 20),
+                SizedBox(width: 8),
+                Text('Apple macOS Sequoia'),
+              ],
+            ),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () => Navigator.pop(sheetContext),
+          child: const Text('취소'),
+        ),
+      ),
+    );
   }
 
   @override
@@ -63,46 +167,77 @@ class _Ios18SettingsViewState extends State<Ios18SettingsView> {
         bottom: false,
         child: Stack(
           children: [
-            // 1. 설정 스크롤 리스트 (하단 플로팅 검색 바 뒤로 자연스럽게 스크롤)
+            // 1. 설정 스크롤 리스트 (상단 쉐이더 마스크로 스크롤 시 부드럽게 페이드아웃)
             Positioned.fill(
-              child: ListView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.only(top: 12, bottom: 96, left: 16, right: 16),
-                children: [
-                  // 상단 대형 '설정' 타이틀
-                  const Padding(
-                    padding: EdgeInsets.only(left: 4, top: 8, bottom: 14),
-                    child: Text(
-                      '설정',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 34,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.5,
+              child: ShaderMask(
+                shaderCallback: (Rect bounds) {
+                  return LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: const [Colors.transparent, Colors.white],
+                    stops: const [0.0, 0.08],
+                  ).createShader(bounds);
+                },
+                blendMode: BlendMode.dstIn,
+                child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.only(top: 24, bottom: 104, left: 22, right: 22),
+                  children: [
+                    // 상단 대형 '설정' 타이틀 (강화된 패딩)
+                    const Padding(
+                      padding: EdgeInsets.only(left: 4, top: 12, bottom: 18),
+                      child: Text(
+                        '설정',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 34,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
+                        ),
                       ),
                     ),
-                  ),
 
-                  // 1) Apple 계정 프로필 카드
-                  _buildProfileCard(),
-                  const SizedBox(height: 18),
+                    // 1) Apple 계정 프로필 카드 (유저 실제 이름 연동)
+                    _buildProfileCard(),
+                    const SizedBox(height: 22),
 
-                  // 2) 시스템 연결성 그룹 (에어플레인 모드 ~ VPN)
-                  _buildConnectivityGroup(),
-                  const SizedBox(height: 18),
+                    // 2) OS 시스템 환경 그룹 (운영체제 전환)
+                    _buildOsSystemGroup(),
+                    const SizedBox(height: 22),
 
-                  // 3) 시스템 일반 & 액션 그룹 (일반, 배경화면, 홈, 로그아웃)
-                  _buildSystemActionsGroup(),
-                  const SizedBox(height: 24),
-                ],
+                    // 3) 시스템 연결성 그룹 (에어플레인 모드 ~ VPN)
+                    _buildConnectivityGroup(),
+                    const SizedBox(height: 22),
+
+                    // 4) 시스템 일반 & 액션 그룹 (일반, 배경화면, 홈, 로그아웃)
+                    _buildSystemActionsGroup(),
+                    const SizedBox(height: 28),
+                  ],
+                ),
               ),
             ),
 
-            // 2. 하단 플로팅 글래스 검색 캡슐 바 (iOS 18 신규 디자인)
+            // 2. 상단 상태바 블러 헤더 (스크롤되는 콘텐츠가 상태바 뒤로 넘어갈 때 블러 처리)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                  child: Container(
+                    height: 38,
+                    color: Colors.black.withValues(alpha: 0.35),
+                  ),
+                ),
+              ),
+            ),
+
+            // 3. 하단 플로팅 글래스 검색 캡슐 바 (강화된 패딩 및 여백)
             Positioned(
               bottom: 24,
-              left: 16,
-              right: 16,
+              left: 22,
+              right: 22,
               child: _buildFloatingSearchBar(),
             ),
           ],
@@ -111,9 +246,11 @@ class _Ios18SettingsViewState extends State<Ios18SettingsView> {
     );
   }
 
-  // Apple 계정 프로필 카드 (이진교 + Apple 계정 제안 2 배지)
+  // Apple 계정 프로필 카드 (유저 실제 이름, 이메일, 모노그램 연동)
   Widget _buildProfileCard() {
-    final displayName = widget.user?.displayName ?? '이진교';
+    final displayName = _getUserName();
+    final subtitle = _getUserSubtitle();
+    final user = widget.user ?? AuthService.currentUser;
 
     return Container(
       decoration: BoxDecoration(
@@ -127,13 +264,13 @@ class _Ios18SettingsViewState extends State<Ios18SettingsView> {
             onTap: () {},
             borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
               child: Row(
                 children: [
                   // 라벤더/블루 그라데이션 모노그램 아바타
                   Container(
-                    width: 58,
-                    height: 58,
+                    width: 60,
+                    height: 60,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
@@ -143,12 +280,12 @@ class _Ios18SettingsViewState extends State<Ios18SettingsView> {
                       ),
                     ),
                     child: Center(
-                      child: widget.user?.photoURL != null
+                      child: user?.photoURL != null
                           ? ClipOval(
                               child: Image.network(
-                                widget.user!.photoURL!,
-                                width: 58,
-                                height: 58,
+                                user!.photoURL!,
+                                width: 60,
+                                height: 60,
                                 fit: BoxFit.cover,
                               ),
                             )
@@ -163,7 +300,7 @@ class _Ios18SettingsViewState extends State<Ios18SettingsView> {
                             ),
                     ),
                   ),
-                  const SizedBox(width: 14),
+                  const SizedBox(width: 15),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,9 +315,11 @@ class _Ios18SettingsViewState extends State<Ios18SettingsView> {
                           ),
                         ),
                         const SizedBox(height: 3),
-                        const Text(
-                          'Apple 계정, iCloud 등',
-                          style: TextStyle(
+                        Text(
+                          subtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
                             color: Color(0xFF8E8E93),
                             fontSize: 13.5,
                             letterSpacing: -0.2,
@@ -196,14 +335,14 @@ class _Ios18SettingsViewState extends State<Ios18SettingsView> {
           ),
 
           // 세퍼레이터 라인 (텍스트 시작 위치에 인덴트)
-          const Divider(height: 0.5, thickness: 0.5, color: Color(0xFF38383A), indent: 88),
+          const Divider(height: 0.5, thickness: 0.5, color: Color(0xFF38383A), indent: 93),
 
           // 하단 'Apple 계정 제안' + 레드 알림 배지 (2)
           InkWell(
             onTap: () {},
             borderRadius: const BorderRadius.vertical(bottom: Radius.circular(26)),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
               child: Row(
                 children: [
                   const Text(
@@ -240,6 +379,27 @@ class _Ios18SettingsViewState extends State<Ios18SettingsView> {
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // OS 시스템 환경 그룹 (운영체제 전환)
+  Widget _buildOsSystemGroup() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1C1C1E),
+        borderRadius: BorderRadius.circular(26),
+      ),
+      child: Column(
+        children: [
+          _buildNavRow(
+            icon: CupertinoIcons.device_desktop,
+            iconBg: const Color(0xFF5856D6),
+            title: '운영체제 (OS) 전환',
+            trailingText: 'Apple iOS',
+            onTap: () => _showOsSelectionSheet(context),
           ),
         ],
       ),

@@ -308,6 +308,18 @@ class _ConsolePageState extends State<ConsolePage> {
                     onOpenSettings: () => setState(() => _isSettingsOpen = true),
                     onSignOut: _handleSignOut,
                     onGoHome: () => context.go('/'),
+                    onSelectOs: (os) {
+                      setState(() {
+                        if (os == 'galaxy') {
+                          _mobileTheme = 'galaxy';
+                        } else if (os == 'ios') {
+                          _mobileTheme = 'ios';
+                        } else if (os == 'windows' || os == 'macos') {
+                          _pcTheme = os;
+                        }
+                      });
+                      _saveCurrentOsSettings();
+                    },
                   )
                 else
                   GalaxyView(

@@ -25,6 +25,7 @@ class Ios18View extends StatefulWidget {
   final VoidCallback onOpenSettings;
   final VoidCallback onSignOut;
   final VoidCallback onGoHome;
+  final Function(String osKey)? onSelectOs;
 
   const Ios18View({
     super.key,
@@ -36,6 +37,7 @@ class Ios18View extends StatefulWidget {
     required this.onOpenSettings,
     required this.onSignOut,
     required this.onGoHome,
+    this.onSelectOs,
   });
 
   @override
@@ -773,6 +775,7 @@ class _Ios18ViewState extends State<Ios18View> {
           onSignOut: widget.onSignOut,
           onGoHome: widget.onGoHome,
           onClose: _closeApp,
+          onSelectOs: widget.onSelectOs,
         );
         break;
 

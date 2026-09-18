@@ -17,6 +17,7 @@ class IosView extends StatelessWidget {
   final VoidCallback onOpenSettings;
   final VoidCallback onSignOut;
   final VoidCallback onGoHome;
+  final Function(String osKey)? onSelectOs;
 
   const IosView({
     super.key,
@@ -29,6 +30,7 @@ class IosView extends StatelessWidget {
     required this.onOpenSettings,
     required this.onSignOut,
     required this.onGoHome,
+    this.onSelectOs,
   });
 
   @override
@@ -66,6 +68,7 @@ class IosView extends StatelessWidget {
           onOpenSettings: onOpenSettings,
           onSignOut: onSignOut,
           onGoHome: onGoHome,
+          onSelectOs: onSelectOs,
         );
       case '26':
       default:
@@ -78,6 +81,7 @@ class IosView extends StatelessWidget {
           onOpenSettings: onOpenSettings,
           onSignOut: onSignOut,
           onGoHome: onGoHome,
+          onSelectOs: onSelectOs,
         );
     }
   }
