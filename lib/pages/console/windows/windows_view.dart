@@ -62,8 +62,7 @@ class WindowsView extends StatelessWidget {
                 const SizedBox(height: 12),
                 OsAppItem(
                   title: '카카오톡',
-                  icon: CupertinoIcons.chat_bubble_2_fill,
-                  iconColor: const Color(0xFFFEE500),
+                  imageAsset: 'assets/images/kakaotalk_icon.webp',
                   onTap: () => onOpenTemplate('kakaotalk'),
                 ),
                 const SizedBox(height: 12),

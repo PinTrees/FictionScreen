@@ -86,9 +86,7 @@ class IosView extends StatelessWidget {
                     children: [
                       OsAppItem(
                         title: '카카오톡',
-                        icon: CupertinoIcons.chat_bubble_2_fill,
-                        iconColor: Colors.black,
-                        backgroundColor: const Color(0xFFFEE500),
+                        imageAsset: 'assets/images/kakaotalk_icon.webp',
                         isDesktop: false,
                         onTap: () => onOpenTemplate('kakaotalk'),
                       ),

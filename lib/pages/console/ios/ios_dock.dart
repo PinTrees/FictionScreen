@@ -35,25 +35,26 @@ class IosDock extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _buildDockIconButton(
-                    CupertinoIcons.phone_fill,
-                    const Color(0xFF10B981),
-                    () {},
+                    icon: CupertinoIcons.phone_fill,
+                    bg: const Color(0xFF10B981),
+                    onTap: () {},
                   ),
                   _buildDockIconButton(
-                    CupertinoIcons.compass,
-                    const Color(0xFF3B82F6),
-                    () {},
+                    icon: CupertinoIcons.compass,
+                    bg: const Color(0xFF3B82F6),
+                    onTap: () {},
                   ),
                   _buildDockIconButton(
-                    CupertinoIcons.chat_bubble_2_fill,
-                    const Color(0xFFFEE500),
-                    () => onOpenTemplate('kakaotalk'),
+                    icon: null,
+                    imageAsset: 'assets/images/kakaotalk_icon.webp',
+                    bg: const Color(0xFFFEE500),
+                    onTap: () => onOpenTemplate('kakaotalk'),
                     iconColor: Colors.black,
                   ),
                   _buildDockIconButton(
-                    CupertinoIcons.gear_alt_fill,
-                    const Color(0xFF64748B),
-                    onOpenSettings,
+                    icon: CupertinoIcons.gear_alt_fill,
+                    bg: const Color(0xFF64748B),
+                    onTap: onOpenSettings,
                   ),
                 ],
               ),
@@ -78,10 +79,11 @@ class IosDock extends StatelessWidget {
     );
   }
 
-  Widget _buildDockIconButton(
-    IconData icon,
-    Color bg,
-    VoidCallback onTap, {
+  Widget _buildDockIconButton({
+    IconData? icon,
+    String? imageAsset,
+    required Color bg,
+    required VoidCallback onTap,
     Color iconColor = Colors.white,
   }) {
     return InkWell(
@@ -101,7 +103,12 @@ class IosDock extends StatelessWidget {
             ),
           ],
         ),
-        child: Icon(icon, color: iconColor, size: 28),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: imageAsset != null
+              ? Image.asset(imageAsset, fit: BoxFit.cover)
+              : (icon != null ? Icon(icon, color: iconColor, size: 28) : const SizedBox()),
+        ),
       ),
     );
   }

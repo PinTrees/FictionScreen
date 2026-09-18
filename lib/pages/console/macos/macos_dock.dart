@@ -159,8 +159,7 @@ class _MacosDockState extends State<MacosDock> {
                 _buildDockApp(
                   index: 9,
                   tooltip: '카카오톡 채팅 에디터',
-                  icon: CupertinoIcons.chat_bubble_2_fill,
-                  iconColor: Colors.black87,
+                  imageAsset: 'assets/images/kakaotalk_icon.webp',
                   gradient: const LinearGradient(
                     colors: [Color(0xFFFEE500), Color(0xFFF5D000)],
                   ),
@@ -248,7 +247,8 @@ class _MacosDockState extends State<MacosDock> {
   Widget _buildDockApp({
     required int index,
     required String tooltip,
-    required IconData icon,
+    IconData? icon,
+    String? imageAsset,
     Color iconColor = Colors.white,
     required LinearGradient gradient,
     required VoidCallback onTap,
@@ -274,7 +274,7 @@ class _MacosDockState extends State<MacosDock> {
               height: size,
               margin: EdgeInsets.only(bottom: isHovered ? 6 : 0),
               decoration: BoxDecoration(
-                gradient: gradient,
+                gradient: imageAsset == null ? gradient : null,
                 borderRadius: BorderRadius.circular(size * 0.28),
                 boxShadow: [
                   BoxShadow(
@@ -285,7 +285,12 @@ class _MacosDockState extends State<MacosDock> {
                 ],
               ),
               child: Center(
-                child: Icon(icon, color: iconColor, size: iconSize),
+                child: imageAsset != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(size * 0.25),
+                        child: Image.asset(imageAsset, width: size, height: size, fit: BoxFit.cover),
+                      )
+                    : Icon(icon ?? CupertinoIcons.circle_fill, color: iconColor, size: iconSize),
               ),
             ),
           ),

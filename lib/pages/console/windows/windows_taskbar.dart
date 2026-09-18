@@ -81,7 +81,7 @@ class WindowsTaskbar extends StatelessWidget {
                       onPressed: onToggleStartMenu,
                     ),
                     const SizedBox(width: 4),
-                    _buildTaskbarIcon(CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk')),
+                    _buildTaskbarIcon(null, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
                     _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
                     _buildTaskbarIcon(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), 'YouTube', () => onOpenTemplate('youtube')),
                     _buildTaskbarIcon(CupertinoIcons.camera_fill, const Color(0xFFE1306C), 'Instagram', () => onOpenTemplate('instagram')),
@@ -139,7 +139,7 @@ class WindowsTaskbar extends StatelessWidget {
           ),
 
           const SizedBox(width: 4),
-          _buildTaskbarIcon(CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk')),
+          _buildTaskbarIcon(null, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
           _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
           _buildTaskbarIcon(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), 'YouTube', () => onOpenTemplate('youtube')),
           _buildTaskbarIcon(CupertinoIcons.camera_fill, const Color(0xFFE1306C), 'Instagram', () => onOpenTemplate('instagram')),
@@ -195,7 +195,7 @@ class WindowsTaskbar extends StatelessWidget {
               ),
 
               const SizedBox(width: 8),
-              _buildTaskbarIcon(CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk')),
+              _buildTaskbarIcon(null, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
               _buildTaskbarIcon(CupertinoIcons.device_desktop, const Color(0xFF0078D7), '블루스크린', () => onOpenTemplate('windows_bsod')),
               _buildTaskbarIcon(CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), 'YouTube', () => onOpenTemplate('youtube')),
               _buildTaskbarIcon(CupertinoIcons.camera_fill, const Color(0xFFE1306C), 'Instagram', () => onOpenTemplate('instagram')),
@@ -222,11 +222,22 @@ class WindowsTaskbar extends StatelessWidget {
     );
   }
 
-  Widget _buildTaskbarIcon(IconData icon, Color color, String tooltip, VoidCallback onTap) {
+  Widget _buildTaskbarIcon(
+    IconData? icon,
+    Color color,
+    String tooltip,
+    VoidCallback onTap, {
+    String? imageAsset,
+  }) {
     return Tooltip(
       message: tooltip,
       child: IconButton(
-        icon: Icon(icon, color: color, size: 20),
+        icon: imageAsset != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Image.asset(imageAsset, width: 20, height: 20, fit: BoxFit.contain),
+              )
+            : Icon(icon ?? CupertinoIcons.circle_fill, color: color, size: 20),
         hoverColor: Colors.white.withValues(alpha: 0.15),
         onPressed: onTap,
       ),

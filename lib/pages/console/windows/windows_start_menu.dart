@@ -116,7 +116,7 @@ class WindowsStartMenu extends StatelessWidget {
                   Expanded(
                     child: ListView(
                       children: [
-                        _buildListTile('카카오톡 채팅', CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), () => onOpenTemplate('kakaotalk')),
+                        _buildListTile('카카오톡 채팅', null, const Color(0xFFFEE500), () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
                         _buildListTile('블루스크린 (BSOD)', CupertinoIcons.device_desktop, const Color(0xFF0078D7), () => onOpenTemplate('windows_bsod')),
                         _buildListTile('YouTube 스튜디오', CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), () => onOpenTemplate('youtube')),
                         _buildListTile('Instagram 피드', CupertinoIcons.camera_fill, const Color(0xFFE1306C), () => onOpenTemplate('instagram')),
@@ -147,7 +147,7 @@ class WindowsStartMenu extends StatelessWidget {
                       crossAxisSpacing: 8,
                       childAspectRatio: 1.2,
                       children: [
-                        _buildTileBox('카톡 캡처', CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), () => onOpenTemplate('kakaotalk'), iconColor: Colors.black87),
+                        _buildTileBox('카톡 캡처', null, const Color(0xFFFEE500), () => onOpenTemplate('kakaotalk'), iconColor: Colors.black87, imageAsset: 'assets/images/kakaotalk_icon.webp'),
                         _buildTileBox('블루스크린', CupertinoIcons.device_desktop, const Color(0xFF0078D7), () => onOpenTemplate('windows_bsod')),
                         _buildTileBox('YouTube', CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), () => onOpenTemplate('youtube')),
                         _buildTileBox('Instagram', CupertinoIcons.camera_fill, const Color(0xFFE1306C), () => onOpenTemplate('instagram')),
@@ -193,7 +193,7 @@ class WindowsStartMenu extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                         child: ListView(
                           children: [
-                            _buildWin7ProgramItem('카카오톡 채팅방', CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), () => onOpenTemplate('kakaotalk')),
+                            _buildWin7ProgramItem('카카오톡 채팅방', null, const Color(0xFFFEE500), () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
                             _buildWin7ProgramItem('Windows 블루스크린', CupertinoIcons.device_desktop, const Color(0xFF0078D7), () => onOpenTemplate('windows_bsod')),
                             _buildWin7ProgramItem('YouTube 비디오 에디터', CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), () => onOpenTemplate('youtube')),
                             _buildWin7ProgramItem('Instagram 소셜 피드', CupertinoIcons.camera_fill, const Color(0xFFE1306C), () => onOpenTemplate('instagram')),
@@ -286,7 +286,7 @@ class WindowsStartMenu extends StatelessWidget {
     );
   }
 
-  Widget _buildWin7ProgramItem(String title, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildWin7ProgramItem(String title, IconData? icon, Color color, VoidCallback onTap, {String? imageAsset}) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(4),
@@ -299,7 +299,12 @@ class WindowsStartMenu extends StatelessWidget {
               width: 28,
               height: 28,
               decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4)),
-              child: Icon(icon, color: Colors.white, size: 16),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: imageAsset != null
+                    ? Image.asset(imageAsset, fit: BoxFit.cover)
+                    : (icon != null ? Icon(icon, color: Colors.white, size: 16) : const SizedBox()),
+              ),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -347,7 +352,7 @@ class WindowsStartMenu extends StatelessWidget {
       mainAxisSpacing: 8,
       crossAxisSpacing: 8,
       children: [
-        _buildAppItem('카카오톡', CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), () => onOpenTemplate('kakaotalk')),
+        _buildAppItem('카카오톡', null, const Color(0xFFFEE500), () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
         _buildAppItem('블루스크린', CupertinoIcons.device_desktop, const Color(0xFF0078D7), () => onOpenTemplate('windows_bsod')),
         _buildAppItem('YouTube', CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), () => onOpenTemplate('youtube')),
         _buildAppItem('Instagram', CupertinoIcons.camera_fill, const Color(0xFFE1306C), () => onOpenTemplate('instagram')),
@@ -357,7 +362,7 @@ class WindowsStartMenu extends StatelessWidget {
     );
   }
 
-  Widget _buildAppItem(String title, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildAppItem(String title, IconData? icon, Color color, VoidCallback onTap, {String? imageAsset}) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
@@ -374,7 +379,12 @@ class WindowsStartMenu extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: color.withValues(alpha: 0.4)),
               ),
-              child: Icon(icon, color: color, size: 18),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: imageAsset != null
+                    ? Image.asset(imageAsset, fit: BoxFit.cover)
+                    : (icon != null ? Icon(icon, color: color, size: 18) : const SizedBox()),
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -391,17 +401,27 @@ class WindowsStartMenu extends StatelessWidget {
     );
   }
 
-  Widget _buildListTile(String title, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildListTile(String title, IconData? icon, Color color, VoidCallback onTap, {String? imageAsset}) {
     return ListTile(
       dense: true,
       contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: color, size: 18),
+      leading: Container(
+        width: 24,
+        height: 24,
+        alignment: Alignment.center,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: imageAsset != null
+              ? Image.asset(imageAsset, fit: BoxFit.cover)
+              : (icon != null ? Icon(icon, color: color, size: 18) : const SizedBox()),
+        ),
+      ),
       title: Text(title, style: const TextStyle(color: Colors.white, fontSize: 12)),
       onTap: onTap,
     );
   }
 
-  Widget _buildTileBox(String title, IconData icon, Color color, VoidCallback onTap, {Color iconColor = Colors.white}) {
+  Widget _buildTileBox(String title, IconData? icon, Color color, VoidCallback onTap, {Color iconColor = Colors.white, String? imageAsset}) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -411,7 +431,16 @@ class WindowsStartMenu extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(icon, color: iconColor, size: 24),
+            SizedBox(
+              width: 28,
+              height: 28,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: imageAsset != null
+                    ? Image.asset(imageAsset, fit: BoxFit.cover)
+                    : (icon != null ? Icon(icon, color: iconColor, size: 24) : const SizedBox()),
+              ),
+            ),
             Text(title, style: TextStyle(color: iconColor, fontSize: 11, fontWeight: FontWeight.bold)),
           ],
         ),
