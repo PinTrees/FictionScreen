@@ -3,16 +3,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'apps/settings/ios18_settings_view.dart';
+import 'models/ios18_app_item.dart';
 import 'widgets/ios18_app_icon.dart';
 import 'widgets/ios18_dock.dart';
 import 'widgets/ios18_home_indicator.dart';
+import 'widgets/ios18_jiggle.dart';
+import 'widgets/ios18_reorderable_grid.dart';
 import 'widgets/ios18_status_bar.dart';
 import 'widgets/ios18_widget_card.dart';
 
 /// iPhone 16 Pro iOS 18 모바일 홈스크린 및 티타늄 프레임 뷰
 /// - 좌우 슬라이드(PageView) 탐색 지원 (Page 0: 위젯+앱, Page 1: 앱 그리드, Page 2: 앱 보관함)
-/// - 실제 iOS 18 홈스크린 순정 레이아웃 (상단 날씨/캘린더 2x2 위젯, 잠금화면 거대 시계 배제)
-/// - 하단 독(Dock): Apple 순정 리퀴드 글래스모피즘 (Liquid Glassmorphism) 적용
+/// - 롱프레스 홈 화면 편집 모드: 앱 아이콘 위치 변경 (드래그 앤 드롭 실시간 스왑), 지글 흔들림, 삭제 '-' 배지, '완료' 버튼
+/// - 하단 독(Dock): Apple 순정 리퀴드 글래스모피즘 (Liquid Glassmorphism)
 class Ios18View extends StatefulWidget {
   final User? user;
   final String timeString;
@@ -44,6 +47,13 @@ class _Ios18ViewState extends State<Ios18View> {
   String? _activeApp;
   late final PageController _pageController;
   int _currentPage = 0;
+  bool _isEditMode = false;
+
+  // Page 1 앱 목록 (위치 이동 가능)
+  late List<Ios18AppItem> _page1Apps;
+
+  // Page 2 앱 목록 (위치 이동 가능)
+  late List<Ios18AppItem> _page2Apps;
 
   @override
   void initState() {
@@ -52,6 +62,110 @@ class _Ios18ViewState extends State<Ios18View> {
         ? widget.currentWallpaper
         : 'ios18_dark';
     _pageController = PageController();
+
+    _page1Apps = [
+      const Ios18AppItem(id: 'facetime', title: 'FaceTime', imageAsset: 'assets/images/ios/icons/facetime.png'),
+      const Ios18AppItem(id: 'photos', title: '사진', imageAsset: 'assets/images/ios/icons/photos.png'),
+      const Ios18AppItem(id: 'camera', title: '카메라', imageAsset: 'assets/images/ios/icons/camera.png'),
+      const Ios18AppItem(id: 'mail', title: '메일', imageAsset: 'assets/images/ios/icons/mail.png', badgeCount: 14),
+      const Ios18AppItem(id: 'clock', title: '시계', imageAsset: 'assets/images/ios/icons/clock.png'),
+      const Ios18AppItem(id: 'maps', title: '지도', imageAsset: 'assets/images/ios/icons/maps.png'),
+      const Ios18AppItem(id: 'notes', title: '메모', imageAsset: 'assets/images/ios/icons/notes.png'),
+      const Ios18AppItem(id: 'calculator', title: '계산기', imageAsset: 'assets/images/ios/icons/calculator.png'),
+      const Ios18AppItem(id: 'files', title: '파일', imageAsset: 'assets/images/ios/icons/files.png'),
+      const Ios18AppItem(id: 'health', title: '건강', imageAsset: 'assets/images/ios/icons/health.png'),
+      const Ios18AppItem(id: 'wallet', title: '지갑', imageAsset: 'assets/images/ios/icons/wallet.png'),
+      const Ios18AppItem(id: 'settings', title: '설정', imageAsset: 'assets/images/ios/icons/settings.png'),
+    ];
+
+    _page2Apps = [
+      const Ios18AppItem(id: 'appstore', title: 'App Store', imageAsset: 'assets/images/ios/icons/appstore.png'),
+      Ios18AppItem(
+        id: 'books',
+        title: '도서',
+        customIcon: Container(
+          color: const Color(0xFFFF9500),
+          child: const Icon(CupertinoIcons.book_fill, color: Colors.white, size: 28),
+        ),
+      ),
+      Ios18AppItem(
+        id: 'podcasts',
+        title: '팟캐스트',
+        customIcon: Container(
+          color: const Color(0xFFAF52DE),
+          child: const Icon(CupertinoIcons.mic_fill, color: Colors.white, size: 28),
+        ),
+      ),
+      Ios18AppItem(
+        id: 'stocks',
+        title: '주식',
+        customIcon: Container(
+          color: const Color(0xFF1C1C1E),
+          child: const Icon(CupertinoIcons.chart_bar_alt_fill, color: Color(0xFF30D158), size: 28),
+        ),
+      ),
+      Ios18AppItem(
+        id: 'reminders',
+        title: '미리알림',
+        customIcon: Container(
+          color: Colors.white,
+          child: const Icon(CupertinoIcons.list_bullet, color: Color(0xFF007AFF), size: 28),
+        ),
+      ),
+      Ios18AppItem(
+        id: 'fitness',
+        title: '피트니스',
+        customIcon: Container(
+          color: Colors.black,
+          child: const Icon(CupertinoIcons.flame_fill, color: Color(0xFFFF2D55), size: 28),
+        ),
+      ),
+      Ios18AppItem(
+        id: 'translate',
+        title: '번역',
+        customIcon: Container(
+          color: const Color(0xFF007AFF),
+          child: const Icon(CupertinoIcons.globe, color: Colors.white, size: 28),
+        ),
+      ),
+      Ios18AppItem(
+        id: 'shortcuts',
+        title: '단축어',
+        customIcon: Container(
+          color: const Color(0xFF5856D6),
+          child: const Icon(CupertinoIcons.bolt_horizontal_fill, color: Colors.white, size: 28),
+        ),
+      ),
+      const Ios18AppItem(id: 'kakaotalk', title: '카카오톡', imageAsset: 'assets/images/kakaotalk_icon.webp', badgeCount: 99),
+      const Ios18AppItem(id: 'instagram', title: 'Instagram', imageAsset: 'assets/images/instagram_icon.webp', badgeCount: 5),
+      Ios18AppItem(
+        id: 'youtube',
+        title: 'YouTube',
+        customIcon: Container(
+          color: Colors.red,
+          child: const Icon(CupertinoIcons.play_arrow_solid, color: Colors.white, size: 28),
+        ),
+      ),
+      const Ios18AppItem(id: 'netflix', title: 'Netflix', imageAsset: 'assets/images/netflix_icon.webp'),
+      const Ios18AppItem(id: 'coupang', title: '쿠팡', imageAsset: 'assets/images/coupang_icon.webp'),
+      Ios18AppItem(
+        id: 'delivery',
+        title: '배달의민족',
+        customIcon: Container(
+          color: const Color(0xFF2AC1BC),
+          child: const Icon(CupertinoIcons.bag_fill, color: Colors.white, size: 28),
+        ),
+      ),
+      const Ios18AppItem(id: 'lottery', title: '동행복권', imageAsset: 'assets/images/lottery_icon.webp'),
+      Ios18AppItem(
+        id: 'windows_bsod',
+        title: '블루스크린',
+        customIcon: Container(
+          color: const Color(0xFF0078D7),
+          child: const Icon(CupertinoIcons.device_desktop, color: Colors.white, size: 28),
+        ),
+      ),
+    ];
   }
 
   @override
@@ -60,7 +174,39 @@ class _Ios18ViewState extends State<Ios18View> {
     super.dispose();
   }
 
+  void _enterEditMode() {
+    if (!_isEditMode) {
+      setState(() {
+        _isEditMode = true;
+      });
+    }
+  }
+
+  void _exitEditMode() {
+    if (_isEditMode) {
+      setState(() {
+        _isEditMode = false;
+      });
+    }
+  }
+
+  void _onReorderPage1(int oldIndex, int newIndex) {
+    setState(() {
+      final item = _page1Apps.removeAt(oldIndex);
+      _page1Apps.insert(newIndex, item);
+    });
+  }
+
+  void _onReorderPage2(int oldIndex, int newIndex) {
+    setState(() {
+      final item = _page2Apps.removeAt(oldIndex);
+      _page2Apps.insert(newIndex, item);
+    });
+  }
+
   void _openApp(String appId) {
+    if (_isEditMode) return;
+
     // Fiction 템플릿 앱인 경우 기존 전역 템플릿 창으로 전환
     const creatorTemplates = {
       'kakaotalk',
@@ -126,7 +272,6 @@ class _Ios18ViewState extends State<Ios18View> {
 
   // iPhone 16 Pro 물리 티타늄 프레임 (외곽 볼륨 버튼, 전원 버튼, 정밀 베젤)
   Widget _buildIphone16ProDeviceFrame(double screenHeight) {
-    // 기기 비율 맞춤 계산 (약 393 x 852 표준)
     final double targetHeight = (screenHeight * 0.94).clamp(680.0, 920.0);
     final double targetWidth = targetHeight * (393.0 / 852.0);
 
@@ -167,14 +312,18 @@ class _Ios18ViewState extends State<Ios18View> {
       children: [
         // 1. 공식 고화질 iOS 18 배경화면
         Positioned.fill(
-          child: Image.asset(
-            _getWallpaperAsset(),
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
+          child: GestureDetector(
+            onTap: _exitEditMode,
+            behavior: HitTestBehavior.translucent,
+            child: Image.asset(
+              _getWallpaperAsset(),
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+            ),
           ),
         ),
 
-        // 2. 홈 스크린 콘텐츠 (상태바 + 좌우 슬라이드 PageView + 페이지 인디케이터 + 리퀴드 독)
+        // 2. 홈 스크린 콘텐츠 (상태바 + 편집 모드 헤더 + PageView + 페이지 인디케이터 + 리퀴드 독)
         Positioned.fill(
           child: SafeArea(
             bottom: false,
@@ -182,7 +331,16 @@ class _Ios18ViewState extends State<Ios18View> {
               children: [
                 // 최상단 상태바 & 다이내믹 아일랜드
                 Ios18StatusBar(timeString: widget.timeString),
-                const SizedBox(height: 10),
+
+                // 편집 모드 헤더 (좌측 '+' 위젯 추가 버튼 & 우측 '완료' 버튼)
+                AnimatedCrossFade(
+                  firstChild: const SizedBox(height: 10),
+                  secondChild: _buildEditModeHeader(),
+                  crossFadeState: _isEditMode
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
+                  duration: const Duration(milliseconds: 200),
+                ),
 
                 // 좌우 슬라이드 가능한 홈스크린 멀티 페이지 (PageView)
                 Expanded(
@@ -195,8 +353,8 @@ class _Ios18ViewState extends State<Ios18View> {
                       });
                     },
                     children: [
-                      _buildPage1(), // Page 1: 상단 2x2 위젯(날씨, 캘린더) + 3행 앱 그리드
-                      _buildPage2(), // Page 2: 4행 앱 그리드 (유틸리티 & 크리에이터 앱)
+                      _buildPage1(), // Page 1: 상단 2x2 위젯(날씨, 캘린더) + 재배치 가능한 앱 그리드
+                      _buildPage2(), // Page 2: 재배치 가능한 4행 앱 그리드
                       _buildPage3AppLibrary(), // Page 3: 순정 앱 보관함
                     ],
                   ),
@@ -207,11 +365,19 @@ class _Ios18ViewState extends State<Ios18View> {
                 const SizedBox(height: 10),
 
                 // 3. 순정 리퀴드 글래스모피즘 플로팅 독
-                Ios18Dock(onOpenApp: _openApp),
+                Ios18Dock(
+                  onOpenApp: _openApp,
+                  isEditMode: _isEditMode,
+                  onEnterEditMode: _enterEditMode,
+                ),
                 const SizedBox(height: 10),
 
                 // 4. 하단 홈 인디케이터 바
                 Ios18HomeIndicator(onHome: () {
+                  if (_isEditMode) {
+                    _exitEditMode();
+                    return;
+                  }
                   if (_currentPage != 0) {
                     _pageController.animateToPage(
                       0,
@@ -235,54 +401,60 @@ class _Ios18ViewState extends State<Ios18View> {
     );
   }
 
-  // Page 1: 순정 iOS 18 레이아웃 (날씨 2x2 위젯 + 캘린더 2x2 위젯 + 3행 앱 그리드)
-  Widget _buildPage1() {
-    return Padding(
+  // 홈 화면 편집 모드 상단 헤더 (iOS 18 순정 '+' 버튼과 '완료' 캡슐)
+  Widget _buildEditModeHeader() {
+    return Container(
+      height: 38,
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // 상단: iOS 18 모듈형 2x2 위젯 2개 나란히 배치
-          Row(
-            children: [
-              Expanded(
-                child: Ios18WeatherWidget(
-                  onTap: () => _openApp('weather'),
-                ),
+          // 좌측 '+' 위젯 추가 버튼
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withValues(alpha: 0.24),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.32),
+                width: 0.6,
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Ios18CalendarWidget(
-                  onTap: () => _openApp('calendar'),
-                ),
-              ),
-            ],
+            ),
+            child: const Center(
+              child: Icon(CupertinoIcons.plus, color: Colors.white, size: 18),
+            ),
           ),
-          const SizedBox(height: 18),
 
-          // 3행 x 4열 순정 앱 그리드 (12개 앱)
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 4,
-              mainAxisSpacing: 14,
-              crossAxisSpacing: 14,
-              childAspectRatio: 0.74,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                Ios18AppIcon(title: 'FaceTime', imageAsset: 'assets/images/ios/icons/facetime.png', onTap: () => _openApp('facetime')),
-                Ios18AppIcon(title: '사진', imageAsset: 'assets/images/ios/icons/photos.png', onTap: () => _openApp('photos')),
-                Ios18AppIcon(title: '카메라', imageAsset: 'assets/images/ios/icons/camera.png', onTap: () => _openApp('camera')),
-                Ios18AppIcon(title: '메일', imageAsset: 'assets/images/ios/icons/mail.png', badgeCount: 14, onTap: () => _openApp('mail')),
-
-                Ios18AppIcon(title: '시계', imageAsset: 'assets/images/ios/icons/clock.png', onTap: () => _openApp('clock')),
-                Ios18AppIcon(title: '지도', imageAsset: 'assets/images/ios/icons/maps.png', onTap: () => _openApp('maps')),
-                Ios18AppIcon(title: '메모', imageAsset: 'assets/images/ios/icons/notes.png', onTap: () => _openApp('notes')),
-                Ios18AppIcon(title: '계산기', imageAsset: 'assets/images/ios/icons/calculator.png', onTap: () => _openApp('calculator')),
-
-                Ios18AppIcon(title: '파일', imageAsset: 'assets/images/ios/icons/files.png', onTap: () => _openApp('files')),
-                Ios18AppIcon(title: '건강', imageAsset: 'assets/images/ios/icons/health.png', onTap: () => _openApp('health')),
-                Ios18AppIcon(title: '지갑', imageAsset: 'assets/images/ios/icons/wallet.png', onTap: () => _openApp('wallet')),
-                Ios18AppIcon(title: '설정', imageAsset: 'assets/images/ios/icons/settings.png', onTap: () => _openApp('settings')),
-              ],
+          // 우측 '완료' 글래스 캡슐 버튼
+          GestureDetector(
+            onTap: _exitEditMode,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.28),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.36),
+                  width: 0.8,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Text(
+                '완료',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.2,
+                ),
+              ),
             ),
           ),
         ],
@@ -290,90 +462,75 @@ class _Ios18ViewState extends State<Ios18View> {
     );
   }
 
-  // Page 2: 4행 x 4열 앱 그리드 (유틸리티 & 크리에이터 템플릿 앱)
+  // Page 1: 상단 2x2 위젯 + 드래그 앤 드롭 위치 변경 앱 그리드
+  Widget _buildPage1() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          // 상단: iOS 18 모듈형 2x2 위젯 2개
+          Row(
+            children: [
+              Expanded(
+                child: Ios18Jiggle(
+                  isJiggling: _isEditMode,
+                  index: 90,
+                  child: Ios18WeatherWidget(
+                    onTap: () => _openApp('weather'),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Ios18Jiggle(
+                  isJiggling: _isEditMode,
+                  index: 91,
+                  child: Ios18CalendarWidget(
+                    onTap: () => _openApp('calendar'),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+
+          // 3행 x 4열 드래그 앤 드롭 재배치 가능 앱 그리드
+          Expanded(
+            child: Ios18ReorderableGrid(
+              items: _page1Apps,
+              isEditMode: _isEditMode,
+              onReorder: _onReorderPage1,
+              onOpenApp: _openApp,
+              onEnterEditMode: _enterEditMode,
+              onDeleteItem: (item) {
+                setState(() {
+                  _page1Apps.remove(item);
+                });
+              },
+              physics: const NeverScrollableScrollPhysics(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Page 2: 4행 x 4열 드래그 앤 드롭 재배치 가능 앱 그리드
   Widget _buildPage2() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: GridView.count(
-        crossAxisCount: 4,
-        mainAxisSpacing: 14,
-        crossAxisSpacing: 14,
-        childAspectRatio: 0.74,
+      child: Ios18ReorderableGrid(
+        items: _page2Apps,
+        isEditMode: _isEditMode,
+        onReorder: _onReorderPage2,
+        onOpenApp: _openApp,
+        onEnterEditMode: _enterEditMode,
+        onDeleteItem: (item) {
+          setState(() {
+            _page2Apps.remove(item);
+          });
+        },
         physics: const BouncingScrollPhysics(),
-        children: [
-          // Row 1
-          Ios18AppIcon(title: 'App Store', imageAsset: 'assets/images/ios/icons/appstore.png', onTap: () => _openApp('appstore')),
-          Ios18AppIcon(
-            title: '도서',
-            customIcon: Container(
-              color: const Color(0xFFFF9500),
-              child: const Icon(CupertinoIcons.book_fill, color: Colors.white, size: 28),
-            ),
-            onTap: () => _openApp('books'),
-          ),
-          Ios18AppIcon(
-            title: '팟캐스트',
-            customIcon: Container(
-              color: const Color(0xFFAF52DE),
-              child: const Icon(CupertinoIcons.mic_fill, color: Colors.white, size: 28),
-            ),
-            onTap: () => _openApp('podcasts'),
-          ),
-          Ios18AppIcon(
-            title: '주식',
-            customIcon: Container(
-              color: const Color(0xFF1C1C1E),
-              child: const Icon(CupertinoIcons.chart_bar_alt_fill, color: Color(0xFF30D158), size: 28),
-            ),
-            onTap: () => _openApp('stocks'),
-          ),
-
-          // Row 2
-          Ios18AppIcon(
-            title: '미리알림',
-            customIcon: Container(
-              color: Colors.white,
-              child: const Icon(CupertinoIcons.list_bullet, color: Color(0xFF007AFF), size: 28),
-            ),
-            onTap: () => _openApp('reminders'),
-          ),
-          Ios18AppIcon(
-            title: '피트니스',
-            customIcon: Container(
-              color: Colors.black,
-              child: const Icon(CupertinoIcons.flame_fill, color: Color(0xFFFF2D55), size: 28),
-            ),
-            onTap: () => _openApp('fitness'),
-          ),
-          Ios18AppIcon(
-            title: '번역',
-            customIcon: Container(
-              color: const Color(0xFF007AFF),
-              child: const Icon(CupertinoIcons.globe, color: Colors.white, size: 28),
-            ),
-            onTap: () => _openApp('translate'),
-          ),
-          Ios18AppIcon(
-            title: '단축어',
-            customIcon: Container(
-              color: const Color(0xFF5856D6),
-              child: const Icon(CupertinoIcons.bolt_horizontal_fill, color: Colors.white, size: 28),
-            ),
-            onTap: () => _openApp('shortcuts'),
-          ),
-
-          // Row 3 (크리에이터 앱)
-          Ios18AppIcon(title: '카카오톡', imageAsset: 'assets/images/kakaotalk_icon.webp', badgeCount: 99, onTap: () => _openApp('kakaotalk')),
-          Ios18AppIcon(title: 'Instagram', imageAsset: 'assets/images/instagram_icon.webp', badgeCount: 5, onTap: () => _openApp('instagram')),
-          Ios18AppIcon(title: 'YouTube', customIcon: Container(color: Colors.red, child: const Icon(CupertinoIcons.play_arrow_solid, color: Colors.white, size: 28)), onTap: () => _openApp('youtube')),
-          Ios18AppIcon(title: 'Netflix', imageAsset: 'assets/images/netflix_icon.webp', onTap: () => _openApp('netflix')),
-
-          // Row 4
-          Ios18AppIcon(title: '쿠팡', imageAsset: 'assets/images/coupang_icon.webp', onTap: () => _openApp('coupang')),
-          Ios18AppIcon(title: '배달의민족', customIcon: Container(color: const Color(0xFF2AC1BC), child: const Icon(CupertinoIcons.bag_fill, color: Colors.white, size: 28)), onTap: () => _openApp('delivery')),
-          Ios18AppIcon(title: '동행복권', imageAsset: 'assets/images/lottery_icon.webp', onTap: () => _openApp('lottery')),
-          Ios18AppIcon(title: '블루스크린', customIcon: Container(color: const Color(0xFF0078D7), child: const Icon(CupertinoIcons.device_desktop, color: Colors.white, size: 28)), onTap: () => _openApp('windows_bsod')),
-        ],
       ),
     );
   }
@@ -569,7 +726,6 @@ class _Ios18ViewState extends State<Ios18View> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                // 3개의 페이지 인디케이터 점
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: List.generate(3, (index) {

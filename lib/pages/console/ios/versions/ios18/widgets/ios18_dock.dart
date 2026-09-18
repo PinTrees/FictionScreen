@@ -7,10 +7,18 @@ import 'ios18_app_icon.dart';
 /// - 유체 표면장력 스펙큘러 하이라이트 (Top Specular Sheen)
 /// - 하단 굴절 바운스 림 라이트
 /// - 듀얼 앰비언트 심도 그림자 및 스쿼클 곡률 (r=36)
+/// - 롱프레스 홈 화면 편집 모드 및 지글 흔들림 연동
 class Ios18Dock extends StatelessWidget {
   final Function(String appId) onOpenApp;
+  final bool isEditMode;
+  final VoidCallback? onEnterEditMode;
 
-  const Ios18Dock({super.key, required this.onOpenApp});
+  const Ios18Dock({
+    super.key,
+    required this.onOpenApp,
+    this.isEditMode = false,
+    this.onEnterEditMode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -98,23 +106,35 @@ class Ios18Dock extends StatelessWidget {
                         Ios18AppIcon(
                           title: '',
                           imageAsset: 'assets/images/ios/icons/phone.png',
+                          isEditMode: isEditMode,
+                          index: 100,
                           onTap: () => onOpenApp('phone'),
+                          onLongPress: onEnterEditMode,
                         ),
                         Ios18AppIcon(
                           title: '',
                           imageAsset: 'assets/images/ios/icons/safari.png',
+                          isEditMode: isEditMode,
+                          index: 101,
                           onTap: () => onOpenApp('safari'),
+                          onLongPress: onEnterEditMode,
                         ),
                         Ios18AppIcon(
                           title: '',
                           imageAsset: 'assets/images/ios/icons/messages.png',
                           badgeCount: 3,
+                          isEditMode: isEditMode,
+                          index: 102,
                           onTap: () => onOpenApp('messages'),
+                          onLongPress: onEnterEditMode,
                         ),
                         Ios18AppIcon(
                           title: '',
                           imageAsset: 'assets/images/ios/icons/music.png',
+                          isEditMode: isEditMode,
+                          index: 103,
                           onTap: () => onOpenApp('music'),
+                          onLongPress: onEnterEditMode,
                         ),
                       ],
                     ),
