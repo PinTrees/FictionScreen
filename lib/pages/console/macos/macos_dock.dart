@@ -160,9 +160,6 @@ class _MacosDockState extends State<MacosDock> {
                   index: 9,
                   tooltip: '카카오톡 채팅 에디터',
                   imageAsset: 'assets/images/kakaotalk_icon.webp',
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFEE500), Color(0xFFF5D000)],
-                  ),
                   onTap: () => widget.onOpenTemplate('kakaotalk'),
                 ),
                 _buildDockApp(
@@ -186,12 +183,7 @@ class _MacosDockState extends State<MacosDock> {
                 _buildDockApp(
                   index: 12,
                   tooltip: 'Instagram 피드 에디터',
-                  icon: CupertinoIcons.camera_fill,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF833AB4), Color(0xFFFD1D1D), Color(0xFFFCB045)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  imageAsset: 'assets/images/instagram_icon.webp',
                   onTap: () => widget.onOpenTemplate('instagram'),
                 ),
                 _buildDockApp(
@@ -250,7 +242,7 @@ class _MacosDockState extends State<MacosDock> {
     IconData? icon,
     String? imageAsset,
     Color iconColor = Colors.white,
-    required LinearGradient gradient,
+    LinearGradient? gradient,
     required VoidCallback onTap,
   }) {
     final bool isHovered = _hoveredIndex == index;

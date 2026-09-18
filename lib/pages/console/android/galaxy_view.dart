@@ -145,9 +145,7 @@ class GalaxyView extends StatelessWidget {
                       ),
                       OsAppItem(
                         title: 'Instagram',
-                        icon: CupertinoIcons.camera_fill,
-                        iconColor: Colors.white,
-                        backgroundColor: const Color(0xFFE1306C),
+                        imageAsset: 'assets/images/instagram_icon.webp',
                         isDesktop: false,
                         onTap: () => onOpenTemplate('instagram'),
                       ),

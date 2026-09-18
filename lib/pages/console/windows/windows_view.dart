@@ -82,8 +82,7 @@ class WindowsView extends StatelessWidget {
                 const SizedBox(height: 12),
                 OsAppItem(
                   title: 'Instagram',
-                  icon: CupertinoIcons.camera_fill,
-                  iconColor: const Color(0xFFE1306C),
+                  imageAsset: 'assets/images/instagram_icon.webp',
                   onTap: () => onOpenTemplate('instagram'),
                 ),
                 const SizedBox(height: 12),
