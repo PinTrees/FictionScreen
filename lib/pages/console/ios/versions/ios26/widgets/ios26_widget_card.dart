@@ -16,7 +16,6 @@ class Ios26WeatherWidget extends StatelessWidget {
         height: 156,
         borderRadius: 26,
         blurSigma: 36,
-        saturation: 1.5,
         tintColor: const Color(0xFF1A6DD6),
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -117,7 +116,6 @@ class Ios26CalendarWidget extends StatelessWidget {
         height: 156,
         borderRadius: 26,
         blurSigma: 36,
-        saturation: 1.45,
         tintColor: const Color(0xFF1E1E22),
         padding: const EdgeInsets.all(14),
         child: Column(

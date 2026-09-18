@@ -330,12 +330,12 @@ class _Ios26ViewState extends State<Ios26View> {
           ),
         ),
 
-        // 2. 홈 스크린 본체 콘텐츠
-        AnimatedScale(
-          scale: _isControlCenterOpen ? 0.93 : 1.0,
-          duration: const Duration(milliseconds: 320),
-          curve: Curves.easeOutCubic,
-          child: Positioned.fill(
+        // 2. 홈 스크린 본체 콘텐츠 (직접 Stack의 Positioned.fill 자식)
+        Positioned.fill(
+          child: AnimatedScale(
+            scale: _isControlCenterOpen ? 0.93 : 1.0,
+            duration: const Duration(milliseconds: 320),
+            curve: Curves.easeOutCubic,
             child: SafeArea(
               bottom: false,
               child: Column(
@@ -417,22 +417,28 @@ class _Ios26ViewState extends State<Ios26View> {
             child: _buildAppOverlay(),
           ),
 
-        // 4. iOS 26 공식 리퀴드 글래스 제어 센터 (상태바 드래그 다운 또는 우측 탭 시 슬라이드 다운)
-        AnimatedPositioned(
-          duration: const Duration(milliseconds: 340),
-          curve: Curves.easeOutCubic,
-          top: _isControlCenterOpen ? 0 : -920,
-          bottom: _isControlCenterOpen ? 0 : 920,
-          left: 0,
-          right: 0,
-          child: Ios26ControlCenter(
-            onClose: () => _toggleControlCenter(false),
-            onOpenApp: (appId) {
-              _toggleControlCenter(false);
-              _openApp(appId);
-            },
+        // 4. iOS 26 공식 리퀴드 글래스 제어 센터 (슬라이드 다운 오버레이)
+        if (_isControlCenterOpen)
+          Positioned.fill(
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: -1.0, end: 0.0),
+              duration: const Duration(milliseconds: 320),
+              curve: Curves.easeOutCubic,
+              builder: (context, offset, child) {
+                return FractionalTranslation(
+                  translation: Offset(0, offset),
+                  child: child,
+                );
+              },
+              child: Ios26ControlCenter(
+                onClose: () => _toggleControlCenter(false),
+                onOpenApp: (appId) {
+                  _toggleControlCenter(false);
+                  _openApp(appId);
+                },
+              ),
+            ),
           ),
-        ),
       ],
     );
   }

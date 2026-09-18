@@ -24,7 +24,6 @@ class Ios26Dock extends StatelessWidget {
         height: 92,
         borderRadius: 38,
         blurSigma: 42,
-        saturation: 1.5,
         hasCornerGlow: true,
         hasChromaticAberration: true,
         child: Center(
