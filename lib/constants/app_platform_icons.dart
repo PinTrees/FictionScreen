@@ -26,13 +26,14 @@ class AppPlatformIcons {
     AppPlatformInfo(id: 'pinterest', name: '핀터레스트', assetPath: 'assets/images/pinterest_icon.webp'),
   ];
 
-  // 2. Virtual Desktop OS (7 platforms)
+  // 2. Virtual Desktop OS (8 platforms)
   static const List<AppPlatformInfo> osList = [
     AppPlatformInfo(id: 'windows_11', name: 'Windows 11', assetPath: 'assets/images/win11_logo.png', isConsole: true),
     AppPlatformInfo(id: 'windows_10', name: 'Windows 10', assetPath: 'assets/images/win10_logo.png', isConsole: true),
     AppPlatformInfo(id: 'windows_7', name: 'Windows 7', assetPath: 'assets/images/win7_logo.png', isConsole: true),
     AppPlatformInfo(id: 'windows_xp', name: 'Windows XP', assetPath: 'assets/images/winxp_logo.png', isConsole: true),
     AppPlatformInfo(id: 'macos', name: 'macOS Sonoma', assetPath: 'assets/images/macos/finder.webp', isConsole: true),
+    AppPlatformInfo(id: 'steamos', name: 'SteamOS (Steam Deck)', assetPath: 'assets/images/steamos_logo.png'),
     AppPlatformInfo(id: 'windows_bsod', name: '블루스크린 (BSOD)', assetPath: 'assets/images/win11_logo.png'),
     AppPlatformInfo(id: 'windows_update', name: '가짜 윈도우 업데이트', assetPath: 'assets/images/windows/settings.png'),
   ];

@@ -92,7 +92,8 @@ class _StudioPageState extends State<StudioPage> {
   @override
   void initState() {
     super.initState();
-    _template = ScreenTemplate.allTemplates.firstWhere((t) => t.id == widget.templateId, orElse: () => ScreenTemplate.allTemplates.first);
+    final lookupId = widget.templateId == 'steamos' ? 'steam' : widget.templateId;
+    _template = ScreenTemplate.allTemplates.firstWhere((t) => t.id == lookupId, orElse: () => ScreenTemplate.allTemplates.first);
     _kakaobankConfig = KakaoBankConfig.defaultPreset();
     _kakaoConfig = KakaoRoomConfig.defaultPreset();
     _tossConfig = TossConfig.defaultPreset();

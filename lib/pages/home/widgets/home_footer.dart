@@ -20,46 +20,52 @@ class HomeFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Final CTA Banner Box (Brand Gradient Box, Centered, NO OUTLINES)
-        Center(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 1140),
-            margin: EdgeInsets.symmetric(
-              horizontal: isMobile ? 24 : 48,
-              vertical: isMobile ? 50 : 80,
-            ),
-            padding: EdgeInsets.symmetric(
-              horizontal: isMobile ? 28 : 64,
-              vertical: isMobile ? 44 : 64,
-            ),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: isDarkMode
-                    ? [const Color(0xFF1E1B4B), const Color(0xFF131525), const Color(0xFF0F172A)]
-                    : [const Color(0xFFEEF2FF), const Color(0xFFE0E7FF), const Color(0xFFF8FAFC)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+        // Final CTA Full-Width Section (Edge-to-Edge, NO CARD BOX, Seamless Ambient Gradient)
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: isDarkMode
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.08),
+                width: 1.0,
               ),
-              borderRadius: BorderRadius.circular(28),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF6366F1).withValues(alpha: isDarkMode ? 0.2 : 0.12),
-                  blurRadius: 36,
-                  offset: const Offset(0, 8),
-                ),
-              ],
             ),
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF6366F1).withValues(alpha: 0.18),
-                    shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: isDarkMode
+                  ? [
+                      const Color(0xFF0C0E1B),
+                      const Color(0xFF080913),
+                      const Color(0xFF040508),
+                    ]
+                  : [
+                      const Color(0xFFF1F5F9),
+                      const Color(0xFFF8FAFC),
+                      const Color(0xFFFFFFFF),
+                    ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 24 : 48,
+            vertical: isMobile ? 70 : 110,
+          ),
+          child: Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 860),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6366F1).withValues(alpha: 0.18),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(CupertinoIcons.sparkles, color: Color(0xFF6366F1), size: 30),
                   ),
-                  child: const Icon(CupertinoIcons.sparkles, color: Color(0xFF6366F1), size: 30),
-                ),
-                const SizedBox(height: 22),
+                  const SizedBox(height: 24),
                 Text(
                   HomeI18n.t('footerTitle', isEnglish: isEnglish),
                   textAlign: TextAlign.center,
@@ -159,6 +165,7 @@ class HomeFooter extends StatelessWidget {
             ),
           ),
         ),
+      ),
 
         // Clean Minimal Footer
         Container(
@@ -166,6 +173,12 @@ class HomeFooter extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
           decoration: BoxDecoration(
             color: isDarkMode ? const Color(0xFF08090E) : const Color(0xFFF1F5F9),
+            border: Border(
+              top: BorderSide(
+                color: isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.06),
+                width: 1.0,
+              ),
+            ),
           ),
           child: Center(
             child: Column(

@@ -206,6 +206,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
           config: newsConfig ?? NewsConfig.defaultPreset(),
           onConfigChanged: onNewsChanged,
         );
+      case 'steamos':
       case 'steam':
         return SteamScreen(
           config: steamConfig ?? SteamConfig.defaultPreset(),
