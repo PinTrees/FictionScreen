@@ -194,15 +194,22 @@ class WindowsTaskbar extends StatelessWidget {
   // Windows 7: 클래식 에어로 글래스
   Widget _buildWin7Taskbar() {
     return Container(
-      height: 42,
+      height: 40,
       decoration: BoxDecoration(
-        color: const Color(0xFF0E2F54).withValues(alpha: 0.7),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            const Color(0xFF2B5885).withValues(alpha: 0.85),
+            const Color(0xFF1B3A5A).withValues(alpha: 0.75),
+          ],
+        ),
         border: Border(
-          top: BorderSide(color: const Color(0xFF67B5FA).withValues(alpha: 0.4), width: 1),
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.45), width: 1),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: Colors.black.withValues(alpha: 0.45),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -210,37 +217,25 @@ class WindowsTaskbar extends StatelessWidget {
       ),
       child: ClipRRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
           child: Row(
             children: [
-              // 시작 구슬(Orb)
-              InkWell(
+              // 시작 구슬(3D Start Orb)
+              _Win7StartOrbWidget(
+                isStartMenuOpen: isStartMenuOpen,
                 onTap: onToggleStartMenu,
-                child: Container(
-                  width: 52,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    gradient: const RadialGradient(
-                      colors: [Color(0xFF67B5FA), Color(0xFF1E528E)],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF38BDF8).withValues(alpha: 0.6),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Icon(CupertinoIcons.circle_grid_hex, color: Colors.white, size: 20),
-                  ),
-                ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
+
+              // 작업표시줄 아이콘들
               Expanded(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
+                      _buildTaskbarIcon(null, const Color(0xFF0078D7), '파일 탐색기', () => onOpenWinApp?.call('file_explorer'), imageAsset: 'assets/images/windows/explorer.png'),
+                      _buildTaskbarIcon(null, const Color(0xFF0078D7), 'Internet Explorer', () => onOpenWinApp?.call('edge'), imageAsset: 'assets/images/windows/edge.png'),
+                      _buildTaskbarIcon(null, const Color(0xFFE53935), 'Windows Media Player', () => onOpenTemplate('youtube'), imageAsset: 'assets/images/windows/vid.png'),
                       _buildTaskbarIcon(null, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
                       _buildTaskbarIcon(null, const Color(0xFFE53935), 'DaVinci Resolve', () => onOpenTemplate('davinci_resolve'), imageAsset: 'assets/images/davinci_resolve_icon.webp'),
                       _buildTaskbarIcon(null, const Color(0xFF68217A), 'Visual Studio 2026', () => onOpenTemplate('visual_studio'), imageAsset: 'assets/images/visual_studio_icon.webp'),
@@ -258,14 +253,25 @@ class WindowsTaskbar extends StatelessWidget {
                   ),
                 ),
               ),
+
+              // 시스템 트레이
               _buildSystemTray(),
-              Container(
-                width: 14,
-                height: 42,
-                margin: const EdgeInsets.only(left: 8),
-                decoration: BoxDecoration(
-                  border: Border(left: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
-                  color: Colors.white.withValues(alpha: 0.1),
+
+              // Windows 7 시그니처 Aero Peek (바탕 화면 보기) 바
+              Tooltip(
+                message: '바탕 화면 보기 (Aero Peek)',
+                child: Container(
+                  width: 14,
+                  height: 40,
+                  margin: const EdgeInsets.only(left: 6),
+                  decoration: BoxDecoration(
+                    border: Border(left: BorderSide(color: Colors.white.withValues(alpha: 0.35))),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.white.withValues(alpha: 0.25), Colors.white.withValues(alpha: 0.05)],
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -401,6 +407,177 @@ class WindowsTaskbar extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Windows 7 시그니처 3D 에어로 시작 구슬 (Start Orb)
+class _Win7StartOrbWidget extends StatefulWidget {
+  final bool isStartMenuOpen;
+  final VoidCallback onTap;
+
+  const _Win7StartOrbWidget({
+    required this.isStartMenuOpen,
+    required this.onTap,
+  });
+
+  @override
+  State<_Win7StartOrbWidget> createState() => _Win7StartOrbWidgetState();
+}
+
+class _Win7StartOrbWidgetState extends State<_Win7StartOrbWidget> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isActive = widget.isStartMenuOpen || _isHovered;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          width: 42,
+          height: 40,
+          margin: const EdgeInsets.only(left: 4),
+          alignment: Alignment.center,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                // 외부 청백색 에어로 발광 헤일로
+                BoxShadow(
+                  color: isActive
+                      ? const Color(0xFF38BDF8).withValues(alpha: 0.85)
+                      : const Color(0xFF1E3A5F).withValues(alpha: 0.4),
+                  blurRadius: isActive ? 12 : 5,
+                  spreadRadius: isActive ? 2 : 0,
+                ),
+                if (isActive)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.7),
+                    blurRadius: 6,
+                  ),
+              ],
+              border: Border.all(
+                color: isActive
+                    ? Colors.white.withValues(alpha: 0.9)
+                    : const Color(0xFF90C4EC).withValues(alpha: 0.6),
+                width: 1.5,
+              ),
+              gradient: RadialGradient(
+                center: const Alignment(-0.25, -0.35),
+                radius: 0.85,
+                colors: isActive
+                    ? [
+                        const Color(0xFF5DB8FF),
+                        const Color(0xFF2879C5),
+                        const Color(0xFF0F3B6E),
+                        const Color(0xFF071E3A),
+                      ]
+                    : [
+                        const Color(0xFF4A9CD9),
+                        const Color(0xFF1F5C98),
+                        const Color(0xFF0E2C52),
+                        const Color(0xFF051428),
+                      ],
+                stops: const [0.0, 0.45, 0.8, 1.0],
+              ),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // 상단 반사광 (Specular reflection)
+                Positioned(
+                  top: 2,
+                  child: Container(
+                    width: 22,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withValues(alpha: 0.75),
+                          Colors.white.withValues(alpha: 0.05),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // 중앙 Windows 4색 깃발 (Windows 7 Pearl Flag Emblem)
+                Transform.rotate(
+                  angle: -0.12,
+                  child: SizedBox(
+                    width: 17,
+                    height: 17,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildFlagQuarter(const Color(0xFFF25022), const Radius.circular(3), const Radius.circular(1)),
+                            const SizedBox(width: 1.5),
+                            _buildFlagQuarter(const Color(0xFF7FBA00), const Radius.circular(1), const Radius.circular(3)),
+                          ],
+                        ),
+                        const SizedBox(height: 1.5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildFlagQuarter(const Color(0xFF00A4EF), const Radius.circular(1), const Radius.circular(3)),
+                            const SizedBox(width: 1.5),
+                            _buildFlagQuarter(const Color(0xFFFFB900), const Radius.circular(3), const Radius.circular(1)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFlagQuarter(Color color, Radius topLeft, Radius bottomRight) {
+    return Container(
+      width: 7,
+      height: 7,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withValues(alpha: 0.95),
+            color,
+            color.withValues(alpha: 0.8),
+          ],
+        ),
+        borderRadius: BorderRadius.only(
+          topLeft: topLeft,
+          bottomRight: bottomRight,
+          topRight: const Radius.circular(1),
+          bottomLeft: const Radius.circular(1),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.35),
+            blurRadius: 1,
+            offset: const Offset(0.5, 0.5),
+          ),
+        ],
+      ),
     );
   }
 }

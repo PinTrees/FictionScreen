@@ -141,21 +141,29 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   @override
   Widget build(BuildContext context) {
     final isDesktopApp = widget.template.isDesktop;
+    final isWin7 = !widget.isMacStyle && widget.windowsVersion == '7';
     final isWin10 = !widget.isMacStyle && widget.windowsVersion == '10';
-    final borderRadius = isWin10 ? BorderRadius.zero : BorderRadius.circular(12);
-    final borderColor = isWin10
-        ? (widget.isFocused ? const Color(0xFF0078D7) : const Color(0xFF3E3E42))
-        : (widget.isFocused ? const Color(0xFF6366F1) : Colors.white.withValues(alpha: 0.12));
-    final titleBarHeight = isWin10 ? 31.0 : 38.0;
-    final titleBarColor = isWin10
-        ? (widget.isFocused ? const Color(0xFF2B2B2B) : const Color(0xFF1F1F1F))
-        : (widget.isFocused ? const Color(0xFF141622) : const Color(0xFF0D0E15));
-    final titleBarBorderRadius = isWin10
+    final borderRadius = widget.isMaximized
         ? BorderRadius.zero
-        : const BorderRadius.only(
-            topLeft: Radius.circular(11),
-            topRight: Radius.circular(11),
-          );
+        : (isWin10 ? BorderRadius.zero : (isWin7 ? BorderRadius.circular(8) : BorderRadius.circular(12)));
+    final borderColor = isWin7
+        ? (widget.isFocused ? Colors.white.withValues(alpha: 0.55) : Colors.white.withValues(alpha: 0.25))
+        : (isWin10
+            ? (widget.isFocused ? const Color(0xFF0078D7) : const Color(0xFF3E3E42))
+            : (widget.isFocused ? const Color(0xFF6366F1) : Colors.white.withValues(alpha: 0.12)));
+    final titleBarHeight = isWin7 ? 30.0 : (isWin10 ? 31.0 : 38.0);
+    final titleBarColor = isWin7
+        ? (widget.isFocused ? const Color(0xFF6BA4D8).withValues(alpha: 0.85) : const Color(0xFF50789E).withValues(alpha: 0.75))
+        : (isWin10
+            ? (widget.isFocused ? const Color(0xFF2B2B2B) : const Color(0xFF1F1F1F))
+            : (widget.isFocused ? const Color(0xFF141622) : const Color(0xFF0D0E15)));
+    final titleBarBorderRadius = widget.isMaximized
+        ? BorderRadius.zero
+        : (isWin10
+            ? BorderRadius.zero
+            : (isWin7
+                ? const BorderRadius.only(topLeft: Radius.circular(7), topRight: Radius.circular(7))
+                : const BorderRadius.only(topLeft: Radius.circular(11), topRight: Radius.circular(11))));
 
     return Positioned(
       left: widget.position.dx,
@@ -231,16 +239,29 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
                                 widget.template.title,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  color: widget.isFocused ? Colors.white : Colors.white60,
+                                  color: isWin7
+                                      ? Colors.black87
+                                      : (widget.isFocused ? Colors.white : Colors.white60),
                                   fontSize: 12,
-                                  fontWeight: widget.isFocused ? (isWin10 ? FontWeight.w500 : FontWeight.bold) : FontWeight.normal,
-                                  fontFamily: isWin10 ? 'Segoe UI' : null,
+                                  fontWeight: isWin7
+                                      ? FontWeight.w600
+                                      : (widget.isFocused ? (isWin10 ? FontWeight.w500 : FontWeight.bold) : FontWeight.normal),
+                                  fontFamily: (isWin7 || isWin10) ? 'Segoe UI' : null,
+                                  shadows: isWin7
+                                      ? const [
+                                          Shadow(color: Colors.white, blurRadius: 10),
+                                          Shadow(color: Colors.white, blurRadius: 5),
+                                          Shadow(color: Colors.white, blurRadius: 2),
+                                        ]
+                                      : null,
                                 ),
                               ),
                             ),
 
                             if (!widget.isMacStyle) ...[
-                              if (isWin10) ...[
+                              if (isWin7) ...[
+                                _buildWin7AeroCaptionButtons(),
+                              ] else if (isWin10) ...[
                                 // Windows 10 직각 풀-하이트 캡션 버튼: [최소화] [최대화/복원] [닫기]
                                 _buildWin10HeaderBtn(
                                   Container(width: 10, height: 1, color: Colors.white70),
@@ -292,12 +313,17 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
                     // 2. 창 내부 앱 실행 뷰 영역
                     Expanded(
                       child: ClipRRect(
-                        borderRadius: isWin10
+                        borderRadius: (isWin10 || widget.isMaximized)
                             ? BorderRadius.zero
-                            : const BorderRadius.only(
-                                bottomLeft: Radius.circular(11),
-                                bottomRight: Radius.circular(11),
-                              ),
+                            : (isWin7
+                                ? const BorderRadius.only(
+                                    bottomLeft: Radius.circular(7),
+                                    bottomRight: Radius.circular(7),
+                                  )
+                                : const BorderRadius.only(
+                                    bottomLeft: Radius.circular(11),
+                                    bottomRight: Radius.circular(11),
+                                  )),
                         child: DeviceFramePreview(
                           showFrame: false,
                           isDesktop: isDesktopApp,
@@ -515,6 +541,103 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
 
   Widget _buildWin10HeaderBtn(Widget icon, VoidCallback? onTap, {bool isClose = false}) {
     return _Win10TitleHeaderButton(icon: icon, onTap: onTap, isClose: isClose);
+  }
+
+  Widget _buildWin7AeroCaptionButtons() {
+    return Container(
+      height: 20,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 0.8),
+        boxShadow: const [
+          BoxShadow(color: Colors.black26, blurRadius: 2, offset: Offset(0, 1)),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _Win7AeroButton(
+            width: 28,
+            onTap: widget.onMinimize,
+            child: Container(width: 8, height: 2, color: Colors.black87),
+          ),
+          _Win7AeroButton(
+            width: 28,
+            onTap: widget.onMaximize,
+            child: widget.isMaximized ? _buildWin10RestoreIcon() : _buildWin10MaximizeIcon(),
+          ),
+          _Win7AeroButton(
+            width: 44,
+            isClose: true,
+            onTap: widget.onClose,
+            child: const Icon(CupertinoIcons.xmark, size: 11, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Win7AeroButton extends StatefulWidget {
+  final double width;
+  final Widget child;
+  final VoidCallback? onTap;
+  final bool isClose;
+
+  const _Win7AeroButton({
+    required this.width,
+    required this.child,
+    required this.onTap,
+    this.isClose = false,
+  });
+
+  @override
+  State<_Win7AeroButton> createState() => _Win7AeroButtonState();
+}
+
+class _Win7AeroButtonState extends State<_Win7AeroButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          width: widget.width,
+          height: 20,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: widget.isClose
+                  ? (_isHovered
+                      ? [const Color(0xFFFF5C5C), const Color(0xFFD61818)]
+                      : [const Color(0xFFE27474).withValues(alpha: 0.85), const Color(0xFFA82E2E).withValues(alpha: 0.9)])
+                  : (_isHovered
+                      ? [const Color(0xFFBFE0FF), const Color(0xFF6EB7F5)]
+                      : [Colors.white.withValues(alpha: 0.45), Colors.white.withValues(alpha: 0.15)]),
+            ),
+            border: widget.isClose
+                ? null
+                : const Border(right: BorderSide(color: Colors.black12, width: 0.8)),
+            boxShadow: (widget.isClose && _isHovered)
+                ? [
+                    BoxShadow(
+                      color: const Color(0xFFFF3B30).withValues(alpha: 0.6),
+                      blurRadius: 6,
+                    ),
+                  ]
+                : null,
+          ),
+          alignment: Alignment.center,
+          child: widget.child,
+        ),
+      ),
+    );
   }
 }
 

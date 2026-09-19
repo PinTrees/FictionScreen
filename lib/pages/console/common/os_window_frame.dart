@@ -6,6 +6,7 @@ enum WindowStyle {
   macos,
   windows,
   windows10,
+  windows7,
 }
 
 /// 현실적인 가상 OS 윈도우 창 프레임
@@ -49,29 +50,43 @@ class OsWindowFrame extends StatelessWidget {
 
     final borderColor = style == WindowStyle.windows10
         ? const Color(0xFF0078D7)
-        : Colors.white.withValues(alpha: 0.15);
+        : (style == WindowStyle.windows7
+            ? Colors.white.withValues(alpha: 0.45)
+            : Colors.white.withValues(alpha: 0.15));
 
-    return Center(
+    final backgroundColor = style == WindowStyle.windows10
+        ? const Color(0xFF1F1F1F)
+        : (style == WindowStyle.windows7
+            ? const Color(0xFF4578A8).withValues(alpha: 0.65)
+            : const Color(0xFF161824).withValues(alpha: 0.92));
+
+    return Material(
+      color: Colors.transparent,
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: style == WindowStyle.windows10 ? const Color(0xFF1F1F1F) : const Color(0xFF1E212B).withValues(alpha: 0.94),
+          color: backgroundColor,
           borderRadius: borderRadius,
-          border: isMaximized
-              ? null
-              : Border.all(
-                  color: borderColor,
-                  width: 1.0,
-                ),
+          border: Border.all(
+            color: borderColor,
+            width: 1.0,
+          ),
           boxShadow: isMaximized
-              ? const []
+              ? null
               : [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.55),
-                    blurRadius: 40,
-                    offset: const Offset(0, 16),
+                    color: Colors.black.withValues(alpha: 0.4),
+                    blurRadius: 24,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 10),
                   ),
+                  if (style == WindowStyle.windows7)
+                    BoxShadow(
+                      color: const Color(0xFF38BDF8).withValues(alpha: 0.25),
+                      blurRadius: 10,
+                      spreadRadius: 1,
+                    ),
                 ],
         ),
         child: ClipRRect(
@@ -100,9 +115,11 @@ class OsWindowFrame extends StatelessWidget {
       onPanEnd: onTitleDragEnd,
       child: style == WindowStyle.macos
           ? _buildMacTitleBar()
-          : (style == WindowStyle.windows10
-              ? _buildWindows10TitleBar()
-              : _buildWindowsTitleBar()),
+          : (style == WindowStyle.windows7
+              ? _buildWindows7TitleBar()
+              : (style == WindowStyle.windows10
+                  ? _buildWindows10TitleBar()
+                  : _buildWindowsTitleBar())),
     );
   }
 
@@ -198,6 +215,84 @@ class OsWindowFrame extends StatelessWidget {
             iconWidget: const Icon(CupertinoIcons.xmark, size: 10.5, color: Colors.white),
             onTap: onClose,
             isClose: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWindows7TitleBar() {
+    return Container(
+      height: 30,
+      padding: const EdgeInsets.only(left: 10, right: 4),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            const Color(0xFF75AADB).withValues(alpha: 0.85),
+            const Color(0xFF4578A8).withValues(alpha: 0.70),
+          ],
+        ),
+        border: Border(
+          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.35)),
+        ),
+      ),
+      child: Row(
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 15, color: Colors.white),
+            const SizedBox(width: 8),
+          ],
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.black87,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Segoe UI',
+              shadows: [
+                Shadow(color: Colors.white, blurRadius: 10),
+                Shadow(color: Colors.white, blurRadius: 4),
+              ],
+            ),
+          ),
+          const Spacer(),
+          // 에어로 캡슐 버튼
+          Container(
+            height: 20,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 0.8),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _Win7AeroCaptionButton(
+                  width: 28,
+                  onTap: onMinimize ?? onClose,
+                  child: Container(width: 8, height: 2, color: Colors.black87),
+                ),
+                _Win7AeroCaptionButton(
+                  width: 28,
+                  onTap: onMaximize ?? () {},
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black87, width: 1.0),
+                    ),
+                  ),
+                ),
+                _Win7AeroCaptionButton(
+                  width: 44,
+                  isClose: true,
+                  onTap: onClose,
+                  child: const Icon(CupertinoIcons.xmark, size: 11, color: Colors.white),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -309,6 +404,68 @@ class _Win10TitleBarButtonState extends State<_Win10TitleBarButton> {
           color: _isHovered ? hoverBg : Colors.transparent,
           alignment: Alignment.center,
           child: widget.iconWidget,
+        ),
+      ),
+    );
+  }
+}
+
+class _Win7AeroCaptionButton extends StatefulWidget {
+  final double width;
+  final Widget child;
+  final VoidCallback? onTap;
+  final bool isClose;
+
+  const _Win7AeroCaptionButton({
+    required this.width,
+    required this.child,
+    required this.onTap,
+    this.isClose = false,
+  });
+
+  @override
+  State<_Win7AeroCaptionButton> createState() => _Win7AeroCaptionButtonState();
+}
+
+class _Win7AeroCaptionButtonState extends State<_Win7AeroCaptionButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          width: widget.width,
+          height: 20,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: widget.isClose
+                  ? (_isHovered
+                      ? [const Color(0xFFFF5C5C), const Color(0xFFD61818)]
+                      : [const Color(0xFFE27474).withValues(alpha: 0.85), const Color(0xFFA82E2E).withValues(alpha: 0.9)])
+                  : (_isHovered
+                      ? [const Color(0xFFBFE0FF), const Color(0xFF6EB7F5)]
+                      : [Colors.white.withValues(alpha: 0.45), Colors.white.withValues(alpha: 0.15)]),
+            ),
+            border: widget.isClose
+                ? null
+                : const Border(right: BorderSide(color: Colors.black12, width: 0.8)),
+            boxShadow: (widget.isClose && _isHovered)
+                ? [
+                    BoxShadow(
+                      color: const Color(0xFFFF3B30).withValues(alpha: 0.6),
+                      blurRadius: 6,
+                    ),
+                  ]
+                : null,
+          ),
+          alignment: Alignment.center,
+          child: widget.child,
         ),
       ),
     );

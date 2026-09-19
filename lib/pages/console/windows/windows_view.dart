@@ -13,6 +13,7 @@ import 'versions/win10/apps/calculator/win10_calculator_window.dart';
 import 'versions/win10/apps/file_explorer/win10_file_explorer_window.dart';
 import 'versions/win10/apps/notepad/win10_notepad_window.dart';
 import 'versions/win10/apps/settings/win10_settings_window.dart';
+import 'versions/win7/apps/file_explorer/win7_file_explorer_window.dart';
 import 'versions/win11/apps/calculator/win11_calculator_window.dart';
 import 'versions/win11/apps/file_explorer/win11_file_explorer_window.dart';
 import 'versions/win11/apps/notepad/win11_notepad_window.dart';
@@ -438,6 +439,18 @@ class _WindowsViewState extends State<WindowsView> {
           defaultSize = const Size(720, 500);
         } else if (appId == 'paint_3d') {
           defaultSize = const Size(960, 620);
+        }
+      } else if (widget.windowsVersion == '7') {
+        if (appId == 'file_explorer' || appId == 'recycle_bin') {
+          defaultSize = const Size(840, 540);
+        } else if (appId == 'settings') {
+          defaultSize = const Size(860, 560);
+        } else if (appId == 'notepad') {
+          defaultSize = const Size(680, 460);
+        } else if (appId == 'calculator') {
+          defaultSize = const Size(320, 460);
+        } else if (appId == 'cmd') {
+          defaultSize = const Size(680, 420);
         }
       } else {
         if (appId == 'calculator') {
@@ -951,6 +964,18 @@ class _WindowsViewState extends State<WindowsView> {
             onTitleDragStart: onDragStart,
             onTitleDragUpdate: onDragUpdate,
           );
+        } else if (widget.windowsVersion == '7') {
+          return Win7FileExplorerWindow(
+            width: win.size.width,
+            height: win.size.height,
+            isMaximized: win.isMaximized,
+            onClose: () => _closeWindow(win.id),
+            onMinimize: () => _minimizeWindow(win.id),
+            onMaximize: () => _toggleMaximizeWindow(win),
+            onOpenTemplate: widget.onOpenTemplate,
+            onTitleDragStart: onDragStart,
+            onTitleDragUpdate: onDragUpdate,
+          );
         }
         return WindowsFileExplorerWindow(
           width: win.size.width,
@@ -961,7 +986,19 @@ class _WindowsViewState extends State<WindowsView> {
           onTitleDragUpdate: onDragUpdate,
         );
       case 'recycle_bin':
-        if (widget.windowsVersion == '10') {
+        if (widget.windowsVersion == '7') {
+          return Win7FileExplorerWindow(
+            width: win.size.width,
+            height: win.size.height,
+            isMaximized: win.isMaximized,
+            onClose: () => _closeWindow(win.id),
+            onMinimize: () => _minimizeWindow(win.id),
+            onMaximize: () => _toggleMaximizeWindow(win),
+            onOpenTemplate: widget.onOpenTemplate,
+            onTitleDragStart: onDragStart,
+            onTitleDragUpdate: onDragUpdate,
+          );
+        } else if (widget.windowsVersion == '10') {
           return Win10FileExplorerWindow(
             width: win.size.width,
             height: win.size.height,
