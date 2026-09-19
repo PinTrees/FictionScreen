@@ -750,6 +750,19 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         _buildOsSubmenuItem(
+                          label: '콘솔 에디터 스튜디오',
+                          icon: CupertinoIcons.slider_horizontal_3,
+                          iconColor: const Color(0xFF818CF8),
+                          onTap: () {
+                            setState(() {
+                              _contextMenuPosition = null;
+                              _isOsSubmenuOpen = false;
+                            });
+                            widget.onSelectOs?.call('workspace');
+                          },
+                        ),
+                        const Divider(color: Colors.white10, height: 8),
+                        _buildOsSubmenuItem(
                           label: 'Windows 11',
                           imageAsset: 'assets/images/win11_logo.png',
                           onTap: () {

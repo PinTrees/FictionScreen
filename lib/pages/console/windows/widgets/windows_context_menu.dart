@@ -246,6 +246,16 @@ class _WindowsContextMenuState extends State<WindowsContextMenu> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         _buildOsSubmenuItem(
+                          icon: CupertinoIcons.slider_horizontal_3,
+                          iconColor: const Color(0xFF818CF8),
+                          label: '콘솔 에디터 스튜디오',
+                          onTap: () {
+                            widget.onClose();
+                            widget.onSelectOs?.call('workspace');
+                          },
+                        ),
+                        const Divider(color: Colors.white12, height: 8),
+                        _buildOsSubmenuItem(
                           icon: CupertinoIcons.square_grid_2x2_fill,
                           label: 'Windows 11',
                           badge: widget.currentVersion == '11' ? '현재' : null,
@@ -402,6 +412,7 @@ class _WindowsContextMenuState extends State<WindowsContextMenu> {
 
   Widget _buildOsSubmenuItem({
     IconData? icon,
+    Color? iconColor,
     String? imageAsset,
     required String label,
     String? badge,
@@ -423,7 +434,7 @@ class _WindowsContextMenuState extends State<WindowsContextMenu> {
                 color: imageAsset.contains('apple') ? Colors.white : null,
               )
             else if (icon != null)
-              Icon(icon, size: 15, color: const Color(0xFF60CDFF)),
+              Icon(icon, size: 15, color: iconColor ?? const Color(0xFF60CDFF)),
             const SizedBox(width: 10),
             Expanded(
               child: Text(

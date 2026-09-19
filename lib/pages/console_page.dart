@@ -37,6 +37,7 @@ import 'console/macos/macos_view.dart';
 import 'console/settings/os_settings_window.dart';
 import 'console/steamos/steamos_view.dart';
 import 'console/windows/windows_view.dart';
+import 'console/workspace/workspace_view.dart';
 
 class FloatingWindowData {
   final String id;
@@ -88,6 +89,9 @@ class _ConsolePageState extends State<ConsolePage> {
   // 전역 바탕화면 테마
   String _wallpaper = 'win10_hero';
 
+  // 콘솔 뷰 모드: 'workspace' (신규 데스크톱 에디터 워크스페이스) vs 'os' (기존 가상 OS 모드)
+  String _viewMode = 'workspace';
+
   // 사용자가 명시적으로 선택한 활성 OS ('windows', 'macos', 'ios', 'galaxy')
   String? _activeOs;
   bool _isDesktopMobileFullScreen = false;
@@ -99,7 +103,12 @@ class _ConsolePageState extends State<ConsolePage> {
   }
 
   void _handleSelectOs(String osKey) {
+    if (osKey == 'workspace') {
+      setState(() => _viewMode = 'workspace');
+      return;
+    }
     setState(() {
+      _viewMode = 'os';
       if (osKey == 'steamos') {
         _pcTheme = 'steamos';
         _activeOs = 'steamos';
@@ -159,18 +168,26 @@ class _ConsolePageState extends State<ConsolePage> {
     super.initState();
     if (widget.initialOs != null) {
       final init = widget.initialOs!;
-      if (init == 'steamos') {
-        _pcTheme = 'steamos';
-        _activeOs = 'steamos';
-      } else if (init == 'windows_11' || init == 'windows_10' || init == 'windows_7' || init == 'windows_xp') {
-        _pcTheme = 'windows';
-        _activeOs = 'windows';
-        _windowsVersion = init.replaceFirst('windows_', '');
-      } else if (init == 'macos') {
-        _pcTheme = 'macos';
-        _activeOs = 'macos';
-      } else if (init == 'windows_bsod' || init == 'windows_update') {
-        _activeFullScreenTemplateId = init;
+      if (init == 'workspace') {
+        _viewMode = 'workspace';
+      } else {
+        _viewMode = 'os';
+        if (init == 'steamos') {
+          _pcTheme = 'steamos';
+          _activeOs = 'steamos';
+        } else if (init == 'windows_11' || init == 'windows_10' || init == 'windows_7' || init == 'windows_xp') {
+          _pcTheme = 'windows';
+          _activeOs = 'windows';
+          _windowsVersion = init.replaceFirst('windows_', '');
+        } else if (init == 'macos') {
+          _pcTheme = 'macos';
+          _activeOs = 'macos';
+        } else if (init == 'windows_bsod' || init == 'windows_update') {
+          _activeFullScreenTemplateId = init;
+        } else if (init == 'galaxy' || init == 'ios') {
+          _activeOs = init;
+          _mobileTheme = init;
+        }
       }
     }
 
@@ -319,6 +336,18 @@ class _ConsolePageState extends State<ConsolePage> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isDesktop = screenWidth >= 768;
+
+    // 데스크톱 환경에서 콘솔 워크스페이스 모드 활성화 시 (신규 콘솔 메인 페이지 & 사이드바 에디터)
+    if (isDesktop && _viewMode == 'workspace') {
+      return WorkspaceView(
+        onSelectOs: (osKey) => _handleSelectOs(osKey),
+        onOpenInOs: (templateId) {
+          setState(() => _viewMode = 'os');
+          _openTemplate(templateId);
+        },
+        onSignOut: _handleSignOut,
+      );
+    }
 
     final activeOs = _currentActiveOs;
 
@@ -537,9 +566,57 @@ class _ConsolePageState extends State<ConsolePage> {
                 Positioned.fill(
                   child: _buildFullScreenOsTemplate(_activeFullScreenTemplateId!),
                 ),
+
+              // 6. 가상 OS 모드에서 콘솔 워크스페이스(에디터)로 복귀하는 플로팅 퀵 버튼
+              if (isDesktop && _activeFullScreenTemplateId == null && _activeMobileTemplateId == null)
+                Positioned(
+                  bottom: 60,
+                  right: 20,
+                  child: _buildWorkspaceFloatingSwitcher(),
+                ),
             ],
           );
         },
+      ),
+    );
+  }
+
+  /// 가상 OS 화면에서 콘솔 에디터 스튜디오로 복귀하는 플로팅 버튼
+  Widget _buildWorkspaceFloatingSwitcher() {
+    return Material(
+      color: Colors.transparent,
+      child: Tooltip(
+        message: '콘솔 에디터 워크스페이스 대시보드로 돌아가기',
+        child: InkWell(
+          onTap: () => setState(() => _viewMode = 'workspace'),
+          borderRadius: BorderRadius.circular(24),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F172A).withValues(alpha: 0.92),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: const Color(0xFF6366F1).withValues(alpha: 0.6), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF6366F1).withValues(alpha: 0.35),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(CupertinoIcons.slider_horizontal_3, size: 15, color: Color(0xFFA5B4FC)),
+                SizedBox(width: 8),
+                Text(
+                  '콘솔 에디터',
+                  style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

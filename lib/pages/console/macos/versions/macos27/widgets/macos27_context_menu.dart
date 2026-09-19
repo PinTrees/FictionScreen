@@ -136,6 +136,16 @@ class _Macos27ContextMenuState extends State<Macos27ContextMenu> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         _buildMenuItem(
+                          label: '콘솔 에디터 스튜디오',
+                          icon: CupertinoIcons.slider_horizontal_3,
+                          highlightColor: const Color(0xFF818CF8),
+                          onTap: () {
+                            widget.onClose();
+                            widget.onSelectOs?.call('workspace');
+                          },
+                        ),
+                        _buildDivider(),
+                        _buildMenuItem(
                           label: 'Windows 11',
                           icon: CupertinoIcons.square_grid_2x2_fill,
                           highlightColor: const Color(0xFF00A4EF),
