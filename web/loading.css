@@ -1,0 +1,208 @@
+/* FictionScreen Modern Web Initial Loading Screen Styles */
+
+#loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #07080d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  overflow: hidden;
+  user-select: none;
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ambient Pulsing Aurora Background */
+.loading-aurora {
+  position: absolute;
+  width: 540px;
+  height: 540px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.18) 0%, rgba(99, 102, 241, 0.12) 45%, rgba(7, 8, 13, 0) 70%);
+  animation: auroraPulse 3s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes auroraPulse {
+  0% {
+    transform: scale(0.9) translate3d(0, 0, 0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.15) translate3d(0, -10px, 0);
+    opacity: 1;
+  }
+}
+
+/* Central Elevated Glass Card */
+.loading-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 38px 44px;
+  background: rgba(17, 20, 32, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  max-width: 360px;
+  width: 90%;
+  animation: cardFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Brand Squircle Icon */
+.loading-icon-wrap {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  margin-bottom: 20px;
+  animation: iconBounce 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes iconBounce {
+  0% {
+    transform: translateY(0) scale(0.98);
+  }
+  100% {
+    transform: translateY(-4px) scale(1.03);
+  }
+}
+
+.loading-icon-glow {
+  position: absolute;
+  inset: -6px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, #00e5ff, #6366f1);
+  filter: blur(14px);
+  opacity: 0.55;
+  animation: glowBreathe 2s ease-in-out infinite alternate;
+}
+
+@keyframes glowBreathe {
+  0% { opacity: 0.35; filter: blur(10px); }
+  100% { opacity: 0.75; filter: blur(16px); }
+}
+
+.loading-icon {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #00e5ff 0%, #00b0ff 50%, #6366f1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 176, 255, 0.4);
+}
+
+.loading-icon svg {
+  width: 32px;
+  height: 32px;
+  fill: #ffffff;
+}
+
+/* Brand Title & Subtitle */
+.loading-title {
+  font-size: 23px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.loading-subtitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: #94a3b8;
+  letter-spacing: -0.2px;
+  margin-bottom: 26px;
+  text-align: center;
+}
+
+/* Futuristic Shimmer Progress Track */
+.loading-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.loading-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 45%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #00e5ff, #6366f1, transparent);
+  animation: progressShimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes progressShimmer {
+  0% {
+    left: -45%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Live Engine Status Badge */
+.loading-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 999px;
+}
+
+.loading-dot {
+  width: 6.5px;
+  height: 6.5px;
+  border-radius: 50%;
+  background-color: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.loading-status-text {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #38bdf8;
+  letter-spacing: -0.2px;
+}
