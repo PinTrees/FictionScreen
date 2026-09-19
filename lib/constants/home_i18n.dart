@@ -15,7 +15,7 @@ class HomeI18n {
       'heroHeadline': 'make it\nreal.',
       'heroSubtitle': 'every screen you imagine.',
       'heroDesc':
-          '웹툰, 웹소설, 시나리오 작가를 위한 가장 정교한 가상 화면 스튜디오.\nWindows 11 공식 OS부터 카카오톡, 당근, 블라인드까지\n스토리 속 모든 인터페이스를 1초 만에 실시간으로 생성하세요.',
+          '웹툰, 웹소설, 시나리오 작가를 위한 가장 정교한 가상 화면 스튜디오.\nWindows 11 OS부터 카카오톡, 당근, 블라인드까지\n스토리 속 모든 인터페이스를 1초 만에 실시간으로 생성하세요.',
       'heroCta': '지금 무료로 시작하기',
       'heroBottomLeft': 'virtual os • mobile apps • web platforms',
       'heroScrollDown': 'scroll down',
@@ -58,7 +58,7 @@ class HomeI18n {
       // Ecosystem Icon Cloud
       'ecosystemBadge': 'SUPPORTED ECOSYSTEM',
       'ecosystemTitle': '지원하는 모든 가상 OS, 어플, 웹사이트',
-      'ecosystemSubtitle': '실제 공식 앱 아이콘을 클릭하면 해당 스튜디오 또는 가상 OS 콘솔로 즉시 이동합니다.',
+      'ecosystemSubtitle': '실제 앱 아이콘을 클릭하면 해당 스튜디오 또는 가상 OS 콘솔로 즉시 이동합니다.',
       'tabAll': '전체보기',
       'tabOs': '운영체제 (OS)',
       'tabApps': '모바일 앱',
@@ -87,7 +87,7 @@ class HomeI18n {
       'heroHeadline': 'make it\nreal.',
       'heroSubtitle': 'every screen you imagine.',
       'heroDesc':
-          'The definitive virtual screen studio for webtoon artists, writers & creators.\nFrom official Windows 11 OS to KakaoTalk, Daangn & Blind.\nGenerate hyper-realistic fiction interfaces in seconds.',
+          'The definitive virtual screen studio for webtoon artists, writers & creators.\nFrom Windows 11 OS to KakaoTalk, Daangn & Blind.\nGenerate hyper-realistic fiction interfaces in seconds.',
       'heroCta': 'Start for Free',
       'heroBottomLeft': 'virtual os • mobile apps • web platforms',
       'heroScrollDown': 'scroll down',
