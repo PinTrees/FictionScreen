@@ -213,6 +213,12 @@ class _MacosDockState extends State<MacosDock> {
                   ),
                   onTap: () => widget.onOpenApp?.call('news'),
                 ),
+                _buildDockApp(
+                  index: 20,
+                  tooltip: '디시인사이드 (커뮤니티)',
+                  imageAsset: 'assets/images/dcinside_icon.webp',
+                  onTap: () => widget.onOpenApp?.call('dcinside'),
+                ),
 
                 // 구분선
                 _buildDockDivider(),

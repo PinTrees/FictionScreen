@@ -332,5 +332,16 @@ class ScreenTemplate {
       badge: '신규',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'dcinside',
+      title: '디시인사이드 (DC Inside)',
+      description: '대한민국 대표 인터넷 커뮤니티 갤러리, 유동/고닉/완장, 개념글 추천, 실시간 댓글 티키타카',
+      category: TemplateCategory.sns,
+      icon: CupertinoIcons.chat_bubble_2_fill,
+      imageAsset: 'assets/images/dcinside_icon.webp',
+      themeColor: Color(0xFF3B4890),
+      badge: 'HOT',
+      isDesktop: true,
+    ),
   ];
 }

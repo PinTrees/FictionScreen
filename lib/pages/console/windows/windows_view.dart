@@ -10,6 +10,7 @@ import '../../../apps/naver/naver_window.dart';
 import '../../../apps/cctv/cctv_window.dart';
 import '../../../apps/steam/steam_window.dart';
 import '../../../apps/news/news_window.dart';
+import '../../../apps/dcinside/dcinside_window.dart';
 import '../common/os_window_frame.dart';
 import 'apps/cmd/cmd_window.dart';
 import 'apps/edge/edge_window.dart';
@@ -496,6 +497,15 @@ class _WindowsViewState extends State<WindowsView> {
         isSystemApp: true,
         onTap: () => _openWinApp('news'),
       ),
+      DesktopIconItem(
+        id: 'dcinside',
+        title: '디시인사이드',
+        imageAsset: 'assets/images/dcinside_icon.webp',
+        gridX: 6,
+        gridY: 6,
+        isSystemApp: true,
+        onTap: () => _openWinApp('dcinside'),
+      ),
     ];
   }
 
@@ -528,6 +538,8 @@ class _WindowsViewState extends State<WindowsView> {
         defaultSize = const Size(980, 640);
       } else if (appId == 'news') {
         defaultSize = const Size(960, 620);
+      } else if (appId == 'dcinside') {
+        defaultSize = const Size(960, 640);
       } else if (widget.windowsVersion == '11') {
         if (appId == 'file_explorer' || appId == 'recycle_bin') {
           defaultSize = const Size(860, 560);
@@ -1497,6 +1509,19 @@ class _WindowsViewState extends State<WindowsView> {
         );
       case 'news':
         return NewsWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'dcinside':
+        return DcinsideWindow(
           width: win.size.width,
           height: win.size.height,
           isMaximized: win.isMaximized,
