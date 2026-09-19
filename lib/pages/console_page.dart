@@ -43,6 +43,9 @@ class FloatingWindowData {
   final ValueNotifier<Offset> positionNotifier;
   Size size;
   bool isMinimized;
+  bool isMaximized;
+  Offset? restorePosition;
+  Size? restoreSize;
   int zIndex;
 
   FloatingWindowData({
@@ -51,6 +54,9 @@ class FloatingWindowData {
     required Offset position,
     required this.size,
     this.isMinimized = false,
+    this.isMaximized = false,
+    this.restorePosition,
+    this.restoreSize,
     this.zIndex = 0,
   }) : positionNotifier = ValueNotifier<Offset>(position);
 
@@ -657,6 +663,33 @@ class _ConsolePageState extends State<ConsolePage> {
     }
   }
 
+  void _toggleMaximizeFloatingWindow(FloatingWindowData win) {
+    final media = MediaQuery.of(context).size;
+    final totalW = media.width;
+    final isWindows = _currentActiveOs == 'windows';
+    final taskbarHeight = isWindows ? 48.0 : 0.0;
+    final topOffset = isWindows ? 0.0 : 30.0;
+    final totalH = media.height - taskbarHeight - topOffset;
+
+    setState(() {
+      final bool currentlyMaximized = win.isMaximized ||
+          (win.size.width >= totalW - 10 && win.size.height >= totalH - 10);
+
+      if (currentlyMaximized) {
+        win.isMaximized = false;
+        win.position = win.restorePosition ?? const Offset(120, 70);
+        win.size = win.restoreSize ?? (win.template.isDesktop ? const Size(760, 500) : const Size(380, 680));
+      } else {
+        win.restorePosition = win.position;
+        win.restoreSize = win.size;
+        win.isMaximized = true;
+        win.position = Offset(0, topOffset);
+        win.size = Size(totalW, totalH);
+      }
+      _bringToFront(win.id);
+    });
+  }
+
   List<Widget> _buildDesktopWindowsLayer({required bool isMacStyle, String windowsVersion = '11'}) {
     return _activeFloatingWindows.where((w) => !w.isMinimized).map((win) {
       final isFocused = _activeFloatingWindows.isNotEmpty && _activeFloatingWindows.last.id == win.id;
@@ -671,10 +704,12 @@ class _ConsolePageState extends State<ConsolePage> {
             isFocused: isFocused,
             isMacStyle: isMacStyle,
             windowsVersion: windowsVersion,
+            isMaximized: win.isMaximized,
             onFocus: () => _bringToFront(win.id),
             onPositionChanged: (newPos) => win.position = newPos,
             onSizeChanged: (newSize) => setState(() => win.size = newSize),
             onMinimize: () => setState(() => win.isMinimized = true),
+            onMaximize: () => _toggleMaximizeFloatingWindow(win),
             onClose: () => setState(() => _activeFloatingWindows.removeWhere((w) => w.id == win.id)),
           );
         },

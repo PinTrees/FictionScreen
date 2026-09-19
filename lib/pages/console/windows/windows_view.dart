@@ -16,8 +16,10 @@ import 'versions/win10/apps/settings/win10_settings_window.dart';
 import 'versions/win11/apps/calculator/win11_calculator_window.dart';
 import 'versions/win11/apps/file_explorer/win11_file_explorer_window.dart';
 import 'versions/win11/apps/notepad/win11_notepad_window.dart';
-import 'versions/win11/apps/settings/win11_settings_window.dart';
+import 'versions/win11/apps/paint_3d/win11_paint_3d_window.dart';
 import 'versions/win11/apps/recycle_bin/win11_recycle_bin_window.dart';
+import 'versions/win11/apps/settings/win11_settings_window.dart';
+import 'versions/win11/apps/snip/win11_snip_window.dart';
 import 'widgets/windows_context_menu.dart';
 import 'widgets/windows_desktop_icon_widget.dart';
 import 'widgets/windows_item_context_menu.dart';
@@ -257,6 +259,24 @@ class _WindowsViewState extends State<WindowsView> {
         onTap: () => _openWinApp('cmd'),
       ),
       DesktopIconItem(
+        id: 'paint_3d',
+        title: '그림판 3D',
+        imageAsset: 'assets/images/windows/paint.png',
+        gridX: 2,
+        gridY: 5,
+        isSystemApp: true,
+        onTap: () => _openWinApp('paint_3d'),
+      ),
+      DesktopIconItem(
+        id: 'snip',
+        title: '캡처 도구',
+        imageAsset: 'assets/images/windows/snip.png',
+        gridX: 3,
+        gridY: 5,
+        isSystemApp: true,
+        onTap: () => _openWinApp('snip'),
+      ),
+      DesktopIconItem(
         id: 'trash',
         title: '휴지통',
         imageAsset: 'assets/images/windows/recycle_bin.png',
@@ -398,6 +418,10 @@ class _WindowsViewState extends State<WindowsView> {
           defaultSize = const Size(720, 480);
         } else if (appId == 'calculator') {
           defaultSize = const Size(340, 520);
+        } else if (appId == 'snip') {
+          defaultSize = const Size(720, 500);
+        } else if (appId == 'paint_3d') {
+          defaultSize = const Size(960, 620);
         }
       } else if (widget.windowsVersion == '10') {
         if (appId == 'file_explorer' || appId == 'recycle_bin') {
@@ -410,6 +434,10 @@ class _WindowsViewState extends State<WindowsView> {
           defaultSize = const Size(340, 500);
         } else if (appId == 'cmd') {
           defaultSize = const Size(680, 440);
+        } else if (appId == 'snip') {
+          defaultSize = const Size(720, 500);
+        } else if (appId == 'paint_3d') {
+          defaultSize = const Size(960, 620);
         }
       } else {
         if (appId == 'calculator') {
@@ -1092,6 +1120,30 @@ class _WindowsViewState extends State<WindowsView> {
           width: win.size.width,
           height: win.size.height,
           onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'snip':
+        return Win11SnipWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'paint_3d':
+        return Win11Paint3DWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
           onTitleDragStart: onDragStart,
           onTitleDragUpdate: onDragUpdate,
         );

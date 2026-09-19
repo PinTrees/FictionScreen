@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../../apps/delivery/data/delivery_model.dart';
 import '../../../apps/delivery/delivery_screen.dart';
 import '../../../apps/daangn/data/daangn_model.dart';
@@ -53,10 +52,12 @@ class FloatingAppWindow extends StatefulWidget {
   final bool isFocused;
   final bool isMacStyle;
   final String windowsVersion;
+  final bool isMaximized;
   final VoidCallback onFocus;
   final Function(Offset) onPositionChanged;
   final Function(Size) onSizeChanged;
   final VoidCallback onMinimize;
+  final VoidCallback onMaximize;
   final VoidCallback onClose;
 
   const FloatingAppWindow({
@@ -67,10 +68,12 @@ class FloatingAppWindow extends StatefulWidget {
     required this.isFocused,
     this.isMacStyle = false,
     this.windowsVersion = '11',
+    this.isMaximized = false,
     required this.onFocus,
     required this.onPositionChanged,
     required this.onSizeChanged,
     required this.onMinimize,
+    required this.onMaximize,
     required this.onClose,
   });
 
@@ -187,6 +190,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
                     // 1. 드래그 가능한 타이틀바 (마우스 포인터 위치 1:1 완벽추종)
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
+                      onDoubleTap: widget.onMaximize,
                       onPanStart: (details) {
                         widget.onFocus();
                         _dragStartOffset = details.globalPosition - widget.position;
@@ -215,9 +219,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
                               const SizedBox(width: 8),
                               _buildMacCircleButton(const Color(0xFFFFBD2E), widget.onMinimize),
                               const SizedBox(width: 8),
-                              _buildMacCircleButton(const Color(0xFF27C93F), () {
-                                context.push('/studio/${widget.template.id}');
-                              }),
+                              _buildMacCircleButton(const Color(0xFF27C93F), widget.onMaximize),
                               const SizedBox(width: 12),
                             ],
 
@@ -239,43 +241,45 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
 
                             if (!widget.isMacStyle) ...[
                               if (isWin10) ...[
-                                // Windows 10 직각 풀-하이트 캡션 버튼
-                                _buildWin10HeaderBtn(
-                                  const Icon(CupertinoIcons.arrow_up_left_arrow_down_right, size: 12, color: Colors.white70),
-                                  () => context.push('/studio/${widget.template.id}'),
-                                ),
+                                // Windows 10 직각 풀-하이트 캡션 버튼: [최소화] [최대화/복원] [닫기]
                                 _buildWin10HeaderBtn(
                                   Container(width: 10, height: 1, color: Colors.white70),
                                   widget.onMinimize,
                                 ),
+                                _Win10TitleHeaderButton(
+                                  icon: widget.isMaximized ? _buildWin10RestoreIcon() : _buildWin10MaximizeIcon(),
+                                  onTap: widget.onMaximize,
+                                ),
                                 _buildWin10HeaderBtn(
-                                  const Icon(CupertinoIcons.xmark, size: 11, color: Colors.white),
+                                  const Icon(CupertinoIcons.xmark, size: 10.5, color: Colors.white),
                                   widget.onClose,
                                   isClose: true,
                                 ),
                               ] else ...[
-                                // Windows 11 MDI 우측 버튼
-                                InkWell(
-                                  onTap: () => context.push('/studio/${widget.template.id}'),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(4),
-                                    child: Icon(CupertinoIcons.arrow_up_left_arrow_down_right, size: 13, color: Colors.white70),
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
+                                // Windows 11 MDI 우측 버튼: [최소화] [최대화/복원] [닫기]
                                 InkWell(
                                   onTap: widget.onMinimize,
                                   child: const Padding(
-                                    padding: EdgeInsets.all(4),
-                                    child: Icon(CupertinoIcons.minus, size: 13, color: Colors.white70),
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    child: Icon(CupertinoIcons.minus, size: 12, color: Colors.white70),
                                   ),
                                 ),
-                                const SizedBox(width: 6),
+                                InkWell(
+                                  onTap: widget.onMaximize,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    child: Icon(
+                                      widget.isMaximized ? CupertinoIcons.square_on_square : CupertinoIcons.square,
+                                      size: 12,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ),
                                 InkWell(
                                   onTap: widget.onClose,
                                   child: const Padding(
-                                    padding: EdgeInsets.all(4),
-                                    child: Icon(CupertinoIcons.xmark, size: 13, color: Colors.redAccent),
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    child: Icon(CupertinoIcons.xmark, size: 12, color: Colors.redAccent),
                                   ),
                                 ),
                               ],
@@ -451,6 +455,62 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
       default:
         return TossScreen(config: _tossConfig);
     }
+  }
+
+  Widget _buildWin10MaximizeIcon() {
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: widget.isFocused ? Colors.white : Colors.white60,
+          width: 1.0,
+        ),
+        borderRadius: BorderRadius.zero,
+      ),
+    );
+  }
+
+  Widget _buildWin10RestoreIcon() {
+    return SizedBox(
+      width: 10,
+      height: 10,
+      child: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: widget.isFocused ? Colors.white : Colors.white60,
+                  width: 1.0,
+                ),
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            child: Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1F1F1F),
+                border: Border.all(
+                  color: widget.isFocused ? Colors.white : Colors.white60,
+                  width: 1.0,
+                ),
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildWin10HeaderBtn(Widget icon, VoidCallback? onTap, {bool isClose = false}) {
