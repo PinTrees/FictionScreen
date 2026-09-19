@@ -1,8 +1,88 @@
 const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
+const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
-admin.initializeApp();
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
+const db = admin.firestore();
+
+/**
+ * 💡 [Auth Trigger] 유저 생성 시 Firestore user 문서 자동 생성
+ * Firebase Authentication 계정 생성 시 즉시 users/{uid} 기본 문서를 프로비저닝합니다.
+ */
+exports.onUserCreated = functions.auth.user().onCreate(async (user) => {
+  const uid = user.uid;
+  const email = user.email || "";
+  const displayName = user.displayName || (email ? email.split("@")[0] : "사용자");
+  const photoURL = user.photoURL || "";
+
+  logger.info(`[Auth Trigger] Auto-creating user document for ${uid} (${email})`);
+
+  try {
+    const userDocRef = db.collection("users").doc(uid);
+    const snap = await userDocRef.get();
+    if (!snap.exists) {
+      await userDocRef.set({
+        uid: uid,
+        email: email,
+        displayName: displayName,
+        photoURL: photoURL,
+        role: "user",
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      logger.info(`[Auth Trigger] Successfully created users/${uid}`);
+    }
+
+    // 기본 테마 설정 초기화
+    const themeRef = userDocRef.collection("settings").doc("theme_config");
+    const themeSnap = await themeRef.get();
+    if (!themeSnap.exists) {
+      await themeRef.set({
+        themeMode: "system",
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+  } catch (error) {
+    logger.error(`[Auth Trigger] Failed to create user document for ${uid}:`, error);
+  }
+});
+
+/**
+ * 💡 [보완용 Callable] 유저 데이터 부트스트랩
+ * 클라이언트 로그인 후 유저 문서가 누락된 경우 즉시 복구 생성
+ */
+exports.bootstrapUser = onCall({ cors: true }, async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "로그인이 필요합니다.");
+  }
+  const uid = request.auth.uid;
+  const token = request.auth.token || {};
+  const email = token.email || "";
+  const displayName = token.name || (email ? email.split("@")[0] : "사용자");
+  const photoURL = token.picture || "";
+
+  logger.info(`[bootstrapUser] Ensuring user document for ${uid}`);
+
+  const userDocRef = db.collection("users").doc(uid);
+  const snap = await userDocRef.get();
+  if (!snap.exists) {
+    await userDocRef.set({
+      uid: uid,
+      email: email,
+      displayName: displayName,
+      photoURL: photoURL,
+      role: "user",
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    logger.info(`[bootstrapUser] Created users/${uid}`);
+  }
+
+  return { success: true, uid };
+});
 
 /**
  * 상태 확인 (Health Check) HTTP 엔드포인트

@@ -18,6 +18,7 @@ class WorkspaceSidebar extends StatelessWidget {
   final bool isDarkMode;
   final VoidCallback onSignOut;
   final VoidCallback onOpenProfile;
+  final double topPadding;
 
   const WorkspaceSidebar({
     super.key,
@@ -33,6 +34,7 @@ class WorkspaceSidebar extends StatelessWidget {
     required this.isDarkMode,
     required this.onSignOut,
     required this.onOpenProfile,
+    this.topPadding = 56.0,
   });
 
   @override
@@ -65,6 +67,7 @@ class WorkspaceSidebar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(height: topPadding),
           // 1. CapCut-style Brand Color "+ Create New" Button (Starts immediately without duplicate top bar)
           Padding(
             padding: EdgeInsets.fromLTRB(
@@ -131,7 +134,7 @@ class WorkspaceSidebar extends StatelessWidget {
                           Icon(CupertinoIcons.add, size: 18, color: Color(0xFF003852)),
                           SizedBox(width: 8),
                           Text(
-                            'Create new',
+                            '새 프로젝트 만들기',
                             style: TextStyle(
                               color: Color(0xFF003852),
                               fontSize: 14,
@@ -147,15 +150,15 @@ class WorkspaceSidebar extends StatelessWidget {
 
           const SizedBox(height: 6),
 
-          // 2. Navigation Items (Using 100% reliable Material Icons)
+          // 2. Navigation Items (CupertinoIcons ONLY)
           Padding(
             padding: EdgeInsets.symmetric(horizontal: isCollapsed ? 10 : 14),
             child: Column(
               children: [
                 _buildNavItem(
                   id: 'home',
-                  icon: Icons.home_rounded,
-                  title: 'Home (대시보드)',
+                  icon: CupertinoIcons.house_fill,
+                  title: '대시보드',
                   badge: null,
                   isActive: activeMenuId == 'home',
                   isCollapsed: isCollapsed,
@@ -169,7 +172,7 @@ class WorkspaceSidebar extends StatelessWidget {
                 const SizedBox(height: 4),
                 _buildNavItem(
                   id: 'gallery',
-                  icon: Icons.explore_rounded,
+                  icon: CupertinoIcons.square_grid_2x2_fill,
                   title: '어플 템플릿 갤러리',
                   badge: '33종',
                   isActive: activeMenuId == 'gallery',
@@ -184,9 +187,9 @@ class WorkspaceSidebar extends StatelessWidget {
                 const SizedBox(height: 4),
                 _buildNavItem(
                   id: 'os',
-                  icon: Icons.desktop_windows_rounded,
-                  title: '가상 데스크톱 OS',
-                  badge: 'SteamOS+',
+                  icon: CupertinoIcons.desktopcomputer,
+                  title: '가상 데스크톱 환경',
+                  badge: '데스크톱',
                   isActive: activeMenuId == 'os',
                   isCollapsed: isCollapsed,
                   isDark: isDark,
@@ -202,12 +205,12 @@ class WorkspaceSidebar extends StatelessWidget {
 
           const SizedBox(height: 18),
 
-          // 3. Section Label: Projects (CapCut muted header)
+          // 3. Section Label: Projects
           if (!isCollapsed)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 4),
               child: Text(
-                'TEMPLATES & PROJECTS',
+                '템플릿 & 프로젝트',
                 style: TextStyle(
                   color: textSubColor.withValues(alpha: 0.7),
                   fontSize: 10.5,
@@ -281,7 +284,7 @@ class WorkspaceSidebar extends StatelessWidget {
                                       ),
                                       child: template?.imageAsset != null
                                           ? Image.asset(template!.imageAsset!, fit: BoxFit.contain)
-                                          : Icon(template?.icon ?? Icons.insert_drive_file_rounded,
+                                          : Icon(template?.icon ?? CupertinoIcons.doc_fill,
                                               size: 14, color: template?.themeColor ?? const Color(0xFF00B0FF)),
                                     ),
                                   ),
@@ -318,7 +321,7 @@ class WorkspaceSidebar extends StatelessWidget {
                                     child: Center(
                                       child: template?.imageAsset != null
                                           ? Image.asset(template!.imageAsset!, fit: BoxFit.contain)
-                                          : Icon(template?.icon ?? Icons.insert_drive_file_rounded,
+                                          : Icon(template?.icon ?? CupertinoIcons.doc_fill,
                                               size: 14, color: template?.themeColor ?? const Color(0xFF00B0FF)),
                                     ),
                                   ),
@@ -356,7 +359,7 @@ class WorkspaceSidebar extends StatelessWidget {
                                     child: Padding(
                                       padding: const EdgeInsets.all(4),
                                       child: Icon(
-                                        proj.isStarred ? Icons.star_rounded : Icons.star_outline_rounded,
+                                        proj.isStarred ? CupertinoIcons.star_fill : CupertinoIcons.star,
                                         size: 16,
                                         color: proj.isStarred ? const Color(0xFFF59E0B) : textSubColor.withValues(alpha: 0.4),
                                       ),
@@ -461,7 +464,7 @@ class WorkspaceSidebar extends StatelessWidget {
                       ),
                       IconButton(
                         tooltip: '로그아웃',
-                        icon: Icon(Icons.logout_rounded, size: 18, color: textSubColor),
+                        icon: Icon(CupertinoIcons.square_arrow_right, size: 18, color: textSubColor),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                         onPressed: onSignOut,

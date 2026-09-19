@@ -29,7 +29,7 @@ class DashboardHomeView extends StatelessWidget {
     final cardBgColor = isDarkMode ? const Color(0xFF141822) : Colors.white;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 36),
+      padding: const EdgeInsets.fromLTRB(40, 76, 40, 36),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -70,12 +70,12 @@ class DashboardHomeView extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: const Text(
-                                'FICTION SCREEN STUDIO',
+                                '스튜디오 대시보드',
                                 style: TextStyle(
                                   color: Color(0xFF00B0FF),
                                   fontSize: 10.5,
                                   fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.8,
+                                  letterSpacing: -0.2,
                                 ),
                               ),
                             ),

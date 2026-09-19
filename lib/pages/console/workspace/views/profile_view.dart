@@ -122,7 +122,7 @@ class _ProfileViewState extends State<ProfileView> {
         .toUpperCase();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 44, vertical: 36),
+      padding: const EdgeInsets.fromLTRB(44, 76, 44, 36),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -341,7 +341,7 @@ class _ProfileViewState extends State<ProfileView> {
                           style: TextButton.styleFrom(
                             foregroundColor: const Color(0xFFEF4444),
                           ),
-                          icon: const Icon(Icons.logout_rounded, size: 16),
+                          icon: const Icon(CupertinoIcons.square_arrow_right, size: 16),
                           label: const Text('계정 로그아웃', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                         ),
                       ],

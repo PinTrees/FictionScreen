@@ -72,19 +72,29 @@ class _AppGalleryViewState extends State<AppGalleryView> {
           crossAxisCount = 4;
         }
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
-          child: CustomScrollView(
-            slivers: [
-            // 1. Header Banner
-            SliverToBoxAdapter(
-              child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // 1. Header (Pop Entrance)
-                      PopEntrance(
-                        delay: const Duration(milliseconds: 60),
-                        child: Row(
+        return PopEntrance(
+          duration: const Duration(milliseconds: 650),
+          startScale: 0.96,
+          curve: Curves.easeOutQuart,
+          fadeCurve: Curves.easeOutQuart,
+          child: ScrollConfiguration(
+            behavior: const ScrollBehavior().copyWith(scrollbars: false),
+            child: CustomScrollView(
+              slivers: [
+                // Top spacing so initial content sits gracefully below the 56px floating app bar
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 72),
+                ),
+
+                // 1. Header Banner
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header Title
+                        Row(
                           children: [
                             Container(
                               padding: const EdgeInsets.all(8),
@@ -99,7 +109,7 @@ class _AppGalleryViewState extends State<AppGalleryView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '스튜디오 어플 탐색 (Studio App Gallery)',
+                                  '스튜디오 어플 탐색',
                                   style: TextStyle(
                                     color: textColor,
                                     fontSize: 22,
@@ -116,13 +126,10 @@ class _AppGalleryViewState extends State<AppGalleryView> {
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                      // 2. Search & Category Filters (ZERO OUTLINE, Pop Entrance)
-                      PopEntrance(
-                        delay: const Duration(milliseconds: 120),
-                        child: Column(
+                        // Search & Category Filters (ZERO OUTLINE)
+                        Column(
                           children: [
                             Row(
                               children: [
@@ -177,14 +184,14 @@ class _AppGalleryViewState extends State<AppGalleryView> {
                             ),
                           ],
                         ),
-                      ),
 
-                      const SizedBox(height: 26),
-                    ],
+                        const SizedBox(height: 26),
+                      ],
+                    ),
                   ),
                 ),
 
-                // 3. Grid of Apps
+                // 2. Grid of Apps
                 if (filtered.isEmpty)
                   SliverToBoxAdapter(
                     child: Padding(
@@ -198,39 +205,39 @@ class _AppGalleryViewState extends State<AppGalleryView> {
                     ),
                   )
                 else
-                  SliverGrid(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      mainAxisSpacing: 18,
-                      crossAxisSpacing: 18,
-                      mainAxisExtent: 184,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final item = filtered[index];
-                        return PopEntrance(
-                          delay: Duration(milliseconds: 80 + (index.clamp(0, 10) * 35)),
-                          startScale: 0.88,
-                          child: _AppGalleryCard(
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    sliver: SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: 18,
+                        crossAxisSpacing: 18,
+                        mainAxisExtent: 184,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final item = filtered[index];
+                          return _AppGalleryCard(
                             template: item,
                             isDark: isDark,
                             textColor: textColor,
                             textSubColor: textSubColor,
                             onTap: () => widget.onSelectApp(item.id),
-                          ),
-                        );
-                      },
-                      childCount: filtered.length,
+                          );
+                        },
+                        childCount: filtered.length,
+                      ),
                     ),
                   ),
 
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 50),
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 36),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
-    },
+          ),
+        );
+      },
     );
   }
 

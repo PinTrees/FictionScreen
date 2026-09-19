@@ -16,11 +16,11 @@ class PopEntrance extends StatefulWidget {
     super.key,
     required this.child,
     this.delay = Duration.zero,
-    this.duration = const Duration(milliseconds: 520),
-    this.startScale = 0.86,
-    this.startOffsetY = 14.0,
-    this.curve = Curves.easeOutBack,
-    this.fadeCurve = Curves.easeOutCubic,
+    this.duration = const Duration(milliseconds: 650),
+    this.startScale = 0.96,
+    this.startOffsetY = 0.0,
+    this.curve = Curves.easeOutQuart,
+    this.fadeCurve = Curves.easeOutQuart,
     this.autoStart = true,
   });
 

@@ -138,73 +138,79 @@ class _WorkspaceViewState extends State<WorkspaceView> {
 
     return Scaffold(
       backgroundColor: isDarkMode ? const Color(0xFF090B10) : const Color(0xFFF1F5F9),
-      body: Column(
+      body: Stack(
         children: [
-          // Top Header Bar (Translucent Blur, Pushed Edge-to-Edge)
-          WorkspaceTopBar(
-            template: dummyTemplate,
-            isDarkMode: isDarkMode,
-            isSidebarCollapsed: _isSidebarCollapsed,
-            isExporting: false,
-            onToggleTheme: () => AppThemeService.instance.toggleTheme(context),
-            onToggleSidebar: () => setState(() => _isSidebarCollapsed = !_isSidebarCollapsed),
-            onExport: () {},
-            onOpenInOs: () => widget.onOpenInOs('kakaotalk'),
-            onSelectOs: widget.onSelectOs,
-            onSignOut: widget.onSignOut,
-            onOpenProfile: () => setState(() => _activeMenuId = 'profile'),
-          ),
+          // Workspace Body: Left Sidebar (Project-centric) + Center View (extends under top bar)
+          Row(
+            children: [
+              // Left Navigation Sidebar (CapCut style, Hamburger icon, Real Firebase projects, user profile)
+              WorkspaceSidebar(
+                projects: _projects,
+                activeMenuId: _activeMenuId,
+                onSelectMenu: (menuId) {
+                  setState(() {
+                    _currentEditingProject = null;
+                    _activeMenuId = menuId;
+                  });
+                },
+                onSelectProject: _openProject,
+                onNewProject: _createNewProject,
+                onDeleteProject: _deleteProject,
+                onToggleStarProject: _toggleStarProject,
+                isCollapsed: _isSidebarCollapsed,
+                onToggleCollapse: () => setState(() => _isSidebarCollapsed = !_isSidebarCollapsed),
+                isDarkMode: isDarkMode,
+                onSignOut: widget.onSignOut,
+                onOpenProfile: () => setState(() => _activeMenuId = 'profile'),
+                topPadding: 56.0,
+              ),
 
-          // Workspace Body: Left Sidebar (Project-centric) + Center View
-          Expanded(
-            child: Row(
-              children: [
-                // Left Navigation Sidebar (CapCut style, Hamburger icon, Real Firebase projects, user profile)
-                WorkspaceSidebar(
-                  projects: _projects,
-                  activeMenuId: _activeMenuId,
-                  onSelectMenu: (menuId) {
-                    setState(() {
-                      _currentEditingProject = null;
-                      _activeMenuId = menuId;
-                    });
-                  },
-                  onSelectProject: _openProject,
-                  onNewProject: _createNewProject,
-                  onDeleteProject: _deleteProject,
-                  onToggleStarProject: _toggleStarProject,
-                  isCollapsed: _isSidebarCollapsed,
-                  onToggleCollapse: () => setState(() => _isSidebarCollapsed = !_isSidebarCollapsed),
-                  isDarkMode: isDarkMode,
-                  onSignOut: widget.onSignOut,
-                  onOpenProfile: () => setState(() => _activeMenuId = 'profile'),
-                ),
-
-                // Center Content Area (Smooth Animated Switcher)
-                Expanded(
-                  child: Container(
-                    color: isDarkMode ? const Color(0xFF06080D) : const Color(0xFFF8FAFC),
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 320),
-                      switchInCurve: Curves.easeOutCubic,
-                      switchOutCurve: Curves.easeInCubic,
-                      transitionBuilder: (child, animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: ScaleTransition(
-                            scale: Tween<double>(begin: 0.98, end: 1.0).animate(animation),
-                            child: child,
+              // Center Content Area (Smooth Animated Switcher)
+              Expanded(
+                child: Container(
+                  color: isDarkMode ? const Color(0xFF06080D) : const Color(0xFFF8FAFC),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 500),
+                    switchInCurve: Curves.easeOutQuart,
+                    switchOutCurve: Curves.easeInQuart,
+                    transitionBuilder: (child, animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: ScaleTransition(
+                          scale: Tween<double>(begin: 0.965, end: 1.0).animate(
+                            CurvedAnimation(parent: animation, curve: Curves.easeOutQuart),
                           ),
-                        );
-                      },
-                      child: KeyedSubtree(
-                        key: ValueKey(_activeMenuId),
-                        child: _buildCenterContent(isDarkMode),
-                      ),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: KeyedSubtree(
+                      key: ValueKey(_activeMenuId),
+                      child: _buildCenterContent(isDarkMode),
                     ),
                   ),
                 ),
-              ],
+              ),
+            ],
+          ),
+
+          // Pinned Top Header Bar (Translucent Blur, Floating Edge-to-Edge)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: WorkspaceTopBar(
+              template: dummyTemplate,
+              isDarkMode: isDarkMode,
+              isSidebarCollapsed: _isSidebarCollapsed,
+              isExporting: false,
+              onToggleTheme: () => AppThemeService.instance.toggleTheme(context),
+              onToggleSidebar: () => setState(() => _isSidebarCollapsed = !_isSidebarCollapsed),
+              onExport: () {},
+              onOpenInOs: () => widget.onOpenInOs('kakaotalk'),
+              onSelectOs: widget.onSelectOs,
+              onSignOut: widget.onSignOut,
+              onOpenProfile: () => setState(() => _activeMenuId = 'profile'),
             ),
           ),
         ],

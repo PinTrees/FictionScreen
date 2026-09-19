@@ -4,7 +4,7 @@ enum TemplateCategory {
   messenger('메신저 / 채팅'),
   sns('SNS / 소셜'),
   finance('금융 / 송금'),
-  os('OS & 시스템 오류'),
+  os('시스템 오류'),
   office('오피스 / 업무 문서'),
   lifestyle('라이프스타일 / 배달');
 

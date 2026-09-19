@@ -117,12 +117,12 @@ class WorkspaceTopBar extends StatelessWidget {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: const Text(
-                          'CONSOLE',
+                          '콘솔',
                           style: TextStyle(
                             color: Color(0xFF00B0FF),
-                            fontSize: 9.5,
+                            fontSize: 10,
                             fontWeight: FontWeight.w800,
-                            letterSpacing: 0.8,
+                            letterSpacing: -0.2,
                           ),
                         ),
                       ),

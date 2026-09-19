@@ -1,0 +1,38 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 인증 여부 확인
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // 본인 계정 확인
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // 1. 유저 프로필 문서 및 하위 모든 컬렉션 (projects, settings, theme_config 등)
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      // 하위 모든 컬렉션에 대한 읽기/쓰기/생성/삭제 허용
+      match /{allPaths=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // 2. 공개 템플릿 정보 (읽기는 누구나, 쓰기는 인증 유저)
+    match /templates/{templateId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // 3. 커뮤니티/공개 시나리오 갤러리
+    match /public_showcases/{docId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+  }
+}

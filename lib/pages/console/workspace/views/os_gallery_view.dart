@@ -23,7 +23,7 @@ class OsGalleryView extends StatelessWidget {
     final osList = AppPlatformIcons.osList;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 32),
+      padding: const EdgeInsets.fromLTRB(36, 76, 36, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -76,12 +76,12 @@ class OsGalleryView extends StatelessWidget {
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: const Text(
-                              'VIRTUAL OS HUB',
+                              '가상 데스크톱 허브',
                               style: TextStyle(
                                 color: Color(0xFF0284C7),
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
-                                letterSpacing: 0.8,
+                                letterSpacing: -0.2,
                               ),
                             ),
                           ),
@@ -94,7 +94,7 @@ class OsGalleryView extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '가상 데스크톱 OS 선택 및 접속',
+                        '가상 데스크톱 환경 선택 및 접속',
                         style: TextStyle(
                           color: textColor,
                           fontSize: 22,
@@ -104,7 +104,7 @@ class OsGalleryView extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Windows 11, macOS, SteamOS(Steam Deck), Windows XP 등 원하는 가상 OS로 즉시 부팅하여 창 모드로 앱을 실행하세요.',
+                        'Windows 11, macOS, SteamOS(Steam Deck), Windows XP 등 원하는 가상 환경으로 즉시 부팅하여 창 모드로 앱을 실행하세요.',
                         style: TextStyle(color: textSubColor, fontSize: 13.5, height: 1.4),
                       ),
                     ],
@@ -121,7 +121,7 @@ class OsGalleryView extends StatelessWidget {
           PopEntrance(
             delay: const Duration(milliseconds: 100),
             child: Text(
-              '사용 가능한 운영체제 목록',
+              '사용 가능한 가상 데스크톱 목록',
               style: TextStyle(
                 color: textColor,
                 fontSize: 17,
@@ -197,7 +197,7 @@ class OsGalleryView extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    'Virtual Desktop Environment',
+                                    '가상 데스크톱 환경',
                                     style: TextStyle(
                                       color: textSubColor,
                                       fontSize: 11,
@@ -225,18 +225,18 @@ class OsGalleryView extends StatelessWidget {
                                 color: const Color(0xFF0284C7).withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Row(
+                              child: const Row(
                                 children: [
-                                  const Text(
-                                    'OS 부팅 및 접속',
+                                  Text(
+                                    '부팅 및 접속',
                                     style: TextStyle(
                                       color: Color(0xFF0284C7),
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
-                                  const Icon(CupertinoIcons.play_arrow_solid, size: 10, color: Color(0xFF0284C7)),
+                                  SizedBox(width: 4),
+                                  Icon(CupertinoIcons.play_arrow_solid, size: 10, color: Color(0xFF0284C7)),
                                 ],
                               ),
                             ),

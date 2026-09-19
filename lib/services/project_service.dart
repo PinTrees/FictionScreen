@@ -98,6 +98,9 @@ class ProjectService {
     }
 
     try {
+      // 유저 문서가 누락된 경우 즉시 자동 생성 (Fallback Provisioning)
+      await AuthService.ensureUserDocument(user);
+
       await _userProjectsRef(user.uid).doc(project.id).set({
         'title': project.title,
         'appTemplateId': project.appTemplateId,
@@ -106,7 +109,7 @@ class ProjectService {
         'isStarred': project.isStarred,
         'contentData': project.contentData,
         'createdAt': FieldValue.serverTimestamp(),
-      });
+      }, SetOptions(merge: true));
     } catch (e) {
       debugPrint('[ProjectService] Create project error: $e');
       _guestProjects.removeWhere((p) => p.id == project.id);
@@ -132,6 +135,9 @@ class ProjectService {
     }
 
     try {
+      // 유저 문서가 누락된 경우 즉시 자동 생성 (Fallback Provisioning)
+      await AuthService.ensureUserDocument(user);
+
       final Map<String, dynamic> updatePayload = {
         'contentData': contentData,
         'updatedAt': FieldValue.serverTimestamp(),
