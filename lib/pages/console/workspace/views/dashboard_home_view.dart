@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../../../../widgets/pop_entrance.dart';
 import '../../../../widgets/scale_button.dart';
 import '../models/project_model.dart';
 
@@ -32,114 +33,121 @@ class DashboardHomeView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Banner / Welcome Area with generous padding (ZERO OUTLINE)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: isDarkMode
-                    ? [const Color(0xFF131B2E), const Color(0xFF090D17)]
-                    : [const Color(0xFFE0F7FA), const Color(0xFFE8EAF6)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: isDarkMode ? 0.3 : 0.04),
-                  blurRadius: 20,
-                  offset: const Offset(0, 6),
+          // Banner / Welcome Area with generous padding (ZERO OUTLINE, Trendy Pop Entrance)
+          PopEntrance(
+            delay: const Duration(milliseconds: 60),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: isDarkMode
+                      ? [const Color(0xFF131B2E), const Color(0xFF090D17)]
+                      : [const Color(0xFFE0F7FA), const Color(0xFFE8EAF6)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF00E5FF).withValues(alpha: 0.18),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: const Text(
-                              'FICTION SCREEN STUDIO',
-                              style: TextStyle(
-                                color: Color(0xFF00B0FF),
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.8,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDarkMode ? 0.3 : 0.04),
+                    blurRadius: 20,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF00E5FF).withValues(alpha: 0.18),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Text(
+                                'FICTION SCREEN STUDIO',
+                                style: TextStyle(
+                                  color: Color(0xFF00B0FF),
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.8,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            '총 ${projects.length}개의 프로젝트',
-                            style: TextStyle(color: textSubColor, fontSize: 12.5),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        '시나리오 & 가상 화면 프로젝트',
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: -0.6,
+                            const SizedBox(width: 10),
+                            Text(
+                              '총 ${projects.length}개의 프로젝트',
+                              style: TextStyle(color: textSubColor, fontSize: 12.5),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        '어플을 선택하여 대화 및 스크린샷을 작성하고, 피그마 캔버스에서 실시간으로 편집하거나 PNG로 내보내세요.',
-                        style: TextStyle(color: textSubColor, fontSize: 14, height: 1.45),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 24),
-                // Brand Button (CapCut style)
-                ScaleButton(
-                  onTap: onNewProject,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(CupertinoIcons.add, size: 18, color: Color(0xFF003852)),
-                        SizedBox(width: 8),
+                        const SizedBox(height: 12),
                         Text(
-                          '새 프로젝트 만들기',
+                          '시나리오 & 가상 화면 프로젝트',
                           style: TextStyle(
-                            color: Color(0xFF003852),
-                            fontWeight: FontWeight.w800,
-                            fontSize: 14,
+                            color: textColor,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.6,
                           ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '어플을 선택하여 대화 및 스크린샷을 작성하고, 피그마 캔버스에서 실시간으로 편집하거나 PNG로 내보내세요.',
+                          style: TextStyle(color: textSubColor, fontSize: 14, height: 1.45),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 24),
+                  // Brand Button (CapCut style, pops in growing)
+                  PopEntrance(
+                    delay: const Duration(milliseconds: 180),
+                    startScale: 0.8,
+                    child: ScaleButton(
+                      onTap: onNewProject,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(CupertinoIcons.add, size: 18, color: Color(0xFF003852)),
+                            SizedBox(width: 8),
+                            Text(
+                              '새 프로젝트 만들기',
+                              style: TextStyle(
+                                color: Color(0xFF003852),
+                                fontWeight: FontWeight.w800,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
 
@@ -198,19 +206,23 @@ class DashboardHomeView extends StatelessWidget {
                           style: TextStyle(color: textSubColor, fontSize: 13),
                         ),
                         const SizedBox(height: 18),
-                        ScaleButton(
-                          onTap: onNewProject,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                        PopEntrance(
+                          delay: const Duration(milliseconds: 160),
+                          startScale: 0.82,
+                          child: ScaleButton(
+                            onTap: onNewProject,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                                ),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Text(
-                              '새 프로젝트 시작하기',
-                              style: TextStyle(color: Color(0xFF003852), fontWeight: FontWeight.bold, fontSize: 13),
+                              child: const Text(
+                                '새 프로젝트 시작하기',
+                                style: TextStyle(color: Color(0xFF003852), fontWeight: FontWeight.bold, fontSize: 13),
+                              ),
                             ),
                           ),
                         ),
@@ -229,8 +241,11 @@ class DashboardHomeView extends StatelessWidget {
                       final proj = projects[index];
                       final template = proj.template;
 
-                      return ScaleButton(
-                        onTap: () => onOpenProject(proj),
+                      return PopEntrance(
+                        delay: Duration(milliseconds: 100 + (index.clamp(0, 8) * 45)),
+                        startScale: 0.88,
+                        child: ScaleButton(
+                          onTap: () => onOpenProject(proj),
                         child: Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
@@ -341,8 +356,9 @@ class DashboardHomeView extends StatelessWidget {
                             ],
                           ),
                         ),
-                      );
-                    },
+                      ),
+                    );
+                  },
                   ),
           ),
         ],

@@ -53,55 +53,105 @@ class AppRouter {
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const LoginPage(),
+        pageBuilder: (context, state) => _buildPageTransition(
+          key: state.pageKey,
+          child: const LoginPage(),
+        ),
       ),
       GoRoute(
         path: '/',
         name: 'home',
-        builder: (context, state) => const HomePage(),
+        pageBuilder: (context, state) => _buildPageTransition(
+          key: state.pageKey,
+          child: const HomePage(),
+        ),
       ),
       GoRoute(
         path: '/console',
         name: 'console',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final initialOs = state.uri.queryParameters['os'];
-          return ConsolePage(initialOs: initialOs);
+          return _buildPageTransition(
+            key: state.pageKey,
+            child: ConsolePage(initialOs: initialOs),
+          );
         },
       ),
       GoRoute(
         path: '/console/editor/:templateId',
         name: 'console-editor',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final templateId = state.pathParameters['templateId'] ?? 'kakaotalk';
-          return AppEditorPage(templateId: templateId);
+          return _buildPageTransition(
+            key: state.pageKey,
+            child: AppEditorPage(templateId: templateId),
+          );
         },
       ),
       GoRoute(
         path: '/editor/:templateId',
         name: 'editor',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final templateId = state.pathParameters['templateId'] ?? 'kakaotalk';
-          return AppEditorPage(templateId: templateId);
+          return _buildPageTransition(
+            key: state.pageKey,
+            child: AppEditorPage(templateId: templateId),
+          );
         },
       ),
       GoRoute(
         path: '/studio/:templateId',
         name: 'studio',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final templateId = state.pathParameters['templateId'] ?? 'kakaotalk';
-          return StudioPage(templateId: templateId);
+          return _buildPageTransition(
+            key: state.pageKey,
+            child: StudioPage(templateId: templateId),
+          );
         },
       ),
       GoRoute(
         path: '/terms',
         name: 'terms',
-        builder: (context, state) => const LegalPage(initialTab: 'terms'),
+        pageBuilder: (context, state) => _buildPageTransition(
+          key: state.pageKey,
+          child: const LegalPage(initialTab: 'terms'),
+        ),
       ),
       GoRoute(
         path: '/privacy',
         name: 'privacy',
-        builder: (context, state) => const LegalPage(initialTab: 'privacy'),
+        pageBuilder: (context, state) => _buildPageTransition(
+          key: state.pageKey,
+          child: const LegalPage(initialTab: 'privacy'),
+        ),
       ),
     ],
   );
+
+  static Page<dynamic> _buildPageTransition({
+    required LocalKey key,
+    required Widget child,
+  }) {
+    return CustomTransitionPage(
+      key: key,
+      child: child,
+      transitionDuration: const Duration(milliseconds: 320),
+      reverseTransitionDuration: const Duration(milliseconds: 250),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+          reverseCurve: Curves.easeInCubic,
+        );
+        return FadeTransition(
+          opacity: Tween<double>(begin: 0.0, end: 1.0).animate(curved),
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.97, end: 1.0).animate(curved),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
 }

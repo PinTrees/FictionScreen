@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../apps/screen_template.dart';
+import '../../../../widgets/pop_entrance.dart';
 import '../../../../widgets/scale_button.dart';
 
 /// 콘솔 메인 페이지에서 어플을 고를 수 있는 갤러리/카탈로그 뷰
@@ -78,136 +79,150 @@ class _AppGalleryViewState extends State<AppGalleryView> {
             // 1. Header Banner
             SliverToBoxAdapter(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF6366F1).withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(CupertinoIcons.square_grid_2x2_fill, color: Color(0xFF00B0FF), size: 20),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '스튜디오 어플 탐색 (Studio App Gallery)',
-                            style: TextStyle(
-                              color: textColor,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -0.5,
+                      // 1. Header (Pop Entrance)
+                      PopEntrance(
+                        delay: const Duration(milliseconds: 60),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF6366F1).withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(CupertinoIcons.square_grid_2x2_fill, color: Color(0xFF00B0FF), size: 20),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '원하는 화면을 선택하면 피그마 스타일의 전체화면 정밀 에디터가 열립니다.',
-                            style: TextStyle(color: textSubColor, fontSize: 13),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-
-                  // 2. Search & Category Filters (ZERO OUTLINE)
-                  Row(
-                    children: [
-                      // Search field
-                      Expanded(
-                        child: Container(
-                          height: 42,
-                          decoration: BoxDecoration(
-                            color: searchBgColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: TextField(
-                            controller: _searchCtrl,
-                            style: TextStyle(color: textColor, fontSize: 13.5),
-                            decoration: InputDecoration(
-                              hintText: '어플 이름, 카테고리, 설명으로 검색...',
-                              hintStyle: TextStyle(color: textSubColor.withValues(alpha: 0.6), fontSize: 13),
-                              prefixIcon: Icon(CupertinoIcons.search, size: 17, color: textSubColor),
-                              suffixIcon: _searchQuery.isNotEmpty
-                                  ? IconButton(
-                                      icon: Icon(CupertinoIcons.xmark_circle_fill, size: 15, color: textSubColor),
-                                      onPressed: () {
-                                        _searchCtrl.clear();
-                                        setState(() => _searchQuery = '');
-                                      },
-                                    )
-                                  : null,
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(vertical: 11),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '스튜디오 어플 탐색 (Studio App Gallery)',
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '원하는 화면을 선택하면 피그마 스타일의 전체화면 정밀 에디터가 열립니다.',
+                                  style: TextStyle(color: textSubColor, fontSize: 13),
+                                ),
+                              ],
                             ),
-                            onChanged: (val) => setState(() => _searchQuery = val.trim()),
-                          ),
+                          ],
                         ),
                       ),
+                      const SizedBox(height: 24),
+
+                      // 2. Search & Category Filters (ZERO OUTLINE, Pop Entrance)
+                      PopEntrance(
+                        delay: const Duration(milliseconds: 120),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                // Search field
+                                Expanded(
+                                  child: Container(
+                                    height: 42,
+                                    decoration: BoxDecoration(
+                                      color: searchBgColor,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: TextField(
+                                      controller: _searchCtrl,
+                                      style: TextStyle(color: textColor, fontSize: 13.5),
+                                      decoration: InputDecoration(
+                                        hintText: '어플 이름, 카테고리, 설명으로 검색...',
+                                        hintStyle: TextStyle(color: textSubColor.withValues(alpha: 0.6), fontSize: 13),
+                                        prefixIcon: Icon(CupertinoIcons.search, size: 17, color: textSubColor),
+                                        suffixIcon: _searchQuery.isNotEmpty
+                                            ? IconButton(
+                                                icon: Icon(CupertinoIcons.xmark_circle_fill, size: 15, color: textSubColor),
+                                                onPressed: () {
+                                                  _searchCtrl.clear();
+                                                  setState(() => _searchQuery = '');
+                                                },
+                                              )
+                                            : null,
+                                        border: InputBorder.none,
+                                        contentPadding: const EdgeInsets.symmetric(vertical: 11),
+                                      ),
+                                      onChanged: (val) => setState(() => _searchQuery = val.trim()),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 14),
+
+                            // Category Filter Pills
+                            SizedBox(
+                              height: 34,
+                              child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  _buildCategoryPill(null, '전체 (${widget.templates.length})', isDark),
+                                  ...TemplateCategory.values.map((cat) {
+                                    final count = widget.templates.where((t) => t.category == cat).length;
+                                    return _buildCategoryPill(cat, '${cat.label} ($count)', isDark);
+                                  }),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 26),
                     ],
                   ),
+                ),
 
-                  const SizedBox(height: 14),
-
-                  // Category Filter Pills
-                  SizedBox(
-                    height: 34,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _buildCategoryPill(null, '전체 (${widget.templates.length})', isDark),
-                        ...TemplateCategory.values.map((cat) {
-                          final count = widget.templates.where((t) => t.category == cat).length;
-                          return _buildCategoryPill(cat, '${cat.label} ($count)', isDark);
-                        }),
-                      ],
+                // 3. Grid of Apps
+                if (filtered.isEmpty)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(40),
+                      child: Center(
+                        child: Text(
+                          '일치하는 어플이 없습니다.',
+                          style: TextStyle(color: textSubColor, fontSize: 14),
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      mainAxisSpacing: 18,
+                      crossAxisSpacing: 18,
+                      mainAxisExtent: 184,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final item = filtered[index];
+                        return PopEntrance(
+                          delay: Duration(milliseconds: 80 + (index.clamp(0, 10) * 35)),
+                          startScale: 0.88,
+                          child: _AppGalleryCard(
+                            template: item,
+                            isDark: isDark,
+                            textColor: textColor,
+                            textSubColor: textSubColor,
+                            onTap: () => widget.onSelectApp(item.id),
+                          ),
+                        );
+                      },
+                      childCount: filtered.length,
                     ),
                   ),
-
-                  const SizedBox(height: 26),
-                ],
-              ),
-            ),
-
-            // 3. Grid of Apps
-            if (filtered.isEmpty)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(40),
-                  child: Center(
-                    child: Text(
-                      '일치하는 어플이 없습니다.',
-                      style: TextStyle(color: textSubColor, fontSize: 14),
-                    ),
-                  ),
-                ),
-              )
-            else
-              SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  mainAxisSpacing: 18,
-                  crossAxisSpacing: 18,
-                  mainAxisExtent: 184,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final item = filtered[index];
-                    return _AppGalleryCard(
-                      template: item,
-                      isDark: isDark,
-                      textColor: textColor,
-                      textSubColor: textSubColor,
-                      onTap: () => widget.onSelectApp(item.id),
-                    );
-                  },
-                  childCount: filtered.length,
-                ),
-              ),
 
             const SliverToBoxAdapter(
               child: SizedBox(height: 50),
