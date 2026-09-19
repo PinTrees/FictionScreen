@@ -184,8 +184,7 @@ class _WindowsViewState extends State<WindowsView> {
       DesktopIconItem(
         id: 'youtube',
         title: 'YouTube',
-        icon: CupertinoIcons.play_arrow_solid,
-        iconColor: const Color(0xFFFF0000),
+        imageAsset: 'assets/images/youtube_icon.webp',
         gridX: 1,
         gridY: 0,
         isSystemApp: true,

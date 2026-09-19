@@ -149,11 +149,8 @@ class _MacosDockState extends State<MacosDock> {
                 ),
                 _buildDockApp(
                   index: 11,
-                  tooltip: 'YouTube 화면 에디터',
-                  icon: CupertinoIcons.play_arrow_solid,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFF0000), Color(0xFFCC0000)],
-                  ),
+                  tooltip: 'YouTube (동영상 스튜디오)',
+                  imageAsset: 'assets/images/youtube_icon.webp',
                   onTap: () => widget.onOpenTemplate('youtube'),
                 ),
                 _buildDockApp(

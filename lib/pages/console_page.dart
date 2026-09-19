@@ -247,8 +247,8 @@ class _ConsolePageState extends State<ConsolePage> {
 
         final count = _activeFloatingWindows.length;
         final initialPos = Offset(100.0 + (count * 30), 50.0 + (count * 25));
-        final initialSize = (template.id == 'coupang' || template.id == 'netflix' || template.id == 'lottery')
-            ? const Size(980, 620)
+        final initialSize = (template.id == 'coupang' || template.id == 'netflix' || template.id == 'lottery' || template.id == 'youtube')
+            ? const Size(1080, 680)
             : (template.isDesktop ? const Size(760, 500) : const Size(380, 680));
 
         _highestZIndex++;
@@ -682,7 +682,7 @@ class _ConsolePageState extends State<ConsolePage> {
       if (currentlyMaximized) {
         win.isMaximized = false;
         win.position = win.restorePosition ?? const Offset(120, 70);
-        win.size = win.restoreSize ?? (win.template.isDesktop ? const Size(760, 500) : const Size(380, 680));
+        win.size = win.restoreSize ?? ((win.template.id == 'youtube' || win.template.id == 'coupang' || win.template.id == 'netflix') ? const Size(1080, 680) : (win.template.isDesktop ? const Size(760, 500) : const Size(380, 680)));
       } else {
         win.restorePosition = win.position;
         win.restoreSize = win.size;

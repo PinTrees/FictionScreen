@@ -115,10 +115,13 @@ class ScreenTemplate {
     const ScreenTemplate(
       id: 'youtube',
       title: '유튜브 영상 & 댓글',
-      description: '유튜브 플레이어, 채널 정보, 조회수, 베스트 댓글 생성',
+      description: 'YouTube 데스크톱 2단 뷰 & 모바일 웹, 영상 플레이어, 인라인 댓글, 5대 장르 프리셋',
       category: TemplateCategory.sns,
       icon: CupertinoIcons.play_circle_fill,
+      imageAsset: 'assets/images/youtube_icon.webp',
       themeColor: Color(0xFFFF0000),
+      badge: '인기',
+      isDesktop: true,
     ),
     const ScreenTemplate(
       id: 'instagram',
