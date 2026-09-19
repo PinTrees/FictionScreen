@@ -37,7 +37,9 @@ class WindowsTaskbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (windowsVersion == '7') {
+    if (windowsVersion == 'xp') {
+      return _buildWinXpTaskbar();
+    } else if (windowsVersion == '7') {
       return _buildWin7Taskbar();
     } else if (windowsVersion == '10') {
       return _buildWin10Taskbar();
@@ -272,6 +274,209 @@ class WindowsTaskbar extends StatelessWidget {
                       colors: [Colors.white.withValues(alpha: 0.25), Colors.white.withValues(alpha: 0.05)],
                     ),
                   ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Windows XP: 루나 블루 & 그린 스타트 버튼 작업표시줄
+  Widget _buildWinXpTaskbar() {
+    return Container(
+      height: 30,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFF245DDA),
+            Color(0xFF3F8CFF),
+            Color(0xFF245DDA),
+            Color(0xFF0038A8),
+          ],
+          stops: [0.0, 0.08, 0.5, 1.0],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black45,
+            blurRadius: 4,
+            offset: Offset(0, -1),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // 1. 시그니처 초록색 시작(start) 단추
+          InkWell(
+            onTap: onToggleStartMenu,
+            child: Container(
+              height: 30,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: isStartMenuOpen
+                      ? const [Color(0xFF1B5E20), Color(0xFF2E7D32), Color(0xFF388E3C)]
+                      : const [Color(0xFF4CAF50), Color(0xFF43A047), Color(0xFF2E7D32), Color(0xFF1B5E20)],
+                  stops: isStartMenuOpen ? null : const [0.0, 0.15, 0.85, 1.0],
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0xFF1B5E20),
+                    blurRadius: 2,
+                    offset: Offset(1, 0),
+                  ),
+                ],
+              ),
+              child: const Row(
+                children: [
+                  Icon(CupertinoIcons.flag_fill, size: 14, color: Color(0xFFFFD54F)),
+                  SizedBox(width: 6),
+                  Text(
+                    '시작',
+                    style: TextStyle(
+                      fontFamily: 'Segoe UI',
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(color: Colors.black87, blurRadius: 3, offset: Offset(1, 1)),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+
+          // 2. 빠른 실행 (Quick Launch)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Row(
+              children: [
+                _buildXpQuickIcon('assets/images/windows/desk.png', '바탕 화면 보기', () {}),
+                _buildXpQuickIcon('assets/images/windows/edge.png', 'Internet Explorer', () => onOpenWinApp?.call('edge')),
+                _buildXpQuickIcon('assets/images/windows/vid.png', 'Windows Media Player', () => onOpenTemplate('youtube')),
+              ],
+            ),
+          ),
+
+          // 3. 실행 중인 작업 표시줄 탭 목록
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildXpTaskbarTab('내 컴퓨터', 'assets/images/windows/this_pc.png', () => onOpenWinApp?.call('file_explorer')),
+                  _buildXpTaskbarTab('3D 핀볼', 'assets/images/windows/desk.png', () => onOpenWinApp?.call('pinball')),
+                  _buildXpTaskbarTab('지뢰찾기', 'assets/images/windows/desk.png', () => onOpenWinApp?.call('minesweeper')),
+                  _buildXpTaskbarTab('그림판', 'assets/images/windows/mspaint.png', () => onOpenWinApp?.call('paint')),
+                  _buildXpTaskbarTab('메모장', 'assets/images/windows/notepad.png', () => onOpenWinApp?.call('notepad')),
+                  _buildXpTaskbarTab('계산기', 'assets/images/windows/calc.png', () => onOpenWinApp?.call('calculator')),
+                  _buildXpTaskbarTab('카카오톡', 'assets/images/kakaotalk_icon.webp', () => onOpenTemplate('kakaotalk')),
+                  _buildXpTaskbarTab('DaVinci Resolve', 'assets/images/davinci_resolve_icon.webp', () => onOpenTemplate('davinci_resolve')),
+                ],
+              ),
+            ),
+          ),
+
+          // 4. Windows XP 스카이블루 알림 영역 (트레이)
+          Container(
+            height: 30,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF0F88EA),
+                  Color(0xFF1E9BFF),
+                  Color(0xFF0F88EA),
+                  Color(0xFF0C62B0),
+                ],
+                stops: [0.0, 0.1, 0.5, 1.0],
+              ),
+              border: Border(
+                left: BorderSide(color: Color(0xFF175DB8), width: 1.2),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(CupertinoIcons.speaker_2_fill, size: 13, color: Colors.white),
+                const SizedBox(width: 8),
+                const Icon(CupertinoIcons.wifi, size: 13, color: Colors.white),
+                const SizedBox(width: 8),
+                Text(
+                  timeString,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildXpQuickIcon(String asset, String tooltip, VoidCallback onTap) {
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 3),
+          child: Image.asset(asset, width: 16, height: 16, errorBuilder: (c, e, s) => const Icon(CupertinoIcons.app, size: 16, color: Colors.white)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildXpTaskbarTab(String title, String asset, VoidCallback onTap) {
+    return Container(
+      width: 130,
+      height: 24,
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      decoration: BoxDecoration(
+        color: const Color(0xFF3886DF),
+        borderRadius: BorderRadius.circular(2),
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF3886DF), Color(0xFF1E52BA), Color(0xFF174298)],
+        ),
+        border: Border.all(color: const Color(0xFF153B8C)),
+        boxShadow: const [
+          BoxShadow(color: Colors.black26, offset: Offset(0, 1), blurRadius: 1),
+        ],
+      ),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          child: Row(
+            children: [
+              Image.asset(asset, width: 14, height: 14, errorBuilder: (c, e, s) => const Icon(CupertinoIcons.app, size: 14, color: Colors.white)),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(color: Colors.white, fontSize: 11),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

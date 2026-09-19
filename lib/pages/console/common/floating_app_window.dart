@@ -141,27 +141,32 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   @override
   Widget build(BuildContext context) {
     final isDesktopApp = widget.template.isDesktop;
+    final isWinXp = !widget.isMacStyle && widget.windowsVersion == 'xp';
     final isWin7 = !widget.isMacStyle && widget.windowsVersion == '7';
     final isWin10 = !widget.isMacStyle && widget.windowsVersion == '10';
     final borderRadius = widget.isMaximized
         ? BorderRadius.zero
-        : (isWin10 ? BorderRadius.zero : (isWin7 ? BorderRadius.circular(8) : BorderRadius.circular(12)));
-    final borderColor = isWin7
-        ? (widget.isFocused ? Colors.white.withValues(alpha: 0.55) : Colors.white.withValues(alpha: 0.25))
-        : (isWin10
-            ? (widget.isFocused ? const Color(0xFF0078D7) : const Color(0xFF3E3E42))
-            : (widget.isFocused ? const Color(0xFF6366F1) : Colors.white.withValues(alpha: 0.12)));
-    final titleBarHeight = isWin7 ? 30.0 : (isWin10 ? 31.0 : 38.0);
-    final titleBarColor = isWin7
-        ? (widget.isFocused ? const Color(0xFF6BA4D8).withValues(alpha: 0.85) : const Color(0xFF50789E).withValues(alpha: 0.75))
-        : (isWin10
-            ? (widget.isFocused ? const Color(0xFF2B2B2B) : const Color(0xFF1F1F1F))
-            : (widget.isFocused ? const Color(0xFF141622) : const Color(0xFF0D0E15)));
+        : (isWin10 ? BorderRadius.zero : (isWinXp || isWin7 ? BorderRadius.circular(8) : BorderRadius.circular(12)));
+    final borderColor = isWinXp
+        ? const Color(0xFF0055EA)
+        : (isWin7
+            ? (widget.isFocused ? Colors.white.withValues(alpha: 0.55) : Colors.white.withValues(alpha: 0.25))
+            : (isWin10
+                ? (widget.isFocused ? const Color(0xFF0078D7) : const Color(0xFF3E3E42))
+                : (widget.isFocused ? const Color(0xFF6366F1) : Colors.white.withValues(alpha: 0.12))));
+    final titleBarHeight = isWinXp ? 29.0 : (isWin7 ? 30.0 : (isWin10 ? 31.0 : 38.0));
+    final titleBarColor = isWinXp
+        ? const Color(0xFF0055EA)
+        : (isWin7
+            ? (widget.isFocused ? const Color(0xFF6BA4D8).withValues(alpha: 0.85) : const Color(0xFF50789E).withValues(alpha: 0.75))
+            : (isWin10
+                ? (widget.isFocused ? const Color(0xFF2B2B2B) : const Color(0xFF1F1F1F))
+                : (widget.isFocused ? const Color(0xFF141622) : const Color(0xFF0D0E15))));
     final titleBarBorderRadius = widget.isMaximized
         ? BorderRadius.zero
         : (isWin10
             ? BorderRadius.zero
-            : (isWin7
+            : (isWinXp || isWin7
                 ? const BorderRadius.only(topLeft: Radius.circular(7), topRight: Radius.circular(7))
                 : const BorderRadius.only(topLeft: Radius.circular(11), topRight: Radius.circular(11))));
 
@@ -243,23 +248,27 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
                                       ? Colors.black87
                                       : (widget.isFocused ? Colors.white : Colors.white60),
                                   fontSize: 12,
-                                  fontWeight: isWin7
+                                  fontWeight: (isWinXp || isWin7)
                                       ? FontWeight.w600
                                       : (widget.isFocused ? (isWin10 ? FontWeight.w500 : FontWeight.bold) : FontWeight.normal),
-                                  fontFamily: (isWin7 || isWin10) ? 'Segoe UI' : null,
-                                  shadows: isWin7
-                                      ? const [
-                                          Shadow(color: Colors.white, blurRadius: 10),
-                                          Shadow(color: Colors.white, blurRadius: 5),
-                                          Shadow(color: Colors.white, blurRadius: 2),
-                                        ]
-                                      : null,
+                                  fontFamily: (isWinXp || isWin7 || isWin10) ? 'Segoe UI' : null,
+                                  shadows: isWinXp
+                                      ? const [Shadow(color: Color(0xFF002266), blurRadius: 2, offset: Offset(1, 1))]
+                                      : (isWin7
+                                          ? const [
+                                              Shadow(color: Colors.white, blurRadius: 10),
+                                              Shadow(color: Colors.white, blurRadius: 5),
+                                              Shadow(color: Colors.white, blurRadius: 2),
+                                            ]
+                                          : null),
                                 ),
                               ),
                             ),
 
                             if (!widget.isMacStyle) ...[
-                              if (isWin7) ...[
+                              if (isWinXp) ...[
+                                _buildWinXpCaptionButtons(),
+                              ] else if (isWin7) ...[
                                 _buildWin7AeroCaptionButtons(),
                               ] else if (isWin10) ...[
                                 // Windows 10 직각 풀-하이트 캡션 버튼: [최소화] [최대화/복원] [닫기]
@@ -543,6 +552,36 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     return _Win10TitleHeaderButton(icon: icon, onTap: onTap, isClose: isClose);
   }
 
+  Widget _buildWinXpCaptionButtons() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _WinXpButton(
+          icon: Container(width: 8, height: 2, color: Colors.white),
+          tooltip: '최소화',
+          onTap: widget.onMinimize,
+        ),
+        const SizedBox(width: 2),
+        _WinXpButton(
+          icon: Icon(
+            widget.isMaximized ? CupertinoIcons.square_on_square : CupertinoIcons.square,
+            size: 11,
+            color: Colors.white,
+          ),
+          tooltip: widget.isMaximized ? '이전 크기로 복원' : '최대화',
+          onTap: widget.onMaximize,
+        ),
+        const SizedBox(width: 2),
+        _WinXpButton(
+          icon: const Icon(CupertinoIcons.xmark, size: 11, color: Colors.white),
+          tooltip: '닫기',
+          isClose: true,
+          onTap: widget.onClose,
+        ),
+      ],
+    );
+  }
+
   Widget _buildWin7AeroCaptionButtons() {
     return Container(
       height: 20,
@@ -635,6 +674,89 @@ class _Win7AeroButtonState extends State<_Win7AeroButton> {
           ),
           alignment: Alignment.center,
           child: widget.child,
+        ),
+      ),
+    );
+  }
+}
+
+class _WinXpButton extends StatefulWidget {
+  final Widget icon;
+  final VoidCallback? onTap;
+  final bool isClose;
+  final String tooltip;
+
+  const _WinXpButton({
+    required this.icon,
+    required this.onTap,
+    this.isClose = false,
+    required this.tooltip,
+  });
+
+  @override
+  State<_WinXpButton> createState() => _WinXpButtonState();
+}
+
+class _WinXpButtonState extends State<_WinXpButton> {
+  bool _isHovered = false;
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Color> normalGradient = widget.isClose
+        ? const [Color(0xFFE2614E), Color(0xFFC7301B), Color(0xFFA81C08)]
+        : const [Color(0xFF3F8CFF), Color(0xFF1E6BE6), Color(0xFF0F50C2)];
+
+    final List<Color> hoverGradient = widget.isClose
+        ? const [Color(0xFFFF8270), Color(0xFFEE4932), Color(0xFFC7240E)]
+        : const [Color(0xFF68A5FF), Color(0xFF3982F7), Color(0xFF1C60D9)];
+
+    final List<Color> pressedGradient = widget.isClose
+        ? const [Color(0xFFB81F0C), Color(0xFFD6341F), Color(0xFFE8503C)]
+        : const [Color(0xFF0C46A8), Color(0xFF1659C9), Color(0xFF2870E8)];
+
+    final currentColors = _isPressed
+        ? pressedGradient
+        : (_isHovered ? hoverGradient : normalGradient);
+
+    return Tooltip(
+      message: widget.tooltip,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() {
+          _isHovered = false;
+          _isPressed = false;
+        }),
+        child: GestureDetector(
+          onTapDown: (_) => setState(() => _isPressed = true),
+          onTapUp: (_) => setState(() => _isPressed = false),
+          onTapCancel: () => setState(() => _isPressed = false),
+          onTap: widget.onTap,
+          child: Container(
+            width: 21,
+            height: 21,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(3),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: currentColors,
+              ),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.9),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.35),
+                  offset: const Offset(1, 1),
+                  blurRadius: 1,
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: widget.icon,
+          ),
         ),
       ),
     );

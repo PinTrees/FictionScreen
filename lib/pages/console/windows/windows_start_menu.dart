@@ -40,7 +40,9 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.windowsVersion == '7') {
+    if (widget.windowsVersion == 'xp') {
+      return _buildWinXpStartMenu();
+    } else if (widget.windowsVersion == '7') {
       return _buildWin7StartMenu();
     } else if (widget.windowsVersion == '10') {
       return _buildWin10StartMenu();
@@ -224,7 +226,332 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
     );
   }
 
-  // Windows 7 시작 메뉴 (에어로 글래스 듀얼 패널)
+  // Windows XP: 루나 듀얼 컬럼 시작 메뉴 (1:1 클래식 순정 디자인)
+  Widget _buildWinXpStartMenu() {
+    final String displayName = widget.user?.displayName ?? 'Fiction 창작자';
+
+    return Container(
+      width: 400,
+      height: 520,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0055EA),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(6),
+          topRight: Radius.circular(6),
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black54,
+            blurRadius: 18,
+            offset: Offset(2, -2),
+          ),
+        ],
+        border: Border.all(color: const Color(0xFF0038A8), width: 1.5),
+      ),
+      child: Column(
+        children: [
+          // 1. 상단 프로필 헤더 (블루 그라데이션 + 오렌지 하단 바)
+          Container(
+            height: 54,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(5),
+                topRight: Radius.circular(5),
+              ),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF0058EE), Color(0xFF1B6AE8), Color(0xFF0040C8)],
+              ),
+            ),
+            child: Row(
+              children: [
+                // 사용자 액자 (흰색 사각 테두리)
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(3),
+                    border: Border.all(color: Colors.white, width: 2),
+                    boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 4, offset: Offset(1, 1))],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(2),
+                    child: widget.user?.photoURL != null
+                        ? Image.network(widget.user!.photoURL!, fit: BoxFit.cover)
+                        : Container(
+                            color: const Color(0xFFEAB308),
+                            child: const Icon(CupertinoIcons.person_fill, color: Colors.white, size: 24),
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    displayName,
+                    style: const TextStyle(
+                      fontFamily: 'Segoe UI',
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      shadows: [Shadow(color: Color(0xFF002266), blurRadius: 2, offset: Offset(1, 1))],
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 오렌지 액센트 구분선
+          Container(
+            height: 2,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFF59E0B), Color(0xFFD97706), Color(0xFFB45309)],
+              ),
+            ),
+          ),
+
+          // 2. 중앙 듀얼 패널 (좌측 화이트 + 우측 소프트 블루)
+          Expanded(
+            child: Row(
+              children: [
+                // 좌측 흰색 프로그램 패널
+                Expanded(
+                  flex: 6,
+                  child: Container(
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView(
+                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                            children: [
+                              _buildXpProgramTile('인터넷', 'Internet Explorer', 'assets/images/windows/edge.png', () => widget.onOpenWinApp?.call('edge')),
+                              _buildXpProgramTile('전자 메일', 'Outlook Express', 'assets/images/windows/desk.png', () => widget.onOpenTemplate('kakaotalk')),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                child: Divider(height: 1, color: Color(0xFFE2E8F0)),
+                              ),
+                              _buildXpProgramTile('3D 핀볼', 'Space Cadet', 'assets/images/windows/desk.png', () => widget.onOpenWinApp?.call('pinball')),
+                              _buildXpProgramTile('지뢰찾기', 'Minesweeper', 'assets/images/windows/desk.png', () => widget.onOpenWinApp?.call('minesweeper')),
+                              _buildXpProgramTile('Windows Media Player', '', 'assets/images/windows/vid.png', () => widget.onOpenTemplate('youtube')),
+                              _buildXpProgramTile('그림판', '', 'assets/images/windows/mspaint.png', () => widget.onOpenWinApp?.call('paint')),
+                              _buildXpProgramTile('메모장', '', 'assets/images/windows/notepad.png', () => widget.onOpenWinApp?.call('notepad')),
+                              _buildXpProgramTile('계산기', '', 'assets/images/windows/calc.png', () => widget.onOpenWinApp?.call('calculator')),
+                              _buildXpProgramTile('DaVinci Resolve', '', 'assets/images/davinci_resolve_icon.webp', () => widget.onOpenTemplate('davinci_resolve')),
+                              _buildXpProgramTile('카카오톡', '', 'assets/images/kakaotalk_icon.webp', () => widget.onOpenTemplate('kakaotalk')),
+                            ],
+                          ),
+                        ),
+                        // 좌측 하단 "모든 프로그램(P) ▶"
+                        Container(
+                          height: 36,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: const BoxDecoration(
+                            border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+                          ),
+                          child: InkWell(
+                            onTap: () {},
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '모든 프로그램(P)',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                SizedBox(width: 6),
+                                Icon(CupertinoIcons.arrowtriangle_right_circle_fill, size: 16, color: Color(0xFF16A34A)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // 우측 소프트 스카이블루 시스템 패널
+                Expanded(
+                  flex: 5,
+                  child: Container(
+                    color: const Color(0xFFD3E5FA),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildXpSystemTile('내 문서', 'assets/images/windows/docs.png', () => widget.onOpenWinApp?.call('file_explorer'), isBold: true),
+                        _buildXpSystemTile('내 최근 문서', 'assets/images/windows/folder.png', () => widget.onOpenWinApp?.call('file_explorer')),
+                        _buildXpSystemTile('내 그림', 'assets/images/windows/pics.png', () => widget.onOpenWinApp?.call('file_explorer'), isBold: true),
+                        _buildXpSystemTile('내 음악', 'assets/images/windows/music.png', () => widget.onOpenWinApp?.call('file_explorer'), isBold: true),
+                        _buildXpSystemTile('내 컴퓨터', 'assets/images/windows/this_pc.png', () => widget.onOpenWinApp?.call('file_explorer'), isBold: true),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          child: Divider(height: 1, color: Color(0xFF90AFC5)),
+                        ),
+                        _buildXpSystemTile('제어판', 'assets/images/windows/settings.png', () => (widget.onOpenWinApp != null ? widget.onOpenWinApp!('settings') : widget.onOpenSettings())),
+                        _buildXpSystemTile('프린터 및 팩스', 'assets/images/windows/desk.png', () => (widget.onOpenWinApp != null ? widget.onOpenWinApp!('settings') : widget.onOpenSettings())),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          child: Divider(height: 1, color: Color(0xFF90AFC5)),
+                        ),
+                        _buildXpSystemTile('도움말 및 지원', 'assets/images/windows/desk.png', widget.onGoHome),
+                        _buildXpSystemTile('검색', 'assets/images/windows/desk.png', () => widget.onOpenWinApp?.call('file_explorer')),
+                        _buildXpSystemTile('실행(R)...', 'assets/images/windows/cmd.png', () => widget.onOpenWinApp?.call('cmd')),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 오렌지 액센트 구분선
+          Container(
+            height: 2,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFF59E0B), Color(0xFFD97706), Color(0xFFB45309)],
+              ),
+            ),
+          ),
+
+          // 3. 하단 시스템 전원 바 (로그오프 / 컴퓨터 끄기)
+          Container(
+            height: 42,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF0058EE), Color(0xFF0038A8)],
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // 로그오프
+                InkWell(
+                  onTap: widget.onSignOut,
+                  child: const Row(
+                    children: [
+                      Icon(CupertinoIcons.lock_shield_fill, size: 16, color: Color(0xFFFBBF24)),
+                      SizedBox(width: 6),
+                      Text(
+                        '로그오프(L)',
+                        style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+
+                // 컴퓨터 끄기
+                InkWell(
+                  onTap: widget.onSignOut,
+                  child: const Row(
+                    children: [
+                      Icon(CupertinoIcons.power, size: 16, color: Color(0xFFEF4444)),
+                      SizedBox(width: 6),
+                      Text(
+                        '컴퓨터 끄기(U)',
+                        style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildXpProgramTile(String title, String subtitle, String iconAsset, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(3),
+      hoverColor: const Color(0xFFDCEBFC),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3.5),
+        child: Row(
+          children: [
+            Image.asset(
+              iconAsset,
+              width: 24,
+              height: 24,
+              errorBuilder: (c, e, s) => const Icon(CupertinoIcons.app, size: 24, color: Color(0xFF0284C7)),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontSize: 11.5, color: Colors.black87, fontWeight: FontWeight.w600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (subtitle.isNotEmpty)
+                    Text(
+                      subtitle,
+                      style: const TextStyle(fontSize: 9.5, color: Colors.black45),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildXpSystemTile(String title, String iconAsset, VoidCallback onTap, {bool isBold = false}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(3),
+      hoverColor: const Color(0xFFC0D5EC),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+        child: Row(
+          children: [
+            Image.asset(
+              iconAsset,
+              width: 18,
+              height: 18,
+              errorBuilder: (c, e, s) => const Icon(CupertinoIcons.folder_fill, size: 18, color: Color(0xFF0284C7)),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: const Color(0xFF0C2442),
+                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // Windows 7 시작 메뉴 (에어로 글래스 듀얼 패널 1:1 완벽 구현)
   Widget _buildWin7StartMenu() {
     final String displayName = widget.user?.displayName ?? 'Fiction 창작자';

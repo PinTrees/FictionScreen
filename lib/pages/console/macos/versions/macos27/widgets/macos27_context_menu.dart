@@ -153,11 +153,19 @@ class _Macos27ContextMenuState extends State<Macos27ContextMenu> {
                           },
                         ),
                         _buildMenuItem(
-                          label: 'Windows 7',
+                          label: 'Windows 7 (Aero)',
                           icon: CupertinoIcons.device_desktop,
                           onTap: () {
                             widget.onClose();
                             widget.onSelectOs?.call('windows_7');
+                          },
+                        ),
+                        _buildMenuItem(
+                          label: 'Windows XP (Luna)',
+                          icon: CupertinoIcons.device_desktop,
+                          onTap: () {
+                            widget.onClose();
+                            widget.onSelectOs?.call('windows_xp');
                           },
                         ),
                         _buildDivider(),

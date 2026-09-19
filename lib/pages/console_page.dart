@@ -98,7 +98,11 @@ class _ConsolePageState extends State<ConsolePage> {
 
   void _handleSelectOs(String osKey) {
     setState(() {
-      if (osKey == 'windows_7') {
+      if (osKey == 'windows_xp') {
+        _windowsVersion = 'xp';
+        _pcTheme = 'windows';
+        _activeOs = 'windows';
+      } else if (osKey == 'windows_7') {
         _windowsVersion = '7';
         _pcTheme = 'windows';
         _activeOs = 'windows';

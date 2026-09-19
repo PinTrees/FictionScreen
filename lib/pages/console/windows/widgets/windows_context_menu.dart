@@ -262,10 +262,18 @@ class _WindowsContextMenuState extends State<WindowsContextMenu> {
                         ),
                         _buildOsSubmenuItem(
                           icon: CupertinoIcons.device_desktop,
-                          label: 'Windows 7',
+                          label: 'Windows 7 (Aero)',
                           onTap: () {
                             widget.onClose();
                             widget.onSelectOs?.call('windows_7');
+                          },
+                        ),
+                        _buildOsSubmenuItem(
+                          icon: CupertinoIcons.device_desktop,
+                          label: 'Windows XP (Luna)',
+                          onTap: () {
+                            widget.onClose();
+                            widget.onSelectOs?.call('windows_xp');
                           },
                         ),
                         const Divider(color: Colors.white12, height: 8),

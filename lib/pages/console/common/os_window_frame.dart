@@ -7,6 +7,7 @@ enum WindowStyle {
   windows,
   windows10,
   windows7,
+  windowsXp,
 }
 
 /// 현실적인 가상 OS 윈도우 창 프레임
@@ -48,17 +49,21 @@ class OsWindowFrame extends StatelessWidget {
         ? BorderRadius.zero
         : BorderRadius.circular(style == WindowStyle.macos ? 12 : 8);
 
-    final borderColor = style == WindowStyle.windows10
-        ? const Color(0xFF0078D7)
-        : (style == WindowStyle.windows7
-            ? Colors.white.withValues(alpha: 0.45)
-            : Colors.white.withValues(alpha: 0.15));
+    final borderColor = style == WindowStyle.windowsXp
+        ? const Color(0xFF0055EA)
+        : (style == WindowStyle.windows10
+            ? const Color(0xFF0078D7)
+            : (style == WindowStyle.windows7
+                ? Colors.white.withValues(alpha: 0.45)
+                : Colors.white.withValues(alpha: 0.15)));
 
-    final backgroundColor = style == WindowStyle.windows10
-        ? const Color(0xFF1F1F1F)
-        : (style == WindowStyle.windows7
-            ? const Color(0xFF4578A8).withValues(alpha: 0.65)
-            : const Color(0xFF161824).withValues(alpha: 0.92));
+    final backgroundColor = style == WindowStyle.windowsXp
+        ? const Color(0xFFECE9D8)
+        : (style == WindowStyle.windows10
+            ? const Color(0xFF1F1F1F)
+            : (style == WindowStyle.windows7
+                ? const Color(0xFF4578A8).withValues(alpha: 0.65)
+                : const Color(0xFF161824).withValues(alpha: 0.92)));
 
     return Material(
       color: Colors.transparent,
@@ -115,11 +120,13 @@ class OsWindowFrame extends StatelessWidget {
       onPanEnd: onTitleDragEnd,
       child: style == WindowStyle.macos
           ? _buildMacTitleBar()
-          : (style == WindowStyle.windows7
-              ? _buildWindows7TitleBar()
-              : (style == WindowStyle.windows10
-                  ? _buildWindows10TitleBar()
-                  : _buildWindowsTitleBar())),
+          : (style == WindowStyle.windowsXp
+              ? _buildWindowsXpTitleBar()
+              : (style == WindowStyle.windows7
+                  ? _buildWindows7TitleBar()
+                  : (style == WindowStyle.windows10
+                      ? _buildWindows10TitleBar()
+                      : _buildWindowsTitleBar()))),
     );
   }
 
@@ -295,6 +302,84 @@ class OsWindowFrame extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildWindowsXpTitleBar() {
+    return Container(
+      height: 29,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFF0058EE),
+            Color(0xFF3593FF),
+            Color(0xFF288EFF),
+            Color(0xFF0055EA),
+            Color(0xFF0040C8),
+          ],
+          stops: [0.0, 0.15, 0.4, 0.7, 1.0],
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      child: Row(
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 16, color: Colors.white),
+            const SizedBox(width: 6),
+          ],
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Segoe UI',
+                shadows: [
+                  Shadow(color: Color(0xFF002266), blurRadius: 2, offset: Offset(1, 1)),
+                ],
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildWinXpCaptionBtn(const Icon(CupertinoIcons.minus, size: 10, color: Colors.white), onMinimize ?? onClose, false),
+              const SizedBox(width: 2),
+              _buildWinXpCaptionBtn(const Icon(CupertinoIcons.square, size: 10, color: Colors.white), onMaximize ?? () {}, false),
+              const SizedBox(width: 2),
+              _buildWinXpCaptionBtn(const Icon(CupertinoIcons.xmark, size: 10, color: Colors.white), onClose, true),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWinXpCaptionBtn(Widget iconWidget, VoidCallback onTap, bool isClose) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: 21,
+        height: 21,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(3),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isClose
+                ? const [Color(0xFFE2614E), Color(0xFFC7301B), Color(0xFFA81C08)]
+                : const [Color(0xFF3F8CFF), Color(0xFF1E6BE6), Color(0xFF0F50C2)],
+          ),
+          border: Border.all(color: Colors.white, width: 1),
+          boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 1, offset: Offset(1, 1))],
+        ),
+        alignment: Alignment.center,
+        child: iconWidget,
       ),
     );
   }

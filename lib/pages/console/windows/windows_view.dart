@@ -14,6 +14,9 @@ import 'versions/win10/apps/file_explorer/win10_file_explorer_window.dart';
 import 'versions/win10/apps/notepad/win10_notepad_window.dart';
 import 'versions/win10/apps/settings/win10_settings_window.dart';
 import 'versions/win7/apps/file_explorer/win7_file_explorer_window.dart';
+import 'versions/winxp/apps/file_explorer/winxp_file_explorer_window.dart';
+import 'versions/winxp/apps/minesweeper/winxp_minesweeper_window.dart';
+import 'versions/winxp/apps/pinball/winxp_pinball_window.dart';
 import 'versions/win11/apps/calculator/win11_calculator_window.dart';
 import 'versions/win11/apps/file_explorer/win11_file_explorer_window.dart';
 import 'versions/win11/apps/notepad/win11_notepad_window.dart';
@@ -121,7 +124,9 @@ class _WindowsViewState extends State<WindowsView> {
     _desktopIcons = [
       DesktopIconItem(
         id: 'pc',
-        title: widget.windowsVersion == '7' ? '컴퓨터' : '내 PC',
+        title: widget.windowsVersion == 'xp'
+            ? '내 컴퓨터'
+            : (widget.windowsVersion == '7' ? '컴퓨터' : '내 PC'),
         imageAsset: 'assets/images/windows/this_pc.png',
         gridX: 0,
         gridY: 0,
@@ -130,7 +135,9 @@ class _WindowsViewState extends State<WindowsView> {
       ),
       DesktopIconItem(
         id: 'edge',
-        title: 'Edge',
+        title: widget.windowsVersion == 'xp' || widget.windowsVersion == '7'
+            ? 'Internet Explorer'
+            : 'Edge',
         imageAsset: 'assets/images/windows/edge.png',
         gridX: 0,
         gridY: 1,
@@ -396,6 +403,24 @@ class _WindowsViewState extends State<WindowsView> {
         isSystemApp: true,
         onTap: () => widget.onOpenTemplate('x_twitter'),
       ),
+      DesktopIconItem(
+        id: 'pinball',
+        title: '3D 핀볼',
+        imageAsset: 'assets/images/windows/desk.png',
+        gridX: 5,
+        gridY: 3,
+        isSystemApp: true,
+        onTap: () => _openWinApp('pinball'),
+      ),
+      DesktopIconItem(
+        id: 'minesweeper',
+        title: '지뢰찾기',
+        imageAsset: 'assets/images/windows/desk.png',
+        gridX: 5,
+        gridY: 4,
+        isSystemApp: true,
+        onTap: () => _openWinApp('minesweeper'),
+      ),
     ];
   }
 
@@ -439,6 +464,24 @@ class _WindowsViewState extends State<WindowsView> {
           defaultSize = const Size(720, 500);
         } else if (appId == 'paint_3d') {
           defaultSize = const Size(960, 620);
+        }
+      } else if (widget.windowsVersion == 'xp') {
+        if (appId == 'file_explorer' || appId == 'recycle_bin') {
+          defaultSize = const Size(820, 540);
+        } else if (appId == 'pinball') {
+          defaultSize = const Size(480, 640);
+        } else if (appId == 'minesweeper') {
+          defaultSize = const Size(280, 360);
+        } else if (appId == 'settings') {
+          defaultSize = const Size(820, 540);
+        } else if (appId == 'notepad') {
+          defaultSize = const Size(640, 440);
+        } else if (appId == 'calculator') {
+          defaultSize = const Size(280, 380);
+        } else if (appId == 'paint') {
+          defaultSize = const Size(780, 520);
+        } else if (appId == 'cmd') {
+          defaultSize = const Size(660, 420);
         }
       } else if (widget.windowsVersion == '7') {
         if (appId == 'file_explorer' || appId == 'recycle_bin') {
@@ -976,6 +1019,18 @@ class _WindowsViewState extends State<WindowsView> {
             onTitleDragStart: onDragStart,
             onTitleDragUpdate: onDragUpdate,
           );
+        } else if (widget.windowsVersion == 'xp') {
+          return WinXpFileExplorerWindow(
+            width: win.size.width,
+            height: win.size.height,
+            isMaximized: win.isMaximized,
+            onClose: () => _closeWindow(win.id),
+            onMinimize: () => _minimizeWindow(win.id),
+            onMaximize: () => _toggleMaximizeWindow(win),
+            onOpenTemplate: widget.onOpenTemplate,
+            onTitleDragStart: onDragStart,
+            onTitleDragUpdate: onDragUpdate,
+          );
         }
         return WindowsFileExplorerWindow(
           width: win.size.width,
@@ -986,7 +1041,19 @@ class _WindowsViewState extends State<WindowsView> {
           onTitleDragUpdate: onDragUpdate,
         );
       case 'recycle_bin':
-        if (widget.windowsVersion == '7') {
+        if (widget.windowsVersion == 'xp') {
+          return WinXpFileExplorerWindow(
+            width: win.size.width,
+            height: win.size.height,
+            isMaximized: win.isMaximized,
+            onClose: () => _closeWindow(win.id),
+            onMinimize: () => _minimizeWindow(win.id),
+            onMaximize: () => _toggleMaximizeWindow(win),
+            onOpenTemplate: widget.onOpenTemplate,
+            onTitleDragStart: onDragStart,
+            onTitleDragUpdate: onDragUpdate,
+          );
+        } else if (widget.windowsVersion == '7') {
           return Win7FileExplorerWindow(
             width: win.size.width,
             height: win.size.height,
@@ -1184,6 +1251,28 @@ class _WindowsViewState extends State<WindowsView> {
           onTitleDragStart: onDragStart,
           onTitleDragUpdate: onDragUpdate,
         );
+      case 'pinball':
+        return WinXpPinballWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'minesweeper':
+        return WinXpMinesweeperWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
       default:
         return const SizedBox.shrink();
     }
@@ -1254,6 +1343,14 @@ class _WindowsViewState extends State<WindowsView> {
         height: double.infinity,
         filterQuality: FilterQuality.high,
       );
+    } else if (activeWallpaper == 'winxp_bliss') {
+      return Image.asset(
+        'assets/images/winxp_bliss.png',
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        filterQuality: FilterQuality.high,
+      );
     }
 
     switch (activeWallpaper) {
@@ -1282,7 +1379,11 @@ class _WindowsViewState extends State<WindowsView> {
       default:
         final defaultAsset = widget.windowsVersion == '11'
             ? 'assets/images/win11_bloom_dark.jpg'
-            : (widget.windowsVersion == '7' ? 'assets/images/win7_harmony.webp' : 'assets/images/win10_hero.webp');
+            : (widget.windowsVersion == 'xp'
+                ? 'assets/images/winxp_bliss.png'
+                : (widget.windowsVersion == '7'
+                    ? 'assets/images/win7_harmony.webp'
+                    : 'assets/images/win10_hero.webp'));
         return Image.asset(
           defaultAsset,
           fit: BoxFit.cover,
