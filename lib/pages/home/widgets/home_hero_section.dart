@@ -1,18 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-class QuickPillData {
-  final String label;
-  final String templateId;
-  final String imageAsset;
-
-  const QuickPillData({
-    required this.label,
-    required this.templateId,
-    required this.imageAsset,
-  });
-}
+import '../../../constants/app_platform_icons.dart';
 
 class HomeHeroSection extends StatelessWidget {
   final bool isMobile;
@@ -25,17 +14,6 @@ class HomeHeroSection extends StatelessWidget {
     required this.isDarkMode,
     required this.onExploreFeatured,
   });
-
-  static const List<QuickPillData> _pills = [
-    QuickPillData(label: '카카오톡', templateId: 'kakaotalk', imageAsset: 'assets/images/kakaotalk_icon.webp'),
-    QuickPillData(label: '당근마켓', templateId: 'daangn', imageAsset: 'assets/images/daangn_icon.webp'),
-    QuickPillData(label: '블라인드', templateId: 'blind', imageAsset: 'assets/images/blind_icon.webp'),
-    QuickPillData(label: '뉴스 속보', templateId: 'news', imageAsset: 'assets/images/windows/news.png'),
-    QuickPillData(label: 'Microsoft 엑셀', templateId: 'excel', imageAsset: 'assets/images/excel_icon.webp'),
-    QuickPillData(label: '디시인사이드', templateId: 'dcinside', imageAsset: 'assets/images/dcinside_icon.webp'),
-    QuickPillData(label: '업비트 코인', templateId: 'upbit', imageAsset: 'assets/images/upbit_icon.webp'),
-    QuickPillData(label: '유튜브', templateId: 'youtube', imageAsset: 'assets/images/youtube_icon.webp'),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +80,7 @@ class HomeHeroSection extends StatelessWidget {
             ),
             const SizedBox(height: 22),
 
-            // 3. Subtitle
+            // 3. Subtitle (No CCTV, No News)
             Container(
               constraints: const BoxConstraints(maxWidth: 720),
               child: Text(
@@ -189,12 +167,14 @@ class HomeHeroSection extends StatelessWidget {
             ),
             const SizedBox(height: 40),
 
-            // 5. Quick-Launch Pills with REAL APP PNG ICONS & CRISP WHITE TEXT IN DARK MODE
+            // 5. Quick-Launch Pills with REAL APP ICONS & HIGH CONTRAST TEXT
             Wrap(
               spacing: 10,
               runSpacing: 10,
               alignment: WrapAlignment.center,
-              children: _pills.map((pill) => _buildQuickPill(context, pill)).toList(),
+              children: AppPlatformIcons.heroQuickPills
+                  .map((pill) => _buildQuickPill(context, pill))
+                  .toList(),
             ),
             const SizedBox(height: 52),
 
@@ -239,13 +219,13 @@ class HomeHeroSection extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickPill(BuildContext context, QuickPillData pill) {
-    // In Dark mode, pill text is ALWAYS crisp pure white! In Light mode, slate-900.
+  Widget _buildQuickPill(BuildContext context, AppPlatformInfo pill) {
+    // In Dark mode, pill text is pure crisp white! In Light mode, slate-900.
     final pillTextColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
     final pillBg = isDarkMode ? const Color(0xFF161928) : Colors.white;
 
     return InkWell(
-      onTap: () => context.go('/studio/${pill.templateId}'),
+      onTap: () => context.go('/studio/${pill.id}'),
       borderRadius: BorderRadius.circular(20),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
@@ -263,20 +243,20 @@ class HomeHeroSection extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Real App PNG/WebP icon!
+            // Real App PNG/WebP icon
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
               child: Image.asset(
-                pill.imageAsset,
+                pill.assetPath,
                 width: 19,
                 height: 19,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) => const SizedBox(width: 19, height: 19),
               ),
             ),
             const SizedBox(width: 8),
             Text(
-              pill.label,
+              pill.name,
               style: TextStyle(
                 color: pillTextColor,
                 fontSize: 13,
