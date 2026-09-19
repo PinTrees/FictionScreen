@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'home/widgets/home_bento_grid.dart';
-import 'home/widgets/home_catalog_section.dart';
+import 'home/widgets/home_featured_trio.dart';
 import 'home/widgets/home_floating_nav.dart';
 import 'home/widgets/home_footer.dart';
-import 'home/widgets/home_genre_cliches.dart';
 import 'home/widgets/home_hero_section.dart';
+import 'home/widgets/home_icon_cloud.dart';
 import 'home/widgets/home_showcase_deck.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,13 +14,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _activeHeroTab = 'news';
+  String _activeHeroTab = 'kakaotalk';
+  bool _isDarkMode = true;
 
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _showcaseKey = GlobalKey();
-  final GlobalKey _featuresKey = GlobalKey();
-  final GlobalKey _clichesKey = GlobalKey();
-  final GlobalKey _catalogKey = GlobalKey();
+  final GlobalKey _featuredKey = GlobalKey();
+  final GlobalKey _iconCloudKey = GlobalKey();
 
   void _scrollToKey(GlobalKey key) {
     if (key.currentContext != null) {
@@ -40,6 +39,12 @@ class _HomePageState extends State<HomePage> {
     _scrollToKey(_showcaseKey);
   }
 
+  void _toggleTheme() {
+    setState(() {
+      _isDarkMode = !_isDarkMode;
+    });
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -52,10 +57,10 @@ class _HomePageState extends State<HomePage> {
     final isMobile = screenWidth < 768;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF07080D),
+      backgroundColor: _isDarkMode ? const Color(0xFF07080D) : const Color(0xFFF8FAFC),
       body: Stack(
         children: [
-          // 1. Deep Ambient Aura & Grid Mesh Background
+          // 1. Ambient Aurora & Light/Dark Mesh Background
           _buildBackgroundAura(),
 
           // 2. Main Scrollable Content
@@ -68,7 +73,8 @@ class _HomePageState extends State<HomePage> {
               SliverToBoxAdapter(
                 child: HomeHeroSection(
                   isMobile: isMobile,
-                  onExploreTemplates: () => _scrollToKey(_catalogKey),
+                  isDarkMode: _isDarkMode,
+                  onExploreShowcase: () => _scrollToKey(_showcaseKey),
                   onQuickLaunch: _handleQuickLaunch,
                 ),
               ),
@@ -79,6 +85,7 @@ class _HomePageState extends State<HomePage> {
                   key: _showcaseKey,
                   child: HomeShowcaseDeck(
                     isMobile: isMobile,
+                    isDarkMode: _isDarkMode,
                     activeTab: _activeHeroTab,
                     onTabChanged: (tabId) {
                       setState(() {
@@ -89,33 +96,34 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-              // Bento Grid Features Section
+              // Signature Mockup Trio Section (KakaoTalk, Daangn, Blind)
               SliverToBoxAdapter(
                 child: Container(
-                  key: _featuresKey,
-                  child: HomeBentoGrid(isMobile: isMobile),
+                  key: _featuredKey,
+                  child: HomeFeaturedTrio(
+                    isMobile: isMobile,
+                    isDarkMode: _isDarkMode,
+                  ),
                 ),
               ),
 
-              // Genre Clichés Collection
+              // All Supported Ecosystem Icon Cloud (OS, Apps, Sites)
               SliverToBoxAdapter(
                 child: Container(
-                  key: _clichesKey,
-                  child: HomeGenreCliches(isMobile: isMobile),
+                  key: _iconCloudKey,
+                  child: HomeIconCloud(
+                    isMobile: isMobile,
+                    isDarkMode: _isDarkMode,
+                  ),
                 ),
               ),
 
-              // Template Catalog Section with Instant Search
+              // Final CTA Banner & Footer
               SliverToBoxAdapter(
-                child: Container(
-                  key: _catalogKey,
-                  child: HomeCatalogSection(isMobile: isMobile),
+                child: HomeFooter(
+                  isMobile: isMobile,
+                  isDarkMode: _isDarkMode,
                 ),
-              ),
-
-              // CTA Banner & Footer
-              SliverToBoxAdapter(
-                child: HomeFooter(isMobile: isMobile),
               ),
             ],
           ),
@@ -128,10 +136,11 @@ class _HomePageState extends State<HomePage> {
             child: Center(
               child: HomeFloatingNav(
                 isMobile: isMobile,
+                isDarkMode: _isDarkMode,
+                onToggleTheme: _toggleTheme,
                 onScrollToShowcase: () => _scrollToKey(_showcaseKey),
-                onScrollToFeatures: () => _scrollToKey(_featuresKey),
-                onScrollToCliches: () => _scrollToKey(_clichesKey),
-                onScrollToCatalog: () => _scrollToKey(_catalogKey),
+                onScrollToFeatured: () => _scrollToKey(_featuredKey),
+                onScrollToIconCloud: () => _scrollToKey(_iconCloudKey),
               ),
             ),
           ),
@@ -141,14 +150,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   // ==========================================
-  // Ambient Aurora & Mesh Background
+  // Ambient Aura & Background
   // ==========================================
   Widget _buildBackgroundAura() {
     return Positioned.fill(
       child: IgnorePointer(
         child: Stack(
           children: [
-            // Ambient Top Glow
+            // Top Ambient Glow
             Positioned(
               top: -160,
               left: 0,
@@ -160,12 +169,18 @@ class _HomePageState extends State<HomePage> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
-                      colors: [
-                        const Color(0xFF6366F1).withValues(alpha: 0.18),
-                        const Color(0xFF8B5CF6).withValues(alpha: 0.08),
-                        const Color(0xFF06B6D4).withValues(alpha: 0.03),
-                        Colors.transparent,
-                      ],
+                      colors: _isDarkMode
+                          ? [
+                              const Color(0xFF6366F1).withValues(alpha: 0.18),
+                              const Color(0xFF8B5CF6).withValues(alpha: 0.08),
+                              const Color(0xFF06B6D4).withValues(alpha: 0.03),
+                              Colors.transparent,
+                            ]
+                          : [
+                              const Color(0xFF818CF8).withValues(alpha: 0.15),
+                              const Color(0xFFC7D2FE).withValues(alpha: 0.1),
+                              Colors.transparent,
+                            ],
                       stops: const [0.0, 0.35, 0.65, 1.0],
                     ),
                   ),
@@ -173,7 +188,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            // Left Side Subtle Cyan Orb
+            // Left Side Subtle Orb
             Positioned(
               top: 400,
               left: -200,
@@ -184,7 +199,7 @@ class _HomePageState extends State<HomePage> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF38BDF8).withValues(alpha: 0.06),
+                      const Color(0xFF38BDF8).withValues(alpha: _isDarkMode ? 0.06 : 0.04),
                       Colors.transparent,
                     ],
                   ),
@@ -203,7 +218,7 @@ class _HomePageState extends State<HomePage> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF8B5CF6).withValues(alpha: 0.06),
+                      const Color(0xFF8B5CF6).withValues(alpha: _isDarkMode ? 0.06 : 0.04),
                       Colors.transparent,
                     ],
                   ),

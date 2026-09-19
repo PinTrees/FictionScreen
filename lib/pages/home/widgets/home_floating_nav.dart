@@ -7,40 +7,41 @@ import '../../../services/auth_service.dart';
 
 class HomeFloatingNav extends StatelessWidget {
   final bool isMobile;
+  final bool isDarkMode;
+  final VoidCallback onToggleTheme;
   final VoidCallback onScrollToShowcase;
-  final VoidCallback onScrollToFeatures;
-  final VoidCallback onScrollToCliches;
-  final VoidCallback onScrollToCatalog;
+  final VoidCallback onScrollToFeatured;
+  final VoidCallback onScrollToIconCloud;
 
   const HomeFloatingNav({
     super.key,
     required this.isMobile,
+    required this.isDarkMode,
+    required this.onToggleTheme,
     required this.onScrollToShowcase,
-    required this.onScrollToFeatures,
-    required this.onScrollToCliches,
-    required this.onScrollToCatalog,
+    required this.onScrollToFeatured,
+    required this.onScrollToIconCloud,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = isDarkMode
+        ? const Color(0xFF0F111A).withValues(alpha: 0.8)
+        : Colors.white.withValues(alpha: 0.85);
+    final textColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: isMobile ? 12 : 24),
       constraints: const BoxConstraints(maxWidth: 1040),
       height: 56,
       decoration: BoxDecoration(
-        color: const Color(0xFF0F111A).withValues(alpha: 0.75),
+        color: bgColor,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.45),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
-          ),
-          BoxShadow(
-            color: const Color(0xFF6366F1).withValues(alpha: 0.08),
-            blurRadius: 30,
-            offset: const Offset(0, 4),
+            color: isDarkMode ? Colors.black.withValues(alpha: 0.4) : const Color(0x1A000000),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -49,7 +50,7 @@ class HomeFloatingNav extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
                 // Brand Logo
@@ -64,7 +65,7 @@ class HomeFloatingNav extends StatelessWidget {
                         height: 32,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFF38BDF8)],
+                            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -82,31 +83,13 @@ class HomeFloatingNav extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      const Text(
+                      Text(
                         'FictionScreen',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: textColor,
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                           letterSpacing: -0.4,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF6366F1).withValues(alpha: 0.18),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: const Color(0xFF6366F1).withValues(alpha: 0.3)),
-                        ),
-                        child: const Text(
-                          'STUDIO',
-                          style: TextStyle(
-                            color: Color(0xFFA5B4FC),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.5,
-                          ),
                         ),
                       ),
                     ],
@@ -117,17 +100,33 @@ class HomeFloatingNav extends StatelessWidget {
 
                 // Desktop Navigation Links
                 if (!isMobile) ...[
-                  _buildNavLink('실시간 미리보기', onScrollToShowcase),
+                  _buildNavLink('실시간 체험', onScrollToShowcase, textColor),
                   const SizedBox(width: 22),
-                  _buildNavLink('핵심 기능', onScrollToFeatures),
+                  _buildNavLink('대표 화면 3선', onScrollToFeatured, textColor),
                   const SizedBox(width: 22),
-                  _buildNavLink('장르별 연출', onScrollToCliches),
-                  const SizedBox(width: 22),
-                  _buildNavLink('앱 카탈로그', onScrollToCatalog),
-                  const SizedBox(width: 28),
+                  _buildNavLink('지원 목록', onScrollToIconCloud, textColor),
+                  const SizedBox(width: 20),
                 ],
 
-                // Action Button (Console Launch)
+                // Light / Dark Mode Toggle Button (Clean icon button, no outline)
+                IconButton(
+                  tooltip: isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환',
+                  onPressed: onToggleTheme,
+                  icon: Icon(
+                    isDarkMode ? CupertinoIcons.sun_max_fill : CupertinoIcons.moon_fill,
+                    color: isDarkMode ? const Color(0xFFFBBF24) : const Color(0xFF6366F1),
+                    size: 19,
+                  ),
+                  style: IconButton.styleFrom(
+                    backgroundColor: isDarkMode
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black.withValues(alpha: 0.05),
+                    shape: const CircleBorder(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+
+                // Brand Gradient Action Button (No outline)
                 StreamBuilder<User?>(
                   stream: AuthService.authStateChanges,
                   builder: (context, snapshot) {
@@ -137,7 +136,9 @@ class HomeFloatingNav extends StatelessWidget {
                     return Container(
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF6366F1), Color(0xFF4F46E5)],
+                          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
@@ -182,7 +183,7 @@ class HomeFloatingNav extends StatelessWidget {
     );
   }
 
-  Widget _buildNavLink(String title, VoidCallback onTap) {
+  Widget _buildNavLink(String title, VoidCallback onTap, Color textColor) {
     return InkWell(
       onTap: onTap,
       hoverColor: Colors.transparent,
@@ -190,9 +191,9 @@ class HomeFloatingNav extends StatelessWidget {
       child: Text(
         title,
         style: TextStyle(
-          color: Colors.white.withValues(alpha: 0.8),
+          color: textColor.withValues(alpha: 0.75),
           fontSize: 13,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           letterSpacing: -0.2,
         ),
       ),
