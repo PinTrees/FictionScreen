@@ -281,13 +281,18 @@ class _DaangnChatPageState extends State<DaangnChatPage> {
                       Expanded(
                         child: TextField(
                           controller: _msgController,
-                          style: const TextStyle(color: Colors.black87, fontSize: 13),
+                          cursorColor: const Color(0xFFFF6F0F),
+                          style: const TextStyle(color: Color(0xFF111827), fontSize: 13),
                           decoration: const InputDecoration(
                             hintText: '메시지 보내기...',
-                            hintStyle: TextStyle(color: Colors.black38, fontSize: 13),
+                            hintStyle: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
+                            filled: false,
+                            fillColor: Colors.transparent,
                             isDense: true,
                             contentPadding: EdgeInsets.zero,
                             border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
                           ),
                           onSubmitted: (_) => _sendMessage(),
                         ),

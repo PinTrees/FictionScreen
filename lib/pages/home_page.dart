@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _isDarkMode = true;
+  bool? _userThemeOverride;
   double _scrollProgress = 0.0;
 
   final ScrollController _scrollController = ScrollController();
@@ -50,9 +50,9 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _toggleTheme() {
+  void _toggleTheme(bool currentIsDark) {
     setState(() {
-      _isDarkMode = !_isDarkMode;
+      _userThemeOverride = !currentIsDark;
     });
   }
 
@@ -65,15 +65,18 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final systemIsDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    final isDarkMode = _userThemeOverride ?? systemIsDark;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 768;
 
     return Scaffold(
-      backgroundColor: _isDarkMode ? const Color(0xFF040508) : const Color(0xFFFAFAFA),
+      backgroundColor: isDarkMode ? const Color(0xFF040508) : const Color(0xFFFAFAFA),
       body: Stack(
         children: [
           // 1. Ambient Aurora & Background
-          _buildBackgroundAura(),
+          _buildBackgroundAura(isDarkMode),
 
           // 2. Main Scrollable Content
           CustomScrollView(
@@ -83,9 +86,9 @@ class _HomePageState extends State<HomePage> {
               SliverToBoxAdapter(
                 child: HomeEditorialHero(
                   isMobile: isMobile,
-                  isDarkMode: _isDarkMode,
+                  isDarkMode: isDarkMode,
                   onExploreFeatured: () => _scrollToKey(_featuredKey),
-                  onToggleTheme: _toggleTheme,
+                  onToggleTheme: () => _toggleTheme(isDarkMode),
                   scrollProgress: _scrollProgress,
                 ),
               ),
@@ -96,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                   key: _featuredKey,
                   child: HomeFeaturedTrio(
                     isMobile: isMobile,
-                    isDarkMode: _isDarkMode,
+                    isDarkMode: isDarkMode,
                   ),
                 ),
               ),
@@ -107,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                   key: _iconCloudKey,
                   child: HomeIconCloud(
                     isMobile: isMobile,
-                    isDarkMode: _isDarkMode,
+                    isDarkMode: isDarkMode,
                   ),
                 ),
               ),
@@ -116,7 +119,7 @@ class _HomePageState extends State<HomePage> {
               SliverToBoxAdapter(
                 child: HomeFooter(
                   isMobile: isMobile,
-                  isDarkMode: _isDarkMode,
+                  isDarkMode: isDarkMode,
                 ),
               ),
             ],
@@ -130,8 +133,8 @@ class _HomePageState extends State<HomePage> {
             height: 64,
             child: HomeTopAppBar(
               isMobile: isMobile,
-              isDarkMode: _isDarkMode,
-              onToggleTheme: _toggleTheme,
+              isDarkMode: isDarkMode,
+              onToggleTheme: () => _toggleTheme(isDarkMode),
               onScrollToFeatured: () => _scrollToKey(_featuredKey),
               onScrollToIconCloud: () => _scrollToKey(_iconCloudKey),
             ),
@@ -144,7 +147,7 @@ class _HomePageState extends State<HomePage> {
   // ==========================================
   // Ambient Aurora & Background
   // ==========================================
-  Widget _buildBackgroundAura() {
+  Widget _buildBackgroundAura(bool isDarkMode) {
     return Positioned.fill(
       child: IgnorePointer(
         child: Stack(
@@ -161,7 +164,7 @@ class _HomePageState extends State<HomePage> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
-                      colors: _isDarkMode
+                      colors: isDarkMode
                           ? [
                               const Color(0xFF6366F1).withValues(alpha: 0.18),
                               const Color(0xFF8B5CF6).withValues(alpha: 0.08),
@@ -191,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF38BDF8).withValues(alpha: _isDarkMode ? 0.06 : 0.04),
+                      const Color(0xFF38BDF8).withValues(alpha: isDarkMode ? 0.06 : 0.04),
                       Colors.transparent,
                     ],
                   ),
@@ -210,7 +213,7 @@ class _HomePageState extends State<HomePage> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF8B5CF6).withValues(alpha: _isDarkMode ? 0.06 : 0.04),
+                      const Color(0xFF8B5CF6).withValues(alpha: isDarkMode ? 0.06 : 0.04),
                       Colors.transparent,
                     ],
                   ),

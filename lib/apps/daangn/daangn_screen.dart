@@ -28,13 +28,21 @@ class _DaangnScreenState extends State<DaangnScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: DaangnChatPage(
-          config: widget.config,
-          onHeaderTap: _openEditDialog,
-          onProductCardTap: _openEditDialog,
+    return Theme(
+      data: ThemeData.light().copyWith(
+        inputDecorationTheme: const InputDecorationTheme(
+          filled: false,
+          fillColor: Colors.transparent,
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: DaangnChatPage(
+            config: widget.config,
+            onHeaderTap: _openEditDialog,
+            onProductCardTap: _openEditDialog,
+          ),
         ),
       ),
     );

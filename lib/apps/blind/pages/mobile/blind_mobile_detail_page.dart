@@ -265,11 +265,16 @@ class _BlindMobileDetailPageState extends State<BlindMobileDetailPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: TextField(
                         controller: _commentCtrl,
-                        style: const TextStyle(fontSize: 13),
+                        cursorColor: const Color(0xFFDA3238),
+                        style: const TextStyle(fontSize: 13, color: Color(0xFF1E2024)),
                         decoration: const InputDecoration(
                           hintText: '댓글을 남겨보세요.',
                           hintStyle: TextStyle(fontSize: 12.5, color: Color(0xFFADB5BD)),
+                          filled: false,
+                          fillColor: Colors.transparent,
                           border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
                           isDense: true,
                           contentPadding: EdgeInsets.symmetric(vertical: 10),
                         ),

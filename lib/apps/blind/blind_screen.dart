@@ -58,7 +58,14 @@ class _BlindScreenState extends State<BlindScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
+    return Theme(
+      data: ThemeData.light().copyWith(
+        inputDecorationTheme: const InputDecorationTheme(
+          filled: false,
+          fillColor: Colors.transparent,
+        ),
+      ),
+      child: LayoutBuilder(
       builder: (context, constraints) {
         final isDesktop = constraints.maxWidth >= 750;
 
@@ -100,6 +107,7 @@ class _BlindScreenState extends State<BlindScreen> {
           onEditStory: _openEditDialog,
         );
       },
-    );
-  }
+    ),
+  );
+}
 }

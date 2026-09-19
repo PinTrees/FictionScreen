@@ -54,7 +54,9 @@ class FictionScreenApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'FictionScreen | 가짜 화면 스튜디오',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       routerConfig: AppRouter.router,
     );
   }
