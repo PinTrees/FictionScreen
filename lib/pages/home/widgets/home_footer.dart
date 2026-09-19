@@ -2,14 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../constants/home_i18n.dart';
+
 class HomeFooter extends StatelessWidget {
   final bool isMobile;
   final bool isDarkMode;
+  final bool isEnglish;
 
   const HomeFooter({
     super.key,
     required this.isMobile,
     required this.isDarkMode,
+    required this.isEnglish,
   });
 
   @override
@@ -57,7 +61,7 @@ class HomeFooter extends StatelessWidget {
                 ),
                 const SizedBox(height: 22),
                 Text(
-                  '지금 바로 당신의 작품 속에\n생생한 화면을 넣어보세요.',
+                  HomeI18n.t('footerTitle', isEnglish: isEnglish),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
@@ -69,7 +73,7 @@ class HomeFooter extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 Text(
-                  '회원가입 없이도 누구나 즉시 가상 OS와 모든 템플릿 스튜디오를 무료로 이용할 수 있습니다.',
+                  HomeI18n.t('footerSubtitle', isEnglish: isEnglish),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: isDarkMode ? Colors.white.withValues(alpha: 0.65) : const Color(0xFF475569),
@@ -109,12 +113,15 @@ class HomeFooter extends StatelessWidget {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         onPressed: () => context.go('/console'),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(CupertinoIcons.device_desktop, size: 17),
-                            SizedBox(width: 8),
-                            Text('가상 OS 콘솔 시작하기', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                            const Icon(CupertinoIcons.device_desktop, size: 17),
+                            const SizedBox(width: 8),
+                            Text(
+                              HomeI18n.t('footerPrimaryBtn', isEnglish: isEnglish),
+                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                            ),
                           ],
                         ),
                       ),
@@ -139,7 +146,10 @@ class HomeFooter extends StatelessWidget {
                             child: Image.asset('assets/images/kakaotalk_icon.webp', width: 18, height: 18),
                           ),
                           const SizedBox(width: 8),
-                          const Text('카카오톡 스튜디오 열기', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5)),
+                          Text(
+                            isEnglish ? 'Open KakaoTalk Studio' : '카카오톡 스튜디오 열기',
+                            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5),
+                          ),
                         ],
                       ),
                     ),
@@ -190,7 +200,9 @@ class HomeFooter extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '소설가, 웹툰 작가, 시나리오 라이터, 영상 크리에이터를 위한 올인원 가상 화면 스튜디오',
+                  isEnglish
+                      ? 'All-in-one virtual screen studio for novelists, webtoon artists & video creators'
+                      : '소설가, 웹툰 작가, 시나리오 라이터, 영상 크리에이터를 위한 올인원 가상 화면 스튜디오',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: isDarkMode ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF64748B),

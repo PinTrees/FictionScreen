@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../constants/home_i18n.dart';
 
 class HomeEditorialHero extends StatelessWidget {
   final bool isMobile;
   final bool isDarkMode;
+  final bool isEnglish;
   final VoidCallback onExploreFeatured;
   final VoidCallback onToggleTheme;
   final double scrollProgress; // 0.0 to 1.0
@@ -13,6 +15,7 @@ class HomeEditorialHero extends StatelessWidget {
     super.key,
     required this.isMobile,
     required this.isDarkMode,
+    required this.isEnglish,
     required this.onExploreFeatured,
     required this.onToggleTheme,
     this.scrollProgress = 0.0,
@@ -158,7 +161,7 @@ class HomeEditorialHero extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Windows 11 Studio & Real App Fiction',
+                              HomeI18n.t('heroBadge', isEnglish: isEnglish),
                               style: TextStyle(
                                 color: subLabelColor,
                                 fontSize: 12,
@@ -173,7 +176,7 @@ class HomeEditorialHero extends StatelessWidget {
 
                       // Giant Bold Lowercase Heading (Sofi reference style)
                       Text(
-                        'make it\nreal.',
+                        HomeI18n.t('heroHeadline', isEnglish: isEnglish),
                         style: TextStyle(
                           color: textPrimary,
                           fontSize: isMobile ? 64 : 108,
@@ -186,7 +189,7 @@ class HomeEditorialHero extends StatelessWidget {
 
                       // Subheading
                       Text(
-                        'every screen you imagine.',
+                        HomeI18n.t('heroSubtitle', isEnglish: isEnglish),
                         style: TextStyle(
                           color: const Color(0xFF6366F1),
                           fontSize: isMobile ? 24 : 38,
@@ -199,7 +202,7 @@ class HomeEditorialHero extends StatelessWidget {
 
                       // Refined Editorial Description
                       Text(
-                        '웹툰, 웹소설, 시나리오 작가를 위한 가장 정교한 가상 화면 스튜디오.\nWindows 11 공식 OS부터 카카오톡, 당근, 블라인드까지\n스토리 속 모든 인터페이스를 1초 만에 실시간으로 생성하세요.',
+                        HomeI18n.t('heroDesc', isEnglish: isEnglish),
                         style: TextStyle(
                           color: textSecondary,
                           fontSize: isMobile ? 14 : 16.5,
@@ -230,20 +233,20 @@ class HomeEditorialHero extends StatelessWidget {
                               ),
                             ],
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                '지금 무료로 시작하기',
-                                style: TextStyle(
+                                HomeI18n.t('heroCta', isEnglish: isEnglish),
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: -0.3,
                                 ),
                               ),
-                              SizedBox(width: 8),
-                              Icon(
+                              const SizedBox(width: 8),
+                              const Icon(
                                 CupertinoIcons.arrow_right,
                                 size: 15,
                                 color: Colors.white,
@@ -270,9 +273,7 @@ class HomeEditorialHero extends StatelessWidget {
               children: [
                 // Bottom-Left Values
                 Text(
-                  isMobile
-                      ? 'virtual os • mobile apps'
-                      : 'virtual os • mobile apps • web platforms',
+                  HomeI18n.t('heroBottomLeft', isEnglish: isEnglish),
                   style: TextStyle(
                     color: subLabelColor,
                     fontSize: isMobile ? 11 : 12.5,
@@ -288,7 +289,7 @@ class HomeEditorialHero extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'scroll down',
+                        HomeI18n.t('heroScrollDown', isEnglish: isEnglish),
                         style: TextStyle(
                           color: subLabelColor,
                           fontSize: isMobile ? 11 : 12.5,

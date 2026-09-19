@@ -14,6 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool? _userThemeOverride;
+  bool _isEnglish = false;
   double _scrollProgress = 0.0;
 
   final ScrollController _scrollController = ScrollController();
@@ -56,6 +57,12 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _toggleLanguage() {
+    setState(() {
+      _isEnglish = !_isEnglish;
+    });
+  }
+
   @override
   void dispose() {
     _scrollController.removeListener(_onScroll);
@@ -87,6 +94,7 @@ class _HomePageState extends State<HomePage> {
                 child: HomeEditorialHero(
                   isMobile: isMobile,
                   isDarkMode: isDarkMode,
+                  isEnglish: _isEnglish,
                   onExploreFeatured: () => _scrollToKey(_featuredKey),
                   onToggleTheme: () => _toggleTheme(isDarkMode),
                   scrollProgress: _scrollProgress,
@@ -100,6 +108,7 @@ class _HomePageState extends State<HomePage> {
                   child: HomeFeaturedTrio(
                     isMobile: isMobile,
                     isDarkMode: isDarkMode,
+                    isEnglish: _isEnglish,
                   ),
                 ),
               ),
@@ -111,6 +120,7 @@ class _HomePageState extends State<HomePage> {
                   child: HomeIconCloud(
                     isMobile: isMobile,
                     isDarkMode: isDarkMode,
+                    isEnglish: _isEnglish,
                   ),
                 ),
               ),
@@ -120,6 +130,7 @@ class _HomePageState extends State<HomePage> {
                 child: HomeFooter(
                   isMobile: isMobile,
                   isDarkMode: isDarkMode,
+                  isEnglish: _isEnglish,
                 ),
               ),
             ],
@@ -134,7 +145,9 @@ class _HomePageState extends State<HomePage> {
             child: HomeTopAppBar(
               isMobile: isMobile,
               isDarkMode: isDarkMode,
+              isEnglish: _isEnglish,
               onToggleTheme: () => _toggleTheme(isDarkMode),
+              onToggleLanguage: _toggleLanguage,
               onScrollToFeatured: () => _scrollToKey(_featuredKey),
               onScrollToIconCloud: () => _scrollToKey(_iconCloudKey),
             ),

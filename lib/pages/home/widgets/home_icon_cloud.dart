@@ -2,15 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../constants/app_platform_icons.dart';
+import '../../../constants/home_i18n.dart';
 
 class HomeIconCloud extends StatelessWidget {
   final bool isMobile;
   final bool isDarkMode;
+  final bool isEnglish;
 
   const HomeIconCloud({
     super.key,
     required this.isMobile,
     required this.isDarkMode,
+    required this.isEnglish,
   });
 
   @override
@@ -45,7 +48,7 @@ class HomeIconCloud extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: Text(
-                      'SUPPORTED ECOSYSTEM',
+                      HomeI18n.t('ecosystemBadge', isEnglish: isEnglish),
                       style: TextStyle(
                         color: isDarkMode ? const Color(0xFFC7D2FE) : const Color(0xFF4F46E5),
                         fontSize: 12,
@@ -56,7 +59,7 @@ class HomeIconCloud extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    '지원하는 모든 가상 OS, 어플, 웹사이트',
+                    HomeI18n.t('ecosystemTitle', isEnglish: isEnglish),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: titleColor,
@@ -67,7 +70,7 @@ class HomeIconCloud extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    '실제 공식 앱 아이콘을 클릭하면 해당 스튜디오 또는 가상 OS 콘솔로 즉시 이동합니다.',
+                    HomeI18n.t('ecosystemSubtitle', isEnglish: isEnglish),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: subtitleColor,
@@ -80,21 +83,33 @@ class HomeIconCloud extends StatelessWidget {
             const SizedBox(height: 60),
 
             // Category 1: 가상 OS
-            _buildCategoryHeader('🖥️ 가상 데스크톱 OS', '${osList.length}종', titleColor),
+            _buildCategoryHeader(
+              isEnglish ? '🖥️ Virtual Desktop OS' : '🖥️ 가상 데스크톱 OS',
+              '${osList.length}${isEnglish ? ' types' : '종'}',
+              titleColor,
+            ),
             const SizedBox(height: 18),
             _buildIconGrid(context, osList),
 
             const SizedBox(height: 52),
 
             // Category 2: 모바일 어플리케이션
-            _buildCategoryHeader('📱 모바일 어플리케이션', '${appList.length}종', titleColor),
+            _buildCategoryHeader(
+              isEnglish ? '📱 Mobile Applications' : '📱 모바일 어플리케이션',
+              '${appList.length}${isEnglish ? ' types' : '종'}',
+              titleColor,
+            ),
             const SizedBox(height: 18),
             _buildIconGrid(context, appList),
 
             const SizedBox(height: 52),
 
             // Category 3: 웹사이트 & 전문 툴 (No news, No CCTV)
-            _buildCategoryHeader('🌐 웹사이트 & 비즈니스 툴', '${siteList.length}종', titleColor),
+            _buildCategoryHeader(
+              isEnglish ? '🌐 Web & Business Tools' : '🌐 웹사이트 & 비즈니스 툴',
+              '${siteList.length}${isEnglish ? ' types' : '종'}',
+              titleColor,
+            ),
             const SizedBox(height: 18),
             _buildIconGrid(context, siteList),
           ],

@@ -3,12 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../constants/home_i18n.dart';
 import '../../../services/auth_service.dart';
 
 class HomeTopAppBar extends StatelessWidget {
   final bool isMobile;
   final bool isDarkMode;
+  final bool isEnglish;
   final VoidCallback onToggleTheme;
+  final VoidCallback onToggleLanguage;
   final VoidCallback onScrollToFeatured;
   final VoidCallback onScrollToIconCloud;
 
@@ -16,7 +19,9 @@ class HomeTopAppBar extends StatelessWidget {
     super.key,
     required this.isMobile,
     required this.isDarkMode,
+    required this.isEnglish,
     required this.onToggleTheme,
+    required this.onToggleLanguage,
     required this.onScrollToFeatured,
     required this.onScrollToIconCloud,
   });
@@ -44,7 +49,7 @@ class HomeTopAppBar extends StatelessWidget {
           child: Center(
             child: Container(
               constraints: const BoxConstraints(maxWidth: 1240),
-              padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 40),
+              padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 40),
               child: Row(
                 children: [
                   // Brand Logo
@@ -94,76 +99,173 @@ class HomeTopAppBar extends StatelessWidget {
 
                   // Navigation Links
                   if (!isMobile) ...[
-                    _buildNavLink('대표 화면 3선', onScrollToFeatured, textColor),
-                    const SizedBox(width: 28),
-                    _buildNavLink('전체 지원 목록', onScrollToIconCloud, textColor),
-                    const SizedBox(width: 28),
+                    _buildNavLink(HomeI18n.t('navFeatured', isEnglish: isEnglish), onScrollToFeatured, textColor),
+                    const SizedBox(width: 24),
+                    _buildNavLink(HomeI18n.t('navAllEcosystem', isEnglish: isEnglish), onScrollToIconCloud, textColor),
+                    const SizedBox(width: 20),
                   ],
 
-                  // Light / Dark Theme Switch
-                  IconButton(
-                    tooltip: isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환',
-                    onPressed: onToggleTheme,
-                    icon: Icon(
-                      isDarkMode ? CupertinoIcons.sun_max_fill : CupertinoIcons.moon_fill,
-                      color: isDarkMode ? const Color(0xFFFBBF24) : const Color(0xFF6366F1),
-                      size: 19,
+                  // Language Switcher (KO / EN)
+                  InkWell(
+                    onTap: onToggleLanguage,
+                    borderRadius: BorderRadius.circular(14),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: isDarkMode
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : Colors.black.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'KO',
+                            style: TextStyle(
+                              color: !isEnglish
+                                  ? (isDarkMode ? Colors.white : Colors.black)
+                                  : (isDarkMode ? Colors.white38 : Colors.black38),
+                              fontSize: 11.5,
+                              fontWeight: !isEnglish ? FontWeight.w800 : FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            ' / ',
+                            style: TextStyle(
+                              color: isDarkMode ? Colors.white24 : Colors.black26,
+                              fontSize: 10.5,
+                            ),
+                          ),
+                          Text(
+                            'EN',
+                            style: TextStyle(
+                              color: isEnglish
+                                  ? (isDarkMode ? Colors.white : Colors.black)
+                                  : (isDarkMode ? Colors.white38 : Colors.black38),
+                              fontSize: 11.5,
+                              fontWeight: isEnglish ? FontWeight.w800 : FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    style: IconButton.styleFrom(
-                      backgroundColor: isDarkMode
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : Colors.black.withValues(alpha: 0.05),
-                      shape: const CircleBorder(),
+                  ),
+                  const SizedBox(width: 10),
+
+                  // Light / Dark Theme Switch (Icon only, purely black/white palette)
+                  IconButton(
+                    tooltip: isEnglish
+                        ? (isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode')
+                        : (isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환'),
+                    onPressed: onToggleTheme,
+                    padding: const EdgeInsets.all(6),
+                    constraints: const BoxConstraints(),
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    icon: Icon(
+                      isDarkMode ? CupertinoIcons.sun_max : CupertinoIcons.moon,
+                      color: isDarkMode ? Colors.white : Colors.black,
+                      size: 20,
                     ),
                   ),
                   const SizedBox(width: 14),
 
-                  // Brand Gradient Console Button (No outline)
+                  // Auth (Login / Logout) & Console Button
                   StreamBuilder<User?>(
                     stream: AuthService.authStateChanges,
                     builder: (context, snapshot) {
                       final user = snapshot.data ?? AuthService.currentUser;
                       final isLoggedIn = user != null;
 
-                      return Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF6366F1).withValues(alpha: 0.35),
-                              blurRadius: 10,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            foregroundColor: Colors.white,
-                            shadowColor: Colors.transparent,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 0),
-                            minimumSize: const Size(0, 38),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          ),
-                          onPressed: () => context.go('/console'),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                isLoggedIn ? '가상 OS 콘솔' : '콘솔 시작하기',
-                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (!isLoggedIn) ...[
+                            InkWell(
+                              onTap: () => context.go('/login'),
+                              borderRadius: BorderRadius.circular(8),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                child: Text(
+                                  HomeI18n.t('login', isEnglish: isEnglish),
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: -0.2,
+                                  ),
+                                ),
                               ),
-                              const SizedBox(width: 6),
-                              const Icon(CupertinoIcons.arrow_right, size: 13),
-                            ],
+                            ),
+                            const SizedBox(width: 10),
+                          ] else ...[
+                            InkWell(
+                              onTap: () => AuthService.signOut(),
+                              borderRadius: BorderRadius.circular(8),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                child: Text(
+                                  HomeI18n.t('logout', isEnglish: isEnglish),
+                                  style: TextStyle(
+                                    color: textColor.withValues(alpha: 0.65),
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                          ],
+
+                          // Brand Gradient Console Button (No outline)
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF6366F1).withValues(alpha: 0.35),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                foregroundColor: Colors.white,
+                                shadowColor: Colors.transparent,
+                                elevation: 0,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: isMobile ? 12 : 16,
+                                  vertical: 0,
+                                ),
+                                minimumSize: const Size(0, 36),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              ),
+                              onPressed: () => context.go('/console'),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    isLoggedIn
+                                        ? HomeI18n.t('virtualOsConsole', isEnglish: isEnglish)
+                                        : HomeI18n.t('startConsole', isEnglish: isEnglish),
+                                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  const Icon(CupertinoIcons.arrow_right, size: 12, color: Colors.white),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       );
                     },
                   ),
