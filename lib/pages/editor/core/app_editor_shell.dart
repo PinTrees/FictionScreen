@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../../apps/screen_template.dart';
 import '../../../managers/export_manager.dart';
+import '../../../services/app_theme_service.dart';
 
 enum ScreenAspectRatio {
   r9_16('9:16', '스마트폰 세로', 390, 844),
@@ -29,8 +30,8 @@ class AppEditorShell extends StatefulWidget {
   final ScreenTemplate template;
   final Widget Function(BuildContext context, bool isDarkMode) canvasBuilder;
   final Widget Function(BuildContext context, bool isDarkMode) inspectorBuilder;
+  final Function(String osKey) onOpenInOs;
   final VoidCallback onBackToGallery;
-  final ValueChanged<String> onOpenInOs;
   final List<Widget> extraTopBarActions;
   final bool initialDarkMode;
 
@@ -39,8 +40,8 @@ class AppEditorShell extends StatefulWidget {
     required this.template,
     required this.canvasBuilder,
     required this.inspectorBuilder,
-    required this.onBackToGallery,
     required this.onOpenInOs,
+    required this.onBackToGallery,
     this.extraTopBarActions = const [],
     this.initialDarkMode = true,
   });
@@ -51,7 +52,7 @@ class AppEditorShell extends StatefulWidget {
 
 class _AppEditorShellState extends State<AppEditorShell> {
   final ScreenshotController _screenshotController = ScreenshotController();
-  late bool _isDarkMode;
+  bool get _isDarkMode => AppThemeService.instance.isDarkMode(context);
   double _zoomScale = 1.0;
   Offset _panOffset = Offset.zero;
   bool _isHoveringArtboard = false;
@@ -62,7 +63,6 @@ class _AppEditorShellState extends State<AppEditorShell> {
   @override
   void initState() {
     super.initState();
-    _isDarkMode = widget.initialDarkMode;
     _currentRatio = widget.template.isDesktop ? ScreenAspectRatio.r16_9 : ScreenAspectRatio.r9_16;
   }
 
@@ -282,7 +282,7 @@ class _AppEditorShellState extends State<AppEditorShell> {
                           backgroundColor: buttonBgColor,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
-                        onPressed: () => setState(() => _isDarkMode = !_isDarkMode),
+                        onPressed: () => AppThemeService.instance.toggleTheme(context),
                       ),
 
                       const SizedBox(width: 10),

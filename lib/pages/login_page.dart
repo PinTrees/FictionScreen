@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../services/app_theme_service.dart';
 import '../services/auth_service.dart';
 import '../widgets/pop_entrance.dart';
 import '../widgets/scale_button.dart';
@@ -49,8 +50,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = AppThemeService.instance.isDarkMode(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF07080D),
+      backgroundColor: isDarkMode ? const Color(0xFF07080D) : const Color(0xFFF8FAFC),
       body: Stack(
         children: [
           // 1. Subtle Ambient Aurora Background
@@ -70,8 +73,8 @@ class _LoginPageState extends State<LoginPage> {
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
                             colors: [
-                              const Color(0xFF00B0FF).withValues(alpha: 0.18),
-                              const Color(0xFF00E5FF).withValues(alpha: 0.06),
+                              const Color(0xFF00B0FF).withValues(alpha: isDarkMode ? 0.18 : 0.12),
+                              const Color(0xFF00E5FF).withValues(alpha: isDarkMode ? 0.06 : 0.04),
                               Colors.transparent,
                             ],
                           ),
@@ -95,17 +98,21 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: isDarkMode ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(CupertinoIcons.arrow_left, size: 16, color: Colors.white),
-                      SizedBox(width: 8),
+                      Icon(
+                        CupertinoIcons.arrow_left,
+                        size: 16,
+                        color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
+                      ),
+                      const SizedBox(width: 8),
                       Text(
                         '메인 화면으로 돌아가기',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                         ),
@@ -117,7 +124,31 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
 
-          // 3. Main Login Card (ZERO OUTLINE, Generous Padding, Trendy Pop Entrance)
+          // 3. Top-right Theme Toggle Button
+          Positioned(
+            top: 24,
+            right: 24,
+            child: PopEntrance(
+              delay: const Duration(milliseconds: 60),
+              child: ScaleButton(
+                onTap: () => AppThemeService.instance.toggleTheme(context),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: isDarkMode ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    isDarkMode ? CupertinoIcons.sun_max_fill : CupertinoIcons.moon_fill,
+                    size: 18,
+                    color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // 4. Main Login Card (ZERO OUTLINE, Generous Padding, Trendy Pop Entrance)
           Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -128,11 +159,13 @@ class _LoginPageState extends State<LoginPage> {
                   constraints: const BoxConstraints(maxWidth: 440),
                   padding: const EdgeInsets.symmetric(horizontal: 38, vertical: 42),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF11131C).withValues(alpha: 0.92),
+                    color: isDarkMode
+                        ? const Color(0xFF11131C).withValues(alpha: 0.92)
+                        : Colors.white.withValues(alpha: 0.96),
                     borderRadius: BorderRadius.circular(28),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.6),
+                        color: Colors.black.withValues(alpha: isDarkMode ? 0.6 : 0.08),
                         blurRadius: 36,
                         offset: const Offset(0, 14),
                       ),
@@ -177,10 +210,10 @@ class _LoginPageState extends State<LoginPage> {
                           // Title
                           PopEntrance(
                             delay: const Duration(milliseconds: 280),
-                            child: const Text(
+                            child: Text(
                               'FictionScreen',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
                                 fontSize: 25,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: -0.5,
@@ -194,7 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                               '크리에이터를 위한 픽셀 정밀 가상 화면 스튜디오',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.6),
+                                color: isDarkMode ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF64748B),
                                 fontSize: 13.5,
                               ),
                             ),
@@ -213,9 +246,10 @@ class _LoginPageState extends State<LoginPage> {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(14),
+                                  border: isDarkMode ? null : Border.all(color: const Color(0xFFE2E8F0)),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.15),
+                                      color: Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.06),
                                       blurRadius: 12,
                                       offset: const Offset(0, 4),
                                     ),
@@ -237,7 +271,7 @@ class _LoginPageState extends State<LoginPage> {
                                           Text(
                                             'Google 계정으로 시작하기',
                                             style: TextStyle(
-                                              color: Colors.black,
+                                              color: Color(0xFF1F2937),
                                               fontWeight: FontWeight.w800,
                                               fontSize: 14.5,
                                               letterSpacing: -0.2,
@@ -257,7 +291,7 @@ class _LoginPageState extends State<LoginPage> {
                               '로그인 시 유저별 프로젝트 및 스튜디오 데이터가 Firestore에 안전하게 동기화됩니다.',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.38),
+                                color: isDarkMode ? Colors.white.withValues(alpha: 0.38) : const Color(0xFF64748B),
                                 fontSize: 11.5,
                                 height: 1.4,
                               ),
@@ -273,7 +307,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: Text(
                                 '이용약관',
                                 style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.55),
+                                  color: isDarkMode ? Colors.white.withValues(alpha: 0.55) : const Color(0xFF475569),
                                   fontSize: 12,
                                   decoration: TextDecoration.underline,
                                 ),
@@ -284,7 +318,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: Text(
                                 '•',
                                 style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.25),
+                                  color: isDarkMode ? Colors.white.withValues(alpha: 0.25) : const Color(0xFFCBD5E1),
                                   fontSize: 11,
                                 ),
                               ),
@@ -294,7 +328,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: Text(
                                 '개인정보 처리방침',
                                 style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.55),
+                                  color: isDarkMode ? Colors.white.withValues(alpha: 0.55) : const Color(0xFF475569),
                                   fontSize: 12,
                                   decoration: TextDecoration.underline,
                                 ),

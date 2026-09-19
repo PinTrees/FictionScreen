@@ -36,6 +36,7 @@ import '../apps/x_twitter/data/x_twitter_model.dart';
 import '../apps/yanolja/data/yanolja_model.dart';
 import '../apps/youtube/data/youtube_model.dart';
 import '../managers/export_manager.dart';
+import '../services/app_theme_service.dart';
 import '../widgets/common/device_frame_preview.dart';
 import 'studio/widgets/studio_preview_dispatcher.dart';
 import 'studio/widgets/studio_top_bar.dart';
@@ -148,8 +149,10 @@ class _StudioPageState extends State<StudioPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = AppThemeService.instance.isDarkMode(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0B0C10),
+      backgroundColor: isDarkMode ? const Color(0xFF0B0C10) : const Color(0xFFF1F5F9),
       body: SafeArea(
         child: Column(
           children: [
@@ -157,8 +160,10 @@ class _StudioPageState extends State<StudioPage> {
               template: _template,
               showFrame: _showFrame,
               isExporting: _isExporting,
+              isDarkMode: isDarkMode,
               onToggleFrame: () => setState(() => _showFrame = !_showFrame),
               onExport: _exportScreen,
+              onToggleTheme: () => AppThemeService.instance.toggleTheme(context),
             ),
             Expanded(
               child: Center(

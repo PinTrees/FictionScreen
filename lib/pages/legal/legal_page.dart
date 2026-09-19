@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../services/app_theme_service.dart';
 import '../../widgets/pop_entrance.dart';
 import '../../widgets/scale_button.dart';
 
@@ -19,7 +20,6 @@ class LegalPage extends StatefulWidget {
 
 class _LegalPageState extends State<LegalPage> {
   late String _activeTab;
-  bool? _userThemeOverride;
   bool _isEnglish = false;
 
   @override
@@ -28,10 +28,8 @@ class _LegalPageState extends State<LegalPage> {
     _activeTab = widget.initialTab == 'privacy' ? 'privacy' : 'terms';
   }
 
-  void _toggleTheme(bool currentIsDark) {
-    setState(() {
-      _userThemeOverride = !currentIsDark;
-    });
+  void _toggleTheme() {
+    AppThemeService.instance.toggleTheme(context);
   }
 
   void _toggleLanguage() {
@@ -42,8 +40,7 @@ class _LegalPageState extends State<LegalPage> {
 
   @override
   Widget build(BuildContext context) {
-    final systemIsDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
-    final isDarkMode = _userThemeOverride ?? systemIsDark;
+    final isDarkMode = AppThemeService.instance.isDarkMode(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 768;
 
@@ -265,7 +262,7 @@ class _LegalPageState extends State<LegalPage> {
 
               // Theme Toggle
               IconButton(
-                onPressed: () => _toggleTheme(isDarkMode),
+                onPressed: _toggleTheme,
                 icon: Icon(
                   isDarkMode ? CupertinoIcons.sun_max_fill : CupertinoIcons.moon_fill,
                   size: 18,

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../apps/screen_template.dart';
+import '../../../services/app_theme_service.dart';
 import '../../../services/project_service.dart';
 import 'dialogs/create_project_dialog.dart';
 import 'models/project_model.dart';
@@ -32,7 +33,6 @@ class _WorkspaceViewState extends State<WorkspaceView> {
   // Navigation State: 'home' | 'gallery' | 'os' | or a projectId
   String _activeMenuId = 'home';
   bool _isSidebarCollapsed = false;
-  bool? _userThemeOverride;
 
   // Real Projects stream from Firebase Firestore
   List<ProjectModel> _projects = [];
@@ -41,10 +41,7 @@ class _WorkspaceViewState extends State<WorkspaceView> {
   ProjectModel? _currentEditingProject;
   String _currentEditorTemplateId = 'kakaotalk';
 
-  bool get _isDarkMode {
-    if (_userThemeOverride != null) return _userThemeOverride!;
-    return true; // Default studio dark theme
-  }
+  bool get _isDarkMode => AppThemeService.instance.isDarkMode(context);
 
   @override
   void initState() {
@@ -146,7 +143,7 @@ class _WorkspaceViewState extends State<WorkspaceView> {
             isDarkMode: isDarkMode,
             isSidebarCollapsed: _isSidebarCollapsed,
             isExporting: false,
-            onToggleTheme: () => setState(() => _userThemeOverride = !isDarkMode),
+            onToggleTheme: () => AppThemeService.instance.toggleTheme(context),
             onToggleSidebar: () => setState(() => _isSidebarCollapsed = !_isSidebarCollapsed),
             onExport: () {},
             onOpenInOs: () => widget.onOpenInOs('kakaotalk'),

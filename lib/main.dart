@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'navigation/app_router.dart';
+import 'services/app_theme_service.dart';
 import 'services/firebase_service.dart';
 import 'style/app_theme.dart';
 
@@ -43,6 +44,9 @@ void main() async {
   // Firebase 사전 준비
   await FirebaseService.initialize();
 
+  // 전역 다크/라이트 테마 서비스 초기화 (세션 및 유저 데이터 동기화)
+  await AppThemeService.instance.initialize();
+
   runApp(const FictionScreenApp());
 }
 
@@ -51,13 +55,18 @@ class FictionScreenApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'FictionScreen | 가짜 화면 스튜디오',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      routerConfig: AppRouter.router,
+    return ListenableBuilder(
+      listenable: AppThemeService.instance,
+      builder: (context, _) {
+        return MaterialApp.router(
+          title: 'FictionScreen | 가짜 화면 스튜디오',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: AppThemeService.instance.themeMode,
+          routerConfig: AppRouter.router,
+        );
+      },
     );
   }
 }

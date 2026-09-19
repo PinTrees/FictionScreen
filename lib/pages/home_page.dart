@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/app_theme_service.dart';
 import 'home/widgets/home_editorial_hero.dart';
 import 'home/widgets/home_featured_trio.dart';
 import 'home/widgets/home_footer.dart';
@@ -13,7 +14,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool? _userThemeOverride;
   bool _isEnglish = false;
   double _scrollProgress = 0.0;
 
@@ -51,10 +51,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _toggleTheme(bool currentIsDark) {
-    setState(() {
-      _userThemeOverride = !currentIsDark;
-    });
+  void _toggleTheme() {
+    AppThemeService.instance.toggleTheme(context);
   }
 
   void _toggleLanguage() {
@@ -72,8 +70,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final systemIsDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
-    final isDarkMode = _userThemeOverride ?? systemIsDark;
+    final isDarkMode = AppThemeService.instance.isDarkMode(context);
 
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 768;
@@ -100,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                   isDarkMode: isDarkMode,
                   isEnglish: _isEnglish,
                   onExploreFeatured: () => _scrollToKey(_featuredKey),
-                  onToggleTheme: () => _toggleTheme(isDarkMode),
+                  onToggleTheme: _toggleTheme,
                   scrollProgress: _scrollProgress,
                 ),
               ),
@@ -150,7 +147,7 @@ class _HomePageState extends State<HomePage> {
               isMobile: isMobile,
               isDarkMode: isDarkMode,
               isEnglish: _isEnglish,
-              onToggleTheme: () => _toggleTheme(isDarkMode),
+              onToggleTheme: _toggleTheme,
               onToggleLanguage: _toggleLanguage,
               onScrollToFeatured: () => _scrollToKey(_featuredKey),
               onScrollToIconCloud: () => _scrollToKey(_iconCloudKey),
