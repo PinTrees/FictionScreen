@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../services/app_theme_service.dart';
 import '../services/auth_service.dart';
-import '../widgets/pop_entrance.dart';
 import '../widgets/scale_button.dart';
 
 class LoginPage extends StatefulWidget {
@@ -87,38 +86,35 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
 
-          // 2. Top-left Back Button (Pop entrance & Scale down feedback)
+          // 2. Top-left Back Button (Scale down feedback)
           Positioned(
             top: 24,
             left: 24,
-            child: PopEntrance(
-              delay: const Duration(milliseconds: 60),
-              child: ScaleButton(
-                onTap: _handleBack,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isDarkMode ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        CupertinoIcons.arrow_left,
-                        size: 16,
+            child: ScaleButton(
+              onTap: _handleBack,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isDarkMode ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      CupertinoIcons.arrow_left,
+                      size: 16,
+                      color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '메인 화면으로 돌아가기',
+                      style: TextStyle(
                         color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '메인 화면으로 돌아가기',
-                        style: TextStyle(
-                          color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -128,21 +124,18 @@ class _LoginPageState extends State<LoginPage> {
           Positioned(
             top: 24,
             right: 24,
-            child: PopEntrance(
-              delay: const Duration(milliseconds: 60),
-              child: ScaleButton(
-                onTap: () => AppThemeService.instance.toggleTheme(context),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: isDarkMode ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    isDarkMode ? CupertinoIcons.sun_max_fill : CupertinoIcons.moon_fill,
-                    size: 18,
-                    color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
-                  ),
+            child: ScaleButton(
+              onTap: () => AppThemeService.instance.toggleTheme(context),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: isDarkMode ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  isDarkMode ? CupertinoIcons.sun_max_fill : CupertinoIcons.moon_fill,
+                  size: 18,
+                  color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
                 ),
               ),
             ),
@@ -152,152 +145,131 @@ class _LoginPageState extends State<LoginPage> {
           Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              child: PopEntrance(
-                delay: const Duration(milliseconds: 120),
-                startScale: 0.92,
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 440),
-                  padding: const EdgeInsets.symmetric(horizontal: 38, vertical: 42),
-                  decoration: BoxDecoration(
-                    color: isDarkMode
-                        ? const Color(0xFF11131C).withValues(alpha: 0.92)
-                        : Colors.white.withValues(alpha: 0.96),
-                    borderRadius: BorderRadius.circular(28),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: isDarkMode ? 0.6 : 0.08),
-                        blurRadius: 36,
-                        offset: const Offset(0, 14),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(28),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Brand Icon (Pops in first with bouncy scale)
-                          PopEntrance(
-                            delay: const Duration(milliseconds: 220),
-                            startScale: 0.65,
-                            child: Container(
-                              width: 58,
-                              height: 58,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 440),
+                padding: const EdgeInsets.symmetric(horizontal: 38, vertical: 42),
+                decoration: BoxDecoration(
+                  color: isDarkMode
+                      ? const Color(0xFF11131C).withValues(alpha: 0.92)
+                      : Colors.white.withValues(alpha: 0.96),
+                  borderRadius: BorderRadius.circular(28),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: isDarkMode ? 0.6 : 0.08),
+                      blurRadius: 36,
+                      offset: const Offset(0, 14),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(28),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Brand Icon
+                        Container(
+                          width: 58,
+                          height: 58,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(18),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                                blurRadius: 18,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: const Center(
+                            child: Icon(CupertinoIcons.sparkles, color: Colors.white, size: 26),
+                          ),
+                        ),
+                        const SizedBox(height: 22),
+
+                        // Title
+                        Text(
+                          'FictionScreen',
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
+                            fontSize: 25,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '크리에이터를 위한 픽셀 정밀 가상 화면 스튜디오',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF64748B),
+                            fontSize: 13.5,
+                          ),
+                        ),
+                        const SizedBox(height: 36),
+
+                        // Official Google Sign-In Button (ZERO OUTLINE)
+                        ScaleButton(
+                          onTap: _isLoading ? null : _handleGoogleSignIn,
+                          child: Container(
+                            width: double.infinity,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(14),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.06),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
                                 ),
-                                borderRadius: BorderRadius.circular(18),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
-                                    blurRadius: 18,
-                                    offset: const Offset(0, 6),
-                                  ),
-                                ],
-                              ),
-                              child: const Center(
-                                child: Icon(CupertinoIcons.sparkles, color: Colors.white, size: 26),
-                              ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 22),
-
-                          // Title
-                          PopEntrance(
-                            delay: const Duration(milliseconds: 280),
-                            child: Text(
-                              'FictionScreen',
-                              style: TextStyle(
-                                color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
-                                fontSize: 25,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          PopEntrance(
-                            delay: const Duration(milliseconds: 320),
-                            child: Text(
-                              '크리에이터를 위한 픽셀 정밀 가상 화면 스튜디오',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: isDarkMode ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF64748B),
-                                fontSize: 13.5,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 36),
-
-                          // Official Google Sign-In Button (Trendy Pop Entrance: smoothly grows in)
-                          PopEntrance(
-                            delay: const Duration(milliseconds: 400),
-                            startScale: 0.84,
-                            child: ScaleButton(
-                              onTap: _isLoading ? null : _handleGoogleSignIn,
-                              child: Container(
-                                width: double.infinity,
-                                height: 52,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: isDarkMode ? null : Border.all(color: const Color(0xFFE2E8F0)),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.06),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 4),
+                            child: _isLoading
+                                ? const Center(
+                                    child: SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
                                     ),
-                                  ],
-                                ),
-                                child: _isLoading
-                                    ? const Center(
-                                        child: SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                                  )
+                                : const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      GoogleLogoIcon(size: 20),
+                                      SizedBox(width: 12),
+                                      Text(
+                                        'Google 계정으로 시작하기',
+                                        style: TextStyle(
+                                          color: Color(0xFF1F2937),
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 14.5,
+                                          letterSpacing: -0.2,
                                         ),
-                                      )
-                                    : const Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          GoogleLogoIcon(size: 20),
-                                          SizedBox(width: 12),
-                                          Text(
-                                            'Google 계정으로 시작하기',
-                                            style: TextStyle(
-                                              color: Color(0xFF1F2937),
-                                              fontWeight: FontWeight.w800,
-                                              fontSize: 14.5,
-                                              letterSpacing: -0.2,
-                                            ),
-                                          ),
-                                        ],
                                       ),
-                              ),
-                            ),
+                                    ],
+                                  ),
                           ),
+                        ),
 
-                          const SizedBox(height: 28),
+                        const SizedBox(height: 28),
 
-                          PopEntrance(
-                            delay: const Duration(milliseconds: 460),
-                            child: Text(
-                              '로그인 시 유저별 프로젝트 및 스튜디오 데이터가 Firestore에 안전하게 동기화됩니다.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: isDarkMode ? Colors.white.withValues(alpha: 0.38) : const Color(0xFF64748B),
-                                fontSize: 11.5,
-                                height: 1.4,
-                              ),
-                            ),
+                        Text(
+                          '로그인 시 유저별 프로젝트 및 스튜디오 데이터가 Firestore에 안전하게 동기화됩니다.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white.withValues(alpha: 0.38) : const Color(0xFF64748B),
+                            fontSize: 11.5,
+                            height: 1.4,
                           ),
-                          const SizedBox(height: 16),
+                        ),
+                        const SizedBox(height: 16),
                         Wrap(
                           alignment: WrapAlignment.center,
                           crossAxisAlignment: WrapCrossAlignment.center,
@@ -342,7 +314,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-          ),
           ),
         ],
       ),

@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../services/app_theme_service.dart';
-import '../../widgets/pop_entrance.dart';
 import '../../widgets/scale_button.dart';
 
 class LegalPage extends StatefulWidget {
@@ -96,67 +95,56 @@ class _LegalPageState extends State<LegalPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Tab Selector (Pop Entrance)
-                            PopEntrance(
-                              delay: const Duration(milliseconds: 60),
-                              child: _buildTabSelector(isDarkMode),
-                            ),
+                            // Tab Selector
+                            _buildTabSelector(isDarkMode),
 
                             const SizedBox(height: 28),
 
-                            // Document Card (NO OUTLINE BORDER, Pop Entrance)
-                            PopEntrance(
-                              delay: const Duration(milliseconds: 140),
-                              startScale: 0.94,
-                              child: Container(
-                                padding: EdgeInsets.all(isMobile ? 22 : 44),
-                                decoration: BoxDecoration(
-                                  color: cardBgColor,
-                                  borderRadius: BorderRadius.circular(24),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(alpha: isDarkMode ? 0.4 : 0.04),
-                                      blurRadius: 30,
-                                      offset: const Offset(0, 8),
-                                    ),
-                                  ],
-                                ),
-                                child: _activeTab == 'terms'
-                                    ? _buildTermsContent(textColor, textSubColor, isDarkMode)
-                                    : _buildPrivacyContent(textColor, textSubColor, isDarkMode),
+                            // Document Card (NO OUTLINE BORDER)
+                            Container(
+                              padding: EdgeInsets.all(isMobile ? 22 : 44),
+                              decoration: BoxDecoration(
+                                color: cardBgColor,
+                                borderRadius: BorderRadius.circular(24),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: isDarkMode ? 0.4 : 0.04),
+                                    blurRadius: 30,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
                               ),
+                              child: _activeTab == 'terms'
+                                  ? _buildTermsContent(textColor, textSubColor, isDarkMode)
+                                  : _buildPrivacyContent(textColor, textSubColor, isDarkMode),
                             ),
 
                             const SizedBox(height: 50),
 
-                            // Bottom Navigation Return (Zero outline, tactile scale, pops in growing)
+                            // Bottom Navigation Return (Zero outline, tactile scale)
                             Center(
-                              child: PopEntrance(
-                                delay: const Duration(milliseconds: 240),
-                                startScale: 0.84,
-                                child: ScaleButton(
-                                  onTap: () => context.go('/'),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF6366F1).withValues(alpha: isDarkMode ? 0.15 : 0.08),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Icon(CupertinoIcons.arrow_left, size: 16, color: Color(0xFF6366F1)),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          _isEnglish ? 'Back to FictionScreen Home' : 'FictionScreen 홈으로 돌아가기',
-                                          style: const TextStyle(
-                                            color: Color(0xFF6366F1),
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 14,
-                                          ),
+                              child: ScaleButton(
+                                onTap: () => context.go('/'),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF6366F1).withValues(alpha: isDarkMode ? 0.15 : 0.08),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(CupertinoIcons.arrow_left, size: 16, color: Color(0xFF6366F1)),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        _isEnglish ? 'Back to FictionScreen Home' : 'FictionScreen 홈으로 돌아가기',
+                                        style: const TextStyle(
+                                          color: Color(0xFF6366F1),
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 14,
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),

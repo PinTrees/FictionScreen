@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../services/auth_service.dart';
-import '../../../../widgets/pop_entrance.dart';
 import '../../../../widgets/scale_button.dart';
 
 class ProfileView extends StatefulWidget {
@@ -163,13 +162,10 @@ class _ProfileViewState extends State<ProfileView> {
 
           const SizedBox(height: 28),
 
-          // Main Profile Card (ZERO OUTLINE, Pop Entrance)
+          // Main Profile Card (ZERO OUTLINE)
           Expanded(
             child: SingleChildScrollView(
-              child: PopEntrance(
-                delay: const Duration(milliseconds: 80),
-                startScale: 0.94,
-                child: Container(
+              child: Container(
                   constraints: const BoxConstraints(maxWidth: 720),
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
@@ -285,53 +281,49 @@ class _ProfileViewState extends State<ProfileView> {
 
                     const SizedBox(height: 28),
 
-                    // Save Button (Pops in growing)
+                    // Save Button
                     Row(
                       children: [
-                        PopEntrance(
-                          delay: const Duration(milliseconds: 200),
-                          startScale: 0.82,
-                          child: ScaleButton(
-                            onTap: _isSaving ? null : _saveProfile,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 13),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
+                        ScaleButton(
+                          onTap: _isSaving ? null : _saveProfile,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 13),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
                                 ),
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 3),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (_isSaving)
+                                  const SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF003852)),
+                                  )
+                                else
+                                  const Icon(CupertinoIcons.check_mark, size: 16, color: Color(0xFF003852)),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  '프로필 저장하기',
+                                  style: TextStyle(
+                                    color: Color(0xFF003852),
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 13.5,
                                   ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (_isSaving)
-                                    const SizedBox(
-                                      width: 14,
-                                      height: 14,
-                                      child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF003852)),
-                                    )
-                                  else
-                                    const Icon(CupertinoIcons.check_mark, size: 16, color: Color(0xFF003852)),
-                                  const SizedBox(width: 8),
-                                  const Text(
-                                    '프로필 저장하기',
-                                    style: TextStyle(
-                                      color: Color(0xFF003852),
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: 13.5,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -348,7 +340,6 @@ class _ProfileViewState extends State<ProfileView> {
                     ),
                   ],
                 ),
-              ),
               ),
             ),
           ),

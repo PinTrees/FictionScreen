@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../constants/home_i18n.dart';
-import '../../../widgets/pop_entrance.dart';
 import '../../../widgets/scale_button.dart';
 import 'home_floating_hero_icons.dart';
 
@@ -178,141 +177,125 @@ class HomeEditorialHero extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Sub-tag or editorial badge
-                      PopEntrance(
-                        delay: const Duration(milliseconds: 60),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: isDarkMode
-                                ? Colors.white.withValues(alpha: 0.08)
-                                : Colors.black.withValues(alpha: 0.05),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 6,
-                                height: 6,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Color(0xFF10B981),
-                                ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: isDarkMode
+                              ? Colors.white.withValues(alpha: 0.08)
+                              : Colors.black.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xFF10B981),
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                HomeI18n.t('heroBadge', isEnglish: isEnglish),
-                                style: TextStyle(
-                                  color: subLabelColor,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: -0.2,
-                                ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              HomeI18n.t('heroBadge', isEnglish: isEnglish),
+                              style: TextStyle(
+                                color: subLabelColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.2,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 18),
 
                       // Giant Bold Lowercase Heading (Sofi reference style)
-                      PopEntrance(
-                        delay: const Duration(milliseconds: 140),
-                        child: AnimatedDefaultTextStyle(
-                          duration: const Duration(milliseconds: 350),
-                          curve: Curves.easeInOut,
-                          style: TextStyle(
-                            color: textPrimary,
-                            fontSize: isMobile ? 64 : 108,
-                            fontWeight: FontWeight.w900,
-                            height: 0.92,
-                            letterSpacing: -4.0,
-                          ),
-                          child: Text(
-                            HomeI18n.t('heroHeadline', isEnglish: isEnglish),
-                          ),
+                      AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 350),
+                        curve: Curves.easeInOut,
+                        style: TextStyle(
+                          color: textPrimary,
+                          fontSize: isMobile ? 64 : 108,
+                          fontWeight: FontWeight.w900,
+                          height: 0.92,
+                          letterSpacing: -4.0,
+                        ),
+                        child: Text(
+                          HomeI18n.t('heroHeadline', isEnglish: isEnglish),
                         ),
                       ),
                       const SizedBox(height: 12),
 
                       // Subheading
-                      PopEntrance(
-                        delay: const Duration(milliseconds: 200),
-                        child: Text(
-                          HomeI18n.t('heroSubtitle', isEnglish: isEnglish),
-                          style: TextStyle(
-                            color: const Color(0xFF6366F1),
-                            fontSize: isMobile ? 24 : 38,
-                            fontWeight: FontWeight.w800,
-                            height: 1.15,
-                            letterSpacing: -1.2,
-                          ),
+                      Text(
+                        HomeI18n.t('heroSubtitle', isEnglish: isEnglish),
+                        style: TextStyle(
+                          color: const Color(0xFF6366F1),
+                          fontSize: isMobile ? 24 : 38,
+                          fontWeight: FontWeight.w800,
+                          height: 1.15,
+                          letterSpacing: -1.2,
                         ),
                       ),
                       const SizedBox(height: 22),
 
                       // Refined Editorial Description
-                      PopEntrance(
-                        delay: const Duration(milliseconds: 260),
-                        child: AnimatedDefaultTextStyle(
-                          duration: const Duration(milliseconds: 350),
-                          curve: Curves.easeInOut,
-                          style: TextStyle(
-                            color: textSecondary,
-                            fontSize: isMobile ? 14 : 16.5,
-                            height: 1.65,
-                            letterSpacing: -0.3,
-                          ),
-                          child: Text(
-                            HomeI18n.t('heroDesc', isEnglish: isEnglish),
-                          ),
+                      AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 350),
+                        curve: Curves.easeInOut,
+                        style: TextStyle(
+                          color: textSecondary,
+                          fontSize: isMobile ? 14 : 16.5,
+                          height: 1.65,
+                          letterSpacing: -0.3,
+                        ),
+                        child: Text(
+                          HomeI18n.t('heroDesc', isEnglish: isEnglish),
                         ),
                       ),
                       const SizedBox(height: 36),
 
                       // Sofi Style Button with Brand Gradient (Scale down on tap, NO INKWELL COLOR CHANGE)
-                      PopEntrance(
-                        delay: const Duration(milliseconds: 340),
-                        startScale: 0.82,
-                        child: ScaleButton(
-                          onTap: () => context.go('/console'),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                      ScaleButton(
+                        onTap: () => context.go('/console'),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                                blurRadius: 14,
+                                offset: const Offset(0, 4),
                               ),
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
-                                  blurRadius: 14,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  HomeI18n.t('heroCta', isEnglish: isEnglish),
-                                  style: const TextStyle(
-                                    color: Color(0xFF003852),
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: -0.3,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                const Icon(
-                                  CupertinoIcons.arrow_right,
-                                  size: 15,
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                HomeI18n.t('heroCta', isEnglish: isEnglish),
+                                style: const TextStyle(
                                   color: Color(0xFF003852),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.3,
                                 ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                CupertinoIcons.arrow_right,
+                                size: 15,
+                                color: Color(0xFF003852),
+                              ),
+                            ],
                           ),
                         ),
                       ),
