@@ -43,6 +43,12 @@ import '../../../apps/lottery/data/lottery_model.dart';
 import '../../../apps/lottery/lottery_screen.dart';
 import '../../../apps/youtube/data/youtube_model.dart';
 import '../../../apps/youtube/youtube_screen.dart';
+import '../../../apps/excel/data/excel_model.dart';
+import '../../../apps/excel/excel_screen.dart';
+import '../../../apps/powerpoint/data/powerpoint_model.dart';
+import '../../../apps/powerpoint/powerpoint_screen.dart';
+import '../../../apps/word/data/word_model.dart';
+import '../../../apps/word/word_screen.dart';
 import '../../../widgets/common/device_frame_preview.dart';
 
 class FloatingAppWindow extends StatefulWidget {
@@ -111,6 +117,9 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   late VisualStudioConfig _visualStudioConfig;
   late ChromeConfig _chromeConfig;
   late DavinciConfig _davinciConfig;
+  late ExcelConfig _excelConfig;
+  late PowerPointConfig _powerpointConfig;
+  late WordConfig _wordConfig;
 
   @override
   void initState() {
@@ -136,6 +145,9 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
     _visualStudioConfig = VisualStudioConfig.defaultPreset();
     _chromeConfig = ChromeConfig.defaultPreset();
     _davinciConfig = DavinciConfig.defaultPreset();
+    _excelConfig = ExcelConfig.defaultPreset();
+    _powerpointConfig = PowerPointConfig.defaultPreset();
+    _wordConfig = WordConfig.defaultPreset();
   }
 
   @override
@@ -484,6 +496,21 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
         return DavinciResolveScreen(
           config: _davinciConfig,
           onConfigChanged: (cfg) => setState(() => _davinciConfig = cfg),
+        );
+      case 'excel':
+        return ExcelScreen(
+          config: _excelConfig,
+          onConfigChanged: (cfg) => setState(() => _excelConfig = cfg),
+        );
+      case 'powerpoint':
+        return PowerPointScreen(
+          config: _powerpointConfig,
+          onConfigChanged: (cfg) => setState(() => _powerpointConfig = cfg),
+        );
+      case 'word':
+        return WordScreen(
+          config: _wordConfig,
+          onConfigChanged: (cfg) => setState(() => _wordConfig = cfg),
         );
       case 'windows_bsod':
         return WindowsBsodScreen(config: _bsodConfig);

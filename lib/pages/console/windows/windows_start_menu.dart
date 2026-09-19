@@ -162,6 +162,9 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                     child: ListView(
                       children: [
                         _buildListTile('카카오톡 채팅', null, const Color(0xFFFEE500), () => widget.onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
+                        _buildListTile('Microsoft Excel (엑셀)', CupertinoIcons.table, const Color(0xFF107C41), () => widget.onOpenTemplate('excel'), imageAsset: 'assets/images/excel_icon.webp'),
+                        _buildListTile('Microsoft PowerPoint (파워포인트)', CupertinoIcons.tv, const Color(0xFFD83B01), () => widget.onOpenTemplate('powerpoint'), imageAsset: 'assets/images/powerpoint_icon.webp'),
+                        _buildListTile('Microsoft Word (워드)', CupertinoIcons.doc_text, const Color(0xFF185ABD), () => widget.onOpenTemplate('word'), imageAsset: 'assets/images/word_icon.webp'),
                         _buildListTile('DaVinci Resolve Studio', CupertinoIcons.videocam_circle_fill, const Color(0xFFE53935), () => widget.onOpenTemplate('davinci_resolve'), imageAsset: 'assets/images/davinci_resolve_icon.webp'),
                         _buildListTile('Visual Studio 2026', CupertinoIcons.chevron_left_slash_chevron_right, const Color(0xFF68217A), () => widget.onOpenTemplate('visual_studio'), imageAsset: 'assets/images/visual_studio_icon.webp'),
                         _buildListTile('Adobe Photoshop 2026', CupertinoIcons.paintbrush_fill, const Color(0xFF31A8FF), () => widget.onOpenTemplate('photoshop'), imageAsset: 'assets/images/photoshop_icon.webp'),
@@ -216,6 +219,9 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                       crossAxisSpacing: 8,
                       childAspectRatio: 1.2,
                       children: [
+                        _buildTileBox('Excel', null, const Color(0xFF107C41), () => widget.onOpenTemplate('excel'), imageAsset: 'assets/images/excel_icon.webp'),
+                        _buildTileBox('PowerPoint', null, const Color(0xFFD83B01), () => widget.onOpenTemplate('powerpoint'), imageAsset: 'assets/images/powerpoint_icon.webp'),
+                        _buildTileBox('Word', null, const Color(0xFF185ABD), () => widget.onOpenTemplate('word'), imageAsset: 'assets/images/word_icon.webp'),
                         _buildTileBox('DaVinci Resolve', null, const Color(0xFF1E212B), () => widget.onOpenTemplate('davinci_resolve'), imageAsset: 'assets/images/davinci_resolve_icon.webp'),
                         _buildTileBox('VS 2026', null, const Color(0xFF2E124D), () => widget.onOpenTemplate('visual_studio'), imageAsset: 'assets/images/visual_studio_icon.webp'),
                         _buildTileBox('Photoshop', null, const Color(0xFF001E36), () => widget.onOpenTemplate('photoshop'), imageAsset: 'assets/images/photoshop_icon.webp'),
@@ -362,6 +368,9 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                               _buildXpProgramTile('뉴스 속보 (TV)', '속보 데스크 & 생중계', 'assets/images/windows/desk.png', () => widget.onOpenWinApp?.call('news')),
                               _buildXpProgramTile('디시인사이드', '커뮤니티 갤러리', 'assets/images/dcinside_icon.webp', () => widget.onOpenWinApp?.call('dcinside')),
                               _buildXpProgramTile('DaVinci Resolve', '', 'assets/images/davinci_resolve_icon.webp', () => widget.onOpenTemplate('davinci_resolve')),
+                              _buildXpProgramTile('Microsoft Excel', '스프레드시트 & 장부', 'assets/images/excel_icon.webp', () => widget.onOpenTemplate('excel')),
+                              _buildXpProgramTile('Microsoft PowerPoint', '슬라이드 쇼 & 발표', 'assets/images/powerpoint_icon.webp', () => widget.onOpenTemplate('powerpoint')),
+                              _buildXpProgramTile('Microsoft Word', '전자 문서 & 서식', 'assets/images/word_icon.webp', () => widget.onOpenTemplate('word')),
                               _buildXpProgramTile('카카오톡', '', 'assets/images/kakaotalk_icon.webp', () => widget.onOpenTemplate('kakaotalk')),
                             ],
                           ),
@@ -651,6 +660,9 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                     child: Divider(height: 1, color: Color(0xFFE2E8F0)),
                                   ),
+                                  _buildWin7ProgramItem('Microsoft Excel', null, const Color(0xFF107C41), () => widget.onOpenTemplate('excel'), imageAsset: 'assets/images/excel_icon.webp'),
+                                  _buildWin7ProgramItem('Microsoft PowerPoint', null, const Color(0xFFD83B01), () => widget.onOpenTemplate('powerpoint'), imageAsset: 'assets/images/powerpoint_icon.webp'),
+                                  _buildWin7ProgramItem('Microsoft Word', null, const Color(0xFF185ABD), () => widget.onOpenTemplate('word'), imageAsset: 'assets/images/word_icon.webp'),
                                   _buildWin7ProgramItem('DaVinci Resolve Studio', null, const Color(0xFFE53935), () => widget.onOpenTemplate('davinci_resolve'), imageAsset: 'assets/images/davinci_resolve_icon.webp'),
                                   _buildWin7ProgramItem('Visual Studio 2026', null, const Color(0xFF68217A), () => widget.onOpenTemplate('visual_studio'), imageAsset: 'assets/images/visual_studio_icon.webp'),
                                   _buildWin7ProgramItem('Adobe Photoshop 2026', null, const Color(0xFF31A8FF), () => widget.onOpenTemplate('photoshop'), imageAsset: 'assets/images/photoshop_icon.webp'),
@@ -1167,6 +1179,21 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
             _buildWin11AppItem('디시인사이드', 'assets/images/dcinside_icon.webp', () => widget.onOpenWinApp?.call('dcinside')),
           ],
         ),
+        const SizedBox(height: 8),
+
+        // Row 5 (Office Suite)
+        Row(
+          children: [
+            _buildWin11AppItem('Excel', 'assets/images/excel_icon.webp', () => widget.onOpenTemplate('excel')),
+            _buildWin11AppItem('PowerPoint', 'assets/images/powerpoint_icon.webp', () => widget.onOpenTemplate('powerpoint')),
+            _buildWin11AppItem('Word', 'assets/images/word_icon.webp', () => widget.onOpenTemplate('word')),
+            _buildWin11AppItem('블라인드', 'assets/images/blind_icon.webp', () => widget.onOpenTemplate('blind')),
+            _buildWin11AppItem('업비트', 'assets/images/upbit_icon.webp', () => widget.onOpenTemplate('upbit')),
+            _buildWin11AppItem('야놀자', 'assets/images/yanolja_icon.webp', () => widget.onOpenTemplate('yanolja')),
+            _buildWin11AppItem('당근마켓', 'assets/images/daangn_icon.webp', () => widget.onOpenTemplate('daangn')),
+            _buildWin11AppItem('Netflix', 'assets/images/netflix_icon.webp', () => widget.onOpenTemplate('netflix')),
+          ],
+        ),
       ],
     );
   }
@@ -1596,6 +1623,9 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
       {'name': '파일 탐색기', 'icon': 'assets/images/windows/explorer.png', 'action': () => widget.onOpenWinApp?.call('file_explorer')},
       {'name': '휴지통', 'icon': 'assets/images/windows/recycle_bin.png', 'action': () => widget.onOpenWinApp?.call('recycle_bin')},
       {'name': 'DaVinci Resolve Studio (다빈치 리졸브 영상 편집)', 'icon': 'assets/images/davinci_resolve_icon.webp', 'action': () => widget.onOpenTemplate('davinci_resolve')},
+      {'name': 'Microsoft Excel (엑셀 스프레드시트)', 'icon': 'assets/images/excel_icon.webp', 'action': () => widget.onOpenTemplate('excel')},
+      {'name': 'Microsoft PowerPoint (파워포인트 슬라이드 쇼)', 'icon': 'assets/images/powerpoint_icon.webp', 'action': () => widget.onOpenTemplate('powerpoint')},
+      {'name': 'Microsoft Word (워드 전자 문서 서식)', 'icon': 'assets/images/word_icon.webp', 'action': () => widget.onOpenTemplate('word')},
       {'name': 'Visual Studio 2026 Professional (비주얼 스튜디오)', 'icon': 'assets/images/visual_studio_icon.webp', 'action': () => widget.onOpenTemplate('visual_studio')},
       {'name': 'Adobe Photoshop 2026 (포토샵 그래픽 에디터)', 'icon': 'assets/images/photoshop_icon.webp', 'action': () => widget.onOpenTemplate('photoshop')},
       {'name': 'Discord (디스코드 커뮤니티)', 'icon': 'assets/images/discord_icon.webp', 'action': () => widget.onOpenTemplate('discord')},

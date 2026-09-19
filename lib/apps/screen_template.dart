@@ -5,6 +5,7 @@ enum TemplateCategory {
   sns('SNS / 소셜'),
   finance('금융 / 송금'),
   os('OS & 시스템 오류'),
+  office('오피스 / 업무 문서'),
   lifestyle('라이프스타일 / 배달');
 
   final String label;
@@ -344,6 +345,39 @@ class ScreenTemplate {
       imageAsset: 'assets/images/dcinside_icon.webp',
       themeColor: Color(0xFF3B4890),
       badge: 'HOT',
+      isDesktop: true,
+    ),
+    const ScreenTemplate(
+      id: 'excel',
+      title: 'Microsoft Excel (엑셀)',
+      description: '그린 리본 바, 수식 입력줄(=SUM), 스프레드시트 그리드, 비자금/헌터정산/코인청산/스타트업 캡테이블',
+      category: TemplateCategory.office,
+      icon: CupertinoIcons.table_fill,
+      imageAsset: 'assets/images/excel_icon.webp',
+      themeColor: Color(0xFF107C41),
+      badge: 'NEW',
+      isDesktop: true,
+    ),
+    const ScreenTemplate(
+      id: 'powerpoint',
+      title: 'Microsoft PowerPoint (PPT)',
+      description: '오렌지 리본 바, 좌측 썸네일 바, 16:9 슬라이드 캔버스, F5 전체화면 슬라이드 쇼, 신기술IR/비상사태브리핑/M&A',
+      category: TemplateCategory.office,
+      icon: CupertinoIcons.tv_fill,
+      imageAsset: 'assets/images/powerpoint_icon.webp',
+      themeColor: Color(0xFFD83B01),
+      badge: 'NEW',
+      isDesktop: true,
+    ),
+    const ScreenTemplate(
+      id: 'word',
+      title: 'Microsoft Word (워드)',
+      description: '블루 리본 바, 수평 눈금자, 그림자 A4 페이퍼, 1급기밀/REDACTED 마스킹/붉은 관인 직인 날인 서식',
+      category: TemplateCategory.office,
+      icon: CupertinoIcons.doc_text_fill,
+      imageAsset: 'assets/images/word_icon.webp',
+      themeColor: Color(0xFF185ABD),
+      badge: 'NEW',
       isDesktop: true,
     ),
   ];

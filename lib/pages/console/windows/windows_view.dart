@@ -505,6 +505,33 @@ class _WindowsViewState extends State<WindowsView> {
         isSystemApp: true,
         onTap: () => _openWinApp('dcinside'),
       ),
+      DesktopIconItem(
+        id: 'excel',
+        title: 'Excel',
+        imageAsset: 'assets/images/excel_icon.webp',
+        gridX: 6,
+        gridY: 0,
+        isSystemApp: true,
+        onTap: () => widget.onOpenTemplate('excel'),
+      ),
+      DesktopIconItem(
+        id: 'powerpoint',
+        title: 'PowerPoint',
+        imageAsset: 'assets/images/powerpoint_icon.webp',
+        gridX: 6,
+        gridY: 1,
+        isSystemApp: true,
+        onTap: () => widget.onOpenTemplate('powerpoint'),
+      ),
+      DesktopIconItem(
+        id: 'word',
+        title: 'Word',
+        imageAsset: 'assets/images/word_icon.webp',
+        gridX: 6,
+        gridY: 2,
+        isSystemApp: true,
+        onTap: () => widget.onOpenTemplate('word'),
+      ),
     ];
   }
 

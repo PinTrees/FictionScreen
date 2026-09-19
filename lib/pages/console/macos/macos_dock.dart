@@ -216,6 +216,24 @@ class _MacosDockState extends State<MacosDock> {
                   imageAsset: 'assets/images/dcinside_icon.webp',
                   onTap: () => widget.onOpenApp?.call('dcinside'),
                 ),
+                _buildDockApp(
+                  index: 21,
+                  tooltip: 'Microsoft Excel (스프레드시트)',
+                  imageAsset: 'assets/images/excel_icon.webp',
+                  onTap: () => widget.onOpenTemplate('excel'),
+                ),
+                _buildDockApp(
+                  index: 22,
+                  tooltip: 'Microsoft PowerPoint (슬라이드 쇼)',
+                  imageAsset: 'assets/images/powerpoint_icon.webp',
+                  onTap: () => widget.onOpenTemplate('powerpoint'),
+                ),
+                _buildDockApp(
+                  index: 23,
+                  tooltip: 'Microsoft Word (전자 문서 서식)',
+                  imageAsset: 'assets/images/word_icon.webp',
+                  onTap: () => widget.onOpenTemplate('word'),
+                ),
 
                 // 구분선
                 _buildDockDivider(),

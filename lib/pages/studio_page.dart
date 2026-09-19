@@ -10,6 +10,9 @@ import '../apps/cctv/data/cctv_model.dart';
 import '../apps/steam/data/steam_model.dart';
 import '../apps/news/data/news_model.dart';
 import '../apps/dcinside/data/dcinside_model.dart';
+import '../apps/excel/data/excel_model.dart';
+import '../apps/powerpoint/data/powerpoint_model.dart';
+import '../apps/word/data/word_model.dart';
 import '../apps/discord/data/discord_model.dart';
 import '../apps/photoshop/data/photoshop_model.dart';
 import '../apps/visual_studio/data/visual_studio_model.dart';
@@ -82,6 +85,9 @@ class _StudioPageState extends State<StudioPage> {
   late SteamConfig _steamConfig;
   late NewsConfig _newsConfig;
   late DcinsideConfig _dcinsideConfig;
+  late ExcelConfig _excelConfig;
+  late PowerPointConfig _powerpointConfig;
+  late WordConfig _wordConfig;
 
   @override
   void initState() {
@@ -117,6 +123,9 @@ class _StudioPageState extends State<StudioPage> {
     _steamConfig = SteamConfig.defaultPreset();
     _newsConfig = NewsConfig.defaultPreset();
     _dcinsideConfig = DcinsideConfig.defaultPreset();
+    _excelConfig = ExcelConfig.defaultPreset();
+    _powerpointConfig = PowerPointConfig.defaultPreset();
+    _wordConfig = WordConfig.defaultPreset();
   }
 
   Future<void> _exportScreen() async {
@@ -232,6 +241,12 @@ class _StudioPageState extends State<StudioPage> {
       onNewsChanged: (cfg) => setState(() => _newsConfig = cfg),
       dcinsideConfig: _dcinsideConfig,
       onDcinsideChanged: (cfg) => setState(() => _dcinsideConfig = cfg),
+      excelConfig: _excelConfig,
+      onExcelChanged: (cfg) => setState(() => _excelConfig = cfg),
+      powerpointConfig: _powerpointConfig,
+      onPowerPointChanged: (cfg) => setState(() => _powerpointConfig = cfg),
+      wordConfig: _wordConfig,
+      onWordChanged: (cfg) => setState(() => _wordConfig = cfg),
     );
   }
 }

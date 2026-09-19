@@ -59,6 +59,12 @@ import '../../../apps/news/data/news_model.dart';
 import '../../../apps/news/news_screen.dart';
 import '../../../apps/dcinside/data/dcinside_model.dart';
 import '../../../apps/dcinside/dcinside_screen.dart';
+import '../../../apps/excel/data/excel_model.dart';
+import '../../../apps/excel/excel_screen.dart';
+import '../../../apps/powerpoint/data/powerpoint_model.dart';
+import '../../../apps/powerpoint/powerpoint_screen.dart';
+import '../../../apps/word/data/word_model.dart';
+import '../../../apps/word/word_screen.dart';
 
 /// 스튜디오 템플릿별 실시간 프리뷰 위젯 순수 디스패처
 class StudioPreviewDispatcher extends StatelessWidget {
@@ -93,9 +99,15 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final NaverConfig? naverConfig;
   final ZigbangConfig? zigbangConfig;
   final TelegramConfig? telegramConfig;
+  final ExcelConfig? excelConfig;
+  final PowerPointConfig? powerpointConfig;
+  final WordConfig? wordConfig;
 
   final ValueChanged<DcinsideConfig>? onDcinsideChanged;
   final ValueChanged<NewsConfig>? onNewsChanged;
+  final ValueChanged<ExcelConfig>? onExcelChanged;
+  final ValueChanged<PowerPointConfig>? onPowerPointChanged;
+  final ValueChanged<WordConfig>? onWordChanged;
 
   final ValueChanged<KakaoBankConfig>? onKakaoBankChanged;
   final ValueChanged<DaangnConfig>? onDaangnChanged;
@@ -173,6 +185,12 @@ class StudioPreviewDispatcher extends StatelessWidget {
     this.onEdgeChanged,
     this.onCctvChanged,
     this.onSteamChanged,
+    this.excelConfig,
+    this.powerpointConfig,
+    this.wordConfig,
+    this.onExcelChanged,
+    this.onPowerPointChanged,
+    this.onWordChanged,
   });
 
   @override
@@ -240,6 +258,9 @@ class StudioPreviewDispatcher extends StatelessWidget {
       case 'visual_studio': return VisualStudioScreen(config: visualStudioConfig, onConfigChanged: onVisualStudioChanged);
       case 'chrome': return ChromeScreen(config: chromeConfig, onConfigChanged: onChromeChanged);
       case 'davinci_resolve': return DavinciResolveScreen(config: davinciConfig, onConfigChanged: onDavinciChanged);
+      case 'excel': return ExcelScreen(config: excelConfig ?? ExcelConfig.defaultPreset(), onConfigChanged: onExcelChanged);
+      case 'powerpoint': return PowerPointScreen(config: powerpointConfig ?? PowerPointConfig.defaultPreset(), onConfigChanged: onPowerPointChanged);
+      case 'word': return WordScreen(config: wordConfig ?? WordConfig.defaultPreset(), onConfigChanged: onWordChanged);
       default: return TossScreen(config: tossConfig);
     }
   }
