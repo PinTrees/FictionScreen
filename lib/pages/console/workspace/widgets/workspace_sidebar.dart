@@ -16,6 +16,7 @@ class WorkspaceSidebar extends StatelessWidget {
   final VoidCallback onToggleCollapse;
   final bool isDarkMode;
   final VoidCallback onSignOut;
+  final VoidCallback onOpenProfile;
 
   const WorkspaceSidebar({
     super.key,
@@ -30,6 +31,7 @@ class WorkspaceSidebar extends StatelessWidget {
     required this.onToggleCollapse,
     required this.isDarkMode,
     required this.onSignOut,
+    required this.onOpenProfile,
   });
 
   @override
@@ -380,65 +382,82 @@ class WorkspaceSidebar extends StatelessWidget {
             child: isCollapsed
                 ? Center(
                     child: Tooltip(
-                      message: user?.displayName ?? user?.email ?? '사용자 프로필',
-                      child: CircleAvatar(
-                        radius: 18,
-                        backgroundColor: const Color(0xFF00B0FF),
-                        backgroundImage: user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
-                        child: user?.photoURL == null
-                            ? Text(
-                                (user?.displayName?.isNotEmpty == true
-                                        ? user!.displayName![0]
-                                        : (user?.email?.isNotEmpty == true ? user!.email![0] : 'U'))
-                                    .toUpperCase(),
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                              )
-                            : null,
+                      message: user?.displayName ?? user?.email ?? '사용자 프로필 (클릭하여 설정)',
+                      child: InkWell(
+                        onTap: onOpenProfile,
+                        borderRadius: BorderRadius.circular(18),
+                        child: CircleAvatar(
+                          radius: 18,
+                          backgroundColor: const Color(0xFF00B0FF),
+                          backgroundImage: user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
+                          child: user?.photoURL == null
+                              ? Text(
+                                  (user?.displayName?.isNotEmpty == true
+                                          ? user!.displayName![0]
+                                          : (user?.email?.isNotEmpty == true ? user!.email![0] : 'U'))
+                                      .toUpperCase(),
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                )
+                              : null,
+                        ),
                       ),
                     ),
                   )
                 : Row(
                     children: [
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundColor: const Color(0xFF00B0FF),
-                        backgroundImage: user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
-                        child: user?.photoURL == null
-                            ? Text(
-                                (user?.displayName?.isNotEmpty == true
-                                        ? user!.displayName![0]
-                                        : (user?.email?.isNotEmpty == true ? user!.email![0] : 'U'))
-                                    .toUpperCase(),
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                              )
-                            : null,
-                      ),
-                      const SizedBox(width: 12),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              user?.displayName ?? '사용자',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: textColor,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                              ),
+                        child: InkWell(
+                          onTap: onOpenProfile,
+                          borderRadius: BorderRadius.circular(10),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 18,
+                                  backgroundColor: const Color(0xFF00B0FF),
+                                  backgroundImage: user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
+                                  child: user?.photoURL == null
+                                      ? Text(
+                                          (user?.displayName?.isNotEmpty == true
+                                                  ? user!.displayName![0]
+                                                  : (user?.email?.isNotEmpty == true ? user!.email![0] : 'U'))
+                                              .toUpperCase(),
+                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                        )
+                                      : null,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        user?.displayName ?? '사용자',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: textColor,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        user?.email ?? 'Firebase 계정 연동됨',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: textSubColor,
+                                          fontSize: 10.5,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              user?.email ?? 'Firebase 계정 연동됨',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: textSubColor,
-                                fontSize: 10.5,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                       IconButton(

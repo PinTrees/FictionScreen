@@ -17,6 +17,7 @@ class WorkspaceTopBar extends StatelessWidget {
   final VoidCallback onOpenInOs;
   final Function(String osKey) onSelectOs;
   final VoidCallback onSignOut;
+  final VoidCallback onOpenProfile;
 
   const WorkspaceTopBar({
     super.key,
@@ -30,6 +31,7 @@ class WorkspaceTopBar extends StatelessWidget {
     required this.onOpenInOs,
     required this.onSelectOs,
     required this.onSignOut,
+    required this.onOpenProfile,
   });
 
   @override
@@ -150,20 +152,24 @@ class WorkspaceTopBar extends StatelessWidget {
 
               // 4. Far Right User Profile Avatar (Directly at the right edge)
               Tooltip(
-                message: user?.displayName ?? user?.email ?? '사용자 프로필',
-                child: CircleAvatar(
-                  radius: 16,
-                  backgroundColor: const Color(0xFF00B0FF),
-                  backgroundImage: user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
-                  child: user?.photoURL == null
-                      ? Text(
-                          (user?.displayName?.isNotEmpty == true
-                                  ? user!.displayName![0]
-                                  : (user?.email?.isNotEmpty == true ? user!.email![0] : 'U'))
-                              .toUpperCase(),
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                        )
-                      : null,
+                message: user?.displayName ?? user?.email ?? '사용자 프로필 (클릭하여 설정)',
+                child: InkWell(
+                  onTap: onOpenProfile,
+                  borderRadius: BorderRadius.circular(16),
+                  child: CircleAvatar(
+                    radius: 16,
+                    backgroundColor: const Color(0xFF00B0FF),
+                    backgroundImage: user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
+                    child: user?.photoURL == null
+                        ? Text(
+                            (user?.displayName?.isNotEmpty == true
+                                    ? user!.displayName![0]
+                                    : (user?.email?.isNotEmpty == true ? user!.email![0] : 'U'))
+                                .toUpperCase(),
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                          )
+                        : null,
+                  ),
                 ),
               ),
             ],

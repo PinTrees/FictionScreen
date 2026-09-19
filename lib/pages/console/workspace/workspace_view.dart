@@ -7,6 +7,7 @@ import 'models/project_model.dart';
 import 'views/app_gallery_view.dart';
 import 'views/dashboard_home_view.dart';
 import 'views/os_gallery_view.dart';
+import 'views/profile_view.dart';
 import 'widgets/workspace_sidebar.dart';
 import 'widgets/workspace_top_bar.dart';
 import '../../editor/app_editor_page.dart';
@@ -151,6 +152,7 @@ class _WorkspaceViewState extends State<WorkspaceView> {
             onOpenInOs: () => widget.onOpenInOs('kakaotalk'),
             onSelectOs: widget.onSelectOs,
             onSignOut: widget.onSignOut,
+            onOpenProfile: () => setState(() => _activeMenuId = 'profile'),
           ),
 
           // Workspace Body: Left Sidebar (Project-centric) + Center View
@@ -175,6 +177,7 @@ class _WorkspaceViewState extends State<WorkspaceView> {
                   onToggleCollapse: () => setState(() => _isSidebarCollapsed = !_isSidebarCollapsed),
                   isDarkMode: isDarkMode,
                   onSignOut: widget.onSignOut,
+                  onOpenProfile: () => setState(() => _activeMenuId = 'profile'),
                 ),
 
                 // Center Content Area
@@ -194,6 +197,12 @@ class _WorkspaceViewState extends State<WorkspaceView> {
 
   Widget _buildCenterContent(bool isDark) {
     switch (_activeMenuId) {
+      case 'profile':
+        return ProfileView(
+          isDarkMode: isDark,
+          onSignOut: widget.onSignOut,
+          onBackToDashboard: () => setState(() => _activeMenuId = 'home'),
+        );
       case 'os':
         // OS Selection Page View (Req: "OS 탭도 누르면 페이지 나와서 선택한 OS로 접속되게 해야지")
         return OsGalleryView(
