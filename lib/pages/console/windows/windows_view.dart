@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'apps/calculator/calculator_window.dart';
 import 'apps/chrome/chrome_window.dart';
+import '../../../apps/pdf_viewer/pdf_viewer_window.dart';
 import 'apps/cmd/cmd_window.dart';
 import 'apps/edge/edge_window.dart';
 import 'apps/file_explorer/file_explorer_window.dart';
@@ -285,6 +286,16 @@ class _WindowsViewState extends State<WindowsView> {
         onTap: () => _openWinApp('snip'),
       ),
       DesktopIconItem(
+        id: 'pdf_viewer',
+        title: 'PDF 서식 스튜디오',
+        icon: CupertinoIcons.doc_text_fill,
+        iconColor: const Color(0xFFEF4444),
+        gridX: 2,
+        gridY: 6,
+        isSystemApp: true,
+        onTap: () => _openWinApp('pdf_viewer'),
+      ),
+      DesktopIconItem(
         id: 'trash',
         title: '휴지통',
         imageAsset: 'assets/images/windows/recycle_bin.png',
@@ -435,7 +446,9 @@ class _WindowsViewState extends State<WindowsView> {
       final initialPos = Offset(100.0 + (count * 28), 50.0 + (count * 22));
       Size defaultSize = const Size(760, 520);
 
-      if (widget.windowsVersion == '11') {
+      if (appId == 'pdf_viewer') {
+        defaultSize = const Size(960, 680);
+      } else if (widget.windowsVersion == '11') {
         if (appId == 'file_explorer' || appId == 'recycle_bin') {
           defaultSize = const Size(860, 560);
         } else if (appId == 'settings') {
@@ -1264,6 +1277,17 @@ class _WindowsViewState extends State<WindowsView> {
         );
       case 'minesweeper':
         return WinXpMinesweeperWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'pdf_viewer':
+        return PdfViewerWindow(
           width: win.size.width,
           height: win.size.height,
           isMaximized: win.isMaximized,

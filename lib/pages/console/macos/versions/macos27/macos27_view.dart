@@ -11,6 +11,7 @@ import '../../apps/notes/notes_window.dart';
 import '../../apps/photos/photos_window.dart';
 import '../../apps/safari/safari_window.dart';
 import '../../apps/terminal/terminal_window.dart';
+import '../../../../../apps/pdf_viewer/pdf_viewer_window.dart';
 import 'apps/settings/macos27_settings_window.dart';
 import 'widgets/macos27_context_menu.dart';
 import 'widgets/macos27_dock.dart';
@@ -225,7 +226,9 @@ class _Macos27ViewState extends State<Macos27View> {
       final initialPos = Offset(110.0 + (count * 28), 54.0 + (count * 22));
       Size defaultSize = const Size(780, 520);
 
-      if (appId == 'terminal') {
+      if (appId == 'pdf_viewer') {
+        defaultSize = const Size(960, 680);
+      } else if (appId == 'terminal') {
         defaultSize = const Size(680, 440);
       } else if (appId == 'settings') {
         defaultSize = const Size(820, 540);
@@ -645,6 +648,14 @@ class _Macos27ViewState extends State<Macos27View> {
         );
       case 'music':
         return MusicWindow(
+          width: win.size.width,
+          height: win.size.height,
+          onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'pdf_viewer':
+        return PdfViewerWindow(
           width: win.size.width,
           height: win.size.height,
           onClose: () => _closeWindow(win.id),

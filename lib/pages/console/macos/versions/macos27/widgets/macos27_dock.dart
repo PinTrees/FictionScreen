@@ -96,6 +96,7 @@ class _Macos27DockState extends State<Macos27Dock> {
                   _buildDockItem(9, '시스템 설정 (OS 전환)', 'assets/images/macos/settings.webp', isSettings: true),
                   _buildDockItem(10, 'Terminal', 'assets/images/macos/terminal.png', appId: 'terminal'),
                   _buildDockItem(11, 'Calculator', 'assets/images/macos/calculator.webp', appId: 'calculator'),
+                  _buildDockItem(12, 'PDF 서식 스튜디오', 'assets/images/windows/docs.png', appId: 'pdf_viewer'),
 
                   _buildDockDivider(),
 
