@@ -106,36 +106,36 @@ class HomeHeroSection extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                      colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF6366F1).withValues(alpha: 0.4),
-                        blurRadius: 20,
-                        offset: const Offset(0, 6),
+                        color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
-                      foregroundColor: Colors.white,
+                      foregroundColor: const Color(0xFF003852),
                       shadowColor: Colors.transparent,
                       padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     onPressed: () => context.go('/console'),
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(CupertinoIcons.device_desktop, size: 19),
+                        Icon(CupertinoIcons.device_desktop, size: 19, color: Color(0xFF003852)),
                         SizedBox(width: 8),
-                        Text('가상 OS 콘솔 즉시 체험', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                        Text('가상 OS 콘솔 즉시 체험', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xFF003852))),
                         SizedBox(width: 6),
-                        Icon(CupertinoIcons.arrow_right, size: 15),
+                        Icon(CupertinoIcons.arrow_right, size: 15, color: Color(0xFF003852)),
                       ],
                     ),
                   ),

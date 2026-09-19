@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
                             colors: [
-                              const Color(0xFF6366F1).withValues(alpha: 0.18),
+                              const Color(0xFF00B0FF).withValues(alpha: 0.18),
                               const Color(0xFF00E5FF).withValues(alpha: 0.06),
                               Colors.transparent,
                             ],
@@ -143,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: 58,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFF00E5FF), Color(0xFF6366F1)],
+                              colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),

@@ -283,19 +283,49 @@ class _ProfileViewState extends State<ProfileView> {
                     // Save Button
                     Row(
                       children: [
-                        ElevatedButton.icon(
-                          onPressed: _isSaving ? null : _saveProfile,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF00B0FF),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
+                        InkWell(
+                          onTap: _isSaving ? null : _saveProfile,
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 13),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (_isSaving)
+                                  const SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF003852)),
+                                  )
+                                else
+                                  const Icon(CupertinoIcons.check_mark, size: 16, color: Color(0xFF003852)),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  '프로필 저장하기',
+                                  style: TextStyle(
+                                    color: Color(0xFF003852),
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 13.5,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          icon: _isSaving
-                              ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                              : const Icon(CupertinoIcons.check_mark, size: 16),
-                          label: const Text('프로필 저장하기', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5)),
                         ),
                         const Spacer(),
                         TextButton.icon(

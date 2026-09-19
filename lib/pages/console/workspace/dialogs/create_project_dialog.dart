@@ -201,7 +201,7 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? const Color(0xFF6366F1).withValues(alpha: 0.16)
+                              ? const Color(0xFF00B0FF).withValues(alpha: 0.16)
                               : (isDark ? Colors.white.withValues(alpha: 0.04) : const Color(0xFFF1F5F9)),
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -229,7 +229,7 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: isSelected
-                                    ? const Color(0xFF6366F1)
+                                    ? const Color(0xFF00B0FF)
                                     : (isDark ? Colors.white70 : const Color(0xFF334155)),
                                 fontSize: 11,
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -259,16 +259,35 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
                   child: const Text('취소', style: TextStyle(fontWeight: FontWeight.w600)),
                 ),
                 const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6366F1),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
+                InkWell(
+                  onTap: _submit,
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: const Text(
+                      '프로젝트 생성 & 에디터 열기',
+                      style: TextStyle(
+                        color: Color(0xFF003852),
+                        fontWeight: FontWeight.w800,
+                        fontSize: 13,
+                      ),
+                    ),
                   ),
-                  child: const Text('프로젝트 생성 & 에디터 열기', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                 ),
               ],
             ),

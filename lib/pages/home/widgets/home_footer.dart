@@ -98,14 +98,14 @@ class HomeFooter extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                          colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF6366F1).withValues(alpha: 0.4),
+                            color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
                             blurRadius: 16,
                             offset: const Offset(0, 4),
                           ),
@@ -114,7 +114,7 @@ class HomeFooter extends StatelessWidget {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
-                          foregroundColor: Colors.white,
+                          foregroundColor: const Color(0xFF003852),
                           shadowColor: Colors.transparent,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 18),
@@ -124,11 +124,11 @@ class HomeFooter extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(CupertinoIcons.device_desktop, size: 17),
+                            const Icon(CupertinoIcons.device_desktop, size: 17, color: Color(0xFF003852)),
                             const SizedBox(width: 8),
                             Text(
                               HomeI18n.t('footerPrimaryBtn', isEnglish: isEnglish),
-                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: Color(0xFF003852)),
                             ),
                           ],
                         ),
@@ -195,7 +195,7 @@ class HomeFooter extends StatelessWidget {
                       height: 26,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                          colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
                         ),
                         borderRadius: BorderRadius.circular(7),
                       ),

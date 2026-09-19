@@ -259,21 +259,21 @@ class HomeEditorialHero extends StatelessWidget {
                       // Sofi Style Pill Button with Brand Gradient (no outline)
                       InkWell(
                         onTap: () => context.go('/console'),
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(12),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                              colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF6366F1).withValues(alpha: 0.42),
-                                blurRadius: 20,
-                                offset: const Offset(0, 6),
+                                color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                                blurRadius: 14,
+                                offset: const Offset(0, 4),
                               ),
                             ],
                           ),
@@ -283,7 +283,7 @@ class HomeEditorialHero extends StatelessWidget {
                               Text(
                                 HomeI18n.t('heroCta', isEnglish: isEnglish),
                                 style: const TextStyle(
-                                  color: Colors.white,
+                                  color: Color(0xFF003852),
                                   fontSize: 15,
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: -0.3,
@@ -293,7 +293,7 @@ class HomeEditorialHero extends StatelessWidget {
                               const Icon(
                                 CupertinoIcons.arrow_right,
                                 size: 15,
-                                color: Colors.white,
+                                color: Color(0xFF003852),
                               ),
                             ],
                           ),

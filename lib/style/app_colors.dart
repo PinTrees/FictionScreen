@@ -8,12 +8,12 @@ class AppColors {
   static const Color border = Color(0xFF2D303E);
 
   // Primary & Accents
-  static const Color primary = Color(0xFF6366F1); // Indigo
-  static const Color primaryLight = Color(0xFF818CF8);
-  static const Color primaryDark = Color(0xFF4F46E5);
+  static const Color primary = Color(0xFF00B0FF); // Brand Cyan Blue
+  static const Color primaryLight = Color(0xFF00E5FF);
+  static const Color primaryDark = Color(0xFF0088CC);
   
   static const Color secondary = Color(0xFFEC4899); // Pink
-  static const Color accent = Color(0xFF06B6D4); // Cyan
+  static const Color accent = Color(0xFF00E5FF); // Cyan
 
   // Text
   static const Color textPrimary = Color(0xFFF9FAFB);

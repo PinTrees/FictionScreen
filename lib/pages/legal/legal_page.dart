@@ -187,7 +187,7 @@ class _LegalPageState extends State<LegalPage> {
                       height: 32,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                          colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),

@@ -65,7 +65,7 @@ class HomeTopAppBar extends StatelessWidget {
                         height: 32,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF00E5FF), Color(0xFF6366F1)],
+                            colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -230,14 +230,14 @@ class HomeTopAppBar extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                              colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF6366F1).withValues(alpha: 0.35),
+                                color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
                                 blurRadius: 10,
                                 offset: const Offset(0, 2),
                               ),
@@ -246,7 +246,7 @@ class HomeTopAppBar extends StatelessWidget {
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
-                              foregroundColor: Colors.white,
+                              foregroundColor: const Color(0xFF003852),
                               shadowColor: Colors.transparent,
                               elevation: 0,
                               padding: EdgeInsets.symmetric(
@@ -261,7 +261,11 @@ class HomeTopAppBar extends StatelessWidget {
                               isLoggedIn
                                   ? HomeI18n.t('virtualOsConsole', isEnglish: isEnglish)
                                   : HomeI18n.t('startConsole', isEnglish: isEnglish),
-                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                              style: const TextStyle(
+                                color: Color(0xFF003852),
+                                fontWeight: FontWeight.w800,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                         ),
