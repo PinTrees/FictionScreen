@@ -27,27 +27,27 @@ class DashboardHomeView extends StatelessWidget {
     final cardBgColor = isDarkMode ? const Color(0xFF141822) : Colors.white;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 36),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Banner / Welcome Area
+          // Banner / Welcome Area with generous padding (ZERO OUTLINE)
           Container(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: isDarkMode
-                    ? [const Color(0xFF1E1B4B), const Color(0xFF0F172A)]
-                    : [const Color(0xFFEEF2FF), const Color(0xFFE0E7FF)],
+                    ? [const Color(0xFF131B2E), const Color(0xFF090D17)]
+                    : [const Color(0xFFE0F7FA), const Color(0xFFE8EAF6)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: isDarkMode ? 0.2 : 0.04),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
+                  color: Colors.black.withValues(alpha: isDarkMode ? 0.3 : 0.04),
+                  blurRadius: 20,
+                  offset: const Offset(0, 6),
                 ),
               ],
             ),
@@ -60,134 +60,170 @@ class DashboardHomeView extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF6366F1).withValues(alpha: 0.2),
+                              color: const Color(0xFF00E5FF).withValues(alpha: 0.18),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: const Text(
                               'FICTION SCREEN STUDIO',
                               style: TextStyle(
-                                color: Color(0xFF818CF8),
+                                color: Color(0xFF00B0FF),
                                 fontSize: 10.5,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w800,
                                 letterSpacing: 0.8,
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 10),
                           Text(
-                            '총 ${projects.length}개의 활성 프로젝트',
-                            style: TextStyle(color: textSubColor, fontSize: 12),
+                            '총 ${projects.length}개의 프로젝트',
+                            style: TextStyle(color: textSubColor, fontSize: 12.5),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 12),
                       Text(
                         '시나리오 & 가상 화면 프로젝트',
                         style: TextStyle(
                           color: textColor,
-                          fontSize: 22,
+                          fontSize: 24,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: -0.5,
+                          letterSpacing: -0.6,
                         ),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         '어플을 선택하여 대화 및 스크린샷을 작성하고, 피그마 캔버스에서 실시간으로 편집하거나 PNG로 내보내세요.',
-                        style: TextStyle(color: textSubColor, fontSize: 13.5, height: 1.4),
+                        style: TextStyle(color: textSubColor, fontSize: 14, height: 1.45),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 20),
-                // Action Buttons (BORDER-FREE)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6366F1),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                const SizedBox(width: 24),
+                // Brand Button (CapCut style)
+                InkWell(
+                  onTap: onNewProject,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      icon: const Icon(CupertinoIcons.plus_circle_fill, size: 16),
-                      label: const Text('새 프로젝트 만들기', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                      onPressed: onNewProject,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    TextButton.icon(
-                      style: TextButton.styleFrom(
-                        foregroundColor: isDarkMode ? const Color(0xFF818CF8) : const Color(0xFF4F46E5),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      ),
-                      icon: const Icon(CupertinoIcons.compass, size: 14),
-                      label: const Text('어플 템플릿 갤러리 탐색', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                      onPressed: onOpenGallery,
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(CupertinoIcons.add, size: 18, color: Color(0xFF003852)),
+                        SizedBox(width: 8),
+                        Text(
+                          '새 프로젝트 만들기',
+                          style: TextStyle(
+                            color: Color(0xFF003852),
+                            fontWeight: FontWeight.w800,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
           ),
 
-          const SizedBox(height: 28),
+          const SizedBox(height: 36),
 
           // Section Title: 최근 작업 프로젝트
           Row(
             children: [
-              Icon(CupertinoIcons.clock, size: 18, color: textColor),
-              const SizedBox(width: 8),
+              Icon(CupertinoIcons.clock, size: 19, color: textColor),
+              const SizedBox(width: 10),
               Text(
                 '최근 작업 프로젝트',
                 style: TextStyle(
                   color: textColor,
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  letterSpacing: -0.3,
+                  letterSpacing: -0.4,
                 ),
               ),
               const Spacer(),
               Text(
                 '총 ${projects.length}개',
-                style: TextStyle(color: textSubColor, fontSize: 12),
+                style: TextStyle(color: textSubColor, fontSize: 13),
               ),
             ],
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 18),
 
-          // Projects Grid
+          // Projects Grid or Empty State
           Expanded(
             child: projects.isEmpty
                 ? Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(CupertinoIcons.folder_badge_plus, size: 48, color: textSubColor.withValues(alpha: 0.4)),
-                        const SizedBox(height: 12),
-                        Text('아직 생성된 프로젝트가 없습니다', style: TextStyle(color: textSubColor, fontSize: 14)),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          onPressed: onNewProject,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF6366F1),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: isDarkMode ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF1F5F9),
+                            shape: BoxShape.circle,
                           ),
-                          child: const Text('첫 번째 프로젝트 만들기'),
+                          child: Center(
+                            child: Icon(CupertinoIcons.folder_badge_plus, size: 36, color: textSubColor.withValues(alpha: 0.5)),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          '저장된 프로젝트가 없습니다',
+                          style: TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '새 프로젝트를 생성하여 피그마 캔버스에서 첫 번째 화면을 디자인해보세요.',
+                          style: TextStyle(color: textSubColor, fontSize: 13),
+                        ),
+                        const SizedBox(height: 18),
+                        InkWell(
+                          onTap: onNewProject,
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Text(
+                              '새 프로젝트 시작하기',
+                              style: TextStyle(color: Color(0xFF003852), fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   )
                 : GridView.builder(
                     gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 340,
-                      mainAxisSpacing: 14,
-                      crossAxisSpacing: 14,
-                      childAspectRatio: 1.55,
+                      maxCrossAxisExtent: 380,
+                      mainAxisSpacing: 18,
+                      crossAxisSpacing: 18,
+                      childAspectRatio: 1.5,
                     ),
                     itemCount: projects.length,
                     itemBuilder: (context, index) {
@@ -196,17 +232,17 @@ class DashboardHomeView extends StatelessWidget {
 
                       return InkWell(
                         onTap: () => onOpenProject(proj),
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(16),
                         child: Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             color: cardBgColor,
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: isDarkMode ? 0.25 : 0.04),
-                                blurRadius: 10,
-                                offset: const Offset(0, 3),
+                                color: Colors.black.withValues(alpha: isDarkMode ? 0.3 : 0.04),
+                                blurRadius: 14,
+                                offset: const Offset(0, 4),
                               ),
                             ],
                           ),
@@ -217,21 +253,21 @@ class DashboardHomeView extends StatelessWidget {
                                 children: [
                                   // App Icon
                                   Container(
-                                    width: 32,
-                                    height: 32,
-                                    padding: const EdgeInsets.all(4),
+                                    width: 36,
+                                    height: 36,
+                                    padding: const EdgeInsets.all(5),
                                     decoration: BoxDecoration(
-                                      color: (template?.themeColor ?? const Color(0xFF6366F1)).withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(8),
+                                      color: (template?.themeColor ?? const Color(0xFF00B0FF)).withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Center(
                                       child: template?.imageAsset != null
                                           ? Image.asset(template!.imageAsset!, fit: BoxFit.contain)
                                           : Icon(template?.icon ?? CupertinoIcons.app,
-                                              size: 16, color: template?.themeColor ?? const Color(0xFF6366F1)),
+                                              size: 18, color: template?.themeColor ?? const Color(0xFF00B0FF)),
                                     ),
                                   ),
-                                  const SizedBox(width: 10),
+                                  const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,7 +276,7 @@ class DashboardHomeView extends StatelessWidget {
                                           template?.title ?? proj.appTemplateId,
                                           style: TextStyle(
                                             color: textSubColor,
-                                            fontSize: 11,
+                                            fontSize: 11.5,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -248,24 +284,24 @@ class DashboardHomeView extends StatelessWidget {
                                           proj.timeAgo,
                                           style: TextStyle(
                                             color: textSubColor.withValues(alpha: 0.7),
-                                            fontSize: 10,
+                                            fontSize: 10.5,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                   if (proj.isStarred)
-                                    const Icon(CupertinoIcons.star_fill, size: 14, color: Color(0xFFF59E0B)),
+                                    const Icon(CupertinoIcons.star_fill, size: 15, color: Color(0xFFF59E0B)),
                                 ],
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 14),
                               Text(
                                 proj.title,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: textColor,
-                                  fontSize: 14.5,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: -0.2,
                                 ),
@@ -280,7 +316,7 @@ class DashboardHomeView extends StatelessWidget {
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     color: textSubColor,
-                                    fontSize: 12,
+                                    fontSize: 12.5,
                                     height: 1.35,
                                   ),
                                 ),
@@ -291,16 +327,16 @@ class DashboardHomeView extends StatelessWidget {
                                   Text(
                                     '피그마 에디터 열기',
                                     style: TextStyle(
-                                      color: isDarkMode ? const Color(0xFF818CF8) : const Color(0xFF4F46E5),
-                                      fontSize: 11.5,
+                                      color: isDarkMode ? const Color(0xFF38BDF8) : const Color(0xFF0284C7),
+                                      fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   const SizedBox(width: 4),
                                   Icon(
                                     CupertinoIcons.arrow_right,
-                                    size: 11,
-                                    color: isDarkMode ? const Color(0xFF818CF8) : const Color(0xFF4F46E5),
+                                    size: 12,
+                                    color: isDarkMode ? const Color(0xFF38BDF8) : const Color(0xFF0284C7),
                                   ),
                                 ],
                               ),

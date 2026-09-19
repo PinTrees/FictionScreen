@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../apps/screen_template.dart';
+import '../../../services/project_service.dart';
 import 'dialogs/create_project_dialog.dart';
 import 'models/project_model.dart';
 import 'views/app_gallery_view.dart';
 import 'views/dashboard_home_view.dart';
+import 'views/os_gallery_view.dart';
 import 'widgets/workspace_sidebar.dart';
 import 'widgets/workspace_top_bar.dart';
 import '../../editor/app_editor_page.dart';
@@ -25,20 +28,39 @@ class WorkspaceView extends StatefulWidget {
 }
 
 class _WorkspaceViewState extends State<WorkspaceView> {
-  // Navigation State
-  // 'home' | 'gallery' | 'os' | or a projectId
+  // Navigation State: 'home' | 'gallery' | 'os' | or a projectId
   String _activeMenuId = 'home';
   bool _isSidebarCollapsed = false;
   bool? _userThemeOverride;
 
-  // Active Projects
-  final List<ProjectModel> _projects = List.from(ProjectModel.initialSampleProjects);
+  // Real Projects stream from Firebase Firestore
+  List<ProjectModel> _projects = [];
+  StreamSubscription<List<ProjectModel>>? _projectsSub;
+
   ProjectModel? _currentEditingProject;
   String _currentEditorTemplateId = 'kakaotalk';
 
   bool get _isDarkMode {
     if (_userThemeOverride != null) return _userThemeOverride!;
-    return true; // Default dark studio theme
+    return true; // Default studio dark theme
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _projectsSub = ProjectService.streamProjects().listen((list) {
+      if (mounted) {
+        setState(() {
+          _projects = list;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _projectsSub?.cancel();
+    super.dispose();
   }
 
   void _openProject(ProjectModel proj) {
@@ -49,60 +71,50 @@ class _WorkspaceViewState extends State<WorkspaceView> {
     });
   }
 
-  void _openAppInEditor(String templateId) {
-    // Check if an existing project matches or create temporary session
+  void _openAppInEditor(String templateId) async {
     final existing = _projects.where((p) => p.appTemplateId == templateId).firstOrNull;
-    setState(() {
-      if (existing != null) {
-        _currentEditingProject = existing;
-        _activeMenuId = existing.id;
-      } else {
-        final t = ScreenTemplate.allTemplates.firstWhere((item) => item.id == templateId);
-        final newProj = ProjectModel(
-          id: 'proj_${DateTime.now().millisecondsSinceEpoch}',
-          title: '${t.title} 작업 프로젝트',
-          appTemplateId: templateId,
-          updatedAt: DateTime.now(),
-        );
-        _projects.insert(0, newProj);
-        _currentEditingProject = newProj;
-        _activeMenuId = newProj.id;
-      }
-      _currentEditorTemplateId = templateId;
-    });
+    if (existing != null) {
+      _openProject(existing);
+    } else {
+      final t = ScreenTemplate.allTemplates.firstWhere((item) => item.id == templateId);
+      final newProj = ProjectModel(
+        id: 'proj_${DateTime.now().millisecondsSinceEpoch}',
+        title: '${t.title} 프로젝트',
+        appTemplateId: templateId,
+        updatedAt: DateTime.now(),
+      );
+      await ProjectService.createProject(newProj);
+      _openProject(newProj);
+    }
   }
 
   void _createNewProject() async {
     final newProj = await CreateProjectDialog.show(context, isDarkMode: _isDarkMode);
     if (newProj != null) {
-      setState(() {
-        _projects.insert(0, newProj);
-        _openProject(newProj);
-      });
+      await ProjectService.createProject(newProj);
+      _openProject(newProj);
     }
   }
 
   void _toggleStarProject(ProjectModel proj) {
-    setState(() {
-      proj.isStarred = !proj.isStarred;
-    });
+    ProjectService.toggleStar(proj.id, !proj.isStarred);
   }
 
   void _deleteProject(ProjectModel proj) {
-    setState(() {
-      _projects.removeWhere((p) => p.id == proj.id);
-      if (_currentEditingProject?.id == proj.id) {
+    ProjectService.deleteProject(proj.id);
+    if (_currentEditingProject?.id == proj.id) {
+      setState(() {
         _currentEditingProject = null;
         _activeMenuId = 'home';
-      }
-    });
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = _isDarkMode;
 
-    // 1. If currently editing a project in Full-Screen Figma Editor Mode
+    // 1. Full-Screen Figma Editor Mode
     final isProjectEditing = _currentEditingProject != null && _activeMenuId == _currentEditingProject!.id;
     if (isProjectEditing) {
       return AppEditorPage(
@@ -117,7 +129,7 @@ class _WorkspaceViewState extends State<WorkspaceView> {
       );
     }
 
-    // 2. Otherwise, display the Console Workspace Shell (Left Sidebar + Center Views)
+    // 2. Console Workspace Shell (Left Sidebar + Center Views)
     final dummyTemplate = ScreenTemplate.allTemplates.firstWhere(
       (t) => t.id == _currentEditorTemplateId,
       orElse: () => ScreenTemplate.allTemplates.first,
@@ -127,7 +139,7 @@ class _WorkspaceViewState extends State<WorkspaceView> {
       backgroundColor: isDarkMode ? const Color(0xFF090B10) : const Color(0xFFF1F5F9),
       body: Column(
         children: [
-          // Top Header Bar
+          // Top Header Bar (Translucent Blur, Pushed Edge-to-Edge)
           WorkspaceTopBar(
             template: dummyTemplate,
             isDarkMode: isDarkMode,
@@ -145,19 +157,15 @@ class _WorkspaceViewState extends State<WorkspaceView> {
           Expanded(
             child: Row(
               children: [
-                // Left Navigation Sidebar (Zero outline, project list)
+                // Left Navigation Sidebar (CapCut style, Hamburger icon, Real Firebase projects, user profile)
                 WorkspaceSidebar(
                   projects: _projects,
                   activeMenuId: _activeMenuId,
                   onSelectMenu: (menuId) {
-                    if (menuId == 'os') {
-                      widget.onSelectOs('windows_11');
-                    } else {
-                      setState(() {
-                        _currentEditingProject = null;
-                        _activeMenuId = menuId;
-                      });
-                    }
+                    setState(() {
+                      _currentEditingProject = null;
+                      _activeMenuId = menuId;
+                    });
                   },
                   onSelectProject: _openProject,
                   onNewProject: _createNewProject,
@@ -166,6 +174,7 @@ class _WorkspaceViewState extends State<WorkspaceView> {
                   isCollapsed: _isSidebarCollapsed,
                   onToggleCollapse: () => setState(() => _isSidebarCollapsed = !_isSidebarCollapsed),
                   isDarkMode: isDarkMode,
+                  onSignOut: widget.onSignOut,
                 ),
 
                 // Center Content Area
@@ -185,6 +194,12 @@ class _WorkspaceViewState extends State<WorkspaceView> {
 
   Widget _buildCenterContent(bool isDark) {
     switch (_activeMenuId) {
+      case 'os':
+        // OS Selection Page View (Req: "OS 탭도 누르면 페이지 나와서 선택한 OS로 접속되게 해야지")
+        return OsGalleryView(
+          isDarkMode: isDark,
+          onSelectOs: widget.onSelectOs,
+        );
       case 'gallery':
         return AppGalleryView(
           templates: ScreenTemplate.allTemplates,

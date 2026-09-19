@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../../../../services/auth_service.dart';
 import '../models/project_model.dart';
-import 'package:go_router/go_router.dart';
 
 class WorkspaceSidebar extends StatelessWidget {
   final List<ProjectModel> projects;
@@ -14,6 +15,7 @@ class WorkspaceSidebar extends StatelessWidget {
   final bool isCollapsed;
   final VoidCallback onToggleCollapse;
   final bool isDarkMode;
+  final VoidCallback onSignOut;
 
   const WorkspaceSidebar({
     super.key,
@@ -27,77 +29,160 @@ class WorkspaceSidebar extends StatelessWidget {
     required this.isCollapsed,
     required this.onToggleCollapse,
     required this.isDarkMode,
+    required this.onSignOut,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = isDarkMode;
-    final sidebarWidth = isCollapsed ? 74.0 : 270.0;
+    final sidebarWidth = isCollapsed ? 76.0 : 280.0;
 
-    final bgColor = isDark ? const Color(0xFF0D1017) : const Color(0xFFF8FAFC);
+    final bgColor = isDark ? const Color(0xFF090B10) : const Color(0xFFF8FAFC);
     final textColor = isDark ? Colors.white : const Color(0xFF0F172A);
     final textSubColor = isDark ? Colors.white54 : const Color(0xFF64748B);
-    final activeItemBg = isDark ? const Color(0xFF1E2433) : const Color(0xFFEEF2FF);
-    final activeItemText = isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5);
+    final activeItemBg = isDark ? const Color(0xFF19202E) : const Color(0xFFEEF2FF);
+    final activeItemText = isDark ? const Color(0xFF38BDF8) : const Color(0xFF0284C7);
+
+    final User? user = AuthService.currentUser;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 230),
+      duration: const Duration(milliseconds: 240),
       curve: Curves.easeOutCubic,
       width: sidebarWidth,
       decoration: BoxDecoration(
         color: bgColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.03),
-            blurRadius: 10,
-            offset: const Offset(2, 0),
+            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.04),
+            blurRadius: 14,
+            offset: const Offset(3, 0),
           ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Top Section: New Project Button or Expand Icon
+          // 1. Top Header: Hamburger Toggle + Logo (CapCut-inspired layout)
           Padding(
-            padding: EdgeInsets.fromLTRB(isCollapsed ? 8 : 12, 14, isCollapsed ? 8 : 12, 10),
+            padding: EdgeInsets.fromLTRB(isCollapsed ? 12 : 20, 18, isCollapsed ? 12 : 16, 12),
+            child: Row(
+              children: [
+                // Hamburger Menu Icon Button
+                IconButton(
+                  tooltip: isCollapsed ? '사이드바 펼치기' : '사이드바 접기',
+                  icon: const Icon(CupertinoIcons.bars, size: 22),
+                  color: isDark ? Colors.white70 : const Color(0xFF334155),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  onPressed: onToggleCollapse,
+                ),
+                if (!isCollapsed) ...[
+                  const SizedBox(width: 10),
+                  Text(
+                    'FictionScreen',
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 16.5,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -0.4,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          // 2. CapCut-style Brand Color "+ Create New (새 프로젝트 생성)" Button
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isCollapsed ? 10 : 16,
+              vertical: 8,
+            ),
             child: isCollapsed
                 ? Center(
-                    child: IconButton(
-                      tooltip: '새 프로젝트 생성',
-                      icon: const Icon(CupertinoIcons.plus_circle_fill, size: 22, color: Color(0xFF6366F1)),
-                      onPressed: onNewProject,
-                      style: IconButton.styleFrom(
-                        backgroundColor: const Color(0xFF6366F1).withValues(alpha: 0.12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    child: Tooltip(
+                      message: '새 프로젝트 생성',
+                      child: InkWell(
+                        onTap: onNewProject,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: const Center(
+                            child: Icon(CupertinoIcons.add, size: 22, color: Color(0xFF003852)),
+                          ),
+                        ),
                       ),
                     ),
                   )
-                : ElevatedButton.icon(
-                    onPressed: onNewProject,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6366F1),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shadowColor: Colors.transparent,
-                      minimumSize: const Size(double.infinity, 42),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                    icon: const Icon(CupertinoIcons.plus_circle_fill, size: 16),
-                    label: const Text(
-                      '새 프로젝트 생성',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                : InkWell(
+                    onTap: onNewProject,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      width: double.infinity,
+                      height: 46,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(CupertinoIcons.add, size: 18, color: Color(0xFF003852)),
+                          SizedBox(width: 8),
+                          Text(
+                            'Create new',
+                            style: TextStyle(
+                              color: Color(0xFF003852),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
           ),
 
-          // 2. Global Core Navigation (Home, Gallery, Virtual OS)
+          const SizedBox(height: 8),
+
+          // 3. Navigation Items (Generous padding, CapCut-style clean items)
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: isCollapsed ? 8 : 10),
+            padding: EdgeInsets.symmetric(horizontal: isCollapsed ? 10 : 14),
             child: Column(
               children: [
                 _buildNavItem(
                   id: 'home',
                   icon: CupertinoIcons.home,
-                  title: '대시보드 / 홈',
+                  title: 'Home (대시보드)',
                   badge: null,
                   isActive: activeMenuId == 'home',
                   isCollapsed: isCollapsed,
@@ -142,256 +227,257 @@ class WorkspaceSidebar extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 18),
 
-          // 3. Projects Section Header (Only when expanded)
+          // 4. Section Label: Projects (CapCut muted header)
           if (!isCollapsed)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              child: Row(
-                children: [
-                  Icon(CupertinoIcons.folder_fill, size: 13, color: textSubColor),
-                  const SizedBox(width: 6),
-                  Text(
-                    '내 프로젝트 (${projects.length})',
-                    style: TextStyle(
-                      color: textSubColor,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 4),
+              child: Text(
+                'TEMPLATES & PROJECTS',
+                style: TextStyle(
+                  color: textSubColor.withValues(alpha: 0.7),
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                ),
               ),
             )
           else
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
+            Center(
               child: Container(
-                width: 28,
+                width: 26,
                 height: 1,
                 color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
               ),
             ),
 
-          // 4. Projects List (Scrollable, NO SCROLLBAR)
+          const SizedBox(height: 6),
+
+          // 5. Real User Projects List (NO SCROLLBAR, Pure Firebase Data)
           Expanded(
             child: ScrollConfiguration(
               behavior: const ScrollBehavior().copyWith(scrollbars: false),
-              child: ListView(
-                padding: EdgeInsets.symmetric(
-                  vertical: 4,
-                  horizontal: isCollapsed ? 8 : 10,
-                ),
-                children: [
-                  if (projects.isEmpty)
-                    if (!isCollapsed)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 10),
-                        child: Center(
-                          child: Text(
-                            '생성된 프로젝트가 없습니다\n상단의 새 프로젝트를 눌러보세요',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: textSubColor, fontSize: 11.5, height: 1.4),
-                          ),
-                        ),
-                      )
-                    else
-                      const SizedBox.shrink()
-                  else
-                    ...projects.map((proj) {
-                      final isActive = activeMenuId == proj.id;
-                      final template = proj.template;
+              child: projects.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: isCollapsed
+                            ? Icon(CupertinoIcons.folder, size: 20, color: textSubColor.withValues(alpha: 0.4))
+                            : Text(
+                                '저장된 프로젝트가 없습니다\n상단의 새 프로젝트를 생성하세요',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: textSubColor, fontSize: 11.5, height: 1.4),
+                              ),
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isCollapsed ? 10 : 14,
+                        vertical: 4,
+                      ),
+                      itemCount: projects.length,
+                      itemBuilder: (context, index) {
+                        final proj = projects[index];
+                        final isActive = activeMenuId == proj.id;
+                        final template = proj.template;
 
-                      if (isCollapsed) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: Tooltip(
-                            message: '${proj.title} (${template?.title ?? proj.appTemplateId})',
-                            child: InkWell(
-                              onTap: () => onSelectProject(proj),
-                              borderRadius: BorderRadius.circular(10),
-                              child: Container(
-                                width: 44,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: isActive ? activeItemBg : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Center(
-                                  child: Container(
-                                    width: 28,
-                                    height: 28,
-                                    padding: const EdgeInsets.all(3),
-                                    decoration: BoxDecoration(
-                                      color: (template?.themeColor ?? const Color(0xFF6366F1)).withValues(alpha: 0.16),
-                                      borderRadius: BorderRadius.circular(7),
+                        if (isCollapsed) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Tooltip(
+                              message: '${proj.title} (${template?.title ?? proj.appTemplateId})',
+                              child: InkWell(
+                                onTap: () => onSelectProject(proj),
+                                borderRadius: BorderRadius.circular(10),
+                                child: Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: isActive ? activeItemBg : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Center(
+                                    child: Container(
+                                      width: 28,
+                                      height: 28,
+                                      padding: const EdgeInsets.all(3),
+                                      decoration: BoxDecoration(
+                                        color: (template?.themeColor ?? const Color(0xFF00B0FF)).withValues(alpha: 0.16),
+                                        borderRadius: BorderRadius.circular(7),
+                                      ),
+                                      child: template?.imageAsset != null
+                                          ? Image.asset(template!.imageAsset!, fit: BoxFit.contain)
+                                          : Icon(template?.icon ?? CupertinoIcons.doc,
+                                              size: 14, color: template?.themeColor ?? const Color(0xFF00B0FF)),
                                     ),
-                                    child: template?.imageAsset != null
-                                        ? Image.asset(template!.imageAsset!, fit: BoxFit.contain)
-                                        : Icon(template?.icon ?? CupertinoIcons.doc,
-                                            size: 14, color: template?.themeColor ?? const Color(0xFF6366F1)),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }
+                          );
+                        }
 
-                      // Expanded Project Card Item (BORDER-FREE)
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 5),
-                        child: InkWell(
-                          onTap: () => onSelectProject(proj),
-                          borderRadius: BorderRadius.circular(10),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 160),
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-                            decoration: BoxDecoration(
-                              color: isActive ? activeItemBg : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(
-                              children: [
-                                // App Icon
-                                Container(
-                                  width: 28,
-                                  height: 28,
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: BoxDecoration(
-                                    color: (template?.themeColor ?? const Color(0xFF6366F1)).withValues(alpha: 0.16),
-                                    borderRadius: BorderRadius.circular(7),
-                                  ),
-                                  child: Center(
-                                    child: template?.imageAsset != null
-                                        ? Image.asset(template!.imageAsset!, fit: BoxFit.contain)
-                                        : Icon(template?.icon ?? CupertinoIcons.doc,
-                                            size: 14, color: template?.themeColor ?? const Color(0xFF6366F1)),
-                                  ),
-                                ),
-                                const SizedBox(width: 9),
-                                // Title & time
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        proj.title,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          color: isActive ? activeItemText : textColor,
-                                          fontSize: 12.5,
-                                          fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            template?.title ?? proj.appTemplateId,
-                                            style: TextStyle(
-                                              color: textSubColor,
-                                              fontSize: 10.5,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '• ${proj.timeAgo}',
-                                            style: TextStyle(
-                                              color: textSubColor.withValues(alpha: 0.7),
-                                              fontSize: 10,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                // Star button
-                                InkWell(
-                                  onTap: () => onToggleStarProject(proj),
-                                  borderRadius: BorderRadius.circular(6),
-                                  child: Padding(
+                        // Expanded Project Item (BORDER-FREE)
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 5),
+                          child: InkWell(
+                            onTap: () => onSelectProject(proj),
+                            borderRadius: BorderRadius.circular(10),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 160),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: isActive ? activeItemBg : Colors.transparent,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  // App Icon
+                                  Container(
+                                    width: 30,
+                                    height: 30,
                                     padding: const EdgeInsets.all(4),
-                                    child: Icon(
-                                      proj.isStarred ? CupertinoIcons.star_fill : CupertinoIcons.star,
-                                      size: 13,
-                                      color: proj.isStarred ? const Color(0xFFF59E0B) : textSubColor.withValues(alpha: 0.4),
+                                    decoration: BoxDecoration(
+                                      color: (template?.themeColor ?? const Color(0xFF00B0FF)).withValues(alpha: 0.16),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Center(
+                                      child: template?.imageAsset != null
+                                          ? Image.asset(template!.imageAsset!, fit: BoxFit.contain)
+                                          : Icon(template?.icon ?? CupertinoIcons.doc,
+                                              size: 14, color: template?.themeColor ?? const Color(0xFF00B0FF)),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: 10),
+                                  // Title & time
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          proj.title,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            color: isActive ? activeItemText : textColor,
+                                            fontSize: 13,
+                                            fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          '${template?.title ?? proj.appTemplateId} • ${proj.timeAgo}',
+                                          style: TextStyle(
+                                            color: textSubColor,
+                                            fontSize: 10.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Star toggle
+                                  InkWell(
+                                    onTap: () => onToggleStarProject(proj),
+                                    borderRadius: BorderRadius.circular(6),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4),
+                                      child: Icon(
+                                        proj.isStarred ? CupertinoIcons.star_fill : CupertinoIcons.star,
+                                        size: 13,
+                                        color: proj.isStarred ? const Color(0xFFF59E0B) : textSubColor.withValues(alpha: 0.4),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    }),
-                ],
-              ),
+                        );
+                      },
+                    ),
             ),
           ),
 
-          // 5. Bottom Navigation & Collapse Control (Zero Outline)
+          // 6. Bottom User Profile Section (Req: "좌측사이드바 하단에는 유저 프로필 출력해")
           Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: isCollapsed ? 6 : 12,
-              vertical: 8,
-            ),
+            padding: EdgeInsets.all(isCollapsed ? 10 : 16),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF090B10) : const Color(0xFFEFF2F6),
+              color: isDark ? const Color(0xFF06070B) : const Color(0xFFF1F5F9),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (!isCollapsed) ...[
-                  Row(
+            child: isCollapsed
+                ? Center(
+                    child: Tooltip(
+                      message: user?.displayName ?? user?.email ?? '사용자 프로필',
+                      child: CircleAvatar(
+                        radius: 18,
+                        backgroundColor: const Color(0xFF00B0FF),
+                        backgroundImage: user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
+                        child: user?.photoURL == null
+                            ? Text(
+                                (user?.displayName?.isNotEmpty == true
+                                        ? user!.displayName![0]
+                                        : (user?.email?.isNotEmpty == true ? user!.email![0] : 'U'))
+                                    .toUpperCase(),
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                              )
+                            : null,
+                      ),
+                    ),
+                  )
+                : Row(
                     children: [
-                      InkWell(
-                        onTap: () => context.push('/terms'),
-                        borderRadius: BorderRadius.circular(6),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                          child: Text(
-                            '이용약관',
-                            style: TextStyle(color: textSubColor, fontSize: 11),
-                          ),
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: const Color(0xFF00B0FF),
+                        backgroundImage: user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
+                        child: user?.photoURL == null
+                            ? Text(
+                                (user?.displayName?.isNotEmpty == true
+                                        ? user!.displayName![0]
+                                        : (user?.email?.isNotEmpty == true ? user!.email![0] : 'U'))
+                                    .toUpperCase(),
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                              )
+                            : null,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              user?.displayName ?? '사용자',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: textColor,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              user?.email ?? 'Firebase 계정 연동됨',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: textSubColor,
+                                fontSize: 10.5,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Text('•', style: TextStyle(color: textSubColor.withValues(alpha: 0.4), fontSize: 10)),
-                      InkWell(
-                        onTap: () => context.push('/privacy'),
-                        borderRadius: BorderRadius.circular(6),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                          child: Text(
-                            '개인정보방침',
-                            style: TextStyle(color: textSubColor, fontSize: 11),
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      InkWell(
-                        onTap: onToggleCollapse,
-                        borderRadius: BorderRadius.circular(6),
-                        child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Icon(CupertinoIcons.chevron_left, size: 14, color: textSubColor),
-                        ),
+                      IconButton(
+                        tooltip: '로그아웃',
+                        icon: Icon(CupertinoIcons.square_arrow_right, size: 16, color: textSubColor),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                        onPressed: onSignOut,
                       ),
                     ],
                   ),
-                ] else ...[
-                  IconButton(
-                    tooltip: '사이드바 펼치기',
-                    icon: const Icon(CupertinoIcons.chevron_right, size: 14),
-                    color: textSubColor,
-                    onPressed: onToggleCollapse,
-                  ),
-                ],
-              ],
-            ),
           ),
         ],
       ),
@@ -428,7 +514,7 @@ class WorkspaceSidebar extends StatelessWidget {
             child: Center(
               child: Icon(
                 icon,
-                size: 18,
+                size: 19,
                 color: isActive ? activeText : textSubColor,
               ),
             ),
@@ -442,7 +528,7 @@ class WorkspaceSidebar extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 160),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
         decoration: BoxDecoration(
           color: isActive ? activeBg : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
@@ -451,17 +537,18 @@ class WorkspaceSidebar extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: 16,
+              size: 18,
               color: isActive ? activeText : textSubColor,
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 title,
                 style: TextStyle(
                   color: isActive ? activeText : textColor,
-                  fontSize: 13,
+                  fontSize: 13.5,
                   fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
+                  letterSpacing: -0.2,
                 ),
               ),
             ),
