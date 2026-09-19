@@ -2,18 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class PlatformIconItem {
+class PlatformAssetItem {
   final String id;
   final String name;
-  final IconData icon;
-  final Color brandColor;
+  final String imageAsset;
   final bool isConsole;
 
-  const PlatformIconItem({
+  const PlatformAssetItem({
     required this.id,
     required this.name,
-    required this.icon,
-    required this.brandColor,
+    required this.imageAsset,
     this.isConsole = false,
   });
 }
@@ -28,131 +26,134 @@ class HomeIconCloud extends StatelessWidget {
     required this.isDarkMode,
   });
 
-  static const List<PlatformIconItem> _osList = [
-    PlatformIconItem(id: 'windows_11', name: 'Windows 11', icon: CupertinoIcons.device_desktop, brandColor: Color(0xFF0078D7), isConsole: true),
-    PlatformIconItem(id: 'windows_10', name: 'Windows 10', icon: CupertinoIcons.device_desktop, brandColor: Color(0xFF0078D7), isConsole: true),
-    PlatformIconItem(id: 'windows_7', name: 'Windows 7', icon: CupertinoIcons.device_desktop, brandColor: Color(0xFF00A4EF), isConsole: true),
-    PlatformIconItem(id: 'windows_xp', name: 'Windows XP', icon: CupertinoIcons.device_desktop, brandColor: Color(0xFF2E6DA4), isConsole: true),
-    PlatformIconItem(id: 'macos', name: 'macOS Sonoma', icon: CupertinoIcons.desktopcomputer, brandColor: Color(0xFFA3AAAE), isConsole: true),
-    PlatformIconItem(id: 'windows_bsod', name: '블루스크린 (BSOD)', icon: CupertinoIcons.exclamationmark_triangle_fill, brandColor: Color(0xFF0078D7)),
-    PlatformIconItem(id: 'windows_update', name: '가짜 윈도우 업데이트', icon: CupertinoIcons.arrow_clockwise, brandColor: Color(0xFF0078D7)),
+  static const List<PlatformAssetItem> _osList = [
+    PlatformAssetItem(id: 'windows_11', name: 'Windows 11', imageAsset: 'assets/images/win11_logo.png', isConsole: true),
+    PlatformAssetItem(id: 'windows_10', name: 'Windows 10', imageAsset: 'assets/images/win10_logo.png', isConsole: true),
+    PlatformAssetItem(id: 'windows_7', name: 'Windows 7', imageAsset: 'assets/images/win7_logo.png', isConsole: true),
+    PlatformAssetItem(id: 'windows_xp', name: 'Windows XP', imageAsset: 'assets/images/winxp_logo.png', isConsole: true),
+    PlatformAssetItem(id: 'macos', name: 'macOS Sonoma', imageAsset: 'assets/images/macos/finder.webp', isConsole: true),
+    PlatformAssetItem(id: 'windows_bsod', name: '블루스크린 (BSOD)', imageAsset: 'assets/images/win11_logo.png'),
+    PlatformAssetItem(id: 'windows_update', name: '가짜 윈도우 업데이트', imageAsset: 'assets/images/windows/settings.png'),
   ];
 
-  static const List<PlatformIconItem> _appList = [
-    PlatformIconItem(id: 'kakaotalk', name: '카카오톡', icon: CupertinoIcons.chat_bubble_2_fill, brandColor: Color(0xFFFEE500)),
-    PlatformIconItem(id: 'daangn', name: '당근마켓', icon: CupertinoIcons.cart_fill, brandColor: Color(0xFFFF6F0F)),
-    PlatformIconItem(id: 'toss', name: '토스 송금', icon: CupertinoIcons.money_dollar_circle_fill, brandColor: Color(0xFF0050FF)),
-    PlatformIconItem(id: 'kakaobank', name: '카카오뱅크', icon: CupertinoIcons.creditcard_fill, brandColor: Color(0xFFFEE500)),
-    PlatformIconItem(id: 'upbit', name: '업비트 코인', icon: CupertinoIcons.chart_bar_alt_fill, brandColor: Color(0xFF093687)),
-    PlatformIconItem(id: 'instagram', name: '인스타그램', icon: CupertinoIcons.camera_fill, brandColor: Color(0xFFE1306C)),
-    PlatformIconItem(id: 'delivery', name: '배달 플랫폼', icon: CupertinoIcons.bag_fill, brandColor: Color(0xFF2AC1BC)),
-    PlatformIconItem(id: 'lottery', name: '동행복권 1등', icon: CupertinoIcons.tickets_fill, brandColor: Color(0xFF0066B3)),
-    PlatformIconItem(id: 'yanolja', name: '야놀자 여행', icon: CupertinoIcons.bed_double_fill, brandColor: Color(0xFFFF3478)),
+  static const List<PlatformAssetItem> _appList = [
+    PlatformAssetItem(id: 'kakaotalk', name: '카카오톡', imageAsset: 'assets/images/kakaotalk_icon.webp'),
+    PlatformAssetItem(id: 'daangn', name: '당근마켓', imageAsset: 'assets/images/daangn_icon.webp'),
+    PlatformAssetItem(id: 'toss', name: '토스 송금', imageAsset: 'assets/images/toss_icon.png'),
+    PlatformAssetItem(id: 'kakaobank', name: '카카오뱅크', imageAsset: 'assets/images/kakaobank_icon.webp'),
+    PlatformAssetItem(id: 'upbit', name: '업비트 코인', imageAsset: 'assets/images/upbit_icon.webp'),
+    PlatformAssetItem(id: 'instagram', name: '인스타그램', imageAsset: 'assets/images/instagram_icon.webp'),
+    PlatformAssetItem(id: 'delivery', name: '배달 플랫폼', imageAsset: 'assets/images/delivery_icon.webp'),
+    PlatformAssetItem(id: 'lottery', name: '동행복권 1등', imageAsset: 'assets/images/lottery_icon.webp'),
+    PlatformAssetItem(id: 'yanolja', name: '야놀자 여행', imageAsset: 'assets/images/yanolja_icon.webp'),
   ];
 
-  static const List<PlatformIconItem> _siteList = [
-    PlatformIconItem(id: 'blind', name: '블라인드', icon: CupertinoIcons.building_2_fill, brandColor: Color(0xFFDA3238)),
-    PlatformIconItem(id: 'dcinside', name: '디시인사이드', icon: CupertinoIcons.chat_bubble_2_fill, brandColor: Color(0xFF3B4890)),
-    PlatformIconItem(id: 'news', name: '뉴스 속보 TV', icon: CupertinoIcons.tv_fill, brandColor: Color(0xFFD32F2F)),
-    PlatformIconItem(id: 'youtube', name: '유튜브', icon: CupertinoIcons.play_circle_fill, brandColor: Color(0xFFFF0000)),
-    PlatformIconItem(id: 'netflix', name: '넷플릭스', icon: CupertinoIcons.tv_fill, brandColor: Color(0xFFE50914)),
-    PlatformIconItem(id: 'excel', name: 'Microsoft Excel', icon: CupertinoIcons.table_fill, brandColor: Color(0xFF107C41)),
-    PlatformIconItem(id: 'powerpoint', name: 'PowerPoint (PPT)', icon: CupertinoIcons.tv_fill, brandColor: Color(0xFFD83B01)),
-    PlatformIconItem(id: 'word', name: 'Word 기밀문서', icon: CupertinoIcons.doc_text_fill, brandColor: Color(0xFF185ABD)),
-    PlatformIconItem(id: 'steam', name: 'Steam 게임', icon: CupertinoIcons.game_controller_solid, brandColor: Color(0xFF1B2838)),
-    PlatformIconItem(id: 'naver', name: '네이버 포털', icon: CupertinoIcons.search_circle_fill, brandColor: Color(0xFF03C75A)),
-    PlatformIconItem(id: 'coupang', name: '쿠팡 쇼핑몰', icon: CupertinoIcons.cart_fill, brandColor: Color(0xFFC72424)),
-    PlatformIconItem(id: 'davinci_resolve', name: '다빈치 리졸브', icon: CupertinoIcons.videocam_circle_fill, brandColor: Color(0xFFE53935)),
-    PlatformIconItem(id: 'photoshop', name: '포토샵 에디터', icon: CupertinoIcons.paintbrush_fill, brandColor: Color(0xFF31A8FF)),
-    PlatformIconItem(id: 'visual_studio', name: '비주얼 스튜디오', icon: CupertinoIcons.chevron_left_slash_chevron_right, brandColor: Color(0xFF68217A)),
-    PlatformIconItem(id: 'chrome', name: '구글 크롬', icon: CupertinoIcons.globe, brandColor: Color(0xFF4285F4)),
-    PlatformIconItem(id: 'edge', name: '마이크로소프트 엣지', icon: CupertinoIcons.globe, brandColor: Color(0xFF0078D7)),
-    PlatformIconItem(id: 'discord', name: '디스코드', icon: CupertinoIcons.game_controller_solid, brandColor: Color(0xFF5865F2)),
-    PlatformIconItem(id: 'telegram', name: '텔레그램', icon: CupertinoIcons.paperplane_fill, brandColor: Color(0xFF2B5278)),
-    PlatformIconItem(id: 'x_twitter', name: 'X (트위터)', icon: CupertinoIcons.conversation_bubble, brandColor: Color(0xFF1D9BF0)),
-    PlatformIconItem(id: 'pinterest', name: '핀터레스트', icon: CupertinoIcons.sparkles, brandColor: Color(0xFFE60023)),
-    PlatformIconItem(id: 'zigbang', name: '직방 부동산', icon: CupertinoIcons.house_alt_fill, brandColor: Color(0xFFFF7800)),
+  static const List<PlatformAssetItem> _siteList = [
+    PlatformAssetItem(id: 'blind', name: '블라인드', imageAsset: 'assets/images/blind_icon.webp'),
+    PlatformAssetItem(id: 'dcinside', name: '디시인사이드', imageAsset: 'assets/images/dcinside_icon.webp'),
+    PlatformAssetItem(id: 'news', name: '뉴스 속보 TV', imageAsset: 'assets/images/windows/news.png'),
+    PlatformAssetItem(id: 'youtube', name: '유튜브', imageAsset: 'assets/images/youtube_icon.webp'),
+    PlatformAssetItem(id: 'netflix', name: '넷플릭스', imageAsset: 'assets/images/netflix_icon.webp'),
+    PlatformAssetItem(id: 'excel', name: 'Microsoft Excel', imageAsset: 'assets/images/excel_icon.webp'),
+    PlatformAssetItem(id: 'powerpoint', name: 'PowerPoint (PPT)', imageAsset: 'assets/images/powerpoint_icon.webp'),
+    PlatformAssetItem(id: 'word', name: 'Word 기밀문서', imageAsset: 'assets/images/word_icon.webp'),
+    PlatformAssetItem(id: 'steam', name: 'Steam 게임', imageAsset: 'assets/images/steam_icon.webp'),
+    PlatformAssetItem(id: 'naver', name: '네이버 포털', imageAsset: 'assets/images/naver_icon.webp'),
+    PlatformAssetItem(id: 'coupang', name: '쿠팡 쇼핑몰', imageAsset: 'assets/images/coupang_icon.webp'),
+    PlatformAssetItem(id: 'davinci_resolve', name: '다빈치 리졸브', imageAsset: 'assets/images/davinci_resolve_icon.webp'),
+    PlatformAssetItem(id: 'photoshop', name: '포토샵 에디터', imageAsset: 'assets/images/photoshop_icon.webp'),
+    PlatformAssetItem(id: 'visual_studio', name: '비주얼 스튜디오', imageAsset: 'assets/images/visual_studio_icon.webp'),
+    PlatformAssetItem(id: 'chrome', name: '구글 크롬', imageAsset: 'assets/images/windows/chrome.png'),
+    PlatformAssetItem(id: 'edge', name: '마이크로소프트 엣지', imageAsset: 'assets/images/windows/edge.png'),
+    PlatformAssetItem(id: 'discord', name: '디스코드', imageAsset: 'assets/images/discord_icon.webp'),
+    PlatformAssetItem(id: 'telegram', name: '텔레그램', imageAsset: 'assets/images/telegram_icon.webp'),
+    PlatformAssetItem(id: 'x_twitter', name: 'X (트위터)', imageAsset: 'assets/images/x_twitter_icon.webp'),
+    PlatformAssetItem(id: 'pinterest', name: '핀터레스트', imageAsset: 'assets/images/pinterest_icon.webp'),
+    PlatformAssetItem(id: 'zigbang', name: '직방 부동산', imageAsset: 'assets/images/zigbang_icon.webp'),
   ];
 
   @override
   Widget build(BuildContext context) {
     final titleColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
     final subtitleColor = isDarkMode
-        ? Colors.white.withValues(alpha: 0.6)
+        ? Colors.white.withValues(alpha: 0.65)
         : const Color(0xFF475569);
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 20 : 40,
-        vertical: 48,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Section Title
-          Center(
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: isDarkMode ? const Color(0xFF1E1F30) : const Color(0xFFEEF2FF),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Text(
-                    'SUPPORTED ECOSYSTEM',
-                    style: TextStyle(
-                      color: isDarkMode ? const Color(0xFFC7D2FE) : const Color(0xFF4F46E5),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.0,
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 1140),
+        padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 24 : 48,
+          vertical: isMobile ? 64 : 100,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Section Title
+            Center(
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: isDarkMode ? const Color(0xFF1E1F30) : const Color(0xFFEEF2FF),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Text(
+                      'SUPPORTED ECOSYSTEM',
+                      style: TextStyle(
+                        color: isDarkMode ? const Color(0xFFC7D2FE) : const Color(0xFF4F46E5),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.0,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  '지원하는 모든 가상 OS, 어플, 웹사이트',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: titleColor,
-                    fontSize: isMobile ? 26 : 34,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -0.8,
+                  const SizedBox(height: 18),
+                  Text(
+                    '지원하는 모든 가상 OS, 어플, 웹사이트',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: titleColor,
+                      fontSize: isMobile ? 28 : 38,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -1.0,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '원하는 플랫폼 아이콘을 클릭하면 해당 스튜디오 또는 가상 OS 콘솔로 즉시 이동합니다.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: subtitleColor,
-                    fontSize: 14,
+                  const SizedBox(height: 12),
+                  Text(
+                    '실제 공식 앱 아이콘을 클릭하면 해당 스튜디오 또는 가상 OS 콘솔로 즉시 이동합니다.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: subtitleColor,
+                      fontSize: isMobile ? 14.5 : 16,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 48),
+            const SizedBox(height: 60),
 
-          // Category 1: 가상 OS
-          _buildCategoryHeader('🖥️ 가상 데스크톱 OS', '${_osList.length}종 지원', titleColor),
-          const SizedBox(height: 14),
-          _buildIconGrid(context, _osList),
+            // Category 1: 가상 OS
+            _buildCategoryHeader('🖥️ 가상 데스크톱 OS', '${_osList.length}종', titleColor),
+            const SizedBox(height: 18),
+            _buildIconGrid(context, _osList),
 
-          const SizedBox(height: 40),
+            const SizedBox(height: 52),
 
-          // Category 2: 모바일 어플리케이션
-          _buildCategoryHeader('📱 모바일 어플리케이션', '${_appList.length}종 지원', titleColor),
-          const SizedBox(height: 14),
-          _buildIconGrid(context, _appList),
+            // Category 2: 모바일 어플리케이션
+            _buildCategoryHeader('📱 모바일 어플리케이션', '${_appList.length}종', titleColor),
+            const SizedBox(height: 18),
+            _buildIconGrid(context, _appList),
 
-          const SizedBox(height: 40),
+            const SizedBox(height: 52),
 
-          // Category 3: 웹사이트 & 전문 툴
-          _buildCategoryHeader('🌐 웹사이트 & 비즈니스 툴', '${_siteList.length}종 지원', titleColor),
-          const SizedBox(height: 14),
-          _buildIconGrid(context, _siteList),
-        ],
+            // Category 3: 웹사이트 & 전문 툴
+            _buildCategoryHeader('🌐 웹사이트 & 비즈니스 툴', '${_siteList.length}종', titleColor),
+            const SizedBox(height: 18),
+            _buildIconGrid(context, _siteList),
+          ],
+        ),
       ),
     );
   }
@@ -164,23 +165,23 @@ class HomeIconCloud extends StatelessWidget {
           title,
           style: TextStyle(
             color: titleColor,
-            fontSize: 17,
+            fontSize: 18,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.3,
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 10),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
           decoration: BoxDecoration(
-            color: const Color(0xFF6366F1).withValues(alpha: isDarkMode ? 0.18 : 0.12),
+            color: const Color(0xFF6366F1).withValues(alpha: isDarkMode ? 0.2 : 0.12),
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
             countBadge,
             style: const TextStyle(
               color: Color(0xFF6366F1),
-              fontSize: 11,
+              fontSize: 11.5,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -189,13 +190,14 @@ class HomeIconCloud extends StatelessWidget {
     );
   }
 
-  Widget _buildIconGrid(BuildContext context, List<PlatformIconItem> items) {
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: items.map((item) {
-        final isYellow = item.brandColor == const Color(0xFFFEE500);
+  Widget _buildIconGrid(BuildContext context, List<PlatformAssetItem> items) {
+    final tileBg = isDarkMode ? const Color(0xFF111422) : Colors.white;
+    final textColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
 
+    return Wrap(
+      spacing: 14,
+      runSpacing: 14,
+      children: items.map((item) {
         return InkWell(
           onTap: () {
             if (item.isConsole) {
@@ -206,16 +208,14 @@ class HomeIconCloud extends StatelessWidget {
           },
           borderRadius: BorderRadius.circular(14),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: isDarkMode
-                  ? const Color(0xFF10121C)
-                  : Colors.white,
+              color: tileBg,
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                  color: isDarkMode ? Colors.black.withValues(alpha: 0.25) : const Color(0x0C000000),
-                  blurRadius: 10,
+                  color: isDarkMode ? Colors.black.withValues(alpha: 0.3) : const Color(0x0C000000),
+                  blurRadius: 12,
                   offset: const Offset(0, 3),
                 ),
               ],
@@ -223,35 +223,42 @@ class HomeIconCloud extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Real Official App/OS Logo!
                 Container(
-                  width: 30,
-                  height: 30,
+                  width: 32,
+                  height: 32,
+                  padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: item.brandColor.withValues(alpha: isDarkMode ? 0.18 : 0.12),
+                    color: isDarkMode ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.04),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Center(
-                    child: Icon(
-                      item.icon,
-                      color: isYellow ? (isDarkMode ? const Color(0xFFFEE500) : const Color(0xFFD97706)) : item.brandColor,
-                      size: 16,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: Image.asset(
+                        item.imageAsset,
+                        width: 24,
+                        height: 24,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) => const Icon(CupertinoIcons.app, size: 22),
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 Text(
                   item.name,
                   style: TextStyle(
-                    color: isDarkMode ? Colors.white : const Color(0xFF1E293B),
-                    fontSize: 13,
+                    color: textColor,
+                    fontSize: 13.5,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 8),
                 Icon(
                   CupertinoIcons.chevron_forward,
                   size: 11,
-                  color: isDarkMode ? Colors.white30 : Colors.black26,
+                  color: isDarkMode ? Colors.white38 : Colors.black26,
                 ),
               ],
             ),

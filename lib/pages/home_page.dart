@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'home/widgets/home_featured_trio.dart';
-import 'home/widgets/home_floating_nav.dart';
 import 'home/widgets/home_footer.dart';
 import 'home/widgets/home_hero_section.dart';
 import 'home/widgets/home_icon_cloud.dart';
-import 'home/widgets/home_showcase_deck.dart';
+import 'home/widgets/home_top_app_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,11 +13,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _activeHeroTab = 'kakaotalk';
   bool _isDarkMode = true;
 
   final ScrollController _scrollController = ScrollController();
-  final GlobalKey _showcaseKey = GlobalKey();
   final GlobalKey _featuredKey = GlobalKey();
   final GlobalKey _iconCloudKey = GlobalKey();
 
@@ -30,13 +27,6 @@ class _HomePageState extends State<HomePage> {
         curve: Curves.easeInOutCubic,
       );
     }
-  }
-
-  void _handleQuickLaunch(String templateId) {
-    setState(() {
-      _activeHeroTab = templateId;
-    });
-    _scrollToKey(_showcaseKey);
   }
 
   void _toggleTheme() {
@@ -60,39 +50,21 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: _isDarkMode ? const Color(0xFF07080D) : const Color(0xFFF8FAFC),
       body: Stack(
         children: [
-          // 1. Ambient Aurora & Light/Dark Mesh Background
+          // 1. Ambient Aurora & Background
           _buildBackgroundAura(),
 
           // 2. Main Scrollable Content
           CustomScrollView(
             controller: _scrollController,
             slivers: [
-              const SliverToBoxAdapter(child: SizedBox(height: 90)),
+              const SliverToBoxAdapter(child: SizedBox(height: 64)),
 
               // Hero Section
               SliverToBoxAdapter(
                 child: HomeHeroSection(
                   isMobile: isMobile,
                   isDarkMode: _isDarkMode,
-                  onExploreShowcase: () => _scrollToKey(_showcaseKey),
-                  onQuickLaunch: _handleQuickLaunch,
-                ),
-              ),
-
-              // Interactive Live Showcase Deck Section
-              SliverToBoxAdapter(
-                child: Container(
-                  key: _showcaseKey,
-                  child: HomeShowcaseDeck(
-                    isMobile: isMobile,
-                    isDarkMode: _isDarkMode,
-                    activeTab: _activeHeroTab,
-                    onTabChanged: (tabId) {
-                      setState(() {
-                        _activeHeroTab = tabId;
-                      });
-                    },
-                  ),
+                  onExploreFeatured: () => _scrollToKey(_featuredKey),
                 ),
               ),
 
@@ -107,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-              // All Supported Ecosystem Icon Cloud (OS, Apps, Sites)
+              // All Supported Ecosystem Icon Cloud (OS, Apps, Sites with REAL PNG icons)
               SliverToBoxAdapter(
                 child: Container(
                   key: _iconCloudKey,
@@ -128,20 +100,18 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
 
-          // 3. Floating Glassmorphism Nav Bar
+          // 3. Full-Width Top App Bar (NOT floating, pinned 100% width across top)
           Positioned(
-            top: 16,
+            top: 0,
             left: 0,
             right: 0,
-            child: Center(
-              child: HomeFloatingNav(
-                isMobile: isMobile,
-                isDarkMode: _isDarkMode,
-                onToggleTheme: _toggleTheme,
-                onScrollToShowcase: () => _scrollToKey(_showcaseKey),
-                onScrollToFeatured: () => _scrollToKey(_featuredKey),
-                onScrollToIconCloud: () => _scrollToKey(_iconCloudKey),
-              ),
+            height: 64,
+            child: HomeTopAppBar(
+              isMobile: isMobile,
+              isDarkMode: _isDarkMode,
+              onToggleTheme: _toggleTheme,
+              onScrollToFeatured: () => _scrollToKey(_featuredKey),
+              onScrollToIconCloud: () => _scrollToKey(_iconCloudKey),
             ),
           ),
         ],
@@ -150,7 +120,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // ==========================================
-  // Ambient Aura & Background
+  // Ambient Aurora & Background
   // ==========================================
   Widget _buildBackgroundAura() {
     return Positioned.fill(
@@ -177,8 +147,8 @@ class _HomePageState extends State<HomePage> {
                               Colors.transparent,
                             ]
                           : [
-                              const Color(0xFF818CF8).withValues(alpha: 0.15),
-                              const Color(0xFFC7D2FE).withValues(alpha: 0.1),
+                              const Color(0xFF818CF8).withValues(alpha: 0.12),
+                              const Color(0xFFC7D2FE).withValues(alpha: 0.08),
                               Colors.transparent,
                             ],
                       stops: const [0.0, 0.35, 0.65, 1.0],

@@ -7,7 +7,7 @@ import '../pages/studio_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/login', // 앱 처음 실행 시 로그인 화면부터 표시
+    initialLocation: '/', // 앱 처음 실행 시 메인 랜딩 화면부터 표시
     errorBuilder: (context, state) => Scaffold(
       body: Center(
         child: Text('페이지를 찾을 수 없습니다: ${state.uri}'),
