@@ -1,71 +1,44 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../../apps/screen_template.dart';
+import '../models/project_model.dart';
+import 'package:go_router/go_router.dart';
 
-class WorkspaceSidebar extends StatefulWidget {
-  final List<ScreenTemplate> templates;
-  final String selectedTemplateId;
-  final ValueChanged<String> onSelectTemplate;
+class WorkspaceSidebar extends StatelessWidget {
+  final List<ProjectModel> projects;
+  final String activeMenuId; // 'home', 'gallery', 'os', or project id
+  final ValueChanged<String> onSelectMenu;
+  final ValueChanged<ProjectModel> onSelectProject;
+  final VoidCallback onNewProject;
+  final ValueChanged<ProjectModel> onDeleteProject;
+  final ValueChanged<ProjectModel> onToggleStarProject;
   final bool isCollapsed;
   final VoidCallback onToggleCollapse;
   final bool isDarkMode;
 
   const WorkspaceSidebar({
     super.key,
-    required this.templates,
-    required this.selectedTemplateId,
-    required this.onSelectTemplate,
+    required this.projects,
+    required this.activeMenuId,
+    required this.onSelectMenu,
+    required this.onSelectProject,
+    required this.onNewProject,
+    required this.onDeleteProject,
+    required this.onToggleStarProject,
     required this.isCollapsed,
     required this.onToggleCollapse,
     required this.isDarkMode,
   });
 
   @override
-  State<WorkspaceSidebar> createState() => _WorkspaceSidebarState();
-}
-
-class _WorkspaceSidebarState extends State<WorkspaceSidebar> {
-  final TextEditingController _searchCtrl = TextEditingController();
-  TemplateCategory? _selectedCategory;
-  String _searchQuery = '';
-
-  @override
-  void dispose() {
-    _searchCtrl.dispose();
-    super.dispose();
-  }
-
-  List<ScreenTemplate> get _filteredTemplates {
-    return widget.templates.where((t) {
-      if (_selectedCategory != null && t.category != _selectedCategory) {
-        return false;
-      }
-      if (_searchQuery.isNotEmpty) {
-        final q = _searchQuery.toLowerCase();
-        final matchTitle = t.title.toLowerCase().contains(q);
-        final matchDesc = t.description.toLowerCase().contains(q);
-        final matchId = t.id.toLowerCase().contains(q);
-        final matchCat = t.category.label.toLowerCase().contains(q);
-        return matchTitle || matchDesc || matchId || matchCat;
-      }
-      return true;
-    }).toList();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDarkMode;
-    final isCollapsed = widget.isCollapsed;
-
-    // Rescene FlutterWebEmbedding style widths
-    final sidebarWidth = isCollapsed ? 74.0 : 268.0;
+    final isDark = isDarkMode;
+    final sidebarWidth = isCollapsed ? 74.0 : 270.0;
 
     final bgColor = isDark ? const Color(0xFF0D1017) : const Color(0xFFF8FAFC);
     final textColor = isDark ? Colors.white : const Color(0xFF0F172A);
     final textSubColor = isDark ? Colors.white54 : const Color(0xFF64748B);
-    final searchBgColor = isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFEDEFEF);
-
-    final filtered = _filteredTemplates;
+    final activeItemBg = isDark ? const Color(0xFF1E2433) : const Color(0xFFEEF2FF);
+    final activeItemText = isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 230),
@@ -83,503 +56,436 @@ class _WorkspaceSidebarState extends State<WorkspaceSidebar> {
       ),
       child: Column(
         children: [
-          // 1. Search Bar & Category Pills (Only when Expanded)
-          if (!isCollapsed) ...[
-            // Search Bar (Border-free filled container)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 14, 12, 8),
-              child: Container(
-                height: 38,
-                decoration: BoxDecoration(
-                  color: searchBgColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: TextField(
-                  controller: _searchCtrl,
-                  style: TextStyle(color: textColor, fontSize: 13),
-                  decoration: InputDecoration(
-                    hintText: '어플 검색...',
-                    hintStyle: TextStyle(color: textSubColor.withValues(alpha: 0.6), fontSize: 12.5),
-                    prefixIcon: Icon(CupertinoIcons.search, size: 16, color: textSubColor),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: Icon(CupertinoIcons.xmark_circle_fill, size: 14, color: textSubColor),
-                            onPressed: () {
-                              _searchCtrl.clear();
-                              setState(() => _searchQuery = '');
-                            },
-                          )
-                        : null,
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 9),
-                  ),
-                  onChanged: (val) => setState(() => _searchQuery = val.trim()),
-                ),
-              ),
-            ),
-
-            // Category Filter Pills (Horizontal Scroll, NO OUTLINE)
-            SizedBox(
-              height: 32,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                children: [
-                  _buildCategoryPill(null, '전체 (${widget.templates.length})', isDark),
-                  ...TemplateCategory.values.map((cat) {
-                    final count = widget.templates.where((t) => t.category == cat).length;
-                    return _buildCategoryPill(cat, '${cat.label.split(' / ').first} ($count)', isDark);
-                  }),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-          ] else ...[
-            // Collapsed Top Quick Toggle
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Center(
-                child: IconButton(
-                  tooltip: '사이드바 펼치기',
-                  icon: const Icon(CupertinoIcons.chevron_right, size: 16),
-                  color: textSubColor,
-                  onPressed: widget.onToggleCollapse,
-                  style: IconButton.styleFrom(
-                    backgroundColor: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFE2E8F0),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-              ),
-            ),
-          ],
-
-          // 2. Applications List (Rescene-inspired scale feedback & borderless)
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.symmetric(
-                vertical: 6,
-                horizontal: isCollapsed ? 8 : 10,
-              ),
-              children: [
-                // Top Gallery View Item
-                if (_searchQuery.isEmpty && _selectedCategory == null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: _SidebarGalleryItem(
-                      isSelected: widget.selectedTemplateId == 'gallery',
-                      isCollapsed: isCollapsed,
-                      isDark: isDark,
-                      textColor: textColor,
-                      textSubColor: textSubColor,
-                      onTap: () => widget.onSelectTemplate('gallery'),
-                    ),
-                  ),
-
-                if (filtered.isEmpty)
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Text(
-                        '검색 결과 없음',
-                        style: TextStyle(color: textSubColor, fontSize: 12.5),
+          // 1. Top Section: New Project Button or Expand Icon
+          Padding(
+            padding: EdgeInsets.fromLTRB(isCollapsed ? 8 : 12, 14, isCollapsed ? 8 : 12, 10),
+            child: isCollapsed
+                ? Center(
+                    child: IconButton(
+                      tooltip: '새 프로젝트 생성',
+                      icon: const Icon(CupertinoIcons.plus_circle_fill, size: 22, color: Color(0xFF6366F1)),
+                      onPressed: onNewProject,
+                      style: IconButton.styleFrom(
+                        backgroundColor: const Color(0xFF6366F1).withValues(alpha: 0.12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                     ),
                   )
-                else
-                  ...filtered.map((item) {
-                    final isSelected = item.id == widget.selectedTemplateId;
-                    return _SidebarAppItem(
-                      item: item,
-                      isSelected: isSelected,
-                      isCollapsed: isCollapsed,
-                      isDark: isDark,
-                      textColor: textColor,
-                      textSubColor: textSubColor,
-                      onTap: () => widget.onSelectTemplate(item.id),
-                    );
-                  }),
+                : ElevatedButton.icon(
+                    onPressed: onNewProject,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6366F1),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
+                      minimumSize: const Size(double.infinity, 42),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    icon: const Icon(CupertinoIcons.plus_circle_fill, size: 16),
+                    label: const Text(
+                      '새 프로젝트 생성',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
+                  ),
+          ),
+
+          // 2. Global Core Navigation (Home, Gallery, Virtual OS)
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: isCollapsed ? 8 : 10),
+            child: Column(
+              children: [
+                _buildNavItem(
+                  id: 'home',
+                  icon: CupertinoIcons.home,
+                  title: '대시보드 / 홈',
+                  badge: null,
+                  isActive: activeMenuId == 'home',
+                  isCollapsed: isCollapsed,
+                  isDark: isDark,
+                  textColor: textColor,
+                  textSubColor: textSubColor,
+                  activeBg: activeItemBg,
+                  activeText: activeItemText,
+                  onTap: () => onSelectMenu('home'),
+                ),
+                const SizedBox(height: 4),
+                _buildNavItem(
+                  id: 'gallery',
+                  icon: CupertinoIcons.compass,
+                  title: '어플 템플릿 갤러리',
+                  badge: '33종',
+                  isActive: activeMenuId == 'gallery',
+                  isCollapsed: isCollapsed,
+                  isDark: isDark,
+                  textColor: textColor,
+                  textSubColor: textSubColor,
+                  activeBg: activeItemBg,
+                  activeText: activeItemText,
+                  onTap: () => onSelectMenu('gallery'),
+                ),
+                const SizedBox(height: 4),
+                _buildNavItem(
+                  id: 'os',
+                  icon: CupertinoIcons.macwindow,
+                  title: '가상 데스크톱 OS',
+                  badge: 'SteamOS+',
+                  isActive: activeMenuId == 'os',
+                  isCollapsed: isCollapsed,
+                  isDark: isDark,
+                  textColor: textColor,
+                  textSubColor: textSubColor,
+                  activeBg: activeItemBg,
+                  activeText: activeItemText,
+                  onTap: () => onSelectMenu('os'),
+                ),
               ],
             ),
           ),
 
-          // 3. Bottom Footer Status & Collapse Toggle
+          const SizedBox(height: 12),
+
+          // 3. Projects Section Header (Only when expanded)
+          if (!isCollapsed)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              child: Row(
+                children: [
+                  Icon(CupertinoIcons.folder_fill, size: 13, color: textSubColor),
+                  const SizedBox(width: 6),
+                  Text(
+                    '내 프로젝트 (${projects.length})',
+                    style: TextStyle(
+                      color: textSubColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Container(
+                width: 28,
+                height: 1,
+                color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+              ),
+            ),
+
+          // 4. Projects List (Scrollable, NO SCROLLBAR)
+          Expanded(
+            child: ScrollConfiguration(
+              behavior: const ScrollBehavior().copyWith(scrollbars: false),
+              child: ListView(
+                padding: EdgeInsets.symmetric(
+                  vertical: 4,
+                  horizontal: isCollapsed ? 8 : 10,
+                ),
+                children: [
+                  if (projects.isEmpty)
+                    if (!isCollapsed)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 10),
+                        child: Center(
+                          child: Text(
+                            '생성된 프로젝트가 없습니다\n상단의 새 프로젝트를 눌러보세요',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: textSubColor, fontSize: 11.5, height: 1.4),
+                          ),
+                        ),
+                      )
+                    else
+                      const SizedBox.shrink()
+                  else
+                    ...projects.map((proj) {
+                      final isActive = activeMenuId == proj.id;
+                      final template = proj.template;
+
+                      if (isCollapsed) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Tooltip(
+                            message: '${proj.title} (${template?.title ?? proj.appTemplateId})',
+                            child: InkWell(
+                              onTap: () => onSelectProject(proj),
+                              borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: isActive ? activeItemBg : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Container(
+                                    width: 28,
+                                    height: 28,
+                                    padding: const EdgeInsets.all(3),
+                                    decoration: BoxDecoration(
+                                      color: (template?.themeColor ?? const Color(0xFF6366F1)).withValues(alpha: 0.16),
+                                      borderRadius: BorderRadius.circular(7),
+                                    ),
+                                    child: template?.imageAsset != null
+                                        ? Image.asset(template!.imageAsset!, fit: BoxFit.contain)
+                                        : Icon(template?.icon ?? CupertinoIcons.doc,
+                                            size: 14, color: template?.themeColor ?? const Color(0xFF6366F1)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      // Expanded Project Card Item (BORDER-FREE)
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        child: InkWell(
+                          onTap: () => onSelectProject(proj),
+                          borderRadius: BorderRadius.circular(10),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 160),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+                            decoration: BoxDecoration(
+                              color: isActive ? activeItemBg : Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                // App Icon
+                                Container(
+                                  width: 28,
+                                  height: 28,
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                    color: (template?.themeColor ?? const Color(0xFF6366F1)).withValues(alpha: 0.16),
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: Center(
+                                    child: template?.imageAsset != null
+                                        ? Image.asset(template!.imageAsset!, fit: BoxFit.contain)
+                                        : Icon(template?.icon ?? CupertinoIcons.doc,
+                                            size: 14, color: template?.themeColor ?? const Color(0xFF6366F1)),
+                                  ),
+                                ),
+                                const SizedBox(width: 9),
+                                // Title & time
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        proj.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: isActive ? activeItemText : textColor,
+                                          fontSize: 12.5,
+                                          fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            template?.title ?? proj.appTemplateId,
+                                            style: TextStyle(
+                                              color: textSubColor,
+                                              fontSize: 10.5,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '• ${proj.timeAgo}',
+                                            style: TextStyle(
+                                              color: textSubColor.withValues(alpha: 0.7),
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                // Star button
+                                InkWell(
+                                  onTap: () => onToggleStarProject(proj),
+                                  borderRadius: BorderRadius.circular(6),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4),
+                                    child: Icon(
+                                      proj.isStarred ? CupertinoIcons.star_fill : CupertinoIcons.star,
+                                      size: 13,
+                                      color: proj.isStarred ? const Color(0xFFF59E0B) : textSubColor.withValues(alpha: 0.4),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                ],
+              ),
+            ),
+          ),
+
+          // 5. Bottom Navigation & Collapse Control (Zero Outline)
           Container(
             padding: EdgeInsets.symmetric(
-              horizontal: isCollapsed ? 6 : 14,
-              vertical: 10,
+              horizontal: isCollapsed ? 6 : 12,
+              vertical: 8,
             ),
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF090B10) : const Color(0xFFEFF2F6),
             ),
-            child: isCollapsed
-                ? Center(
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF22C55E),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  )
-                : Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!isCollapsed) ...[
+                  Row(
                     children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF22C55E),
-                          shape: BoxShape.circle,
+                      InkWell(
+                        onTap: () => context.push('/terms'),
+                        borderRadius: BorderRadius.circular(6),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                          child: Text(
+                            '이용약관',
+                            style: TextStyle(color: textSubColor, fontSize: 11),
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${widget.templates.length}개 가상 스크린',
-                        style: TextStyle(
-                          color: textSubColor,
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w600,
+                      Text('•', style: TextStyle(color: textSubColor.withValues(alpha: 0.4), fontSize: 10)),
+                      InkWell(
+                        onTap: () => context.push('/privacy'),
+                        borderRadius: BorderRadius.circular(6),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                          child: Text(
+                            '개인정보방침',
+                            style: TextStyle(color: textSubColor, fontSize: 11),
+                          ),
                         ),
                       ),
                       const Spacer(),
                       InkWell(
-                        onTap: widget.onToggleCollapse,
+                        onTap: onToggleCollapse,
                         borderRadius: BorderRadius.circular(6),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                          child: Icon(
-                            CupertinoIcons.chevron_left,
-                            size: 14,
-                            color: textSubColor,
-                          ),
+                          padding: const EdgeInsets.all(4),
+                          child: Icon(CupertinoIcons.chevron_left, size: 14, color: textSubColor),
                         ),
                       ),
                     ],
                   ),
+                ] else ...[
+                  IconButton(
+                    tooltip: '사이드바 펼치기',
+                    icon: const Icon(CupertinoIcons.chevron_right, size: 14),
+                    color: textSubColor,
+                    onPressed: onToggleCollapse,
+                  ),
+                ],
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCategoryPill(TemplateCategory? cat, String label, bool isDark) {
-    final isSelected = _selectedCategory == cat;
-    final activeBg = const Color(0xFF6366F1);
-    final inactiveBg = isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFE2E8F0);
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 5),
-      child: InkWell(
-        onTap: () => setState(() => _selectedCategory = cat),
-        borderRadius: BorderRadius.circular(14),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: isSelected ? activeBg : inactiveBg,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: isSelected
-                    ? Colors.white
-                    : (isDark ? Colors.white70 : const Color(0xFF475569)),
-                fontSize: 11,
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+  Widget _buildNavItem({
+    required String id,
+    required IconData icon,
+    required String title,
+    required String? badge,
+    required bool isActive,
+    required bool isCollapsed,
+    required bool isDark,
+    required Color textColor,
+    required Color textSubColor,
+    required Color activeBg,
+    required Color activeText,
+    required VoidCallback onTap,
+  }) {
+    if (isCollapsed) {
+      return Tooltip(
+        message: title,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: isActive ? activeBg : Colors.transparent,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Icon(
+                icon,
+                size: 18,
+                color: isActive ? activeText : textSubColor,
               ),
             ),
           ),
         ),
-      ),
-    );
-  }
-}
+      );
+    }
 
-/// Rescene GameSidebar inspired menu item with scale and smooth press feedback
-class _SidebarAppItem extends StatefulWidget {
-  final ScreenTemplate item;
-  final bool isSelected;
-  final bool isCollapsed;
-  final bool isDark;
-  final Color textColor;
-  final Color textSubColor;
-  final VoidCallback onTap;
-
-  const _SidebarAppItem({
-    required this.item,
-    required this.isSelected,
-    required this.isCollapsed,
-    required this.isDark,
-    required this.textColor,
-    required this.textSubColor,
-    required this.onTap,
-  });
-
-  @override
-  State<_SidebarAppItem> createState() => _SidebarAppItemState();
-}
-
-class _SidebarAppItemState extends State<_SidebarAppItem> {
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final isSelected = widget.isSelected;
-    final isCollapsed = widget.isCollapsed;
-    final isDark = widget.isDark;
-    final item = widget.item;
-
-    final activeBgColor = isDark
-        ? const Color(0xFF6366F1).withValues(alpha: 0.22)
-        : const Color(0xFFEEF2FF);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Tooltip(
-        message: isCollapsed ? item.title : '',
-        child: AnimatedScale(
-          scale: _isPressed ? 0.94 : 1.0,
-          duration: const Duration(milliseconds: 115),
-          curve: Curves.easeOutCubic,
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: widget.onTap,
-              onTapDown: (_) => setState(() => _isPressed = true),
-              onTapUp: (_) => setState(() => _isPressed = false),
-              onTapCancel: () => setState(() => _isPressed = false),
-              borderRadius: BorderRadius.circular(12),
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOutCubic,
-                padding: isCollapsed
-                    ? const EdgeInsets.symmetric(vertical: 10)
-                    : const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected ? activeBgColor : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: isActive ? activeBg : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isActive ? activeText : textSubColor,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: isActive ? activeText : textColor,
+                  fontSize: 13,
+                  fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
                 ),
-                child: isCollapsed
-                    ? Center(
-                        child: _buildAppIcon(item, size: 28),
-                      )
-                    : Row(
-                        children: [
-                          _buildAppIcon(item, size: 30),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        item.title,
-                                        style: TextStyle(
-                                          color: isSelected
-                                              ? (isDark ? Colors.white : const Color(0xFF4338CA))
-                                              : widget.textColor,
-                                          fontSize: 12.5,
-                                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    if (item.badge.isNotEmpty) ...[
-                                      const SizedBox(width: 5),
-                                      _buildBadge(item.badge),
-                                    ],
-                                  ],
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  item.category.label,
-                                  style: TextStyle(
-                                    color: widget.textSubColor.withValues(alpha: 0.8),
-                                    fontSize: 10.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (isSelected)
-                            Icon(
-                              CupertinoIcons.chevron_right,
-                              color: isDark ? const Color(0xFF818CF8) : const Color(0xFF6366F1),
-                              size: 13,
-                            ),
-                        ],
-                      ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAppIcon(ScreenTemplate item, {required double size}) {
-    return Container(
-      width: size,
-      height: size,
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: item.themeColor.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Center(
-        child: item.imageAsset != null
-            ? Image.asset(item.imageAsset!, fit: BoxFit.contain)
-            : Icon(item.icon, color: item.themeColor, size: size * 0.55),
-      ),
-    );
-  }
-
-  Widget _buildBadge(String badge) {
-    final isHot = badge == 'HOT' || badge == '인기';
-    final badgeColor = isHot ? const Color(0xFFEF4444) : const Color(0xFF10B981);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-      decoration: BoxDecoration(
-        color: badgeColor.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Text(
-        badge,
-        style: TextStyle(
-          color: badgeColor,
-          fontSize: 8.5,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-  }
-}
-
-class _SidebarGalleryItem extends StatefulWidget {
-  final bool isSelected;
-  final bool isCollapsed;
-  final bool isDark;
-  final Color textColor;
-  final Color textSubColor;
-  final VoidCallback onTap;
-
-  const _SidebarGalleryItem({
-    required this.isSelected,
-    required this.isCollapsed,
-    required this.isDark,
-    required this.textColor,
-    required this.textSubColor,
-    required this.onTap,
-  });
-
-  @override
-  State<_SidebarGalleryItem> createState() => _SidebarGalleryItemState();
-}
-
-class _SidebarGalleryItemState extends State<_SidebarGalleryItem> {
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final isSelected = widget.isSelected;
-    final isCollapsed = widget.isCollapsed;
-    final isDark = widget.isDark;
-
-    final activeBgColor = isDark
-        ? const Color(0xFF6366F1).withValues(alpha: 0.22)
-        : const Color(0xFFEEF2FF);
-
-    return Tooltip(
-      message: isCollapsed ? '어플 갤러리 (전체보기)' : '',
-      child: AnimatedScale(
-        scale: _isPressed ? 0.94 : 1.0,
-        duration: const Duration(milliseconds: 115),
-        curve: Curves.easeOutCubic,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: widget.onTap,
-            onTapDown: (_) => setState(() => _isPressed = true),
-            onTapUp: (_) => setState(() => _isPressed = false),
-            onTapCancel: () => setState(() => _isPressed = false),
-            borderRadius: BorderRadius.circular(12),
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              curve: Curves.easeOutCubic,
-              padding: isCollapsed
-                  ? const EdgeInsets.symmetric(vertical: 10)
-                  : const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-              decoration: BoxDecoration(
-                color: isSelected ? activeBgColor : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
+            if (badge != null)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isActive
+                      ? activeText.withValues(alpha: 0.15)
+                      : (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06)),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Text(
+                  badge,
+                  style: TextStyle(
+                    color: isActive ? activeText : textSubColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              child: isCollapsed
-                  ? const Center(
-                      child: Icon(CupertinoIcons.square_grid_2x2_fill, color: Color(0xFF6366F1), size: 20),
-                    )
-                  : Row(
-                      children: [
-                        Container(
-                          width: 30,
-                          height: 30,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF6366F1).withValues(alpha: 0.16),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Center(
-                            child: Icon(CupertinoIcons.square_grid_2x2_fill, color: Color(0xFF6366F1), size: 16),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '어플 탐색 갤러리',
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? (isDark ? Colors.white : const Color(0xFF4338CA))
-                                      : widget.textColor,
-                                  fontSize: 13,
-                                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '전체 가상 앱 둘러보기',
-                                style: TextStyle(
-                                  color: widget.textSubColor.withValues(alpha: 0.8),
-                                  fontSize: 10.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (isSelected)
-                          Icon(
-                            CupertinoIcons.chevron_right,
-                            color: isDark ? const Color(0xFF818CF8) : const Color(0xFF6366F1),
-                            size: 13,
-                          ),
-                      ],
-                    ),
-            ),
-          ),
+          ],
         ),
       ),
     );
   }
 }
-

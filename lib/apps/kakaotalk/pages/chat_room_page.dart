@@ -34,6 +34,7 @@ class ChatRoomPage extends StatelessWidget {
           // 4. 대화 메시지 리스트
           Expanded(
             child: ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               itemCount: config.messages.length,
               itemBuilder: (context, index) {

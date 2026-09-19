@@ -1,23 +1,22 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../../apps/screen_template.dart';
-import '../../editor/modules/generic_editor_page.dart';
-import '../../editor/modules/kakaotalk_editor_page.dart';
+import '../../../apps/screen_template.dart';
+import 'dialogs/create_project_dialog.dart';
+import 'models/project_model.dart';
 import 'views/app_gallery_view.dart';
+import 'views/dashboard_home_view.dart';
 import 'widgets/workspace_sidebar.dart';
 import 'widgets/workspace_top_bar.dart';
+import '../../editor/app_editor_page.dart';
 
 class WorkspaceView extends StatefulWidget {
-  final String? initialTemplateId;
-  final Function(String osKey) onSelectOs;
-  final Function(String templateId) onOpenInOs;
+  final ValueChanged<String> onOpenInOs;
+  final ValueChanged<String> onSelectOs;
   final VoidCallback onSignOut;
 
   const WorkspaceView({
     super.key,
-    this.initialTemplateId,
-    required this.onSelectOs,
     required this.onOpenInOs,
+    required this.onSelectOs,
     required this.onSignOut,
   });
 
@@ -26,62 +25,103 @@ class WorkspaceView extends StatefulWidget {
 }
 
 class _WorkspaceViewState extends State<WorkspaceView> {
-  late String _currentTemplateId;
-  bool? _userThemeOverride;
+  // Navigation State
+  // 'home' | 'gallery' | 'os' | or a projectId
+  String _activeMenuId = 'home';
   bool _isSidebarCollapsed = false;
+  bool? _userThemeOverride;
 
-  @override
-  void initState() {
-    super.initState();
-    _currentTemplateId = widget.initialTemplateId ?? 'gallery';
+  // Active Projects
+  final List<ProjectModel> _projects = List.from(ProjectModel.initialSampleProjects);
+  ProjectModel? _currentEditingProject;
+  String _currentEditorTemplateId = 'kakaotalk';
+
+  bool get _isDarkMode {
+    if (_userThemeOverride != null) return _userThemeOverride!;
+    return true; // Default dark studio theme
   }
 
-  static const _galleryTemplate = ScreenTemplate(
-    id: 'gallery',
-    title: '어플 탐색 갤러리',
-    description: '33개 픽셀 정밀 가상 어플 스튜디오 탐색',
-    category: TemplateCategory.messenger,
-    icon: CupertinoIcons.square_grid_2x2_fill,
-    themeColor: Color(0xFF6366F1),
-  );
+  void _openProject(ProjectModel proj) {
+    setState(() {
+      _currentEditingProject = proj;
+      _currentEditorTemplateId = proj.appTemplateId;
+      _activeMenuId = proj.id;
+    });
+  }
 
-  ScreenTemplate get _currentTemplate {
-    if (_currentTemplateId == 'gallery') return _galleryTemplate;
-    return ScreenTemplate.allTemplates.firstWhere(
-      (t) => t.id == _currentTemplateId,
-      orElse: () => _galleryTemplate,
-    );
+  void _openAppInEditor(String templateId) {
+    // Check if an existing project matches or create temporary session
+    final existing = _projects.where((p) => p.appTemplateId == templateId).firstOrNull;
+    setState(() {
+      if (existing != null) {
+        _currentEditingProject = existing;
+        _activeMenuId = existing.id;
+      } else {
+        final t = ScreenTemplate.allTemplates.firstWhere((item) => item.id == templateId);
+        final newProj = ProjectModel(
+          id: 'proj_${DateTime.now().millisecondsSinceEpoch}',
+          title: '${t.title} 작업 프로젝트',
+          appTemplateId: templateId,
+          updatedAt: DateTime.now(),
+        );
+        _projects.insert(0, newProj);
+        _currentEditingProject = newProj;
+        _activeMenuId = newProj.id;
+      }
+      _currentEditorTemplateId = templateId;
+    });
+  }
+
+  void _createNewProject() async {
+    final newProj = await CreateProjectDialog.show(context, isDarkMode: _isDarkMode);
+    if (newProj != null) {
+      setState(() {
+        _projects.insert(0, newProj);
+        _openProject(newProj);
+      });
+    }
+  }
+
+  void _toggleStarProject(ProjectModel proj) {
+    setState(() {
+      proj.isStarred = !proj.isStarred;
+    });
+  }
+
+  void _deleteProject(ProjectModel proj) {
+    setState(() {
+      _projects.removeWhere((p) => p.id == proj.id);
+      if (_currentEditingProject?.id == proj.id) {
+        _currentEditingProject = null;
+        _activeMenuId = 'home';
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final systemIsDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
-    final isDarkMode = _userThemeOverride ?? systemIsDark;
+    final isDarkMode = _isDarkMode;
 
-    // 1. If user selected a specific application, display the Full-Screen Figma-style Editor!
-    if (_currentTemplateId != 'gallery') {
-      void handleBackToGallery() {
-        setState(() {
-          _currentTemplateId = 'gallery';
-        });
-      }
-
-      if (_currentTemplateId == 'kakaotalk') {
-        return KakaoTalkEditorPage(
-          onBackToGallery: handleBackToGallery,
-          onOpenInOs: widget.onSelectOs,
-        );
-      }
-
-      return GenericEditorPage(
-        templateId: _currentTemplateId,
-        onBackToGallery: handleBackToGallery,
-        onOpenInOs: widget.onSelectOs,
+    // 1. If currently editing a project in Full-Screen Figma Editor Mode
+    final isProjectEditing = _currentEditingProject != null && _activeMenuId == _currentEditingProject!.id;
+    if (isProjectEditing) {
+      return AppEditorPage(
+        templateId: _currentEditorTemplateId,
+        onBackToGallery: () {
+          setState(() {
+            _currentEditingProject = null;
+            _activeMenuId = 'home';
+          });
+        },
+        onOpenInOs: widget.onOpenInOs,
       );
     }
 
-    // 2. Otherwise, display the Console Main Page (Left Sidebar + App Gallery View)
-    final template = _currentTemplate;
+    // 2. Otherwise, display the Console Workspace Shell (Left Sidebar + Center Views)
+    final dummyTemplate = ScreenTemplate.allTemplates.firstWhere(
+      (t) => t.id == _currentEditorTemplateId,
+      orElse: () => ScreenTemplate.allTemplates.first,
+    );
 
     return Scaffold(
       backgroundColor: isDarkMode ? const Color(0xFF090B10) : const Color(0xFFF1F5F9),
@@ -89,7 +129,7 @@ class _WorkspaceViewState extends State<WorkspaceView> {
         children: [
           // Top Header Bar
           WorkspaceTopBar(
-            template: template,
+            template: dummyTemplate,
             isDarkMode: isDarkMode,
             isSidebarCollapsed: _isSidebarCollapsed,
             isExporting: false,
@@ -101,33 +141,38 @@ class _WorkspaceViewState extends State<WorkspaceView> {
             onSignOut: widget.onSignOut,
           ),
 
-          // Workspace Body: Left Sidebar + Center App Gallery Grid
+          // Workspace Body: Left Sidebar (Project-centric) + Center View
           Expanded(
             child: Row(
               children: [
-                // Left Navigation Sidebar (Rescene-inspired Collapsible & Border-free)
+                // Left Navigation Sidebar (Zero outline, project list)
                 WorkspaceSidebar(
-                  templates: ScreenTemplate.allTemplates,
-                  selectedTemplateId: _currentTemplateId,
-                  onSelectTemplate: (id) => setState(() => _currentTemplateId = id),
+                  projects: _projects,
+                  activeMenuId: _activeMenuId,
+                  onSelectMenu: (menuId) {
+                    if (menuId == 'os') {
+                      widget.onSelectOs('windows_11');
+                    } else {
+                      setState(() {
+                        _currentEditingProject = null;
+                        _activeMenuId = menuId;
+                      });
+                    }
+                  },
+                  onSelectProject: _openProject,
+                  onNewProject: _createNewProject,
+                  onDeleteProject: _deleteProject,
+                  onToggleStarProject: _toggleStarProject,
                   isCollapsed: _isSidebarCollapsed,
                   onToggleCollapse: () => setState(() => _isSidebarCollapsed = !_isSidebarCollapsed),
                   isDarkMode: isDarkMode,
                 ),
 
-                // Center App Selection Gallery View
+                // Center Content Area
                 Expanded(
                   child: Container(
                     color: isDarkMode ? const Color(0xFF06080D) : const Color(0xFFF8FAFC),
-                    child: AppGalleryView(
-                      templates: ScreenTemplate.allTemplates,
-                      isDarkMode: isDarkMode,
-                      onSelectApp: (id) {
-                        setState(() {
-                          _currentTemplateId = id;
-                        });
-                      },
-                    ),
+                    child: _buildCenterContent(isDarkMode),
                   ),
                 ),
               ],
@@ -136,5 +181,26 @@ class _WorkspaceViewState extends State<WorkspaceView> {
         ],
       ),
     );
+  }
+
+  Widget _buildCenterContent(bool isDark) {
+    switch (_activeMenuId) {
+      case 'gallery':
+        return AppGalleryView(
+          templates: ScreenTemplate.allTemplates,
+          isDarkMode: isDark,
+          onSelectApp: (appId) => _openAppInEditor(appId),
+        );
+      case 'home':
+      default:
+        return DashboardHomeView(
+          projects: _projects,
+          isDarkMode: isDark,
+          onOpenProject: _openProject,
+          onNewProject: _createNewProject,
+          onOpenGallery: () => setState(() => _activeMenuId = 'gallery'),
+          onOpenOs: widget.onSelectOs,
+        );
+    }
   }
 }

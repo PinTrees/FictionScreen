@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../constants/home_i18n.dart';
+import 'home_floating_hero_icons.dart';
 
 class HomeEditorialHero extends StatelessWidget {
   final bool isMobile;
@@ -143,7 +144,21 @@ class HomeEditorialHero extends StatelessWidget {
             ),
           ),
 
-          // 2. Main Editorial Content (Left-aligned, massive typography inspired by Sofi)
+          // 2. Right-side Floating Icons (KakaoTalk, Blind, DC Inside, MS-DOS)
+          Positioned(
+            top: 0,
+            bottom: 0,
+            right: 0,
+            width: isMobile
+                ? MediaQuery.of(context).size.width
+                : MediaQuery.of(context).size.width * 0.52,
+            child: HomeFloatingHeroIcons(
+              isMobile: isMobile,
+              isDarkMode: isDarkMode,
+            ),
+          ),
+
+          // 3. Main Editorial Content (Left-aligned, massive typography inspired by Sofi)
           Positioned.fill(
             child: Padding(
               padding: EdgeInsets.only(
