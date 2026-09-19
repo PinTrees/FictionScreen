@@ -236,7 +236,7 @@ class WorkspaceSidebar extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(20),
                         child: isCollapsed
-                            ? Icon(Icons.folder_open_rounded, size: 22, color: textSubColor.withValues(alpha: 0.4))
+                            ? Icon(CupertinoIcons.folder, size: 22, color: textSubColor.withValues(alpha: 0.4))
                             : Text(
                                 '저장된 프로젝트가 없습니다\n상단의 새 프로젝트를 생성하세요',
                                 textAlign: TextAlign.center,

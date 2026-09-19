@@ -78,13 +78,47 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: '/console/editor/:templateId/:projectId',
+        name: 'console-editor-project',
+        pageBuilder: (context, state) {
+          final templateId = state.pathParameters['templateId'] ?? 'kakaotalk';
+          final projectId = state.pathParameters['projectId'];
+          return _buildPageTransition(
+            key: state.pageKey,
+            child: AppEditorPage(
+              templateId: templateId,
+              projectId: projectId,
+            ),
+          );
+        },
+      ),
+      GoRoute(
         path: '/console/editor/:templateId',
         name: 'console-editor',
         pageBuilder: (context, state) {
           final templateId = state.pathParameters['templateId'] ?? 'kakaotalk';
+          final projectId = state.uri.queryParameters['id'] ?? state.uri.queryParameters['projectId'];
           return _buildPageTransition(
             key: state.pageKey,
-            child: AppEditorPage(templateId: templateId),
+            child: AppEditorPage(
+              templateId: templateId,
+              projectId: projectId,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/editor/:templateId/:projectId',
+        name: 'editor-project',
+        pageBuilder: (context, state) {
+          final templateId = state.pathParameters['templateId'] ?? 'kakaotalk';
+          final projectId = state.pathParameters['projectId'];
+          return _buildPageTransition(
+            key: state.pageKey,
+            child: AppEditorPage(
+              templateId: templateId,
+              projectId: projectId,
+            ),
           );
         },
       ),
@@ -93,9 +127,13 @@ class AppRouter {
         name: 'editor',
         pageBuilder: (context, state) {
           final templateId = state.pathParameters['templateId'] ?? 'kakaotalk';
+          final projectId = state.uri.queryParameters['id'] ?? state.uri.queryParameters['projectId'];
           return _buildPageTransition(
             key: state.pageKey,
-            child: AppEditorPage(templateId: templateId),
+            child: AppEditorPage(
+              templateId: templateId,
+              projectId: projectId,
+            ),
           );
         },
       ),

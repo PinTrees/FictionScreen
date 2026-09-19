@@ -44,6 +44,7 @@ class ProjectService {
           description: data['description'] ?? '',
           updatedAt: updated,
           isStarred: data['isStarred'] ?? false,
+          contentData: data['contentData'] is Map ? Map<String, dynamic>.from(data['contentData'] as Map) : null,
         );
       }).toList();
     }).handleError((err) {
@@ -52,10 +53,46 @@ class ProjectService {
     });
   }
 
-  /// Create a new project in Firestore
+  /// Get single project by ID
+  static Future<ProjectModel?> getProject(String projectId) async {
+    final user = AuthService.currentUser;
+    if (user == null) {
+      return _guestProjects.where((p) => p.id == projectId).firstOrNull;
+    }
+
+    try {
+      final doc = await _userProjectsRef(user.uid).doc(projectId).get();
+      if (!doc.exists || doc.data() == null) {
+        return _guestProjects.where((p) => p.id == projectId).firstOrNull;
+      }
+      final data = doc.data()!;
+      DateTime updated = DateTime.now();
+      if (data['updatedAt'] is Timestamp) {
+        updated = (data['updatedAt'] as Timestamp).toDate();
+      } else if (data['updatedAt'] is String) {
+        updated = DateTime.tryParse(data['updatedAt']) ?? DateTime.now();
+      }
+
+      return ProjectModel(
+        id: doc.id,
+        title: data['title'] ?? '새 프로젝트',
+        appTemplateId: data['appTemplateId'] ?? 'kakaotalk',
+        description: data['description'] ?? '',
+        updatedAt: updated,
+        isStarred: data['isStarred'] ?? false,
+        contentData: data['contentData'] is Map ? Map<String, dynamic>.from(data['contentData'] as Map) : null,
+      );
+    } catch (e) {
+      debugPrint('[ProjectService] getProject error: $e');
+      return _guestProjects.where((p) => p.id == projectId).firstOrNull;
+    }
+  }
+
+  /// Create a new project document in Firestore
   static Future<void> createProject(ProjectModel project) async {
     final user = AuthService.currentUser;
     if (user == null) {
+      _guestProjects.removeWhere((p) => p.id == project.id);
       _guestProjects.insert(0, project);
       return;
     }
@@ -67,11 +104,47 @@ class ProjectService {
         'description': project.description,
         'updatedAt': FieldValue.serverTimestamp(),
         'isStarred': project.isStarred,
+        'contentData': project.contentData,
         'createdAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
       debugPrint('[ProjectService] Create project error: $e');
+      _guestProjects.removeWhere((p) => p.id == project.id);
       _guestProjects.insert(0, project);
+    }
+  }
+
+  /// Update project data/content in Firestore
+  static Future<void> updateProjectData(
+    String projectId,
+    Map<String, dynamic> contentData, {
+    String? title,
+  }) async {
+    final user = AuthService.currentUser;
+    if (user == null) {
+      final p = _guestProjects.where((item) => item.id == projectId).firstOrNull;
+      if (p != null) {
+        p.contentData = contentData;
+        if (title != null) p.title = title;
+        p.updatedAt = DateTime.now();
+      }
+      return;
+    }
+
+    try {
+      final Map<String, dynamic> updatePayload = {
+        'contentData': contentData,
+        'updatedAt': FieldValue.serverTimestamp(),
+      };
+      if (title != null) {
+        updatePayload['title'] = title;
+      }
+      await _userProjectsRef(user.uid).doc(projectId).set(
+        updatePayload,
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      debugPrint('[ProjectService] updateProjectData error: $e');
     }
   }
 

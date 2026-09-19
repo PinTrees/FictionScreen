@@ -28,6 +28,8 @@ enum ScreenAspectRatio {
 /// Shared across all 33 screen applications.
 class AppEditorShell extends StatefulWidget {
   final ScreenTemplate template;
+  final String? documentTitle;
+  final String? documentId;
   final Widget Function(BuildContext context, bool isDarkMode) canvasBuilder;
   final Widget Function(BuildContext context, bool isDarkMode) inspectorBuilder;
   final Widget Function(BuildContext context, bool isDarkMode)? layersBuilder;
@@ -39,6 +41,8 @@ class AppEditorShell extends StatefulWidget {
   const AppEditorShell({
     super.key,
     required this.template,
+    this.documentTitle,
+    this.documentId,
     required this.canvasBuilder,
     required this.inspectorBuilder,
     this.layersBuilder,
@@ -202,6 +206,31 @@ class _AppEditorShellState extends State<AppEditorShell> {
                         template.title,
                         style: TextStyle(color: textColor, fontSize: 14.5, fontWeight: FontWeight.w800, letterSpacing: -0.3),
                       ),
+                      if (widget.documentTitle != null) ...[
+                        const SizedBox(width: 8),
+                        Text('•', style: TextStyle(color: textSubColor.withValues(alpha: 0.5), fontSize: 14)),
+                        const SizedBox(width: 8),
+                        Text(
+                          widget.documentTitle!,
+                          style: const TextStyle(color: Color(0xFF6366F1), fontSize: 13.5, fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                      if (widget.documentId != null) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF6366F1).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            widget.documentId!.length > 18
+                                ? 'DOC: ...${widget.documentId!.substring(widget.documentId!.length - 8)}'
+                                : 'DOC: ${widget.documentId}',
+                            style: const TextStyle(color: Color(0xFF818CF8), fontSize: 9.5, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),

@@ -40,12 +40,14 @@ import '../core/app_editor_shell.dart';
 /// 범용 피그마 스타일 전체화면 앱 에디터 페이지 (기타 모든 32개 앱 지원)
 class GenericEditorPage extends StatefulWidget {
   final String templateId;
+  final String? projectId;
   final VoidCallback onBackToGallery;
   final Function(String osKey) onOpenInOs;
 
   const GenericEditorPage({
     super.key,
     required this.templateId,
+    this.projectId,
     required this.onBackToGallery,
     required this.onOpenInOs,
   });

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../apps/screen_template.dart';
 import '../../../services/app_theme_service.dart';
 import '../../../services/project_service.dart';
@@ -65,32 +66,33 @@ class _WorkspaceViewState extends State<WorkspaceView> {
     setState(() {
       _currentEditingProject = proj;
       _currentEditorTemplateId = proj.appTemplateId;
-      _activeMenuId = proj.id;
     });
+    context.go('/editor/${proj.appTemplateId}/${proj.id}');
   }
 
   void _openAppInEditor(String templateId) async {
-    final existing = _projects.where((p) => p.appTemplateId == templateId).firstOrNull;
-    if (existing != null) {
-      _openProject(existing);
-    } else {
-      final t = ScreenTemplate.allTemplates.firstWhere((item) => item.id == templateId);
-      final newProj = ProjectModel(
-        id: 'proj_${DateTime.now().millisecondsSinceEpoch}',
-        title: '${t.title} 프로젝트',
-        appTemplateId: templateId,
-        updatedAt: DateTime.now(),
-      );
-      await ProjectService.createProject(newProj);
-      _openProject(newProj);
-    }
+    final t = ScreenTemplate.allTemplates.firstWhere(
+      (item) => item.id == templateId,
+      orElse: () => ScreenTemplate.allTemplates.first,
+    );
+    final count = _projects.where((p) => p.appTemplateId == templateId).length + 1;
+    final newProj = ProjectModel(
+      id: 'proj_${DateTime.now().millisecondsSinceEpoch}',
+      title: '${t.title} 작업 #$count',
+      appTemplateId: templateId,
+      updatedAt: DateTime.now(),
+    );
+    await ProjectService.createProject(newProj);
+    if (!mounted) return;
+    context.go('/editor/$templateId/${newProj.id}');
   }
 
   void _createNewProject() async {
     final newProj = await CreateProjectDialog.show(context, isDarkMode: _isDarkMode);
     if (newProj != null) {
       await ProjectService.createProject(newProj);
-      _openProject(newProj);
+      if (!mounted) return;
+      context.go('/editor/${newProj.appTemplateId}/${newProj.id}');
     }
   }
 
@@ -117,6 +119,7 @@ class _WorkspaceViewState extends State<WorkspaceView> {
     if (isProjectEditing) {
       return AppEditorPage(
         templateId: _currentEditorTemplateId,
+        projectId: _currentEditingProject!.id,
         onBackToGallery: () {
           setState(() {
             _currentEditingProject = null;

@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../apps/kakaotalk/data/kakaotalk_model.dart';
 import '../../../../apps/kakaotalk/kakaotalk_screen.dart';
 import '../../../../apps/screen_template.dart';
+import '../../../../services/project_service.dart';
 import '../../../../widgets/scale_button.dart';
+import '../../console/workspace/models/project_model.dart';
 import '../core/app_editor_shell.dart';
 
 /// 카카오톡 전용 피그마 스타일 전체화면 에디터
@@ -11,11 +15,13 @@ import '../core/app_editor_shell.dart';
 /// 중앙 캔버스: 실시간 렌더링 및 클릭 선택
 /// 우측 사이드바: 선택된 오브젝트 전용 인스펙터 속성 패널
 class KakaoTalkEditorPage extends StatefulWidget {
+  final String? projectId;
   final VoidCallback onBackToGallery;
   final Function(String osKey) onOpenInOs;
 
   const KakaoTalkEditorPage({
     super.key,
+    this.projectId,
     required this.onBackToGallery,
     required this.onOpenInOs,
   });
@@ -31,16 +37,88 @@ class _KakaoTalkEditorPageState extends State<KakaoTalkEditorPage> {
   bool _quickMsgIsMe = true;
   bool _quickMsgHasUnread = true;
 
+  String _documentTitle = '카카오톡 대화 작업';
+  bool _isLoadingDoc = false;
+  Timer? _autoSaveTimer;
+
   @override
   void initState() {
     super.initState();
     _config = KakaoRoomConfig.defaultPreset();
+    if (widget.projectId != null) {
+      _loadDocument();
+    }
   }
 
   @override
   void dispose() {
+    _autoSaveTimer?.cancel();
     _quickMsgCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadDocument() async {
+    setState(() => _isLoadingDoc = true);
+    try {
+      final proj = await ProjectService.getProject(widget.projectId!);
+      if (proj != null) {
+        setState(() {
+          _documentTitle = proj.title;
+          if (proj.contentData != null) {
+            _config = KakaoRoomConfig.fromMap(proj.contentData!);
+          }
+        });
+        if (proj.contentData == null) {
+          _triggerAutoSave();
+        }
+      }
+    } catch (e) {
+      debugPrint('[KakaoTalkEditorPage] Error loading document: $e');
+    } finally {
+      if (mounted) setState(() => _isLoadingDoc = false);
+    }
+  }
+
+  void _triggerAutoSave() {
+    _autoSaveTimer?.cancel();
+    _autoSaveTimer = Timer(const Duration(milliseconds: 600), () {
+      if (widget.projectId != null) {
+        ProjectService.updateProjectData(
+          widget.projectId!,
+          _config.toMap(),
+          title: _documentTitle.isNotEmpty ? _documentTitle : _config.roomTitle,
+        );
+      }
+    });
+  }
+
+  Future<void> _duplicateEntireProject() async {
+    final newDocId = 'proj_${DateTime.now().millisecondsSinceEpoch}';
+    final newProj = ProjectModel(
+      id: newDocId,
+      title: '$_documentTitle (사본)',
+      appTemplateId: 'kakaotalk',
+      contentData: _config.toMap(),
+      updatedAt: DateTime.now(),
+    );
+    await ProjectService.createProject(newProj);
+    if (!mounted) return;
+    context.go('/editor/kakaotalk/$newDocId');
+  }
+
+  Future<void> _createNewDocument() async {
+    final newDocId = 'proj_${DateTime.now().millisecondsSinceEpoch}';
+    final defaultCfg = KakaoRoomConfig.defaultPreset();
+    final newProj = ProjectModel(
+      id: newDocId,
+      title: '새 카카오톡 작업',
+      appTemplateId: 'kakaotalk',
+      contentData: defaultCfg.toMap(),
+      updatedAt: DateTime.now(),
+    );
+    await ProjectService.createProject(newProj);
+    if (!mounted) return;
+    context.go('/editor/kakaotalk/$newDocId');
   }
 
   ScreenTemplate get _template {
@@ -75,6 +153,7 @@ class _KakaoTalkEditorPageState extends State<KakaoTalkEditorPage> {
       _selectedObjectId = 'msg_$newId';
       _quickMsgCtrl.clear();
     });
+    _triggerAutoSave();
   }
 
   void _duplicateMessage(KakaoMessage msg) {
@@ -91,6 +170,7 @@ class _KakaoTalkEditorPageState extends State<KakaoTalkEditorPage> {
       _config.messages.insert(index + 1, duplicated);
       _selectedObjectId = 'msg_$newId';
     });
+    _triggerAutoSave();
   }
 
   void _deleteMessage(String msgId) {
@@ -100,6 +180,7 @@ class _KakaoTalkEditorPageState extends State<KakaoTalkEditorPage> {
         _selectedObjectId = _config.messages.isNotEmpty ? 'msg_${_config.messages.last.id}' : 'room_settings';
       }
     });
+    _triggerAutoSave();
   }
 
   void _moveMessage(int fromIndex, int toIndex) {
@@ -108,12 +189,24 @@ class _KakaoTalkEditorPageState extends State<KakaoTalkEditorPage> {
       final item = _config.messages.removeAt(fromIndex);
       _config.messages.insert(toIndex, item);
     });
+    _triggerAutoSave();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingDoc) {
+      return const Scaffold(
+        backgroundColor: Color(0xFF0F1219),
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF6366F1)),
+        ),
+      );
+    }
+
     return AppEditorShell(
       template: _template,
+      documentTitle: _documentTitle,
+      documentId: widget.projectId,
       onBackToGallery: widget.onBackToGallery,
       onOpenInOs: widget.onOpenInOs,
       // Left Figma-style Layers Sidebar
@@ -691,10 +784,104 @@ class _KakaoTalkEditorPageState extends State<KakaoTalkEditorPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Document & Paging Management Section
+        _buildSectionTitle('작업 문서 & 페이징 정보', isDark),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(CupertinoIcons.doc_text_fill, size: 14, color: Color(0xFF6366F1)),
+                  const SizedBox(width: 6),
+                  Text(
+                    '문서 고유 ID',
+                    style: TextStyle(color: textSubColor, fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6366F1).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      widget.projectId ?? '임시 작업',
+                      style: const TextStyle(color: Color(0xFF818CF8), fontSize: 10.5, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              _buildTextField('작업 프로젝트 이름', _documentTitle, fieldBgColor, textColor, textSubColor, (val) {
+                setState(() {
+                  _documentTitle = val;
+                });
+                _triggerAutoSave();
+              }),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: ScaleButton(
+                      onTap: _duplicateEntireProject,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6366F1).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(CupertinoIcons.doc_on_doc, size: 12, color: Color(0xFF6366F1)),
+                            SizedBox(width: 4),
+                            Text('새 페이지로 복제', style: TextStyle(color: Color(0xFF6366F1), fontSize: 11, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: ScaleButton(
+                      onTap: _createNewDocument,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0),
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(CupertinoIcons.plus, size: 12, color: textColor),
+                            const SizedBox(width: 4),
+                            Text('새 빈 작업', style: TextStyle(color: textColor, fontSize: 11, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
         _buildSectionTitle('대화방 테마', isDark),
         const SizedBox(height: 8),
         _buildSwitchField('카카오톡 다크 모드', _config.isDarkTheme, textColor, (val) {
           setState(() => _config.isDarkTheme = val);
+          _triggerAutoSave();
         }),
         const SizedBox(height: 14),
         _buildSectionTitle('대화방 배경색 프리셋', isDark),
@@ -708,6 +895,7 @@ class _KakaoTalkEditorPageState extends State<KakaoTalkEditorPage> {
             return ScaleButton(
               onTap: () {
                 setState(() => _config.customBgColor = col);
+                _triggerAutoSave();
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
@@ -748,6 +936,7 @@ class _KakaoTalkEditorPageState extends State<KakaoTalkEditorPage> {
           setState(() {
             _config.kakaoPayBalance = int.tryParse(val) ?? _config.kakaoPayBalance;
           });
+          _triggerAutoSave();
         }, isNumber: true),
       ],
     );

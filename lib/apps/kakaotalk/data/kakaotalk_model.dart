@@ -48,6 +48,34 @@ class KakaoMessage {
       imageUrl: imageUrl ?? this.imageUrl,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'senderName': senderName,
+      'isMe': isMe,
+      'text': text,
+      'time': time,
+      'showTime': showTime,
+      'showProfile': showProfile,
+      'unreadCount': unreadCount,
+      'imageUrl': imageUrl,
+    };
+  }
+
+  factory KakaoMessage.fromMap(Map<String, dynamic> map) {
+    return KakaoMessage(
+      id: map['id']?.toString() ?? 'msg_${DateTime.now().millisecondsSinceEpoch}',
+      senderName: map['senderName']?.toString() ?? '',
+      isMe: map['isMe'] == true,
+      text: map['text']?.toString() ?? '',
+      time: map['time']?.toString() ?? '오후 2:30',
+      showTime: map['showTime'] != false,
+      showProfile: map['showProfile'] != false,
+      unreadCount: (map['unreadCount'] as num?)?.toInt() ?? 0,
+      imageUrl: map['imageUrl']?.toString(),
+    );
+  }
 }
 
 class KakaoRoomConfig {
@@ -140,6 +168,57 @@ class KakaoRoomConfig {
           unreadCount: 1, // 안읽음 1
         ),
       ],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'roomTitle': roomTitle,
+      'memberCount': memberCount,
+      'statusBarTime': statusBarTime,
+      'batteryLevel': batteryLevel,
+      'networkType': networkType,
+      'isDarkTheme': isDarkTheme,
+      'customBgColor': customBgColor?.toARGB32(),
+      'showNotice': showNotice,
+      'noticeText': noticeText,
+      'inputText': inputText,
+      'partnerProfileName': partnerProfileName,
+      'partnerProfileImage': partnerProfileImage,
+      'kakaoPayBalance': kakaoPayBalance,
+      'messages': messages.map((m) => m.toMap()).toList(),
+    };
+  }
+
+  factory KakaoRoomConfig.fromMap(Map<String, dynamic> map) {
+    final preset = KakaoRoomConfig.defaultPreset();
+    Color? customBg;
+    if (map['customBgColor'] != null) {
+      customBg = Color((map['customBgColor'] as num).toInt());
+    }
+    List<KakaoMessage> msgs = preset.messages;
+    if (map['messages'] is List) {
+      msgs = (map['messages'] as List)
+          .map((item) => KakaoMessage.fromMap(Map<String, dynamic>.from(item as Map)))
+          .toList();
+    }
+    return KakaoRoomConfig(
+      roomTitle: map['roomTitle']?.toString() ?? preset.roomTitle,
+      memberCount: (map['memberCount'] as num?)?.toInt() ?? preset.memberCount,
+      statusBarTime: map['statusBarTime']?.toString() ?? preset.statusBarTime,
+      batteryLevel: (map['batteryLevel'] as num?)?.toInt() ?? preset.batteryLevel,
+      networkType: map['networkType']?.toString() ?? preset.networkType,
+      isDarkTheme: map['isDarkTheme'] == true,
+      customBgColor: customBg,
+      showNotice: map['showNotice'] == true,
+      noticeText: map['noticeText']?.toString() ?? preset.noticeText,
+      inputText: map['inputText']?.toString() ?? preset.inputText,
+      partnerProfileName: map['partnerProfileName']?.toString() ?? preset.partnerProfileName,
+      partnerProfileImage: map['partnerProfileImage']?.toString(),
+      kakaoPayBalance: (map['kakaoPayBalance'] as num?)?.toInt() ?? preset.kakaoPayBalance,
+      friends: preset.friends,
+      chatList: preset.chatList,
+      messages: msgs,
     );
   }
 }
