@@ -13,6 +13,9 @@ import '../../apps/safari/safari_window.dart';
 import '../../apps/terminal/terminal_window.dart';
 import '../../../../../apps/pdf_viewer/pdf_viewer_window.dart';
 import '../../../../../apps/telegram/telegram_window.dart';
+import '../../../../../apps/zigbang/zigbang_window.dart';
+import '../../../../../apps/naver/naver_window.dart';
+import '../../../../console/windows/apps/edge/edge_window.dart';
 import '../../../common/os_window_frame.dart';
 import 'apps/settings/macos27_settings_window.dart';
 import 'widgets/macos27_context_menu.dart';
@@ -232,6 +235,12 @@ class _Macos27ViewState extends State<Macos27View> {
         defaultSize = const Size(960, 680);
       } else if (appId == 'telegram') {
         defaultSize = const Size(920, 620);
+      } else if (appId == 'edge') {
+        defaultSize = const Size(880, 580);
+      } else if (appId == 'zigbang') {
+        defaultSize = const Size(960, 640);
+      } else if (appId == 'naver') {
+        defaultSize = const Size(1000, 660);
       } else if (appId == 'terminal') {
         defaultSize = const Size(680, 440);
       } else if (appId == 'settings') {
@@ -669,6 +678,34 @@ class _Macos27ViewState extends State<Macos27View> {
         );
       case 'telegram':
         return TelegramWindow(
+          width: win.size.width,
+          height: win.size.height,
+          style: WindowStyle.macos,
+          onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'edge':
+        return WindowsEdgeWindow(
+          width: win.size.width,
+          height: win.size.height,
+          style: WindowStyle.macos,
+          windowsVersion: '11',
+          onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'zigbang':
+        return ZigbangWindow(
+          width: win.size.width,
+          height: win.size.height,
+          style: WindowStyle.macos,
+          onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'naver':
+        return NaverWindow(
           width: win.size.width,
           height: win.size.height,
           style: WindowStyle.macos,

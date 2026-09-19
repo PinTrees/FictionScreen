@@ -5,6 +5,8 @@ import 'apps/calculator/calculator_window.dart';
 import 'apps/chrome/chrome_window.dart';
 import '../../../apps/pdf_viewer/pdf_viewer_window.dart';
 import '../../../apps/telegram/telegram_window.dart';
+import '../../../apps/zigbang/zigbang_window.dart';
+import '../../../apps/naver/naver_window.dart';
 import '../common/os_window_frame.dart';
 import 'apps/cmd/cmd_window.dart';
 import 'apps/edge/edge_window.dart';
@@ -398,6 +400,26 @@ class _WindowsViewState extends State<WindowsView> {
         onTap: () => widget.onOpenTemplate('kakaobank'),
       ),
       DesktopIconItem(
+        id: 'zigbang',
+        title: '직방',
+        icon: CupertinoIcons.house_alt_fill,
+        iconColor: const Color(0xFFFF7800),
+        gridX: 4,
+        gridY: 5,
+        isSystemApp: true,
+        onTap: () => _openWinApp('zigbang'),
+      ),
+      DesktopIconItem(
+        id: 'naver',
+        title: '네이버',
+        icon: CupertinoIcons.search_circle_fill,
+        iconColor: const Color(0xFF03C75A),
+        gridX: 4,
+        gridY: 6,
+        isSystemApp: true,
+        onTap: () => _openWinApp('naver'),
+      ),
+      DesktopIconItem(
         id: 'daangn',
         title: '당근마켓',
         imageAsset: 'assets/images/daangn_icon.webp',
@@ -462,6 +484,14 @@ class _WindowsViewState extends State<WindowsView> {
         defaultSize = const Size(960, 680);
       } else if (appId == 'telegram') {
         defaultSize = const Size(920, 620);
+      } else if (appId == 'chrome') {
+        defaultSize = const Size(900, 600);
+      } else if (appId == 'edge') {
+        defaultSize = const Size(880, 580);
+      } else if (appId == 'zigbang') {
+        defaultSize = const Size(960, 640);
+      } else if (appId == 'naver') {
+        defaultSize = const Size(1000, 660);
       } else if (widget.windowsVersion == '11') {
         if (appId == 'file_explorer' || appId == 'recycle_bin') {
           defaultSize = const Size(860, 560);
@@ -1366,6 +1396,32 @@ class _WindowsViewState extends State<WindowsView> {
         );
       case 'telegram':
         return TelegramWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'zigbang':
+        return ZigbangWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'naver':
+        return NaverWindow(
           width: win.size.width,
           height: win.size.height,
           isMaximized: win.isMaximized,

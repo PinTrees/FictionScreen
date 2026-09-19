@@ -1,61 +1,53 @@
 import 'package:flutter/cupertino.dart';
-import '../../../../../../apps/edge/data/edge_model.dart';
-import '../../../../../../apps/edge/edge_screen.dart';
-import '../../../common/os_window_frame.dart';
+import '../../pages/console/common/os_window_frame.dart';
+import 'data/zigbang_model.dart';
+import 'zigbang_screen.dart';
 
-/// Microsoft Edge / Internet Explorer 브라우저 창 (각 Windows 버전별 순정 헤드 디자인 자동 적용)
-class WindowsEdgeWindow extends StatefulWidget {
+/// 직방 데스크톱 MDI 윈도우 프레임 (OS별 순정 헤드 자동 적용)
+class ZigbangWindow extends StatefulWidget {
   final VoidCallback onClose;
   final VoidCallback? onMinimize;
   final VoidCallback? onMaximize;
   final Function(int layoutType, int zoneIndex)? onSnapLayout;
-  final Function(String templateId)? onOpenTemplate;
   final Function(DragStartDetails)? onTitleDragStart;
   final Function(DragUpdateDetails)? onTitleDragUpdate;
   final double width;
   final double height;
   final bool isMaximized;
   final WindowStyle style;
-  final String windowsVersion;
 
-  const WindowsEdgeWindow({
+  const ZigbangWindow({
     super.key,
     required this.onClose,
     this.onMinimize,
     this.onMaximize,
     this.onSnapLayout,
-    this.onOpenTemplate,
     this.onTitleDragStart,
     this.onTitleDragUpdate,
-    this.width = 820,
-    this.height = 540,
+    this.width = 960,
+    this.height = 640,
     this.isMaximized = false,
     this.style = WindowStyle.windows10,
-    this.windowsVersion = '11',
   });
 
   @override
-  State<WindowsEdgeWindow> createState() => _WindowsEdgeWindowState();
+  State<ZigbangWindow> createState() => _ZigbangWindowState();
 }
 
-class _WindowsEdgeWindowState extends State<WindowsEdgeWindow> {
-  late EdgeConfig _config;
+class _ZigbangWindowState extends State<ZigbangWindow> {
+  late ZigbangConfig _config;
 
   @override
   void initState() {
     super.initState();
-    _config = EdgeConfig.defaultPreset();
+    _config = ZigbangConfig.defaultPreset();
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool isLegacyIe = widget.windowsVersion == 'xp' || widget.windowsVersion == '7';
-    final String titleText = isLegacyIe ? 'Internet Explorer' : 'Microsoft Edge';
-
     return OsWindowFrame(
-      title: titleText,
-      iconAsset: 'assets/images/windows/edge.png',
-      icon: CupertinoIcons.globe,
+      title: '직방 (Zigbang) - 부동산 포털 & 아파트 실거래가',
+      icon: CupertinoIcons.house_alt_fill,
       style: widget.style,
       width: widget.width,
       height: widget.height,
@@ -66,10 +58,9 @@ class _WindowsEdgeWindowState extends State<WindowsEdgeWindow> {
       onSnapLayout: widget.onSnapLayout,
       onTitleDragStart: widget.onTitleDragStart,
       onTitleDragUpdate: widget.onTitleDragUpdate,
-      child: EdgeScreen(
+      child: ZigbangScreen(
         config: _config,
         onConfigChanged: (updated) => setState(() => _config = updated),
-        onOpenTemplate: widget.onOpenTemplate,
       ),
     );
   }

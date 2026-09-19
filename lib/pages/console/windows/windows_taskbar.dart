@@ -100,6 +100,8 @@ class WindowsTaskbar extends StatelessWidget {
                         _buildTaskbarIcon(null, Colors.transparent, '설정', () => (onOpenWinApp != null ? onOpenWinApp!('settings') : onOpenSettings()), imageAsset: 'assets/images/windows/settings/System.webp'),
                         _buildTaskbarIcon(null, Colors.transparent, 'Edge', () => onOpenWinApp?.call('edge'), imageAsset: 'assets/images/windows/edge.png'),
                         _buildTaskbarIcon(null, Colors.transparent, 'Chrome', () => onOpenWinApp?.call('chrome'), imageAsset: 'assets/images/windows/chrome.png'),
+                        _buildTaskbarIcon(CupertinoIcons.house_alt_fill, const Color(0xFFFF7800), '직방', () => onOpenWinApp?.call('zigbang')),
+                        _buildTaskbarIcon(CupertinoIcons.search_circle_fill, const Color(0xFF03C75A), '네이버', () => onOpenWinApp?.call('naver')),
                         _buildTaskbarIcon(null, Colors.transparent, '메모장', () => onOpenWinApp?.call('notepad'), imageAsset: 'assets/images/windows/notepad.png'),
                         _buildTaskbarIcon(null, Colors.transparent, '계산기', () => onOpenWinApp?.call('calculator'), imageAsset: 'assets/images/windows/calc.png'),
                         // 프로 크리에이티브 & 개발 툴
@@ -170,6 +172,10 @@ class WindowsTaskbar extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
+                  _buildTaskbarIcon(null, Colors.transparent, 'Edge', () => onOpenWinApp?.call('edge'), imageAsset: 'assets/images/windows/edge.png'),
+                  _buildTaskbarIcon(null, Colors.transparent, 'Chrome', () => onOpenWinApp?.call('chrome'), imageAsset: 'assets/images/windows/chrome.png'),
+                  _buildTaskbarIcon(CupertinoIcons.house_alt_fill, const Color(0xFFFF7800), '직방', () => onOpenWinApp?.call('zigbang')),
+                  _buildTaskbarIcon(CupertinoIcons.search_circle_fill, const Color(0xFF03C75A), '네이버', () => onOpenWinApp?.call('naver')),
                   _buildTaskbarIcon(null, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
                   _buildTaskbarIcon(null, const Color(0xFFE53935), 'DaVinci Resolve', () => onOpenTemplate('davinci_resolve'), imageAsset: 'assets/images/davinci_resolve_icon.webp'),
                   _buildTaskbarIcon(null, const Color(0xFF68217A), 'Visual Studio 2026', () => onOpenTemplate('visual_studio'), imageAsset: 'assets/images/visual_studio_icon.webp'),
@@ -237,6 +243,9 @@ class WindowsTaskbar extends StatelessWidget {
                     children: [
                       _buildTaskbarIcon(null, const Color(0xFF0078D7), '파일 탐색기', () => onOpenWinApp?.call('file_explorer'), imageAsset: 'assets/images/windows/explorer.png'),
                       _buildTaskbarIcon(null, const Color(0xFF0078D7), 'Internet Explorer', () => onOpenWinApp?.call('edge'), imageAsset: 'assets/images/windows/edge.png'),
+                      _buildTaskbarIcon(null, const Color(0xFF4285F4), 'Chrome', () => onOpenWinApp?.call('chrome'), imageAsset: 'assets/images/windows/chrome.png'),
+                      _buildTaskbarIcon(CupertinoIcons.house_alt_fill, const Color(0xFFFF7800), '직방', () => onOpenWinApp?.call('zigbang')),
+                      _buildTaskbarIcon(CupertinoIcons.search_circle_fill, const Color(0xFF03C75A), '네이버', () => onOpenWinApp?.call('naver')),
                       _buildTaskbarIcon(null, const Color(0xFFE53935), 'Windows Media Player', () => onOpenTemplate('youtube'), imageAsset: 'assets/images/windows/vid.png'),
                       _buildTaskbarIcon(null, const Color(0xFFFEE500), '카카오톡', () => onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
                       _buildTaskbarIcon(null, const Color(0xFFE53935), 'DaVinci Resolve', () => onOpenTemplate('davinci_resolve'), imageAsset: 'assets/images/davinci_resolve_icon.webp'),
@@ -367,6 +376,7 @@ class WindowsTaskbar extends StatelessWidget {
               children: [
                 _buildXpQuickIcon('assets/images/windows/desk.png', '바탕 화면 보기', () {}),
                 _buildXpQuickIcon('assets/images/windows/edge.png', 'Internet Explorer', () => onOpenWinApp?.call('edge')),
+                _buildXpQuickIcon('assets/images/windows/chrome.png', 'Chrome', () => onOpenWinApp?.call('chrome')),
                 _buildXpQuickIcon('assets/images/windows/vid.png', 'Windows Media Player', () => onOpenTemplate('youtube')),
               ],
             ),
@@ -386,6 +396,8 @@ class WindowsTaskbar extends StatelessWidget {
                   _buildXpTaskbarTab('계산기', 'assets/images/windows/calc.png', () => onOpenWinApp?.call('calculator')),
                   _buildXpTaskbarTab('PDF 서식 스튜디오', 'assets/images/windows/docs.png', () => onOpenWinApp?.call('pdf_viewer')),
                   _buildXpTaskbarTab('Telegram', 'assets/images/windows/desk.png', () => onOpenWinApp?.call('telegram')),
+                  _buildXpTaskbarTab('직방', 'assets/images/windows/desk.png', () => onOpenWinApp?.call('zigbang')),
+                  _buildXpTaskbarTab('네이버', 'assets/images/windows/desk.png', () => onOpenWinApp?.call('naver')),
                   _buildXpTaskbarTab('카카오톡', 'assets/images/kakaotalk_icon.webp', () => onOpenTemplate('kakaotalk')),
                   _buildXpTaskbarTab('DaVinci Resolve', 'assets/images/davinci_resolve_icon.webp', () => onOpenTemplate('davinci_resolve')),
                 ],

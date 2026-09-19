@@ -10,6 +10,12 @@ import '../../apps/notes/notes_window.dart';
 import '../../apps/photos/photos_window.dart';
 import '../../apps/safari/safari_window.dart';
 import '../../apps/terminal/terminal_window.dart';
+import '../../../../../apps/pdf_viewer/pdf_viewer_window.dart';
+import '../../../../../apps/telegram/telegram_window.dart';
+import '../../../../../apps/zigbang/zigbang_window.dart';
+import '../../../../../apps/naver/naver_window.dart';
+import '../../../../console/windows/apps/edge/edge_window.dart';
+import '../../../common/os_window_frame.dart';
 import '../../macos_dock.dart';
 import '../../macos_menubar.dart';
 import '../macos27/apps/settings/macos27_settings_window.dart';
@@ -143,6 +149,16 @@ class _SequoiaViewState extends State<SequoiaView> {
         return MusicWindow(width: 740, height: 480, onClose: () => setState(() => _openApps.remove('music')), onTitleDragStart: (_) {}, onTitleDragUpdate: (_) {});
       case 'chrome':
         return MacosChromeWindow(width: 780, height: 500, onClose: () => setState(() => _openApps.remove('chrome')), onOpenTemplate: widget.onOpenTemplate, onTitleDragStart: (_) {}, onTitleDragUpdate: (_) {});
+      case 'edge':
+        return WindowsEdgeWindow(width: 820, height: 540, style: WindowStyle.macos, onClose: () => setState(() => _openApps.remove('edge')), onTitleDragStart: (_) {}, onTitleDragUpdate: (_) {});
+      case 'zigbang':
+        return ZigbangWindow(width: 880, height: 580, style: WindowStyle.macos, onClose: () => setState(() => _openApps.remove('zigbang')), onTitleDragStart: (_) {}, onTitleDragUpdate: (_) {});
+      case 'naver':
+        return NaverWindow(width: 920, height: 600, style: WindowStyle.macos, onClose: () => setState(() => _openApps.remove('naver')), onTitleDragStart: (_) {}, onTitleDragUpdate: (_) {});
+      case 'pdf_viewer':
+        return PdfViewerWindow(width: 880, height: 580, style: WindowStyle.macos, onClose: () => setState(() => _openApps.remove('pdf_viewer')), onTitleDragStart: (_) {}, onTitleDragUpdate: (_) {});
+      case 'telegram':
+        return TelegramWindow(width: 860, height: 560, style: WindowStyle.macos, onClose: () => setState(() => _openApps.remove('telegram')), onTitleDragStart: (_) {}, onTitleDragUpdate: (_) {});
       case 'finder':
       default:
         return FinderWindow(width: 780, height: 500, onClose: () => setState(() => _openApps.remove(appId)), onOpenTemplate: widget.onOpenTemplate, onTitleDragStart: (_) {}, onTitleDragUpdate: (_) {});

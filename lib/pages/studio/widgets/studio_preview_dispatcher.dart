@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
-import '../../../apps/telegram/data/telegram_model.dart';
-import '../../../apps/telegram/telegram_screen.dart';
 import '../../../apps/blind/blind_screen.dart';
 import '../../../apps/blind/data/blind_model.dart';
-import '../../../apps/discord/discord_screen.dart';
-import '../../../apps/discord/data/discord_model.dart';
-import '../../../apps/photoshop/photoshop_screen.dart';
-import '../../../apps/photoshop/data/photoshop_model.dart';
-import '../../../apps/visual_studio/visual_studio_screen.dart';
-import '../../../apps/visual_studio/data/visual_studio_model.dart';
 import '../../../apps/chrome/chrome_screen.dart';
 import '../../../apps/chrome/data/chrome_model.dart';
-import '../../../apps/davinci_resolve/davinci_resolve_screen.dart';
-import '../../../apps/davinci_resolve/data/davinci_resolve_model.dart';
 import '../../../apps/coupang/coupang_screen.dart';
 import '../../../apps/coupang/data/coupang_model.dart';
 import '../../../apps/daangn/daangn_screen.dart';
 import '../../../apps/daangn/data/daangn_model.dart';
+import '../../../apps/davinci_resolve/davinci_resolve_screen.dart';
+import '../../../apps/davinci_resolve/data/davinci_resolve_model.dart';
 import '../../../apps/delivery/data/delivery_model.dart';
 import '../../../apps/delivery/delivery_screen.dart';
+import '../../../apps/discord/data/discord_model.dart';
+import '../../../apps/discord/discord_screen.dart';
+import '../../../apps/edge/data/edge_model.dart';
+import '../../../apps/edge/edge_screen.dart';
 import '../../../apps/instagram/data/instagram_model.dart';
 import '../../../apps/instagram/instagram_screen.dart';
 import '../../../apps/kakaobank/data/kakaobank_model.dart';
@@ -27,14 +23,22 @@ import '../../../apps/kakaotalk/data/kakaotalk_model.dart';
 import '../../../apps/kakaotalk/kakaotalk_screen.dart';
 import '../../../apps/lottery/data/lottery_model.dart';
 import '../../../apps/lottery/lottery_screen.dart';
+import '../../../apps/naver/data/naver_model.dart';
+import '../../../apps/naver/naver_screen.dart';
 import '../../../apps/netflix/data/netflix_model.dart';
 import '../../../apps/netflix/netflix_screen.dart';
+import '../../../apps/photoshop/data/photoshop_model.dart';
+import '../../../apps/photoshop/photoshop_screen.dart';
 import '../../../apps/pinterest/data/pinterest_model.dart';
 import '../../../apps/pinterest/pinterest_screen.dart';
+import '../../../apps/telegram/data/telegram_model.dart';
+import '../../../apps/telegram/telegram_screen.dart';
 import '../../../apps/toss/data/toss_model.dart';
 import '../../../apps/toss/toss_screen.dart';
 import '../../../apps/upbit/data/upbit_model.dart';
 import '../../../apps/upbit/upbit_screen.dart';
+import '../../../apps/visual_studio/data/visual_studio_model.dart';
+import '../../../apps/visual_studio/visual_studio_screen.dart';
 import '../../../apps/windows_bsod/data/windows_bsod_model.dart';
 import '../../../apps/windows_bsod/windows_bsod_screen.dart';
 import '../../../apps/windows_update/data/windows_update_model.dart';
@@ -45,6 +49,8 @@ import '../../../apps/yanolja/data/yanolja_model.dart';
 import '../../../apps/yanolja/yanolja_screen.dart';
 import '../../../apps/youtube/data/youtube_model.dart';
 import '../../../apps/youtube/youtube_screen.dart';
+import '../../../apps/zigbang/data/zigbang_model.dart';
+import '../../../apps/zigbang/zigbang_screen.dart';
 
 /// 스튜디오 템플릿별 실시간 프리뷰 위젯 순수 디스패처
 class StudioPreviewDispatcher extends StatelessWidget {
@@ -67,6 +73,15 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final UpbitConfig upbitConfig;
   final BlindConfig blindConfig;
   final DiscordConfig discordConfig;
+  final PhotoshopConfig photoshopConfig;
+  final VisualStudioConfig visualStudioConfig;
+  final ChromeConfig chromeConfig;
+  final DavinciConfig davinciConfig;
+  final TelegramConfig? telegramConfig;
+  final ZigbangConfig? zigbangConfig;
+  final NaverConfig? naverConfig;
+  final EdgeConfig? edgeConfig;
+
   final ValueChanged<KakaoBankConfig>? onKakaoBankChanged;
   final ValueChanged<DaangnConfig>? onDaangnChanged;
   final ValueChanged<YoutubeConfig>? onYoutubeChanged;
@@ -77,6 +92,14 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final ValueChanged<UpbitConfig>? onUpbitChanged;
   final ValueChanged<BlindConfig>? onBlindChanged;
   final ValueChanged<DiscordConfig>? onDiscordChanged;
+  final ValueChanged<PhotoshopConfig>? onPhotoshopChanged;
+  final ValueChanged<VisualStudioConfig>? onVisualStudioChanged;
+  final ValueChanged<ChromeConfig>? onChromeChanged;
+  final ValueChanged<DavinciConfig>? onDavinciChanged;
+  final ValueChanged<TelegramConfig>? onTelegramChanged;
+  final ValueChanged<ZigbangConfig>? onZigbangChanged;
+  final ValueChanged<NaverConfig>? onNaverChanged;
+  final ValueChanged<EdgeConfig>? onEdgeChanged;
 
   const StudioPreviewDispatcher({
     super.key,
@@ -103,6 +126,10 @@ class StudioPreviewDispatcher extends StatelessWidget {
     required this.visualStudioConfig,
     required this.chromeConfig,
     required this.davinciConfig,
+    this.telegramConfig,
+    this.zigbangConfig,
+    this.naverConfig,
+    this.edgeConfig,
     this.onKakaoBankChanged,
     this.onDaangnChanged,
     this.onYoutubeChanged,
@@ -117,25 +144,35 @@ class StudioPreviewDispatcher extends StatelessWidget {
     this.onVisualStudioChanged,
     this.onChromeChanged,
     this.onDavinciChanged,
-    this.telegramConfig,
     this.onTelegramChanged,
+    this.onZigbangChanged,
+    this.onNaverChanged,
+    this.onEdgeChanged,
   });
-
-  final PhotoshopConfig photoshopConfig;
-  final ValueChanged<PhotoshopConfig>? onPhotoshopChanged;
-  final VisualStudioConfig visualStudioConfig;
-  final ValueChanged<VisualStudioConfig>? onVisualStudioChanged;
-  final ChromeConfig chromeConfig;
-  final ValueChanged<ChromeConfig>? onChromeChanged;
-  final DavinciConfig davinciConfig;
-  final ValueChanged<DavinciConfig>? onDavinciChanged;
-  final TelegramConfig? telegramConfig;
-  final ValueChanged<TelegramConfig>? onTelegramChanged;
 
   @override
   Widget build(BuildContext context) {
     switch (templateId) {
-      case 'telegram': return TelegramScreen(config: telegramConfig ?? TelegramConfig.defaultPreset(), onConfigChanged: onTelegramChanged);
+      case 'zigbang':
+        return ZigbangScreen(
+          config: zigbangConfig ?? ZigbangConfig.defaultPreset(),
+          onConfigChanged: onZigbangChanged ?? (_) {},
+        );
+      case 'naver':
+        return NaverScreen(
+          config: naverConfig ?? NaverConfig.defaultPreset(),
+          onConfigChanged: onNaverChanged ?? (_) {},
+        );
+      case 'edge':
+        return EdgeScreen(
+          config: edgeConfig ?? EdgeConfig.defaultPreset(),
+          onConfigChanged: onEdgeChanged,
+        );
+      case 'telegram':
+        return TelegramScreen(
+          config: telegramConfig ?? TelegramConfig.defaultPreset(),
+          onConfigChanged: onTelegramChanged,
+        );
       case 'toss': return TossScreen(config: tossConfig);
       case 'kakaobank': return KakaoBankScreen(config: kakaobankConfig, onConfigChanged: onKakaoBankChanged);
       case 'x_twitter': return XTwitterScreen(config: twitterConfig);
