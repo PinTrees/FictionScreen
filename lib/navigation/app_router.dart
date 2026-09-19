@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../pages/console_page.dart';
 import '../pages/home_page.dart';
+import '../pages/legal/legal_page.dart';
 import '../pages/login_page.dart';
 import '../pages/studio_page.dart';
 
@@ -39,6 +40,16 @@ class AppRouter {
           final templateId = state.pathParameters['templateId'] ?? 'kakaotalk';
           return StudioPage(templateId: templateId);
         },
+      ),
+      GoRoute(
+        path: '/terms',
+        name: 'terms',
+        builder: (context, state) => const LegalPage(initialTab: 'terms'),
+      ),
+      GoRoute(
+        path: '/privacy',
+        name: 'privacy',
+        builder: (context, state) => const LegalPage(initialTab: 'privacy'),
       ),
     ],
   );

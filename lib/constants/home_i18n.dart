@@ -70,6 +70,8 @@ class HomeI18n {
       'footerPrimaryBtn': '가상 OS 콘솔 시작하기',
       'footerSecondaryBtn': '대표 템플릿 둘러보기',
       'footerRights': '© 2026 FictionScreen Studio. All rights reserved.',
+      'termsOfService': '이용약관',
+      'privacyPolicy': '개인정보 처리방침',
     },
     'en': {
       // Top App Bar
@@ -141,6 +143,8 @@ class HomeI18n {
       'footerPrimaryBtn': 'Launch Virtual OS Studio',
       'footerSecondaryBtn': 'Explore Signature Templates',
       'footerRights': '© 2026 FictionScreen Studio. All rights reserved.',
+      'termsOfService': 'Terms of Service',
+      'privacyPolicy': 'Privacy Policy',
     },
   };
 

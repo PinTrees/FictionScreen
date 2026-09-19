@@ -203,6 +203,45 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 11,
                           ),
                         ),
+                        const SizedBox(height: 16),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: () => context.push('/terms'),
+                              child: Text(
+                                '이용약관',
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.55),
+                                  fontSize: 11.5,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6),
+                              child: Text(
+                                '•',
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.25),
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () => context.push('/privacy'),
+                              child: Text(
+                                '개인정보 처리방침',
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.55),
+                                  fontSize: 11.5,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),

@@ -227,6 +227,53 @@ class HomeFooter extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 18),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () => context.push('/terms'),
+                      borderRadius: BorderRadius.circular(4),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        child: Text(
+                          HomeI18n.t('termsOfService', isEnglish: isEnglish),
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF475569),
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.underline,
+                            decorationColor: isDarkMode ? Colors.white.withValues(alpha: 0.3) : const Color(0xFF94A3B8),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '•',
+                      style: TextStyle(
+                        color: isDarkMode ? Colors.white.withValues(alpha: 0.25) : const Color(0xFFCBD5E1),
+                        fontSize: 12,
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () => context.push('/privacy'),
+                      borderRadius: BorderRadius.circular(4),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        child: Text(
+                          HomeI18n.t('privacyPolicy', isEnglish: isEnglish),
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF475569),
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline,
+                            decorationColor: isDarkMode ? Colors.white.withValues(alpha: 0.3) : const Color(0xFF94A3B8),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
                 Text(
                   '© 2026 FictionScreen. All rights reserved.',
                   style: TextStyle(
