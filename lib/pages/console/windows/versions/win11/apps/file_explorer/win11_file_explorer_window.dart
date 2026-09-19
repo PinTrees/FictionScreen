@@ -50,11 +50,14 @@ class _Win11FileExplorerWindowState extends State<Win11FileExplorerWindow> {
 
   // 최근 사용한 파일 목록
   final List<Map<String, dynamic>> _recentFiles = [
+    {'title': '다빈치리졸브_색보정프로젝트.drp', 'date': '오늘 19:40', 'type': 'DaVinci Resolve 프로젝트', 'size': '1.2 GB', 'app': 'davinci_resolve', 'icon': CupertinoIcons.videocam_circle_fill},
+    {'title': 'FictionScreen_Core.sln', 'date': '오늘 18:55', 'type': 'Visual Studio 솔루션', 'size': '512 MB', 'app': 'visual_studio', 'icon': CupertinoIcons.chevron_left_slash_chevron_right},
+    {'title': '포토샵_포스터_디자인.psd', 'date': '오늘 18:30', 'type': 'Photoshop 문서', 'size': '256 MB', 'app': 'photoshop', 'icon': CupertinoIcons.paintbrush_fill},
+    {'title': '디스코드_커뮤니티_서버.json', 'date': '오늘 18:28', 'type': 'Discord 설정', 'size': '128 MB', 'app': 'discord', 'icon': CupertinoIcons.game_controller_solid},
     {'title': '카카오톡_대화내용_백업.txt', 'date': '오늘 18:24', 'type': '텍스트 문서', 'size': '42 KB', 'app': 'kakaotalk', 'icon': CupertinoIcons.doc_text},
     {'title': '로또_1등_당첨영수증.png', 'date': '오늘 16:10', 'type': 'PNG 이미지', 'size': '1.2 MB', 'app': 'lottery', 'icon': CupertinoIcons.photo},
     {'title': '넷플릭스_오리지널_기획안.docx', 'date': '어제 21:05', 'type': 'Word 문서', 'size': '520 KB', 'app': 'netflix', 'icon': CupertinoIcons.doc_richtext},
     {'title': '쿠팡_로켓배송_주문서.pdf', 'date': '2024-10-04', 'type': 'PDF 문서', 'size': '2.4 MB', 'app': 'coupang', 'icon': CupertinoIcons.doc_fill},
-    {'title': '유튜브_썸네일_최종.psd', 'date': '2024-10-02', 'type': '포토샵 파일', 'size': '45 MB', 'app': 'youtube', 'icon': CupertinoIcons.photo_fill_on_rectangle_fill},
     {'title': '인스타그램_릴스_편집본.mp4', 'date': '2024-09-28', 'type': 'MP4 동영상', 'size': '180 MB', 'app': 'instagram', 'icon': CupertinoIcons.play_circle_fill},
   ];
 

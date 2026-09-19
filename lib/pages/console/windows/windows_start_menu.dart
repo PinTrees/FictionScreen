@@ -160,6 +160,17 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                     child: ListView(
                       children: [
                         _buildListTile('카카오톡 채팅', null, const Color(0xFFFEE500), () => widget.onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
+                        _buildListTile('DaVinci Resolve Studio', CupertinoIcons.videocam_circle_fill, const Color(0xFFE53935), () => widget.onOpenTemplate('davinci_resolve'), imageAsset: 'assets/images/davinci_resolve_icon.webp'),
+                        _buildListTile('Visual Studio 2026', CupertinoIcons.chevron_left_slash_chevron_right, const Color(0xFF68217A), () => widget.onOpenTemplate('visual_studio'), imageAsset: 'assets/images/visual_studio_icon.webp'),
+                        _buildListTile('Adobe Photoshop 2026', CupertinoIcons.paintbrush_fill, const Color(0xFF31A8FF), () => widget.onOpenTemplate('photoshop'), imageAsset: 'assets/images/photoshop_icon.webp'),
+                        _buildListTile('Discord 커뮤니티', CupertinoIcons.game_controller_solid, const Color(0xFF5865F2), () => widget.onOpenTemplate('discord'), imageAsset: 'assets/images/discord_icon.webp'),
+                        _buildListTile('블라인드 익명 커뮤니티', CupertinoIcons.building_2_fill, const Color(0xFFDA3238), () => widget.onOpenTemplate('blind'), imageAsset: 'assets/images/blind_icon.webp'),
+                        _buildListTile('업비트 가상자산', CupertinoIcons.chart_bar_alt_fill, const Color(0xFF093687), () => widget.onOpenTemplate('upbit'), imageAsset: 'assets/images/upbit_icon.webp'),
+                        _buildListTile('야놀자 숙소 & 여행', CupertinoIcons.bed_double_fill, const Color(0xFFFF3478), () => widget.onOpenTemplate('yanolja'), imageAsset: 'assets/images/yanolja_icon.webp'),
+                        _buildListTile('카카오뱅크 통장', CupertinoIcons.creditcard_fill, const Color(0xFFFEE500), () => widget.onOpenTemplate('kakaobank'), imageAsset: 'assets/images/kakaobank_icon.webp'),
+                        _buildListTile('당근마켓 중고거래', CupertinoIcons.cart_fill, const Color(0xFFFF6F0F), () => widget.onOpenTemplate('daangn'), imageAsset: 'assets/images/daangn_icon.webp'),
+                        _buildListTile('토스 (Toss)', CupertinoIcons.money_dollar_circle_fill, const Color(0xFF0050FF), () => widget.onOpenTemplate('toss')),
+                        _buildListTile('X (Twitter)', CupertinoIcons.conversation_bubble, const Color(0xFF1D9BF0), () => widget.onOpenTemplate('x_twitter')),
                         _buildListTile('블루스크린 (BSOD)', CupertinoIcons.device_desktop, const Color(0xFF0078D7), () => widget.onOpenTemplate('windows_bsod')),
                         _buildListTile('YouTube 스튜디오', CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), () => widget.onOpenTemplate('youtube')),
                         _buildListTile('Instagram 피드', null, const Color(0xFFE1306C), () => widget.onOpenTemplate('instagram'), imageAsset: 'assets/images/instagram_icon.webp'),
@@ -193,12 +204,14 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                       crossAxisSpacing: 8,
                       childAspectRatio: 1.2,
                       children: [
+                        _buildTileBox('DaVinci Resolve', null, const Color(0xFF1E212B), () => widget.onOpenTemplate('davinci_resolve'), imageAsset: 'assets/images/davinci_resolve_icon.webp'),
+                        _buildTileBox('VS 2026', null, const Color(0xFF2E124D), () => widget.onOpenTemplate('visual_studio'), imageAsset: 'assets/images/visual_studio_icon.webp'),
+                        _buildTileBox('Photoshop', null, const Color(0xFF001E36), () => widget.onOpenTemplate('photoshop'), imageAsset: 'assets/images/photoshop_icon.webp'),
+                        _buildTileBox('Discord', null, const Color(0xFF5865F2), () => widget.onOpenTemplate('discord'), imageAsset: 'assets/images/discord_icon.webp'),
                         _buildTileBox('카톡 캡처', null, const Color(0xFFFEE500), () => widget.onOpenTemplate('kakaotalk'), iconColor: Colors.black87, imageAsset: 'assets/images/kakaotalk_icon.webp'),
                         _buildTileBox('Netflix', null, const Color(0xFFE50914), () => widget.onOpenTemplate('netflix'), imageAsset: 'assets/images/netflix_icon.webp'),
                         _buildTileBox('YouTube', CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), () => widget.onOpenTemplate('youtube')),
                         _buildTileBox('Instagram', null, const Color(0xFFE1306C), () => widget.onOpenTemplate('instagram'), imageAsset: 'assets/images/instagram_icon.webp'),
-                        _buildTileBox('쿠팡', null, const Color(0xFFC72424), () => widget.onOpenTemplate('coupang'), imageAsset: 'assets/images/coupang_icon.webp'),
-                        _buildTileBox('배달의민족', CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), () => widget.onOpenTemplate('delivery')),
                       ],
                     ),
                   ),
@@ -241,7 +254,16 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                         child: ListView(
                           children: [
+                            _buildWin7ProgramItem('DaVinci Resolve Studio', null, const Color(0xFFE53935), () => widget.onOpenTemplate('davinci_resolve'), imageAsset: 'assets/images/davinci_resolve_icon.webp'),
+                            _buildWin7ProgramItem('Visual Studio 2026', null, const Color(0xFF68217A), () => widget.onOpenTemplate('visual_studio'), imageAsset: 'assets/images/visual_studio_icon.webp'),
+                            _buildWin7ProgramItem('Adobe Photoshop 2026', null, const Color(0xFF31A8FF), () => widget.onOpenTemplate('photoshop'), imageAsset: 'assets/images/photoshop_icon.webp'),
+                            _buildWin7ProgramItem('Discord 커뮤니티', null, const Color(0xFF5865F2), () => widget.onOpenTemplate('discord'), imageAsset: 'assets/images/discord_icon.webp'),
                             _buildWin7ProgramItem('카카오톡 채팅방', null, const Color(0xFFFEE500), () => widget.onOpenTemplate('kakaotalk'), imageAsset: 'assets/images/kakaotalk_icon.webp'),
+                            _buildWin7ProgramItem('블라인드 익명 게시판', null, const Color(0xFFDA3238), () => widget.onOpenTemplate('blind'), imageAsset: 'assets/images/blind_icon.webp'),
+                            _buildWin7ProgramItem('업비트 가상자산 시세', null, const Color(0xFF093687), () => widget.onOpenTemplate('upbit'), imageAsset: 'assets/images/upbit_icon.webp'),
+                            _buildWin7ProgramItem('야놀자 숙소/여행', null, const Color(0xFFFF3478), () => widget.onOpenTemplate('yanolja'), imageAsset: 'assets/images/yanolja_icon.webp'),
+                            _buildWin7ProgramItem('카카오뱅크 통장/이체', null, const Color(0xFFFEE500), () => widget.onOpenTemplate('kakaobank'), imageAsset: 'assets/images/kakaobank_icon.webp'),
+                            _buildWin7ProgramItem('당근마켓 중고거래', null, const Color(0xFFFF6F0F), () => widget.onOpenTemplate('daangn'), imageAsset: 'assets/images/daangn_icon.webp'),
                             _buildWin7ProgramItem('Windows 블루스크린', CupertinoIcons.device_desktop, const Color(0xFF0078D7), () => widget.onOpenTemplate('windows_bsod')),
                             _buildWin7ProgramItem('YouTube 비디오 에디터', CupertinoIcons.play_arrow_solid, const Color(0xFFFF0000), () => widget.onOpenTemplate('youtube')),
                             _buildWin7ProgramItem('Instagram 소셜 피드', null, const Color(0xFFE1306C), () => widget.onOpenTemplate('instagram'), imageAsset: 'assets/images/instagram_icon.webp'),
@@ -478,7 +500,7 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
         ),
         const SizedBox(height: 8),
 
-        // Row 2 (6 apps + 2 empty placeholders for exact 8-column alignment)
+        // Row 2 (8 apps)
         Row(
           children: [
             _buildWin11AppItem('LinkedIn', null, () {}, customIcon: _buildLinkedInIcon()),
@@ -487,8 +509,78 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
             _buildWin11AppItem('메모장', 'assets/images/windows/notepad.png', () => widget.onOpenWinApp?.call('notepad')),
             _buildWin11AppItem('캡처 도구', 'assets/images/windows/snip.png', () => widget.onOpenWinApp?.call('snip')),
             _buildWin11AppItem('파일 탐색기', 'assets/images/windows/explorer.png', () => widget.onOpenWinApp?.call('file_explorer')),
-            const Expanded(child: SizedBox()),
-            const Expanded(child: SizedBox()),
+            _buildWin11AppItem('DaVinci Resolve', 'assets/images/davinci_resolve_icon.webp', () => widget.onOpenTemplate('davinci_resolve')),
+            _buildWin11AppItem('VS 2026', 'assets/images/visual_studio_icon.webp', () => widget.onOpenTemplate('visual_studio')),
+          ],
+        ),
+        const SizedBox(height: 8),
+
+        // Row 3 (8 apps)
+        Row(
+          children: [
+            _buildWin11AppItem('Photoshop', 'assets/images/photoshop_icon.webp', () => widget.onOpenTemplate('photoshop')),
+            _buildWin11AppItem('Discord', 'assets/images/discord_icon.webp', () => widget.onOpenTemplate('discord')),
+            _buildWin11AppItem('블라인드', 'assets/images/blind_icon.webp', () => widget.onOpenTemplate('blind')),
+            _buildWin11AppItem('업비트', 'assets/images/upbit_icon.webp', () => widget.onOpenTemplate('upbit')),
+            _buildWin11AppItem('야놀자', 'assets/images/yanolja_icon.webp', () => widget.onOpenTemplate('yanolja')),
+            _buildWin11AppItem('카카오뱅크', 'assets/images/kakaobank_icon.webp', () => widget.onOpenTemplate('kakaobank')),
+            _buildWin11AppItem('당근마켓', 'assets/images/daangn_icon.webp', () => widget.onOpenTemplate('daangn')),
+            _buildWin11AppItem('카카오톡', 'assets/images/kakaotalk_icon.webp', () => widget.onOpenTemplate('kakaotalk')),
+          ],
+        ),
+        const SizedBox(height: 8),
+
+        // Row 4 (8 apps)
+        Row(
+          children: [
+            _buildWin11AppItem('쿠팡', 'assets/images/coupang_icon.webp', () => widget.onOpenTemplate('coupang')),
+            _buildWin11AppItem('Netflix', 'assets/images/netflix_icon.webp', () => widget.onOpenTemplate('netflix')),
+            _buildWin11AppItem(
+              'YouTube',
+              null,
+              () => widget.onOpenTemplate('youtube'),
+              customIcon: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(color: const Color(0xFFFF0000), borderRadius: BorderRadius.circular(6)),
+                child: const Icon(CupertinoIcons.play_arrow_solid, color: Colors.white, size: 18),
+              ),
+            ),
+            _buildWin11AppItem('Instagram', 'assets/images/instagram_icon.webp', () => widget.onOpenTemplate('instagram')),
+            _buildWin11AppItem('동행복권', 'assets/images/lottery_icon.webp', () => widget.onOpenTemplate('lottery')),
+            _buildWin11AppItem(
+              '토스',
+              null,
+              () => widget.onOpenTemplate('toss'),
+              customIcon: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(color: const Color(0xFF0050FF), borderRadius: BorderRadius.circular(6)),
+                child: const Icon(CupertinoIcons.money_dollar_circle_fill, color: Colors.white, size: 20),
+              ),
+            ),
+            _buildWin11AppItem(
+              'X (트위터)',
+              null,
+              () => widget.onOpenTemplate('x_twitter'),
+              customIcon: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(6), border: Border.all(color: Colors.white24)),
+                child: const Center(child: Text('𝕏', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
+              ),
+            ),
+            _buildWin11AppItem(
+              '배달의민족',
+              null,
+              () => widget.onOpenTemplate('delivery'),
+              customIcon: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(color: const Color(0xFF2AC1BC), borderRadius: BorderRadius.circular(6)),
+                child: const Icon(CupertinoIcons.bag_fill, color: Colors.white, size: 18),
+              ),
+            ),
           ],
         ),
       ],
@@ -674,9 +766,31 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
               ),
             ),
             const SizedBox(width: 8),
-            const Expanded(child: SizedBox()),
+            Expanded(
+              child: _buildCategoryFolderCard(
+                '전문가 도구',
+                [
+                  'assets/images/davinci_resolve_icon.webp',
+                  'assets/images/visual_studio_icon.webp',
+                  'assets/images/photoshop_icon.webp',
+                  'assets/images/discord_icon.webp',
+                ],
+                () => widget.onOpenTemplate('davinci_resolve'),
+              ),
+            ),
             const SizedBox(width: 8),
-            const Expanded(child: SizedBox()),
+            Expanded(
+              child: _buildCategoryFolderCard(
+                '라이프 & 금융',
+                [
+                  'assets/images/blind_icon.webp',
+                  'assets/images/upbit_icon.webp',
+                  'assets/images/yanolja_icon.webp',
+                  'assets/images/kakaobank_icon.webp',
+                ],
+                () => widget.onOpenTemplate('blind'),
+              ),
+            ),
           ],
         ),
       ],
@@ -917,6 +1031,17 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
       {'name': '캡처 도구', 'icon': 'assets/images/windows/snip.png', 'action': () => widget.onOpenWinApp?.call('snip')},
       {'name': '파일 탐색기', 'icon': 'assets/images/windows/explorer.png', 'action': () => widget.onOpenWinApp?.call('file_explorer')},
       {'name': '휴지통', 'icon': 'assets/images/windows/recycle_bin.png', 'action': () => widget.onOpenWinApp?.call('recycle_bin')},
+      {'name': 'DaVinci Resolve Studio (다빈치 리졸브 영상 편집)', 'icon': 'assets/images/davinci_resolve_icon.webp', 'action': () => widget.onOpenTemplate('davinci_resolve')},
+      {'name': 'Visual Studio 2026 Professional (비주얼 스튜디오)', 'icon': 'assets/images/visual_studio_icon.webp', 'action': () => widget.onOpenTemplate('visual_studio')},
+      {'name': 'Adobe Photoshop 2026 (포토샵 그래픽 에디터)', 'icon': 'assets/images/photoshop_icon.webp', 'action': () => widget.onOpenTemplate('photoshop')},
+      {'name': 'Discord (디스코드 커뮤니티)', 'icon': 'assets/images/discord_icon.webp', 'action': () => widget.onOpenTemplate('discord')},
+      {'name': '블라인드 (Blind 직장인 커뮤니티)', 'icon': 'assets/images/blind_icon.webp', 'action': () => widget.onOpenTemplate('blind')},
+      {'name': '업비트 (Upbit 가상자산 거래소)', 'icon': 'assets/images/upbit_icon.webp', 'action': () => widget.onOpenTemplate('upbit')},
+      {'name': '야놀자 (Yanolja 숙소 및 여행)', 'icon': 'assets/images/yanolja_icon.webp', 'action': () => widget.onOpenTemplate('yanolja')},
+      {'name': '카카오뱅크 (KakaoBank 통장 및 이체)', 'icon': 'assets/images/kakaobank_icon.webp', 'action': () => widget.onOpenTemplate('kakaobank')},
+      {'name': '당근마켓 (Daangn 중고거래)', 'icon': 'assets/images/daangn_icon.webp', 'action': () => widget.onOpenTemplate('daangn')},
+      {'name': '토스 (Toss 송금 및 계좌)', 'icon': null, 'action': () => widget.onOpenTemplate('toss')},
+      {'name': 'X (Twitter 트위터 소셜)', 'icon': null, 'action': () => widget.onOpenTemplate('x_twitter')},
       {'name': '카카오톡 채팅방', 'icon': 'assets/images/kakaotalk_icon.webp', 'action': () => widget.onOpenTemplate('kakaotalk')},
       {'name': '쿠팡 로켓쇼핑', 'icon': 'assets/images/coupang_icon.webp', 'action': () => widget.onOpenTemplate('coupang')},
       {'name': 'Netflix 오리지널', 'icon': 'assets/images/netflix_icon.webp', 'action': () => widget.onOpenTemplate('netflix')},
