@@ -49,144 +49,90 @@ class _HomeFloatingHeroIconsState extends State<HomeFloatingHeroIcons>
   late final AnimationController _controller;
   String? _hoveredId;
 
+  // Exactly 6 unique icons (NO duplicates, enlarged sizes):
+  // KakaoTalk, Instagram, Naver, Blind, Toss, DC Inside
   static const List<_FloatingSpec> _specs = [
-    // 1. 카카오톡 - 대형 메인
+    // 1. 카카오톡 (KakaoTalk) - 대형
     _FloatingSpec(
-      id: 'kakao_large',
+      id: 'kakaotalk',
       name: '카카오톡',
       assetPath: 'assets/images/kakaotalk_icon.webp',
-      size: 92,
-      alignment: Alignment(0.42, -0.52),
-      floatDistance: 18,
+      size: 124,
+      alignment: Alignment(0.46, -0.62),
+      floatDistance: 20,
       horizontalSway: 8,
       phase: 0.0,
       speedMultiplier: 1.0,
       glowColor: Color(0xFFFEE500),
       routePath: '/console/editor/kakaotalk',
     ),
-    // 2. 블라인드 - 대형
+    // 2. 인스타그램 (Instagram) - 대형
     _FloatingSpec(
-      id: 'blind_large',
-      name: '블라인드',
-      assetPath: 'assets/images/blind_icon.webp',
-      size: 82,
-      alignment: Alignment(0.85, -0.18),
+      id: 'instagram',
+      name: '인스타그램',
+      assetPath: 'assets/images/instagram_icon.webp',
+      size: 118,
+      alignment: Alignment(0.88, -0.35),
       floatDistance: 22,
       horizontalSway: 10,
-      phase: 1.4,
-      speedMultiplier: 0.85,
-      glowColor: Color(0xFFE53935),
-      routePath: '/console/editor/blind',
+      phase: 1.5,
+      speedMultiplier: 0.88,
+      glowColor: Color(0xFFE1306C),
+      routePath: '/console/editor/instagram',
     ),
-    // 3. 디시인사이드 - 중대형
+    // 3. 네이버 (Naver) - 대형
     _FloatingSpec(
-      id: 'dc_large',
-      name: '디시인사이드',
-      assetPath: 'assets/images/dcinside_icon.webp',
-      size: 76,
-      alignment: Alignment(0.32, 0.22),
-      floatDistance: 16,
+      id: 'naver',
+      name: '네이버',
+      assetPath: 'assets/images/naver_icon.webp',
+      size: 112,
+      alignment: Alignment(0.24, -0.06),
+      floatDistance: 18,
       horizontalSway: 9,
-      phase: 2.8,
-      speedMultiplier: 1.15,
-      glowColor: Color(0xFF3B5998),
-      routePath: '/console/editor/dcinside',
+      phase: 3.2,
+      speedMultiplier: 1.1,
+      glowColor: Color(0xFF03C75A),
+      routePath: '/console/editor/naver',
     ),
-    // 4. MS-DOS / CMD - 대형 레트로
+    // 4. 블라인드 (Blind) - 대형
     _FloatingSpec(
-      id: 'dos_large',
-      name: 'MS-DOS 프롬프트',
-      assetPath: 'assets/images/windows/cmd.png',
-      size: 84,
-      alignment: Alignment(0.76, 0.46),
-      floatDistance: 20,
-      horizontalSway: 12,
-      phase: 4.2,
-      speedMultiplier: 0.9,
-      glowColor: Color(0xFF06B6D4),
-      routePath: '/console?os=windows_11',
-    ),
-    // 5. 카카오톡 - 중소형
-    _FloatingSpec(
-      id: 'kakao_med',
-      name: '카카오톡',
-      assetPath: 'assets/images/kakaotalk_icon.webp',
-      size: 52,
-      alignment: Alignment(0.92, -0.68),
-      floatDistance: 14,
-      horizontalSway: 6,
-      phase: 3.1,
-      speedMultiplier: 1.25,
-      glowColor: Color(0xFFFEE500),
-      routePath: '/console/editor/kakaotalk',
-    ),
-    // 6. 블라인드 - 중소형
-    _FloatingSpec(
-      id: 'blind_med',
+      id: 'blind',
       name: '블라인드',
       assetPath: 'assets/images/blind_icon.webp',
-      size: 48,
-      alignment: Alignment(0.18, -0.22),
-      floatDistance: 15,
-      horizontalSway: 7,
-      phase: 0.8,
-      speedMultiplier: 1.05,
+      size: 122,
+      alignment: Alignment(0.80, 0.18),
+      floatDistance: 24,
+      horizontalSway: 11,
+      phase: 4.6,
+      speedMultiplier: 0.92,
       glowColor: Color(0xFFE53935),
       routePath: '/console/editor/blind',
     ),
-    // 7. 디시인사이드 - 중형
+    // 5. 토스 (Toss) - 대형
     _FloatingSpec(
-      id: 'dc_med',
-      name: '디시인사이드',
-      assetPath: 'assets/images/dcinside_icon.webp',
-      size: 56,
-      alignment: Alignment(0.68, -0.36),
-      floatDistance: 13,
-      horizontalSway: 6,
-      phase: 5.0,
-      speedMultiplier: 0.95,
-      glowColor: Color(0xFF3B5998),
-      routePath: '/console/editor/dcinside',
-    ),
-    // 8. MS-DOS / CMD - 중소형
-    _FloatingSpec(
-      id: 'dos_med',
-      name: 'MS-DOS',
-      assetPath: 'assets/images/windows/cmd.png',
-      size: 50,
-      alignment: Alignment(0.48, 0.68),
-      floatDistance: 17,
+      id: 'toss',
+      name: '토스',
+      assetPath: 'assets/images/toss_icon.webp',
+      size: 115,
+      alignment: Alignment(0.38, 0.54),
+      floatDistance: 19,
       horizontalSway: 8,
-      phase: 2.1,
-      speedMultiplier: 1.2,
-      glowColor: Color(0xFF06B6D4),
-      routePath: '/console?os=windows_11',
+      phase: 2.3,
+      speedMultiplier: 1.18,
+      glowColor: Color(0xFF0064FF),
+      routePath: '/console/editor/toss',
     ),
-    // 9. 카카오톡 - 미니 귀여운 억센트
+    // 6. 디시인사이드 (DC Inside) - 대형
     _FloatingSpec(
-      id: 'kakao_small',
-      name: '카카오톡',
-      assetPath: 'assets/images/kakaotalk_icon.webp',
-      size: 38,
-      alignment: Alignment(0.94, 0.18),
-      floatDistance: 11,
-      horizontalSway: 5,
-      phase: 4.8,
-      speedMultiplier: 1.35,
-      glowColor: Color(0xFFFEE500),
-      routePath: '/console/editor/kakaotalk',
-    ),
-    // 10. 디시인사이드 - 미니 억센트
-    _FloatingSpec(
-      id: 'dc_small',
+      id: 'dcinside',
       name: '디시인사이드',
       assetPath: 'assets/images/dcinside_icon.webp',
-      size: 36,
-      alignment: Alignment(0.24, 0.58),
-      floatDistance: 12,
-      horizontalSway: 5,
-      phase: 1.9,
-      speedMultiplier: 1.1,
+      size: 110,
+      alignment: Alignment(0.84, 0.68),
+      floatDistance: 21,
+      horizontalSway: 10,
+      phase: 5.7,
+      speedMultiplier: 0.95,
       glowColor: Color(0xFF3B5998),
       routePath: '/console/editor/dcinside',
     ),
@@ -210,7 +156,7 @@ class _HomeFloatingHeroIconsState extends State<HomeFloatingHeroIcons>
   @override
   Widget build(BuildContext context) {
     final isMobile = widget.isMobile;
-    final scaleFactor = isMobile ? 0.68 : 1.0;
+    final scaleFactor = isMobile ? 0.65 : 1.0;
 
     return AnimatedBuilder(
       animation: _controller,
@@ -223,7 +169,7 @@ class _HomeFloatingHeroIconsState extends State<HomeFloatingHeroIcons>
             final cycle = (progress * spec.speedMultiplier * 2 * math.pi) + spec.phase;
             final dy = math.sin(cycle) * spec.floatDistance * scaleFactor;
             final dx = math.cos(cycle * 0.7) * spec.horizontalSway * scaleFactor;
-            final rotation = math.sin(cycle * 0.8) * 0.05; // natural gentle sway
+            final rotation = math.sin(cycle * 0.8) * 0.045;
 
             final isHovered = _hoveredId == spec.id;
             final targetSize = spec.size * scaleFactor;
@@ -241,7 +187,7 @@ class _HomeFloatingHeroIconsState extends State<HomeFloatingHeroIcons>
                     child: GestureDetector(
                       onTap: () => context.go(spec.routePath),
                       child: AnimatedScale(
-                        scale: isHovered ? 1.15 : 1.0,
+                        scale: isHovered ? 1.14 : 1.0,
                         duration: const Duration(milliseconds: 200),
                         curve: Curves.easeOutBack,
                         child: Tooltip(
@@ -255,12 +201,12 @@ class _HomeFloatingHeroIconsState extends State<HomeFloatingHeroIcons>
                                 BoxShadow(
                                   color: spec.glowColor.withValues(
                                     alpha: widget.isDarkMode
-                                        ? (isHovered ? 0.55 : 0.28)
-                                        : (isHovered ? 0.40 : 0.18),
+                                        ? (isHovered ? 0.65 : 0.35)
+                                        : (isHovered ? 0.50 : 0.22),
                                   ),
-                                  blurRadius: isHovered ? 28 : 16,
-                                  spreadRadius: isHovered ? 4 : 1,
-                                  offset: const Offset(0, 8),
+                                  blurRadius: isHovered ? 36 : 22,
+                                  spreadRadius: isHovered ? 5 : 2,
+                                  offset: const Offset(0, 10),
                                 ),
                               ],
                             ),

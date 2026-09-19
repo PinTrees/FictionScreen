@@ -23,7 +23,6 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       if (mounted) {
-        // 소셜 로그인 도중 실패 시 게스트 모드로 콘솔 진입
         context.go('/console');
       }
     } finally {
@@ -37,31 +36,39 @@ class _LoginPageState extends State<LoginPage> {
     context.go('/console');
   }
 
+  void _handleBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go('/');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF090A0F),
+      backgroundColor: const Color(0xFF07080D),
       body: Stack(
         children: [
-          // 1. 은은한 오로라 배경
+          // 1. Subtle Ambient Aurora Background
           Positioned.fill(
             child: IgnorePointer(
               child: Stack(
                 children: [
                   Positioned(
-                    top: -100,
+                    top: -120,
                     left: 0,
                     right: 0,
                     child: Center(
                       child: Container(
-                        width: 700,
-                        height: 380,
+                        width: 800,
+                        height: 440,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
                             colors: [
-                              const Color(0xFF6366F1).withValues(alpha: 0.15),
-                              const Color(0xFF3B82F6).withValues(alpha: 0.05),
+                              const Color(0xFF6366F1).withValues(alpha: 0.18),
+                              const Color(0xFF00E5FF).withValues(alpha: 0.06),
                               Colors.transparent,
                             ],
                           ),
@@ -74,83 +81,116 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
 
-          // 2. 메인 로그인 카드
+          // 2. Top-left Back Button (Req: "이전화면으로 가는 버튼 없음")
+          Positioned(
+            top: 24,
+            left: 24,
+            child: InkWell(
+              onTap: _handleBack,
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(CupertinoIcons.arrow_left, size: 16, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text(
+                      '메인 화면으로 돌아가기',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // 3. Main Login Card (ZERO OUTLINE, Generous Padding)
           Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
               child: Container(
-                constraints: const BoxConstraints(maxWidth: 420),
-                padding: const EdgeInsets.all(32),
+                constraints: const BoxConstraints(maxWidth: 440),
+                padding: const EdgeInsets.symmetric(horizontal: 38, vertical: 42),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF12141D).withValues(alpha: 0.85),
+                  color: const Color(0xFF11131C).withValues(alpha: 0.92),
                   borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.5),
-                      blurRadius: 30,
-                      offset: const Offset(0, 10),
+                      color: Colors.black.withValues(alpha: 0.6),
+                      blurRadius: 36,
+                      offset: const Offset(0, 14),
                     ),
                   ],
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(28),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                    filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // 브랜드 로고 아이콘
+                        // Brand Icon
                         Container(
-                          width: 56,
-                          height: 56,
+                          width: 58,
+                          height: 58,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFF6366F1), Color(0xFF38BDF8)],
+                              colors: [Color(0xFF00E5FF), Color(0xFF6366F1)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(18),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF6366F1).withValues(alpha: 0.35),
-                                blurRadius: 16,
+                                color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                                blurRadius: 18,
                                 offset: const Offset(0, 6),
                               ),
                             ],
                           ),
                           child: const Center(
-                            child: Icon(CupertinoIcons.square_stack_3d_up_fill, color: Colors.white, size: 28),
+                            child: Icon(CupertinoIcons.sparkles, color: Colors.white, size: 26),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 22),
 
-                        // 타이틀
+                        // Title
                         const Text(
                           'FictionScreen',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w800,
+                            fontSize: 25,
+                            fontWeight: FontWeight.w900,
                             letterSpacing: -0.5,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '크리에이터를 위한 픽셀 정밀 가짜 화면 스튜디오',
+                          '크리에이터를 위한 픽셀 정밀 가상 화면 스튜디오',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.6),
-                            fontSize: 13,
+                            fontSize: 13.5,
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 36),
 
-                        // Google 로그인 버튼
+                        // Official Google Sign-In Button (Req: "구글 로그인 버튼에 구글 아이콘 적용하고")
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: Colors.black,
-                            minimumSize: const Size(double.infinity, 48),
+                            minimumSize: const Size(double.infinity, 50),
                             elevation: 0,
+                            shadowColor: Colors.transparent,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
@@ -165,42 +205,59 @@ class _LoginPageState extends State<LoginPage> {
                               : const Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(CupertinoIcons.person_crop_circle_fill, size: 20, color: Color(0xFF4285F4)),
-                                    SizedBox(width: 10),
-                                    Text('Google 계정으로 시작하기', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                                    GoogleLogoIcon(size: 20),
+                                    SizedBox(width: 12),
+                                    Text(
+                                      'Google 계정으로 시작하기',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 14,
+                                        letterSpacing: -0.2,
+                                      ),
+                                    ),
                                   ],
                                 ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 14),
 
-                        // 게스트/비회원 입장 버튼
-                        OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(double.infinity, 46),
-                            side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
-                            shape: RoundedRectangleBorder(
+                        // Guest / Non-member Entry Button (ZERO OUTLINE, Filled surface)
+                        InkWell(
+                          onTap: _handleGuestEntry,
+                          borderRadius: BorderRadius.circular(14),
+                          child: Container(
+                            width: double.infinity,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(14),
                             ),
-                          ),
-                          onPressed: _handleGuestEntry,
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('체험하기 (비회원 로그인)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                              SizedBox(width: 6),
-                              Icon(CupertinoIcons.arrow_right, size: 14),
-                            ],
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '체험하기 (비회원 로그인)',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13.5,
+                                  ),
+                                ),
+                                SizedBox(width: 6),
+                                Icon(CupertinoIcons.arrow_right, size: 14, color: Colors.white70),
+                              ],
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 24),
+
+                        const SizedBox(height: 28),
 
                         Text(
-                          '로그인 시 유저별 OS 설정 및 스튜디오 커스텀 데이터가 동기화됩니다.',
+                          '로그인 시 유저별 프로젝트 및 스튜디오 데이터가 Firestore에 안전하게 동기화됩니다.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.35),
-                            fontSize: 11,
+                            color: Colors.white.withValues(alpha: 0.38),
+                            fontSize: 11.5,
+                            height: 1.4,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -214,13 +271,13 @@ class _LoginPageState extends State<LoginPage> {
                                 '이용약관',
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.55),
-                                  fontSize: 11.5,
+                                  fontSize: 12,
                                   decoration: TextDecoration.underline,
                                 ),
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
                               child: Text(
                                 '•',
                                 style: TextStyle(
@@ -235,7 +292,7 @@ class _LoginPageState extends State<LoginPage> {
                                 '개인정보 처리방침',
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.55),
-                                  fontSize: 11.5,
+                                  fontSize: 12,
                                   decoration: TextDecoration.underline,
                                 ),
                               ),
@@ -253,4 +310,51 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+}
+
+/// Authentic 4-color Google G Logo Vector Icon
+class GoogleLogoIcon extends StatelessWidget {
+  final double size;
+  const GoogleLogoIcon({super.key, this.size = 20});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size(size, size),
+      painter: _GoogleLogoPainter(),
+    );
+  }
+}
+
+class _GoogleLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final center = Offset(w / 2, h / 2);
+    final radius = w / 2;
+
+    final bluePaint = Paint()..color = const Color(0xFF4285F4)..style = PaintingStyle.fill;
+
+    final strokeW = w * 0.22;
+    final arcRadius = radius - strokeW / 2;
+    final arcRect = Rect.fromCircle(center: center, radius: arcRadius);
+
+    final strokeBlue = Paint()..color = const Color(0xFF4285F4)..style = PaintingStyle.stroke..strokeWidth = strokeW..strokeCap = StrokeCap.butt;
+    final strokeRed = Paint()..color = const Color(0xFFEA4335)..style = PaintingStyle.stroke..strokeWidth = strokeW..strokeCap = StrokeCap.butt;
+    final strokeYellow = Paint()..color = const Color(0xFFFBBC05)..style = PaintingStyle.stroke..strokeWidth = strokeW..strokeCap = StrokeCap.butt;
+    final strokeGreen = Paint()..color = const Color(0xFF34A853)..style = PaintingStyle.stroke..strokeWidth = strokeW..strokeCap = StrokeCap.butt;
+
+    // Center blue crossbar
+    canvas.drawRect(Rect.fromLTWH(center.dx - strokeW * 0.1, center.dy - strokeW / 2, radius + strokeW * 0.1, strokeW), bluePaint);
+
+    // Multi-color Google arcs
+    canvas.drawArc(arcRect, -0.75, 1.45, false, strokeBlue);
+    canvas.drawArc(arcRect, 0.7, 1.75, false, strokeGreen);
+    canvas.drawArc(arcRect, 2.45, 1.35, false, strokeYellow);
+    canvas.drawArc(arcRect, 3.8, 1.73, false, strokeRed);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

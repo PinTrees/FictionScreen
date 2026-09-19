@@ -35,7 +35,7 @@ class WorkspaceSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = isDarkMode;
-    final sidebarWidth = isCollapsed ? 76.0 : 280.0;
+    final sidebarWidth = isCollapsed ? 76.0 : 270.0;
 
     final bgColor = isDark ? const Color(0xFF090B10) : const Color(0xFFF8FAFC);
     final textColor = isDark ? Colors.white : const Color(0xFF0F172A);
@@ -62,41 +62,13 @@ class WorkspaceSidebar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Top Header: Hamburger Toggle + Logo (CapCut-inspired layout)
+          // 1. CapCut-style Brand Color "+ Create New" Button (Starts immediately without duplicate top bar)
           Padding(
-            padding: EdgeInsets.fromLTRB(isCollapsed ? 12 : 20, 18, isCollapsed ? 12 : 16, 12),
-            child: Row(
-              children: [
-                // Hamburger Menu Icon Button
-                IconButton(
-                  tooltip: isCollapsed ? '사이드바 펼치기' : '사이드바 접기',
-                  icon: const Icon(CupertinoIcons.bars, size: 22),
-                  color: isDark ? Colors.white70 : const Color(0xFF334155),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  onPressed: onToggleCollapse,
-                ),
-                if (!isCollapsed) ...[
-                  const SizedBox(width: 10),
-                  Text(
-                    'FictionScreen',
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 16.5,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -0.4,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-
-          // 2. CapCut-style Brand Color "+ Create New (새 프로젝트 생성)" Button
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: isCollapsed ? 10 : 16,
-              vertical: 8,
+            padding: EdgeInsets.fromLTRB(
+              isCollapsed ? 10 : 16,
+              18,
+              isCollapsed ? 10 : 16,
+              12,
             ),
             child: isCollapsed
                 ? Center(
@@ -172,16 +144,16 @@ class WorkspaceSidebar extends StatelessWidget {
                   ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
-          // 3. Navigation Items (Generous padding, CapCut-style clean items)
+          // 2. Navigation Items (Using 100% reliable Material Icons)
           Padding(
             padding: EdgeInsets.symmetric(horizontal: isCollapsed ? 10 : 14),
             child: Column(
               children: [
                 _buildNavItem(
                   id: 'home',
-                  icon: CupertinoIcons.home,
+                  icon: Icons.home_rounded,
                   title: 'Home (대시보드)',
                   badge: null,
                   isActive: activeMenuId == 'home',
@@ -196,7 +168,7 @@ class WorkspaceSidebar extends StatelessWidget {
                 const SizedBox(height: 4),
                 _buildNavItem(
                   id: 'gallery',
-                  icon: CupertinoIcons.compass,
+                  icon: Icons.explore_rounded,
                   title: '어플 템플릿 갤러리',
                   badge: '33종',
                   isActive: activeMenuId == 'gallery',
@@ -211,7 +183,7 @@ class WorkspaceSidebar extends StatelessWidget {
                 const SizedBox(height: 4),
                 _buildNavItem(
                   id: 'os',
-                  icon: CupertinoIcons.macwindow,
+                  icon: Icons.desktop_windows_rounded,
                   title: '가상 데스크톱 OS',
                   badge: 'SteamOS+',
                   isActive: activeMenuId == 'os',
@@ -229,7 +201,7 @@ class WorkspaceSidebar extends StatelessWidget {
 
           const SizedBox(height: 18),
 
-          // 4. Section Label: Projects (CapCut muted header)
+          // 3. Section Label: Projects (CapCut muted header)
           if (!isCollapsed)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 4),
@@ -254,7 +226,7 @@ class WorkspaceSidebar extends StatelessWidget {
 
           const SizedBox(height: 6),
 
-          // 5. Real User Projects List (NO SCROLLBAR, Pure Firebase Data)
+          // 4. Real User Projects List (NO SCROLLBAR, Pure Firebase Data)
           Expanded(
             child: ScrollConfiguration(
               behavior: const ScrollBehavior().copyWith(scrollbars: false),
@@ -263,7 +235,7 @@ class WorkspaceSidebar extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(20),
                         child: isCollapsed
-                            ? Icon(CupertinoIcons.folder, size: 20, color: textSubColor.withValues(alpha: 0.4))
+                            ? Icon(Icons.folder_open_rounded, size: 22, color: textSubColor.withValues(alpha: 0.4))
                             : Text(
                                 '저장된 프로젝트가 없습니다\n상단의 새 프로젝트를 생성하세요',
                                 textAlign: TextAlign.center,
@@ -308,7 +280,7 @@ class WorkspaceSidebar extends StatelessWidget {
                                       ),
                                       child: template?.imageAsset != null
                                           ? Image.asset(template!.imageAsset!, fit: BoxFit.contain)
-                                          : Icon(template?.icon ?? CupertinoIcons.doc,
+                                          : Icon(template?.icon ?? Icons.insert_drive_file_rounded,
                                               size: 14, color: template?.themeColor ?? const Color(0xFF00B0FF)),
                                     ),
                                   ),
@@ -345,7 +317,7 @@ class WorkspaceSidebar extends StatelessWidget {
                                     child: Center(
                                       child: template?.imageAsset != null
                                           ? Image.asset(template!.imageAsset!, fit: BoxFit.contain)
-                                          : Icon(template?.icon ?? CupertinoIcons.doc,
+                                          : Icon(template?.icon ?? Icons.insert_drive_file_rounded,
                                               size: 14, color: template?.themeColor ?? const Color(0xFF00B0FF)),
                                     ),
                                   ),
@@ -383,8 +355,8 @@ class WorkspaceSidebar extends StatelessWidget {
                                     child: Padding(
                                       padding: const EdgeInsets.all(4),
                                       child: Icon(
-                                        proj.isStarred ? CupertinoIcons.star_fill : CupertinoIcons.star,
-                                        size: 13,
+                                        proj.isStarred ? Icons.star_rounded : Icons.star_outline_rounded,
+                                        size: 16,
                                         color: proj.isStarred ? const Color(0xFFF59E0B) : textSubColor.withValues(alpha: 0.4),
                                       ),
                                     ),
@@ -399,7 +371,7 @@ class WorkspaceSidebar extends StatelessWidget {
             ),
           ),
 
-          // 6. Bottom User Profile Section (Req: "좌측사이드바 하단에는 유저 프로필 출력해")
+          // 5. Bottom User Profile Section
           Container(
             padding: EdgeInsets.all(isCollapsed ? 10 : 16),
             decoration: BoxDecoration(
@@ -471,7 +443,7 @@ class WorkspaceSidebar extends StatelessWidget {
                       ),
                       IconButton(
                         tooltip: '로그아웃',
-                        icon: Icon(CupertinoIcons.square_arrow_right, size: 16, color: textSubColor),
+                        icon: Icon(Icons.logout_rounded, size: 18, color: textSubColor),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                         onPressed: onSignOut,
@@ -514,7 +486,7 @@ class WorkspaceSidebar extends StatelessWidget {
             child: Center(
               child: Icon(
                 icon,
-                size: 19,
+                size: 20,
                 color: isActive ? activeText : textSubColor,
               ),
             ),
@@ -537,7 +509,7 @@ class WorkspaceSidebar extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: 18,
+              size: 20,
               color: isActive ? activeText : textSubColor,
             ),
             const SizedBox(width: 12),

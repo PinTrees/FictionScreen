@@ -29,41 +29,205 @@ class HomeTopAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bgColor = isDarkMode
-        ? const Color(0xFF07090E).withValues(alpha: 0.88)
-        : Colors.white.withValues(alpha: 0.92);
+        ? const Color(0xCC07090E)
+        : const Color(0xEEFFFFFF);
     final borderColor = isDarkMode
         ? Colors.white.withValues(alpha: 0.08)
-        : Colors.black.withValues(alpha: 0.08);
+        : Colors.black.withValues(alpha: 0.06);
     final textColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 350),
       curve: Curves.easeInOut,
       width: double.infinity,
-      height: 64,
+      height: 60,
       decoration: BoxDecoration(
         color: bgColor,
         border: Border(bottom: BorderSide(color: borderColor, width: 1.0)),
       ),
       child: ClipRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-          child: Center(
-            child: Container(
-              constraints: const BoxConstraints(maxWidth: 1240),
-              padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 40),
-              child: Row(
-                children: [
-                  // Brand Logo
-                  InkWell(
-                    onTap: () => context.go('/'),
-                    hoverColor: Colors.transparent,
-                    splashColor: Colors.transparent,
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+          child: Padding(
+            // Tight, modern horizontal padding (Req: "앱바 좌우 패딩 너무 큰데 제거해")
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: Row(
+              children: [
+                // Brand Logo
+                InkWell(
+                  onTap: () => context.go('/'),
+                  hoverColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF00E5FF), Color(0xFF6366F1)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Icon(CupertinoIcons.sparkles, color: Colors.white, size: 16),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'FictionScreen',
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const Spacer(),
+
+                // Navigation Links
+                if (!isMobile) ...[
+                  _buildNavLink(HomeI18n.t('navFeatured', isEnglish: isEnglish), onScrollToFeatured, textColor),
+                  const SizedBox(width: 20),
+                  _buildNavLink(HomeI18n.t('navAllEcosystem', isEnglish: isEnglish), onScrollToIconCloud, textColor),
+                  const SizedBox(width: 18),
+                ],
+
+                // Language Switcher (KO / EN)
+                InkWell(
+                  onTap: onToggleLanguage,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: isDarkMode
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.black.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
+                        Text(
+                          'KO',
+                          style: TextStyle(
+                            color: !isEnglish
+                                ? (isDarkMode ? Colors.white : Colors.black)
+                                : (isDarkMode ? Colors.white38 : Colors.black38),
+                            fontSize: 11.5,
+                            fontWeight: !isEnglish ? FontWeight.w800 : FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          ' / ',
+                          style: TextStyle(
+                            color: isDarkMode ? Colors.white24 : Colors.black26,
+                            fontSize: 10.5,
+                          ),
+                        ),
+                        Text(
+                          'EN',
+                          style: TextStyle(
+                            color: isEnglish
+                                ? (isDarkMode ? Colors.white : Colors.black)
+                                : (isDarkMode ? Colors.white38 : Colors.black38),
+                            fontSize: 11.5,
+                            fontWeight: isEnglish ? FontWeight.w800 : FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                // Light / Dark Theme Switch (Req: "라이트모드 다크모드 아이콘 안보인다. 수정")
+                IconButton(
+                  tooltip: isEnglish
+                      ? (isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode')
+                      : (isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환'),
+                  onPressed: onToggleTheme,
+                  padding: const EdgeInsets.all(6),
+                  constraints: const BoxConstraints(),
+                  icon: Icon(
+                    isDarkMode ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+                    color: isDarkMode ? const Color(0xFFFBBF24) : const Color(0xFF475569),
+                    size: 21,
+                  ),
+                ),
+
+                const SizedBox(width: 14),
+
+                // Auth State & Console Button
+                StreamBuilder<User?>(
+                  stream: AuthService.authStateChanges,
+                  builder: (context, snapshot) {
+                    final user = snapshot.data ?? AuthService.currentUser;
+                    final isLoggedIn = user != null;
+
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Req: "로그인 되어있으면 그때는 유저 아이콘 표시해주고, 안되어있을때만 로그인버튼 표시."
+                        if (isLoggedIn) ...[
+                          Tooltip(
+                            message: '${user.displayName ?? user.email ?? "사용자"} (클릭 시 콘솔 이동)',
+                            child: InkWell(
+                              onTap: () => context.go('/console'),
+                              borderRadius: BorderRadius.circular(18),
+                              child: CircleAvatar(
+                                radius: 16,
+                                backgroundColor: const Color(0xFF00B0FF),
+                                backgroundImage: user.photoURL != null ? NetworkImage(user.photoURL!) : null,
+                                child: user.photoURL == null
+                                    ? Text(
+                                        (user.displayName?.isNotEmpty == true
+                                                ? user.displayName![0]
+                                                : (user.email?.isNotEmpty == true ? user.email![0] : 'U'))
+                                            .toUpperCase(),
+                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                                      )
+                                    : null,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                        ] else ...[
+                          InkWell(
+                            onTap: () => context.go('/login'),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              child: Text(
+                                HomeI18n.t('login', isEnglish: isEnglish),
+                                style: TextStyle(
+                                  color: textColor,
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: -0.2,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                        ],
+
+                        // Console Button (Req: "콘솔 시작하기 버튼에 아이콘 제거하고")
                         Container(
-                          width: 32,
-                          height: 32,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
@@ -79,200 +243,33 @@ class HomeTopAppBar extends StatelessWidget {
                               ),
                             ],
                           ),
-                          child: const Center(
-                            child: Icon(CupertinoIcons.square_stack_3d_up_fill, color: Colors.white, size: 16),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          'FictionScreen',
-                          style: TextStyle(
-                            color: textColor,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.4,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              foregroundColor: Colors.white,
+                              shadowColor: Colors.transparent,
+                              elevation: 0,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isMobile ? 14 : 18,
+                                vertical: 0,
+                              ),
+                              minimumSize: const Size(0, 36),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                            onPressed: () => context.go('/console'),
+                            child: Text(
+                              isLoggedIn
+                                  ? HomeI18n.t('virtualOsConsole', isEnglish: isEnglish)
+                                  : HomeI18n.t('startConsole', isEnglish: isEnglish),
+                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                            ),
                           ),
                         ),
                       ],
-                    ),
-                  ),
-
-                  const Spacer(),
-
-                  // Navigation Links
-                  if (!isMobile) ...[
-                    _buildNavLink(HomeI18n.t('navFeatured', isEnglish: isEnglish), onScrollToFeatured, textColor),
-                    const SizedBox(width: 24),
-                    _buildNavLink(HomeI18n.t('navAllEcosystem', isEnglish: isEnglish), onScrollToIconCloud, textColor),
-                    const SizedBox(width: 20),
-                  ],
-
-                  // Language Switcher (KO / EN)
-                  InkWell(
-                    onTap: onToggleLanguage,
-                    borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: isDarkMode
-                            ? Colors.white.withValues(alpha: 0.08)
-                            : Colors.black.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'KO',
-                            style: TextStyle(
-                              color: !isEnglish
-                                  ? (isDarkMode ? Colors.white : Colors.black)
-                                  : (isDarkMode ? Colors.white38 : Colors.black38),
-                              fontSize: 11.5,
-                              fontWeight: !isEnglish ? FontWeight.w800 : FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            ' / ',
-                            style: TextStyle(
-                              color: isDarkMode ? Colors.white24 : Colors.black26,
-                              fontSize: 10.5,
-                            ),
-                          ),
-                          Text(
-                            'EN',
-                            style: TextStyle(
-                              color: isEnglish
-                                  ? (isDarkMode ? Colors.white : Colors.black)
-                                  : (isDarkMode ? Colors.white38 : Colors.black38),
-                              fontSize: 11.5,
-                              fontWeight: isEnglish ? FontWeight.w800 : FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-
-                  // Light / Dark Theme Switch (Icon only, purely black/white palette)
-                  IconButton(
-                    tooltip: isEnglish
-                        ? (isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode')
-                        : (isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환'),
-                    onPressed: onToggleTheme,
-                    padding: const EdgeInsets.all(6),
-                    constraints: const BoxConstraints(),
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    icon: Icon(
-                      isDarkMode ? CupertinoIcons.sun_max : CupertinoIcons.moon,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-
-                  // Auth (Login / Logout) & Console Button
-                  StreamBuilder<User?>(
-                    stream: AuthService.authStateChanges,
-                    builder: (context, snapshot) {
-                      final user = snapshot.data ?? AuthService.currentUser;
-                      final isLoggedIn = user != null;
-
-                      return Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (!isLoggedIn) ...[
-                            InkWell(
-                              onTap: () => context.go('/login'),
-                              borderRadius: BorderRadius.circular(8),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                child: Text(
-                                  HomeI18n.t('login', isEnglish: isEnglish),
-                                  style: TextStyle(
-                                    color: textColor,
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: -0.2,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                          ] else ...[
-                            InkWell(
-                              onTap: () => AuthService.signOut(),
-                              borderRadius: BorderRadius.circular(8),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                                child: Text(
-                                  HomeI18n.t('logout', isEnglish: isEnglish),
-                                  style: TextStyle(
-                                    color: textColor.withValues(alpha: 0.65),
-                                    fontSize: 12.5,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                          ],
-
-                          // Brand Gradient Console Button (No outline)
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF6366F1).withValues(alpha: 0.35),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                foregroundColor: Colors.white,
-                                shadowColor: Colors.transparent,
-                                elevation: 0,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: isMobile ? 12 : 16,
-                                  vertical: 0,
-                                ),
-                                minimumSize: const Size(0, 36),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              ),
-                              onPressed: () => context.go('/console'),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    isLoggedIn
-                                        ? HomeI18n.t('virtualOsConsole', isEnglish: isEnglish)
-                                        : HomeI18n.t('startConsole', isEnglish: isEnglish),
-                                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  const Icon(CupertinoIcons.arrow_right, size: 12, color: Colors.white),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ],
-              ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ),
@@ -280,18 +277,20 @@ class HomeTopAppBar extends StatelessWidget {
     );
   }
 
-  Widget _buildNavLink(String title, VoidCallback onTap, Color textColor) {
+  Widget _buildNavLink(String label, VoidCallback onTap, Color textColor) {
     return InkWell(
       onTap: onTap,
-      hoverColor: Colors.transparent,
-      splashColor: Colors.transparent,
-      child: Text(
-        title,
-        style: TextStyle(
-          color: textColor.withValues(alpha: 0.75),
-          fontSize: 13.5,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.2,
+      borderRadius: BorderRadius.circular(6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: textColor.withValues(alpha: 0.75),
+            fontSize: 13.5,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.2,
+          ),
         ),
       ),
     );
