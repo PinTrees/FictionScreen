@@ -37,6 +37,7 @@ import 'widgets/windows_context_menu.dart';
 import 'widgets/windows_desktop_icon_widget.dart';
 import 'widgets/windows_item_context_menu.dart';
 import 'widgets/windows_quick_settings.dart';
+import 'apps/folder/windows_folder_window.dart';
 import 'windows_start_menu.dart';
 import 'windows_taskbar.dart';
 
@@ -51,6 +52,7 @@ class WindowsWindowData {
   bool isMaximized;
   Offset? restorePosition;
   Size? restoreSize;
+  final DesktopIconItem? folderItem;
 
   WindowsWindowData({
     required this.id,
@@ -62,6 +64,7 @@ class WindowsWindowData {
     this.isMaximized = false,
     this.restorePosition,
     this.restoreSize,
+    this.folderItem,
   }) : positionNotifier = ValueNotifier<Offset>(position);
 
   Offset get position => positionNotifier.value;
@@ -114,6 +117,7 @@ class _WindowsViewState extends State<WindowsView> {
   DesktopIconItem? _contextMenuItem;
   String? _selectedItemId;
   String? _renamingItemId;
+  String? _dropTargetFolderId;
 
   // 바탕화면 그리드 규격
   static const double cellWidth = 92.0;
@@ -533,6 +537,39 @@ class _WindowsViewState extends State<WindowsView> {
         onTap: () => widget.onOpenTemplate('word'),
       ),
     ];
+
+    for (final icon in _desktopIcons) {
+      if (icon.isFolder) {
+        icon.onTap = () => _openFolder(icon);
+      }
+    }
+  }
+
+  void _openFolder(DesktopIconItem folder) {
+    final windowAppId = 'folder_${folder.id}';
+    final existingIndex = _activeWindows.indexWhere((w) => w.appId == windowAppId);
+
+    if (existingIndex != -1) {
+      _bringToFront(_activeWindows[existingIndex].id);
+    } else {
+      _highestZIndex++;
+      final count = _activeWindows.length;
+      final initialPos = Offset(140.0 + (count * 28), 70.0 + (count * 22));
+      const defaultSize = Size(760, 500);
+
+      setState(() {
+        _activeWindows.add(
+          WindowsWindowData(
+            id: 'win_folder_${folder.id}_${DateTime.now().millisecondsSinceEpoch}',
+            appId: windowAppId,
+            position: initialPos,
+            size: defaultSize,
+            zIndex: _highestZIndex,
+            folderItem: folder,
+          ),
+        );
+      });
+    }
   }
 
   void _openWinApp(String appId) {
@@ -758,7 +795,62 @@ class _WindowsViewState extends State<WindowsView> {
     });
   }
 
-  /// 마우스 드래그 완료 시 격자 그리드(Snap-to-Grid)로 스냅 정렬
+  /// 가장 가까운 빈 바탕화면 그리드 셀 검색 (아이콘 겹침 원천 방지)
+  Offset? _findNearestEmptyGrid(int targetX, int targetY, {DesktopIconItem? excludeItem}) {
+    final occupied = <String>{};
+    for (final icon in _desktopIcons) {
+      if (excludeItem != null && icon.id == excludeItem.id) continue;
+      occupied.add('${icon.gridX}_${icon.gridY}');
+    }
+
+    if (!occupied.contains('${targetX}_$targetY')) {
+      return Offset(targetX.toDouble(), targetY.toDouble());
+    }
+
+    double minDistance = double.infinity;
+    Offset? bestPos;
+
+    for (int col = 0; col < 16; col++) {
+      for (int row = 0; row < 8; row++) {
+        if (!occupied.contains('${col}_$row')) {
+          final dist = (col - targetX) * (col - targetX) + (row - targetY) * (row - targetY);
+          if (dist < minDistance) {
+            minDistance = dist.toDouble();
+            bestPos = Offset(col.toDouble(), row.toDouble());
+          }
+        }
+      }
+    }
+    return bestPos;
+  }
+
+  /// 마우스 드래그 중 폴더 위 호버 상태 실시간 감지
+  void _onIconDragUpdate(DesktopIconItem item, Offset currentDelta) {
+    final double currentX = gridPaddingLeft + (item.gridX * cellWidth);
+    final double currentY = gridPaddingTop + (item.gridY * cellHeight);
+    final double droppedX = currentX + currentDelta.dx;
+    final double droppedY = currentY + currentDelta.dy;
+
+    final int hoverX = ((droppedX - gridPaddingLeft) / cellWidth).round().clamp(0, 15);
+    final int hoverY = ((droppedY - gridPaddingTop) / cellHeight).round().clamp(0, 7);
+
+    final hoverFolder = _desktopIcons.cast<DesktopIconItem?>().firstWhere(
+      (e) => e != null && e.id != item.id && e.isFolder && e.gridX == hoverX && e.gridY == hoverY,
+      orElse: () => null,
+    );
+
+    final newDropId = hoverFolder?.id;
+    if (_dropTargetFolderId != newDropId) {
+      setState(() {
+        _dropTargetFolderId = newDropId;
+      });
+    }
+  }
+
+  /// 마우스 드래그 완료 시:
+  /// 1) 폴더 위 드롭 시 -> 폴더 내부로 아이템 수납
+  /// 2) 다른 아이콘과 겹칠 경우 -> 가장 가까운 빈 자리로 자동 스냅 (겹침 방지)
+  /// 3) 빈 자리 드롭 시 -> 정상 이동
   void _onIconDragEnd(DesktopIconItem item, Offset totalDelta) {
     final double currentX = gridPaddingLeft + (item.gridX * cellWidth);
     final double currentY = gridPaddingTop + (item.gridY * cellHeight);
@@ -768,12 +860,39 @@ class _WindowsViewState extends State<WindowsView> {
     final double relativeX = (droppedX - gridPaddingLeft).clamp(0.0, 2000.0);
     final double relativeY = (droppedY - gridPaddingTop).clamp(0.0, 1500.0);
 
-    final int newGridX = (relativeX / cellWidth).round().clamp(0, 15);
-    final int newGridY = (relativeY / cellHeight).round().clamp(0, 8);
+    final int targetGridX = (relativeX / cellWidth).round().clamp(0, 15);
+    final int targetGridY = (relativeY / cellHeight).round().clamp(0, 7);
+
+    // 타겟 위치에 다른 아이템이 있는지 검색
+    final targetItem = _desktopIcons.cast<DesktopIconItem?>().firstWhere(
+      (e) => e != null && e.id != item.id && e.gridX == targetGridX && e.gridY == targetGridY,
+      orElse: () => null,
+    );
 
     setState(() {
-      item.gridX = newGridX;
-      item.gridY = newGridY;
+      _dropTargetFolderId = null;
+
+      // 1. 폴더 아이콘 위에 드롭된 경우: 해당 폴더 내부로 수납!
+      if (targetItem != null && targetItem.isFolder) {
+        _desktopIcons.removeWhere((e) => e.id == item.id);
+        targetItem.children.add(item);
+        _selectedItemId = targetItem.id;
+        return;
+      }
+
+      // 2. 다른 일반 아이콘과 겹치는 위치인 경우: 겹침 방지 (가장 가까운 빈 그리드로 이동)
+      if (targetItem != null) {
+        final emptyPos = _findNearestEmptyGrid(targetGridX, targetGridY, excludeItem: item);
+        if (emptyPos != null) {
+          item.gridX = emptyPos.dx.toInt();
+          item.gridY = emptyPos.dy.toInt();
+        }
+        return;
+      }
+
+      // 3. 빈 그리드인 경우: 정상 이동
+      item.gridX = targetGridX;
+      item.gridY = targetGridY;
     });
   }
 
@@ -807,7 +926,8 @@ class _WindowsViewState extends State<WindowsView> {
     }
 
     final newFolderId = 'folder_${DateTime.now().millisecondsSinceEpoch}';
-    final newFolder = DesktopIconItem(
+    late final DesktopIconItem newFolder;
+    newFolder = DesktopIconItem(
       id: newFolderId,
       title: folderTitle,
       imageAsset: 'assets/images/windows/folder.png',
@@ -815,7 +935,7 @@ class _WindowsViewState extends State<WindowsView> {
       gridY: newGridY,
       isSystemApp: false,
       isFolder: true,
-      onTap: () => _openWinApp('file_explorer'),
+      onTap: () => _openFolder(newFolder),
     );
 
     setState(() {
@@ -936,6 +1056,7 @@ class _WindowsViewState extends State<WindowsView> {
                 item: item,
                 isSelected: _selectedItemId == item.id,
                 isRenaming: _renamingItemId == item.id,
+                isDropTarget: _dropTargetFolderId == item.id,
                 onTap: () {
                   setState(() {
                     _contextMenuPosition = null;
@@ -972,6 +1093,7 @@ class _WindowsViewState extends State<WindowsView> {
                     _renamingItemId = null;
                   });
                 },
+                onDragUpdate: (delta) => _onIconDragUpdate(item, delta),
                 onDragEnd: (totalDelta) => _onIconDragEnd(item, totalDelta),
               ),
             );
@@ -1125,6 +1247,35 @@ class _WindowsViewState extends State<WindowsView> {
     Function(DragStartDetails) onDragStart,
     Function(DragUpdateDetails) onDragUpdate,
   ) {
+    if (win.folderItem != null) {
+      return WindowsFolderWindow(
+        folder: win.folderItem!,
+        style: _currentWindowStyle,
+        windowsVersion: widget.windowsVersion,
+        width: win.size.width,
+        height: win.size.height,
+        onClose: () => _closeWindow(win.id),
+        onMinimize: () => _minimizeWindow(win.id),
+        onMaximize: () => _toggleMaximizeWindow(win),
+        onOpenTemplate: widget.onOpenTemplate,
+        onOpenWinApp: _openWinApp,
+        onOpenFolder: _openFolder,
+        onMoveToDesktop: (childItem) {
+          setState(() {
+            win.folderItem!.children.removeWhere((c) => c.id == childItem.id);
+            final emptyPos = _findNearestEmptyGrid(0, 0);
+            if (emptyPos != null) {
+              childItem.gridX = emptyPos.dx.toInt();
+              childItem.gridY = emptyPos.dy.toInt();
+              _desktopIcons.add(childItem);
+            }
+          });
+        },
+        onTitleDragStart: onDragStart,
+        onTitleDragUpdate: onDragUpdate,
+      );
+    }
+
     switch (win.appId) {
       case 'file_explorer':
         if (widget.windowsVersion == '11') {
