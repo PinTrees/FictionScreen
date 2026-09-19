@@ -189,6 +189,15 @@ class _MacosDockState extends State<MacosDock> {
                   ),
                   onTap: () => widget.onOpenTemplate('delivery'),
                 ),
+                _buildDockApp(
+                  index: 17,
+                  tooltip: '보안 관제 (CCTV)',
+                  icon: CupertinoIcons.videocam_fill,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFE53935), Color(0xFFC62828)],
+                  ),
+                  onTap: () => widget.onOpenApp?.call('cctv'),
+                ),
 
                 // 구분선
                 _buildDockDivider(),

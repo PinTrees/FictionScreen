@@ -51,6 +51,8 @@ import '../../../apps/youtube/data/youtube_model.dart';
 import '../../../apps/youtube/youtube_screen.dart';
 import '../../../apps/zigbang/data/zigbang_model.dart';
 import '../../../apps/zigbang/zigbang_screen.dart';
+import '../../../apps/cctv/data/cctv_model.dart';
+import '../../../apps/cctv/cctv_screen.dart';
 
 /// 스튜디오 템플릿별 실시간 프리뷰 위젯 순수 디스패처
 class StudioPreviewDispatcher extends StatelessWidget {
@@ -81,6 +83,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final ZigbangConfig? zigbangConfig;
   final NaverConfig? naverConfig;
   final EdgeConfig? edgeConfig;
+  final CctvConfig? cctvConfig;
 
   final ValueChanged<KakaoBankConfig>? onKakaoBankChanged;
   final ValueChanged<DaangnConfig>? onDaangnChanged;
@@ -100,6 +103,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final ValueChanged<ZigbangConfig>? onZigbangChanged;
   final ValueChanged<NaverConfig>? onNaverChanged;
   final ValueChanged<EdgeConfig>? onEdgeChanged;
+  final ValueChanged<CctvConfig>? onCctvChanged;
 
   const StudioPreviewDispatcher({
     super.key,
@@ -130,6 +134,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
     this.zigbangConfig,
     this.naverConfig,
     this.edgeConfig,
+    this.cctvConfig,
     this.onKakaoBankChanged,
     this.onDaangnChanged,
     this.onYoutubeChanged,
@@ -148,11 +153,17 @@ class StudioPreviewDispatcher extends StatelessWidget {
     this.onZigbangChanged,
     this.onNaverChanged,
     this.onEdgeChanged,
+    this.onCctvChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     switch (templateId) {
+      case 'cctv':
+        return CctvScreen(
+          config: cctvConfig ?? CctvConfig.defaultPreset(),
+          onConfigChanged: onCctvChanged,
+        );
       case 'zigbang':
         return ZigbangScreen(
           config: zigbangConfig ?? ZigbangConfig.defaultPreset(),

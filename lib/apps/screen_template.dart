@@ -301,5 +301,15 @@ class ScreenTemplate {
       badge: '기본',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'cctv',
+      title: 'CCTV / 보안 관제 시스템',
+      description: '4분할/9분할 실시간 NVR 관제, 깜빡이는 REC, 침입자 모션 감지, 케이블 단선, OSD 타임스탬프',
+      category: TemplateCategory.os,
+      icon: CupertinoIcons.videocam_fill,
+      themeColor: Color(0xFFE53935),
+      badge: 'HOT',
+      isDesktop: true,
+    ),
   ];
 }

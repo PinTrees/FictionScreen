@@ -6,6 +6,7 @@ import '../apps/telegram/data/telegram_model.dart';
 import '../apps/zigbang/data/zigbang_model.dart';
 import '../apps/naver/data/naver_model.dart';
 import '../apps/edge/data/edge_model.dart';
+import '../apps/cctv/data/cctv_model.dart';
 import '../apps/discord/data/discord_model.dart';
 import '../apps/photoshop/data/photoshop_model.dart';
 import '../apps/visual_studio/data/visual_studio_model.dart';
@@ -74,6 +75,7 @@ class _StudioPageState extends State<StudioPage> {
   late ZigbangConfig _zigbangConfig;
   late NaverConfig _naverConfig;
   late EdgeConfig _edgeConfig;
+  late CctvConfig _cctvConfig;
 
   @override
   void initState() {
@@ -105,6 +107,7 @@ class _StudioPageState extends State<StudioPage> {
     _zigbangConfig = ZigbangConfig.defaultPreset();
     _naverConfig = NaverConfig.defaultPreset();
     _edgeConfig = EdgeConfig.defaultPreset();
+    _cctvConfig = CctvConfig.defaultPreset();
   }
 
   Future<void> _exportScreen() async {
@@ -212,6 +215,8 @@ class _StudioPageState extends State<StudioPage> {
       onNaverChanged: (cfg) => setState(() => _naverConfig = cfg),
       edgeConfig: _edgeConfig,
       onEdgeChanged: (cfg) => setState(() => _edgeConfig = cfg),
+      cctvConfig: _cctvConfig,
+      onCctvChanged: (cfg) => setState(() => _cctvConfig = cfg),
     );
   }
 }

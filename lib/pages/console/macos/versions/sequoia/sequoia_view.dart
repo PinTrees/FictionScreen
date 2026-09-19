@@ -14,6 +14,7 @@ import '../../../../../apps/pdf_viewer/pdf_viewer_window.dart';
 import '../../../../../apps/telegram/telegram_window.dart';
 import '../../../../../apps/zigbang/zigbang_window.dart';
 import '../../../../../apps/naver/naver_window.dart';
+import '../../../../../apps/cctv/cctv_window.dart';
 import '../../../../console/windows/apps/edge/edge_window.dart';
 import '../../../common/os_window_frame.dart';
 import '../../macos_dock.dart';
@@ -155,6 +156,8 @@ class _SequoiaViewState extends State<SequoiaView> {
         return ZigbangWindow(width: 880, height: 580, style: WindowStyle.macos, onClose: () => setState(() => _openApps.remove('zigbang')), onTitleDragStart: (_) {}, onTitleDragUpdate: (_) {});
       case 'naver':
         return NaverWindow(width: 920, height: 600, style: WindowStyle.macos, onClose: () => setState(() => _openApps.remove('naver')), onTitleDragStart: (_) {}, onTitleDragUpdate: (_) {});
+      case 'cctv':
+        return CctvWindow(width: 960, height: 640, style: WindowStyle.macos, onClose: () => setState(() => _openApps.remove('cctv')), onTitleDragStart: (_) {}, onTitleDragUpdate: (_) {});
       case 'pdf_viewer':
         return PdfViewerWindow(width: 880, height: 580, style: WindowStyle.macos, onClose: () => setState(() => _openApps.remove('pdf_viewer')), onTitleDragStart: (_) {}, onTitleDragUpdate: (_) {});
       case 'telegram':

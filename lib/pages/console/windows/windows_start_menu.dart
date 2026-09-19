@@ -184,6 +184,7 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                         _buildListTile('Telegram (텔레그램)', CupertinoIcons.paperplane_fill, const Color(0xFF5288C1), () => widget.onOpenWinApp?.call('telegram')),
                         _buildListTile('직방 (부동산 플랫폼)', null, const Color(0xFFFF7800), () => widget.onOpenWinApp?.call('zigbang'), imageAsset: 'assets/images/zigbang_icon.webp'),
                         _buildListTile('네이버 (NAVER 포털)', null, const Color(0xFF03C75A), () => widget.onOpenWinApp?.call('naver'), imageAsset: 'assets/images/naver_icon.webp'),
+                        _buildListTile('보안 관제 (CCTV 시스템)', CupertinoIcons.videocam_fill, const Color(0xFFE53935), () => widget.onOpenWinApp?.call('cctv')),
                         _buildListTile('Chrome (크롬 브라우저)', null, const Color(0xFF4285F4), () => widget.onOpenWinApp?.call('chrome'), imageAsset: 'assets/images/windows/chrome.png'),
                         _buildListTile('Microsoft Edge', null, const Color(0xFF0078D7), () => widget.onOpenWinApp?.call('edge'), imageAsset: 'assets/images/windows/edge.png'),
                         _buildListTile('시스템 설정', CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), () => (widget.onOpenWinApp != null ? widget.onOpenWinApp!('settings') : widget.onOpenSettings())),
@@ -353,6 +354,7 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                               _buildXpProgramTile('Chrome', '웹 브라우저', 'assets/images/windows/chrome.png', () => widget.onOpenWinApp?.call('chrome')),
                               _buildXpProgramTile('직방 (Zigbang)', '부동산 & 원룸', 'assets/images/zigbang_icon.webp', () => widget.onOpenWinApp?.call('zigbang')),
                               _buildXpProgramTile('네이버 (NAVER)', '포털 & 뉴스', 'assets/images/naver_icon.webp', () => widget.onOpenWinApp?.call('naver')),
+                              _buildXpProgramTile('보안 관제 (CCTV)', 'NVR 감시 모니터링', 'assets/images/windows/desk.png', () => widget.onOpenWinApp?.call('cctv')),
                               _buildXpProgramTile('DaVinci Resolve', '', 'assets/images/davinci_resolve_icon.webp', () => widget.onOpenTemplate('davinci_resolve')),
                               _buildXpProgramTile('카카오톡', '', 'assets/images/kakaotalk_icon.webp', () => widget.onOpenTemplate('kakaotalk')),
                             ],
@@ -635,6 +637,7 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                                   _buildWin7ProgramItem('Google Chrome', null, const Color(0xFF4285F4), () => widget.onOpenWinApp?.call('chrome'), imageAsset: 'assets/images/windows/chrome.png'),
                                   _buildWin7ProgramItem('직방 (부동산)', null, const Color(0xFFFF7800), () => widget.onOpenWinApp?.call('zigbang'), imageAsset: 'assets/images/zigbang_icon.webp'),
                                   _buildWin7ProgramItem('네이버 (NAVER)', null, const Color(0xFF03C75A), () => widget.onOpenWinApp?.call('naver'), imageAsset: 'assets/images/naver_icon.webp'),
+                                  _buildWin7ProgramItem('보안 관제 (CCTV)', CupertinoIcons.videocam_fill, const Color(0xFFE53935), () => widget.onOpenWinApp?.call('cctv')),
                                   const Padding(
                                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                     child: Divider(height: 1, color: Color(0xFFE2E8F0)),
@@ -1107,6 +1110,41 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
             _buildWin11AppItem('카카오톡', 'assets/images/kakaotalk_icon.webp', () => widget.onOpenTemplate('kakaotalk')),
             _buildWin11AppItem('쿠팡', 'assets/images/coupang_icon.webp', () => widget.onOpenTemplate('coupang')),
             _buildWin11AppItem('동행복권', 'assets/images/lottery_icon.webp', () => widget.onOpenTemplate('lottery')),
+          ],
+        ),
+        const SizedBox(height: 8),
+
+        // Row 4 (CCTV, DaVinci Resolve, Visual Studio, Photoshop, Discord, 배달의민족, Instagram, Netflix)
+        Row(
+          children: [
+            _buildWin11AppItem(
+              '보안 관제',
+              null,
+              () => widget.onOpenWinApp?.call('cctv'),
+              customIcon: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(color: const Color(0xFFE53935), borderRadius: BorderRadius.circular(6)),
+                child: const Icon(CupertinoIcons.videocam_fill, color: Colors.white, size: 18),
+              ),
+            ),
+            _buildWin11AppItem('DaVinci', 'assets/images/davinci_resolve_icon.webp', () => widget.onOpenTemplate('davinci_resolve')),
+            _buildWin11AppItem('VS 2026', 'assets/images/visual_studio_icon.webp', () => widget.onOpenTemplate('visual_studio')),
+            _buildWin11AppItem('Photoshop', 'assets/images/photoshop_icon.webp', () => widget.onOpenTemplate('photoshop')),
+            _buildWin11AppItem('Discord', 'assets/images/discord_icon.webp', () => widget.onOpenTemplate('discord')),
+            _buildWin11AppItem(
+              '배달의민족',
+              null,
+              () => widget.onOpenTemplate('delivery'),
+              customIcon: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(color: const Color(0xFF2AC1BC), borderRadius: BorderRadius.circular(6)),
+                child: const Icon(CupertinoIcons.bag_fill, color: Colors.white, size: 18),
+              ),
+            ),
+            _buildWin11AppItem('Instagram', 'assets/images/instagram_icon.webp', () => widget.onOpenTemplate('instagram')),
+            _buildWin11AppItem('Netflix', 'assets/images/netflix_icon.webp', () => widget.onOpenTemplate('netflix')),
           ],
         ),
       ],

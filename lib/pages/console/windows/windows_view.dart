@@ -7,6 +7,7 @@ import '../../../apps/pdf_viewer/pdf_viewer_window.dart';
 import '../../../apps/telegram/telegram_window.dart';
 import '../../../apps/zigbang/zigbang_window.dart';
 import '../../../apps/naver/naver_window.dart';
+import '../../../apps/cctv/cctv_window.dart';
 import '../common/os_window_frame.dart';
 import 'apps/cmd/cmd_window.dart';
 import 'apps/edge/edge_window.dart';
@@ -464,6 +465,16 @@ class _WindowsViewState extends State<WindowsView> {
         isSystemApp: true,
         onTap: () => _openWinApp('minesweeper'),
       ),
+      DesktopIconItem(
+        id: 'cctv',
+        title: '보안 관제 (CCTV)',
+        icon: CupertinoIcons.videocam_fill,
+        iconColor: const Color(0xFFE53935),
+        gridX: 5,
+        gridY: 5,
+        isSystemApp: true,
+        onTap: () => _openWinApp('cctv'),
+      ),
     ];
   }
 
@@ -490,6 +501,8 @@ class _WindowsViewState extends State<WindowsView> {
         defaultSize = const Size(960, 640);
       } else if (appId == 'naver') {
         defaultSize = const Size(1000, 660);
+      } else if (appId == 'cctv') {
+        defaultSize = const Size(960, 640);
       } else if (widget.windowsVersion == '11') {
         if (appId == 'file_explorer' || appId == 'recycle_bin') {
           defaultSize = const Size(860, 560);
@@ -1420,6 +1433,19 @@ class _WindowsViewState extends State<WindowsView> {
         );
       case 'naver':
         return NaverWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'cctv':
+        return CctvWindow(
           width: win.size.width,
           height: win.size.height,
           isMaximized: win.isMaximized,
