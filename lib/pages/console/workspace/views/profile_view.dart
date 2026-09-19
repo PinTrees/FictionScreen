@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../services/auth_service.dart';
+import '../../../../widgets/scale_button.dart';
 
 class ProfileView extends StatefulWidget {
   final bool isDarkMode;
@@ -283,9 +284,8 @@ class _ProfileViewState extends State<ProfileView> {
                     // Save Button
                     Row(
                       children: [
-                        InkWell(
+                        ScaleButton(
                           onTap: _isSaving ? null : _saveProfile,
-                          borderRadius: BorderRadius.circular(10),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 13),
                             decoration: BoxDecoration(

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../../../../widgets/scale_button.dart';
 import '../models/project_model.dart';
 
 class DashboardHomeView extends StatelessWidget {
@@ -102,9 +103,8 @@ class DashboardHomeView extends StatelessWidget {
                 ),
                 const SizedBox(width: 24),
                 // Brand Button (CapCut style)
-                InkWell(
+                ScaleButton(
                   onTap: onNewProject,
-                  borderRadius: BorderRadius.circular(12),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
                     decoration: BoxDecoration(
@@ -198,9 +198,8 @@ class DashboardHomeView extends StatelessWidget {
                           style: TextStyle(color: textSubColor, fontSize: 13),
                         ),
                         const SizedBox(height: 18),
-                        InkWell(
+                        ScaleButton(
                           onTap: onNewProject,
-                          borderRadius: BorderRadius.circular(10),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
                             decoration: BoxDecoration(
@@ -230,9 +229,8 @@ class DashboardHomeView extends StatelessWidget {
                       final proj = projects[index];
                       final template = proj.template;
 
-                      return InkWell(
+                      return ScaleButton(
                         onTap: () => onOpenProject(proj),
-                        borderRadius: BorderRadius.circular(16),
                         child: Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(

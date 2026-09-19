@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../constants/home_i18n.dart';
+import '../../../widgets/scale_button.dart';
 
 class HomeFooter extends StatelessWidget {
   final bool isMobile;
@@ -95,32 +96,26 @@ class HomeFooter extends StatelessWidget {
                   alignment: WrapAlignment.center,
                   children: [
                     // Primary Brand Gradient Button (NO OUTLINE)
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4),
+                    // Primary Brand Gradient Button (Scale down feedback)
+                    ScaleButton(
+                      onTap: () => context.go('/console'),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 18),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          foregroundColor: const Color(0xFF003852),
-                          shadowColor: Colors.transparent,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 18),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                              blurRadius: 16,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        onPressed: () => context.go('/console'),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -135,30 +130,33 @@ class HomeFooter extends StatelessWidget {
                       ),
                     ),
 
-                    // Secondary Button (NO OUTLINE)
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: isDarkMode ? Colors.white : const Color(0xFF0F172A),
-                        backgroundColor: isDarkMode ? Colors.white.withValues(alpha: 0.08) : Colors.white,
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
+                    // Secondary Button (Scale down feedback)
+                    ScaleButton(
+                      onTap: () => context.go('/studio/kakaotalk'),
+                      child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      onPressed: () => context.go('/studio/kakaotalk'),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: Image.asset('assets/images/kakaotalk_icon.webp', width: 18, height: 18),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            isEnglish ? 'Open KakaoTalk Studio' : '카카오톡 스튜디오 열기',
-                            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5),
-                          ),
-                        ],
+                        decoration: BoxDecoration(
+                          color: isDarkMode ? Colors.white.withValues(alpha: 0.08) : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(4),
+                              child: Image.asset('assets/images/kakaotalk_icon.webp', width: 18, height: 18),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              isEnglish ? 'Open KakaoTalk Studio' : '카카오톡 스튜디오 열기',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14.5,
+                                color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

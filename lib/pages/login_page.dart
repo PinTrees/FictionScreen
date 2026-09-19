@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../services/auth_service.dart';
+import '../widgets/scale_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,23 +18,24 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _handleGoogleSignIn() async {
     setState(() => _isLoading = true);
     try {
-      await AuthService.signInWithGoogle();
-      if (mounted) {
+      final cred = await AuthService.signInWithGoogle();
+      if (cred != null && mounted) {
         context.go('/console');
       }
     } catch (e) {
       if (mounted) {
-        context.go('/console');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('로그인 중 문제가 발생했습니다: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
       }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
     }
-  }
-
-  void _handleGuestEntry() {
-    context.go('/console');
   }
 
   void _handleBack() {
@@ -81,13 +83,12 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
 
-          // 2. Top-left Back Button (Req: "이전화면으로 가는 버튼 없음")
+          // 2. Top-left Back Button (Scale down feedback)
           Positioned(
             top: 24,
             left: 24,
-            child: InkWell(
+            child: ScaleButton(
               onTap: _handleBack,
-              borderRadius: BorderRadius.circular(10),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
@@ -183,69 +184,47 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 36),
 
-                        // Official Google Sign-In Button (Req: "구글 로그인 버튼에 구글 아이콘 적용하고")
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            minimumSize: const Size(double.infinity, 50),
-                            elevation: 0,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                          onPressed: _isLoading ? null : _handleGoogleSignIn,
-                          child: _isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
-                                )
-                              : const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    GoogleLogoIcon(size: 20),
-                                    SizedBox(width: 12),
-                                    Text(
-                                      'Google 계정으로 시작하기',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 14,
-                                        letterSpacing: -0.2,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                        ),
-                        const SizedBox(height: 14),
-
-                        // Guest / Non-member Entry Button (ZERO OUTLINE, Filled surface)
-                        InkWell(
-                          onTap: _handleGuestEntry,
-                          borderRadius: BorderRadius.circular(14),
+                        // Official Google Sign-In Button (Scale down feedback, NO INKWELL)
+                        ScaleButton(
+                          onTap: _isLoading ? null : _handleGoogleSignIn,
                           child: Container(
                             width: double.infinity,
-                            height: 48,
+                            height: 52,
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.08),
+                              color: Colors.white,
                               borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '체험하기 (비회원 로그인)',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 13.5,
-                                  ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.15),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
                                 ),
-                                SizedBox(width: 6),
-                                Icon(CupertinoIcons.arrow_right, size: 14, color: Colors.white70),
                               ],
                             ),
+                            child: _isLoading
+                                ? const Center(
+                                    child: SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                                    ),
+                                  )
+                                : const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      GoogleLogoIcon(size: 20),
+                                      SizedBox(width: 12),
+                                      Text(
+                                        'Google 계정으로 시작하기',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 14.5,
+                                          letterSpacing: -0.2,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                           ),
                         ),
 

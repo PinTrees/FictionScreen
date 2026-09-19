@@ -7,6 +7,10 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      splashFactory: NoSplash.splashFactory,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
       scaffoldBackgroundColor: const Color(0xFFF8FAFC),
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
@@ -58,6 +62,10 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      splashFactory: NoSplash.splashFactory,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
       scaffoldBackgroundColor: AppColors.background,
       colorScheme: const ColorScheme.dark(
         primary: AppColors.primary,

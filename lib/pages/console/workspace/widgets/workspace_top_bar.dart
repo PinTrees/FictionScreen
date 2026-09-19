@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../apps/screen_template.dart';
 import '../../../../services/auth_service.dart';
+import '../../../../widgets/scale_button.dart';
 
 class WorkspaceTopBar extends StatelessWidget {
   final ScreenTemplate template;
@@ -150,12 +151,11 @@ class WorkspaceTopBar extends StatelessWidget {
 
               const SizedBox(width: 10),
 
-              // 4. Far Right User Profile Avatar (Directly at the right edge)
+              // 4. Far Right User Profile Avatar (Directly at the right edge, Scale down feedback)
               Tooltip(
                 message: user?.displayName ?? user?.email ?? '사용자 프로필 (클릭하여 설정)',
-                child: InkWell(
+                child: ScaleButton(
                   onTap: onOpenProfile,
-                  borderRadius: BorderRadius.circular(16),
                   child: CircleAvatar(
                     radius: 16,
                     backgroundColor: const Color(0xFF00B0FF),

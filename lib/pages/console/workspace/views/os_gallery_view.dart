@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../constants/app_platform_icons.dart';
+import '../../../../widgets/scale_button.dart';
 
 class OsGalleryView extends StatelessWidget {
   final bool isDarkMode;
@@ -137,9 +138,8 @@ class OsGalleryView extends StatelessWidget {
               itemBuilder: (context, index) {
                 final os = osList[index];
 
-                return InkWell(
+                return ScaleButton(
                   onTap: () => onSelectOs(os.id),
-                  borderRadius: BorderRadius.circular(16),
                   child: Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(

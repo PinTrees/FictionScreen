@@ -9,6 +9,7 @@ import '../../../apps/kakaotalk/data/kakaotalk_model.dart';
 import '../../../apps/kakaotalk/kakaotalk_screen.dart';
 
 import '../../../constants/home_i18n.dart';
+import '../../../widgets/scale_button.dart';
 
 class HomeFeaturedTrio extends StatelessWidget {
   final bool isMobile;
@@ -259,33 +260,26 @@ class HomeFeaturedTrio extends StatelessWidget {
         ),
         const SizedBox(height: 28),
 
-        // Brand Gradient Action Button (NO OUTLINE)
-        Container(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
-                blurRadius: 14,
-                offset: const Offset(0, 4),
+        // Brand Gradient Action Button (Tactile Scale Down Feedback)
+        ScaleButton(
+          onTap: () => context.go('/studio/$templateId'),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-            ],
-          ),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              foregroundColor: const Color(0xFF003852),
-              shadowColor: Colors.transparent,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                  blurRadius: 14,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            onPressed: () => context.go('/studio/$templateId'),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [

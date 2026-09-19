@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../constants/home_i18n.dart';
+import '../../../widgets/scale_button.dart';
 import 'home_floating_hero_icons.dart';
 
 class HomeEditorialHero extends StatelessWidget {
@@ -256,10 +257,9 @@ class HomeEditorialHero extends StatelessWidget {
                       ),
                       const SizedBox(height: 36),
 
-                      // Sofi Style Pill Button with Brand Gradient (no outline)
-                      InkWell(
+                      // Sofi Style Button with Brand Gradient (Scale down on tap, NO INKWELL COLOR CHANGE)
+                      ScaleButton(
                         onTap: () => context.go('/console'),
-                        borderRadius: BorderRadius.circular(12),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
                           decoration: BoxDecoration(

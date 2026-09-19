@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../services/auth_service.dart';
+import '../../../../widgets/scale_button.dart';
 import '../models/project_model.dart';
 
 class WorkspaceSidebar extends StatelessWidget {
@@ -76,9 +77,8 @@ class WorkspaceSidebar extends StatelessWidget {
                 ? Center(
                     child: Tooltip(
                       message: '새 프로젝트 생성',
-                      child: InkWell(
+                      child: ScaleButton(
                         onTap: onNewProject,
-                        borderRadius: BorderRadius.circular(12),
                         child: Container(
                           width: 46,
                           height: 46,
@@ -104,9 +104,8 @@ class WorkspaceSidebar extends StatelessWidget {
                       ),
                     ),
                   )
-                : InkWell(
+                : ScaleButton(
                     onTap: onNewProject,
-                    borderRadius: BorderRadius.circular(12),
                     child: Container(
                       width: double.infinity,
                       height: 46,

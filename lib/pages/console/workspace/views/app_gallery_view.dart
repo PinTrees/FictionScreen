@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../apps/screen_template.dart';
+import '../../../../widgets/scale_button.dart';
 
 /// 콘솔 메인 페이지에서 어플을 고를 수 있는 갤러리/카탈로그 뷰
 class AppGalleryView extends StatefulWidget {
@@ -87,7 +88,7 @@ class _AppGalleryViewState extends State<AppGalleryView> {
                           color: const Color(0xFF6366F1).withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(CupertinoIcons.square_grid_2x2_fill, color: Color(0xFF6366F1), size: 20),
+                        child: const Icon(CupertinoIcons.square_grid_2x2_fill, color: Color(0xFF00B0FF), size: 20),
                       ),
                       const SizedBox(width: 12),
                       Column(
@@ -220,7 +221,7 @@ class _AppGalleryViewState extends State<AppGalleryView> {
 
   Widget _buildCategoryPill(TemplateCategory? cat, String label, bool isDark) {
     final isSelected = _selectedCategory == cat;
-    final activeBg = const Color(0xFF6366F1);
+    final activeBg = const Color(0xFF00B0FF);
     final inactiveBg = isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFE2E8F0);
 
     return Padding(
@@ -298,126 +299,121 @@ class _AppGalleryCardState extends State<_AppGalleryCard> {
             ),
           ],
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: widget.onTap,
-            borderRadius: BorderRadius.circular(18),
-            splashColor: Colors.transparent,
-            child: Padding(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Top Row: Icon + Title + Category + Badge
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 42,
-                        height: 42,
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: item.themeColor.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: item.imageAsset != null
-                              ? Image.asset(item.imageAsset!, fit: BoxFit.contain)
-                              : Icon(item.icon, color: item.themeColor, size: 22),
-                        ),
+        child: ScaleButton(
+          onTap: widget.onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top Row: Icon + Title + Category + Badge
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: (item.themeColor).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    item.title,
-                                    style: TextStyle(
-                                      color: widget.textColor,
-                                      fontSize: 14.5,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: -0.3,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                if (item.badge.isNotEmpty) ...[
-                                  const SizedBox(width: 6),
-                                  _buildBadge(item.badge),
-                                ],
-                              ],
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              item.category.label,
-                              style: TextStyle(
-                                color: widget.textSubColor,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: Center(
+                        child: item.imageAsset != null
+                            ? Image.asset(item.imageAsset!, fit: BoxFit.contain)
+                            : Icon(item.icon, color: item.themeColor, size: 24),
                       ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Middle: Description
-                  Expanded(
-                    child: Text(
-                      item.description,
-                      style: TextStyle(
-                        color: widget.textSubColor.withValues(alpha: 0.85),
-                        fontSize: 12,
-                        height: 1.45,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-
-                  // Bottom Action: Open Editor (NO OUTLINE)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF6366F1).withValues(alpha: _isHovered ? 0.2 : 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '피그마 에디터 열기',
-                              style: TextStyle(
-                                color: const Color(0xFF6366F1),
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.bold,
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  item.title,
+                                  style: TextStyle(
+                                    color: widget.textColor,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.3,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
+                              if (item.badge.isNotEmpty) ...[
+                                const SizedBox(width: 6),
+                                _buildBadge(item.badge),
+                              ],
+                            ],
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            item.category.label,
+                            style: TextStyle(
+                              color: widget.textSubColor,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
                             ),
-                            const SizedBox(width: 4),
-                            Icon(
-                              CupertinoIcons.arrow_right,
-                              size: 11,
-                              color: const Color(0xFF6366F1),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                // Middle: Description
+                Expanded(
+                  child: Text(
+                    item.description,
+                    style: TextStyle(
+                      color: widget.textSubColor.withValues(alpha: 0.85),
+                      fontSize: 12,
+                      height: 1.45,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
-              ),
+                ),
+
+                // Bottom Action: Open Editor (NO OUTLINE)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00B0FF).withValues(alpha: _isHovered ? 0.2 : 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '피그마 에디터 열기',
+                            style: TextStyle(
+                              color: const Color(0xFF00B0FF),
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            CupertinoIcons.arrow_right,
+                            size: 11,
+                            color: const Color(0xFF00B0FF),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),

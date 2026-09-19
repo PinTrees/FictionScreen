@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../constants/home_i18n.dart';
 import '../../../services/auth_service.dart';
+import '../../../widgets/scale_button.dart';
 
 class HomeTopAppBar extends StatelessWidget {
   final bool isMobile;
@@ -186,9 +187,8 @@ class HomeTopAppBar extends StatelessWidget {
                         if (isLoggedIn) ...[
                           Tooltip(
                             message: '${user.displayName ?? user.email ?? "사용자"} (클릭 시 콘솔 이동)',
-                            child: InkWell(
+                            child: ScaleButton(
                               onTap: () => context.go('/console'),
-                              borderRadius: BorderRadius.circular(18),
                               child: CircleAvatar(
                                 radius: 16,
                                 backgroundColor: const Color(0xFF00B0FF),
@@ -207,9 +207,8 @@ class HomeTopAppBar extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                         ] else ...[
-                          InkWell(
+                          ScaleButton(
                             onTap: () => context.go('/login'),
-                            borderRadius: BorderRadius.circular(8),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               child: Text(
@@ -226,37 +225,29 @@ class HomeTopAppBar extends StatelessWidget {
                           const SizedBox(width: 10),
                         ],
 
-                        // Console Button (Req: "콘솔 시작하기 버튼에 아이콘 제거하고")
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
+                        // Console Button (Tactile Scale Down Feedback)
+                        ScaleButton(
+                          onTap: () => context.go('/console'),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isMobile ? 14 : 18,
+                              vertical: 8.5,
                             ),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
-                                blurRadius: 10,
-                                offset: const Offset(0, 2),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                               ),
-                            ],
-                          ),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              foregroundColor: const Color(0xFF003852),
-                              shadowColor: Colors.transparent,
-                              elevation: 0,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: isMobile ? 14 : 18,
-                                vertical: 0,
-                              ),
-                              minimumSize: const Size(0, 36),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
-                            onPressed: () => context.go('/console'),
                             child: Text(
                               isLoggedIn
                                   ? HomeI18n.t('virtualOsConsole', isEnglish: isEnglish)

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../apps/screen_template.dart';
+import '../../../../widgets/scale_button.dart';
 import '../models/project_model.dart';
 
 class CreateProjectDialog extends StatefulWidget {
@@ -259,9 +260,8 @@ class _CreateProjectDialogState extends State<CreateProjectDialog> {
                   child: const Text('취소', style: TextStyle(fontWeight: FontWeight.w600)),
                 ),
                 const SizedBox(width: 8),
-                InkWell(
+                ScaleButton(
                   onTap: _submit,
-                  borderRadius: BorderRadius.circular(10),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     decoration: BoxDecoration(

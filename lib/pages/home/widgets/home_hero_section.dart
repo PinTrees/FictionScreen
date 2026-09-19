@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../constants/app_platform_icons.dart';
+import '../../../widgets/scale_button.dart';
 
 class HomeHeroSection extends StatelessWidget {
   final bool isMobile;
@@ -102,32 +103,26 @@ class HomeHeroSection extends StatelessWidget {
               runSpacing: 14,
               alignment: WrapAlignment.center,
               children: [
-                // Primary Brand Gradient Button
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
-                        blurRadius: 16,
-                        offset: const Offset(0, 4),
+                // Primary Brand Gradient Button (Scale down feedback)
+                ScaleButton(
+                  onTap: () => context.go('/console'),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF00E5FF), Color(0xFF00B0FF)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      foregroundColor: const Color(0xFF003852),
-                      shadowColor: Colors.transparent,
-                      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF00E5FF).withValues(alpha: 0.35),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    onPressed: () => context.go('/console'),
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -141,26 +136,32 @@ class HomeHeroSection extends StatelessWidget {
                   ),
                 ),
 
-                // Secondary Clean Filled Button (NO OUTLINE)
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isDarkMode
-                        ? Colors.white.withValues(alpha: 0.08)
-                        : const Color(0xFFE2E8F0),
-                    foregroundColor: isDarkMode ? Colors.white : const Color(0xFF0F172A),
-                    elevation: 0,
-                    shadowColor: Colors.transparent,
+                // Secondary Clean Filled Button (Scale down feedback)
+                ScaleButton(
+                  onTap: onExploreFeatured,
+                  child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 20),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  ),
-                  onPressed: onExploreFeatured,
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(CupertinoIcons.play_circle_fill, size: 18),
-                      SizedBox(width: 8),
-                      Text('대표 화면 둘러보기', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
-                    ],
+                    decoration: BoxDecoration(
+                      color: isDarkMode
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : const Color(0xFFE2E8F0),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(CupertinoIcons.play_circle_fill, size: 18, color: isDarkMode ? Colors.white : const Color(0xFF0F172A)),
+                        const SizedBox(width: 8),
+                        Text(
+                          '대표 화면 둘러보기',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                            color: isDarkMode ? Colors.white : const Color(0xFF0F172A),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
