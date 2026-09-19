@@ -34,6 +34,8 @@ class SteamosDesktopMode extends StatefulWidget {
 class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
   bool _isKickoffOpen = false;
   String? _selectedIconId;
+  Offset? _contextMenuPosition;
+  bool _isOsSubmenuOpen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,37 +43,31 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
       onTap: () {
         if (_isKickoffOpen) setState(() => _isKickoffOpen = false);
         if (_selectedIconId != null) setState(() => _selectedIconId = null);
+        if (_contextMenuPosition != null) {
+          setState(() {
+            _contextMenuPosition = null;
+            _isOsSubmenuOpen = false;
+          });
+        }
+      },
+      onSecondaryTapDown: (details) {
+        setState(() {
+          _contextMenuPosition = details.localPosition;
+          _isOsSubmenuOpen = false;
+          _isKickoffOpen = false;
+        });
       },
       child: Container(
-        // Authentic SteamOS KDE Plasma Desktop Wallpaper
+        // Authentic Valve SteamOS KDE Plasma Official Wallpaper
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0D1B2A),
-              Color(0xFF1B263B),
-              Color(0xFF0F172A),
-              Color(0xFF030712),
-            ],
-            stops: [0.0, 0.4, 0.75, 1.0],
+          color: Color(0xFF090D14),
+          image: DecorationImage(
+            image: AssetImage('assets/images/steamos_desktop.jpg'),
+            fit: BoxFit.cover,
           ),
         ),
         child: Stack(
           children: [
-            // Center Ambient SteamOS Neon Geometric Watermark
-            Center(
-              child: Opacity(
-                opacity: 0.12,
-                child: Image.asset(
-                  'assets/images/steamos_logo.png',
-                  width: 480,
-                  height: 480,
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-
             // 1. Desktop Icons Column (Top-Left)
             Positioned(
               top: 20,
@@ -83,6 +79,7 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
                   _buildDesktopIcon(
                     id: 'return_gaming',
                     title: 'Return to\nGaming Mode',
+                    imageAsset: 'assets/images/steamdeck_return.png',
                     icon: CupertinoIcons.gamecontroller_fill,
                     iconColor: const Color(0xFF1A9FFF),
                     isHighlight: true,
@@ -94,6 +91,7 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
                   _buildDesktopIcon(
                     id: 'steam_client',
                     title: 'Steam',
+                    imageAsset: 'assets/images/steamos_logo.png',
                     icon: CupertinoIcons.app_badge_fill,
                     iconColor: const Color(0xFF67C1F5),
                     onTap: () => widget.onOpenTemplate('steam'),
@@ -158,6 +156,12 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
               height: 44,
               child: _buildKdeTaskbar(),
             ),
+
+            // 4. KDE Plasma Desktop Context Menu (Right Click)
+            if (_contextMenuPosition != null)
+              Positioned.fill(
+                child: _buildDesktopContextMenu(context),
+              ),
           ],
         ),
       ),
@@ -170,6 +174,7 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
   Widget _buildDesktopIcon({
     required String id,
     required String title,
+    String? imageAsset,
     required IconData icon,
     required Color iconColor,
     required VoidCallback onTap,
@@ -201,6 +206,7 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
             Container(
               width: 44,
               height: 44,
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: const Color(0xFF111722).withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(10),
@@ -214,7 +220,9 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
                 ],
               ),
               child: Center(
-                child: Icon(icon, color: iconColor, size: 24),
+                child: imageAsset != null
+                    ? Image.asset(imageAsset, width: 30, height: 30, fit: BoxFit.contain)
+                    : Icon(icon, color: iconColor, size: 24),
               ),
             ),
             const SizedBox(height: 6),
@@ -255,6 +263,7 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
       child: Row(
         children: [
           // Kickoff Application Launcher button
+          // Kickoff Application Launcher button
           InkWell(
             onTap: () => setState(() => _isKickoffOpen = !_isKickoffOpen),
             child: Container(
@@ -265,7 +274,7 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
               ),
               child: Row(
                 children: [
-                  Image.asset('assets/images/steamos_logo.png', width: 22, height: 22),
+                  Image.asset('assets/images/steamdeck_icon.png', width: 22, height: 22),
                   const SizedBox(width: 8),
                   const Text(
                     'SteamOS',
@@ -279,10 +288,28 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
           const VerticalDivider(color: Colors.white12, width: 1, indent: 8, endIndent: 8),
 
           // Pinned App Taskbar Icons
-          _buildTaskbarPinnedIcon(CupertinoIcons.gamecontroller_fill, const Color(0xFF1A9FFF), 'Gaming Mode', widget.onReturnToGamingMode),
-          _buildTaskbarPinnedIcon(CupertinoIcons.app_badge_fill, const Color(0xFF67C1F5), 'Steam', () => widget.onOpenTemplate('steam')),
-          _buildTaskbarPinnedIcon(CupertinoIcons.folder_fill, const Color(0xFF38BDF8), 'Dolphin', () => widget.onOpenTemplate('excel')),
-          _buildTaskbarPinnedIcon(CupertinoIcons.chevron_left_slash_chevron_right, const Color(0xFF10B981), 'Konsole', () => widget.onOpenTemplate('dcinside')),
+          _buildTaskbarPinnedIcon(
+            imageAsset: 'assets/images/steamdeck_return.png',
+            tooltip: 'Return to Gaming Mode',
+            onTap: widget.onReturnToGamingMode,
+          ),
+          _buildTaskbarPinnedIcon(
+            imageAsset: 'assets/images/steamos_logo.png',
+            tooltip: 'Steam',
+            onTap: () => widget.onOpenTemplate('steam'),
+          ),
+          _buildTaskbarPinnedIcon(
+            icon: CupertinoIcons.folder_fill,
+            iconColor: const Color(0xFF38BDF8),
+            tooltip: 'Dolphin File Manager',
+            onTap: () => widget.onOpenTemplate('excel'),
+          ),
+          _buildTaskbarPinnedIcon(
+            icon: CupertinoIcons.chevron_left_slash_chevron_right,
+            iconColor: const Color(0xFF10B981),
+            tooltip: 'Konsole Terminal',
+            onTap: () => widget.onOpenTemplate('dcinside'),
+          ),
 
           const Spacer(),
 
@@ -338,14 +365,25 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
     );
   }
 
-  Widget _buildTaskbarPinnedIcon(IconData icon, Color color, String tooltip, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: 42,
-        height: 44,
-        alignment: Alignment.center,
-        child: Icon(icon, color: color, size: 19),
+  Widget _buildTaskbarPinnedIcon({
+    IconData? icon,
+    String? imageAsset,
+    Color iconColor = Colors.white,
+    required String tooltip,
+    required VoidCallback onTap,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          width: 42,
+          height: 44,
+          alignment: Alignment.center,
+          child: imageAsset != null
+              ? Image.asset(imageAsset, width: 20, height: 20, fit: BoxFit.contain)
+              : Icon(icon, color: iconColor, size: 19),
+        ),
       ),
     );
   }
@@ -547,6 +585,360 @@ class _SteamosDesktopModeState extends State<SteamosDesktopMode> {
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ==========================================
+  // KDE Plasma Desktop Context Menu
+  // ==========================================
+  Widget _buildDesktopContextMenu(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final double menuLeft = (_contextMenuPosition?.dx ?? 100).clamp(10.0, screenSize.width - 240.0);
+    final double menuTop = (_contextMenuPosition?.dy ?? 100).clamp(10.0, screenSize.height - 360.0);
+
+    final bool openOsSubmenuRight = (menuLeft + 230 + 220) < screenSize.width;
+    final double osSubmenuLeft = openOsSubmenuRight ? (menuLeft + 224) : (menuLeft - 215);
+    final double osSubmenuTop = (menuTop + 40).clamp(10.0, screenSize.height - 380.0);
+
+    return Stack(
+      children: [
+        // External tap dismiss
+        Positioned.fill(
+          child: GestureDetector(
+            onTap: () => setState(() {
+              _contextMenuPosition = null;
+              _isOsSubmenuOpen = false;
+            }),
+            onSecondaryTap: () => setState(() {
+              _contextMenuPosition = null;
+              _isOsSubmenuOpen = false;
+            }),
+            behavior: HitTestBehavior.translucent,
+            child: Container(color: Colors.transparent),
+          ),
+        ),
+
+        // Context Menu Main Body
+        Positioned(
+          left: menuLeft,
+          top: menuTop,
+          child: Container(
+            width: 230,
+            decoration: BoxDecoration(
+              color: const Color(0xFF141923).withValues(alpha: 0.96),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.6),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Return to Gaming Mode
+                      _buildContextMenuItem(
+                        label: '게임 모드로 복귀',
+                        imageAsset: 'assets/images/steamdeck_return.png',
+                        isHighlight: true,
+                        onTap: () {
+                          setState(() {
+                            _contextMenuPosition = null;
+                            _isOsSubmenuOpen = false;
+                          });
+                          widget.onReturnToGamingMode();
+                        },
+                      ),
+                      const Divider(color: Colors.white12, height: 8),
+
+                      // Switch OS submenu trigger
+                      MouseRegion(
+                        onEnter: (_) => setState(() => _isOsSubmenuOpen = true),
+                        child: _buildContextMenuItem(
+                          label: '운영체제 전환 (OS)',
+                          icon: CupertinoIcons.device_desktop,
+                          trailing: '›',
+                          onTap: () => setState(() => _isOsSubmenuOpen = !_isOsSubmenuOpen),
+                        ),
+                      ),
+                      const Divider(color: Colors.white12, height: 8),
+
+                      // Refresh
+                      _buildContextMenuItem(
+                        label: '새로 고침',
+                        icon: CupertinoIcons.arrow_clockwise,
+                        onTap: () {
+                          setState(() {
+                            _contextMenuPosition = null;
+                            _isOsSubmenuOpen = false;
+                          });
+                        },
+                      ),
+
+                      // Open Konsole
+                      _buildContextMenuItem(
+                        label: '터미널 열기 (Konsole)',
+                        icon: CupertinoIcons.chevron_left_slash_chevron_right,
+                        iconColor: const Color(0xFF10B981),
+                        onTap: () {
+                          setState(() {
+                            _contextMenuPosition = null;
+                            _isOsSubmenuOpen = false;
+                          });
+                          widget.onOpenTemplate('dcinside');
+                        },
+                      ),
+
+                      // Desktop Settings
+                      _buildContextMenuItem(
+                        label: '바탕화면 및 환경설정',
+                        icon: CupertinoIcons.slider_horizontal_3,
+                        onTap: () {
+                          setState(() {
+                            _contextMenuPosition = null;
+                            _isOsSubmenuOpen = false;
+                          });
+                          widget.onOpenSettings();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Submenu: OS Switcher
+        if (_isOsSubmenuOpen)
+          Positioned(
+            left: osSubmenuLeft,
+            top: osSubmenuTop,
+            child: Container(
+              width: 215,
+              decoration: BoxDecoration(
+                color: const Color(0xFF121620).withValues(alpha: 0.98),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.6),
+                    blurRadius: 20,
+                    offset: const Offset(2, 4),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildOsSubmenuItem(
+                          label: 'Windows 11',
+                          imageAsset: 'assets/images/win11_logo.png',
+                          onTap: () {
+                            setState(() {
+                              _contextMenuPosition = null;
+                              _isOsSubmenuOpen = false;
+                            });
+                            widget.onSelectOs?.call('windows_11');
+                          },
+                        ),
+                        _buildOsSubmenuItem(
+                          label: 'Windows 10',
+                          imageAsset: 'assets/images/win10_logo.png',
+                          onTap: () {
+                            setState(() {
+                              _contextMenuPosition = null;
+                              _isOsSubmenuOpen = false;
+                            });
+                            widget.onSelectOs?.call('windows_10');
+                          },
+                        ),
+                        _buildOsSubmenuItem(
+                          label: 'Windows 7',
+                          imageAsset: 'assets/images/win7_logo.png',
+                          onTap: () {
+                            setState(() {
+                              _contextMenuPosition = null;
+                              _isOsSubmenuOpen = false;
+                            });
+                            widget.onSelectOs?.call('windows_7');
+                          },
+                        ),
+                        _buildOsSubmenuItem(
+                          label: 'Windows XP',
+                          imageAsset: 'assets/images/winxp_logo.png',
+                          onTap: () {
+                            setState(() {
+                              _contextMenuPosition = null;
+                              _isOsSubmenuOpen = false;
+                            });
+                            widget.onSelectOs?.call('windows_xp');
+                          },
+                        ),
+                        const Divider(color: Colors.white10, height: 8),
+                        _buildOsSubmenuItem(
+                          label: 'macOS Sequoia',
+                          imageAsset: 'assets/images/apple_logo.png',
+                          imageColor: Colors.white,
+                          onTap: () {
+                            setState(() {
+                              _contextMenuPosition = null;
+                              _isOsSubmenuOpen = false;
+                            });
+                            widget.onSelectOs?.call('macos_15');
+                          },
+                        ),
+                        _buildOsSubmenuItem(
+                          label: 'SteamOS (Steam Deck)',
+                          imageAsset: 'assets/images/steamdeck_icon.png',
+                          badge: '현재',
+                          onTap: () {
+                            setState(() {
+                              _contextMenuPosition = null;
+                              _isOsSubmenuOpen = false;
+                            });
+                          },
+                        ),
+                        const Divider(color: Colors.white10, height: 8),
+                        _buildOsSubmenuItem(
+                          label: 'Galaxy (One UI)',
+                          icon: Icons.android_rounded,
+                          iconColor: const Color(0xFF3DDC84),
+                          onTap: () {
+                            setState(() {
+                              _contextMenuPosition = null;
+                              _isOsSubmenuOpen = false;
+                            });
+                            widget.onSelectOs?.call('galaxy');
+                          },
+                        ),
+                        _buildOsSubmenuItem(
+                          label: 'iOS (iPhone 18)',
+                          icon: CupertinoIcons.device_phone_portrait,
+                          iconColor: Colors.white70,
+                          onTap: () {
+                            setState(() {
+                              _contextMenuPosition = null;
+                              _isOsSubmenuOpen = false;
+                            });
+                            widget.onSelectOs?.call('ios');
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildContextMenuItem({
+    required String label,
+    IconData? icon,
+    String? imageAsset,
+    Color iconColor = Colors.white70,
+    String? trailing,
+    bool isHighlight = false,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      hoverColor: const Color(0xFF1A9FFF).withValues(alpha: 0.18),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        child: Row(
+          children: [
+            if (imageAsset != null)
+              Image.asset(imageAsset, width: 16, height: 16, fit: BoxFit.contain)
+            else if (icon != null)
+              Icon(icon, color: isHighlight ? const Color(0xFF1A9FFF) : iconColor, size: 16)
+            else
+              const SizedBox(width: 16),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: isHighlight ? const Color(0xFF38BDF8) : Colors.white,
+                  fontSize: 12,
+                  fontWeight: isHighlight ? FontWeight.bold : FontWeight.w500,
+                ),
+              ),
+            ),
+            if (trailing != null)
+              Text(
+                trailing,
+                style: const TextStyle(color: Colors.white54, fontSize: 13),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOsSubmenuItem({
+    required String label,
+    IconData? icon,
+    String? imageAsset,
+    Color? imageColor,
+    Color iconColor = Colors.white70,
+    String? badge,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      hoverColor: const Color(0xFF1A9FFF).withValues(alpha: 0.18),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6.5),
+        child: Row(
+          children: [
+            if (imageAsset != null)
+              Image.asset(imageAsset, width: 16, height: 16, color: imageColor, fit: BoxFit.contain)
+            else if (icon != null)
+              Icon(icon, color: iconColor, size: 16)
+            else
+              const SizedBox(width: 16),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w500),
+              ),
+            ),
+            if (badge != null)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A9FFF).withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: const Color(0xFF1A9FFF).withValues(alpha: 0.6)),
+                ),
+                child: Text(
+                  badge,
+                  style: const TextStyle(color: Color(0xFF67C1F5), fontSize: 9.5, fontWeight: FontWeight.bold),
+                ),
+              ),
           ],
         ),
       ),

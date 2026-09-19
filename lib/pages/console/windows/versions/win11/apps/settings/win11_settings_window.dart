@@ -1351,6 +1351,17 @@ class _Win11SettingsWindowState extends State<Win11SettingsWindow> {
               widget.onSelectOs?.call('macos');
             },
           ),
+          const SizedBox(height: 4),
+          _buildWin11SettingsTile(
+            title: 'SteamOS (Steam Deck)',
+            desc: '게이밍 모드 (Big Picture) 및 KDE Plasma 가상 데스크톱 환경',
+            icon: CupertinoIcons.gamecontroller_fill,
+            isCurrent: false,
+            onTap: () {
+              widget.onClose();
+              widget.onSelectOs?.call('steamos');
+            },
+          ),
 
           const SizedBox(height: 24),
 

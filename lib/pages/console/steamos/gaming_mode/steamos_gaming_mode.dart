@@ -213,7 +213,7 @@ class _SteamosGamingModeState extends State<SteamosGamingMode> {
       child: Row(
         children: [
           // Steam Logo Brand
-          Image.asset('assets/images/steamos_logo.png', width: 22, height: 22),
+          Image.asset('assets/images/steamdeck_icon.png', width: 22, height: 22),
           const SizedBox(width: 8),
           const Text(
             'STEAM DECK',

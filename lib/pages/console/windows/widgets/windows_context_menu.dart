@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 /// Windows 11 모던 Fluent 우클릭 컨텍스트 드롭다운 메뉴 (서브메뉴 플라이아웃 지원)
 class WindowsContextMenu extends StatefulWidget {
   final Offset position;
+  final String currentVersion;
   final VoidCallback onRefresh;
   final VoidCallback onNewFolder;
   final VoidCallback onNewTextDocument;
@@ -16,6 +17,7 @@ class WindowsContextMenu extends StatefulWidget {
   const WindowsContextMenu({
     super.key,
     required this.position,
+    this.currentVersion = '11',
     required this.onRefresh,
     required this.onNewFolder,
     required this.onNewTextDocument,
@@ -46,7 +48,7 @@ class _WindowsContextMenuState extends State<WindowsContextMenu> {
 
     final bool openOsSubmenuRight = (menuLeft + 230 + 220) < screenSize.width;
     final double osSubmenuLeft = openOsSubmenuRight ? (menuLeft + 224) : (menuLeft - 215);
-    final double osSubmenuTop = (menuTop + 140).clamp(10.0, screenSize.height - 330.0);
+    final double osSubmenuTop = (menuTop + 130).clamp(10.0, screenSize.height - 400.0);
 
     return Stack(
       children: [
@@ -246,7 +248,7 @@ class _WindowsContextMenuState extends State<WindowsContextMenu> {
                         _buildOsSubmenuItem(
                           icon: CupertinoIcons.square_grid_2x2_fill,
                           label: 'Windows 11',
-                          badge: '현재',
+                          badge: widget.currentVersion == '11' ? '현재' : null,
                           onTap: () {
                             widget.onClose();
                             widget.onSelectOs?.call('windows_11');
@@ -255,6 +257,7 @@ class _WindowsContextMenuState extends State<WindowsContextMenu> {
                         _buildOsSubmenuItem(
                           icon: CupertinoIcons.device_desktop,
                           label: 'Windows 10',
+                          badge: widget.currentVersion == '10' ? '현재' : null,
                           onTap: () {
                             widget.onClose();
                             widget.onSelectOs?.call('windows_10');
@@ -263,6 +266,7 @@ class _WindowsContextMenuState extends State<WindowsContextMenu> {
                         _buildOsSubmenuItem(
                           icon: CupertinoIcons.device_desktop,
                           label: 'Windows 7 (Aero)',
+                          badge: widget.currentVersion == '7' ? '현재' : null,
                           onTap: () {
                             widget.onClose();
                             widget.onSelectOs?.call('windows_7');
@@ -271,6 +275,7 @@ class _WindowsContextMenuState extends State<WindowsContextMenu> {
                         _buildOsSubmenuItem(
                           icon: CupertinoIcons.device_desktop,
                           label: 'Windows XP (Luna)',
+                          badge: widget.currentVersion == 'xp' ? '현재' : null,
                           onTap: () {
                             widget.onClose();
                             widget.onSelectOs?.call('windows_xp');
@@ -291,6 +296,15 @@ class _WindowsContextMenuState extends State<WindowsContextMenu> {
                           onTap: () {
                             widget.onClose();
                             widget.onSelectOs?.call('macos_15');
+                          },
+                        ),
+                        const Divider(color: Colors.white12, height: 8),
+                        _buildOsSubmenuItem(
+                          imageAsset: 'assets/images/steamdeck_icon.png',
+                          label: 'SteamOS (Steam Deck)',
+                          onTap: () {
+                            widget.onClose();
+                            widget.onSelectOs?.call('steamos');
                           },
                         ),
                         const Divider(color: Colors.white12, height: 8),
@@ -401,7 +415,13 @@ class _WindowsContextMenuState extends State<WindowsContextMenu> {
         child: Row(
           children: [
             if (imageAsset != null)
-              Image.asset(imageAsset, width: 15, height: 15, fit: BoxFit.contain, color: Colors.white)
+              Image.asset(
+                imageAsset,
+                width: 16,
+                height: 16,
+                fit: BoxFit.contain,
+                color: imageAsset.contains('apple') ? Colors.white : null,
+              )
             else if (icon != null)
               Icon(icon, size: 15, color: const Color(0xFF60CDFF)),
             const SizedBox(width: 10),

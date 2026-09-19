@@ -1186,6 +1186,7 @@ class _WindowsViewState extends State<WindowsView> {
           if (_contextMenuPosition != null)
             WindowsContextMenu(
               position: _contextMenuPosition!,
+              currentVersion: widget.windowsVersion,
               onRefresh: () => setState(() {}),
               onNewFolder: _handleCreateNewFolder,
               onNewTextDocument: _handleCreateNewTextDocument,

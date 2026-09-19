@@ -188,6 +188,16 @@ class _Macos27ContextMenuState extends State<Macos27ContextMenu> {
                         ),
                         _buildDivider(),
                         _buildMenuItem(
+                          label: 'SteamOS (Steam Deck)',
+                          imageAsset: 'assets/images/steamdeck_icon.png',
+                          highlightColor: const Color(0xFF67C1F5),
+                          onTap: () {
+                            widget.onClose();
+                            widget.onSelectOs?.call('steamos');
+                          },
+                        ),
+                        _buildDivider(),
+                        _buildMenuItem(
                           label: 'Galaxy (One UI 9)',
                           icon: CupertinoIcons.device_phone_portrait,
                           highlightColor: const Color(0xFF10B981),

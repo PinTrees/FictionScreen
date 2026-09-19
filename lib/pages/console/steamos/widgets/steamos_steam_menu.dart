@@ -61,7 +61,7 @@ class SteamosSteamMenu extends StatelessWidget {
                       child: Row(
                         children: [
                           Image.asset(
-                            'assets/images/steamos_logo.png',
+                            'assets/images/steamdeck_icon.png',
                             width: 28,
                             height: 28,
                             fit: BoxFit.contain,
@@ -147,6 +147,7 @@ class SteamosSteamMenu extends StatelessWidget {
                             ),
                           ),
                           _buildMenuItem(
+                            imageAsset: 'assets/images/steamdeck_return.png',
                             icon: CupertinoIcons.device_desktop,
                             label: '데스크톱 모드로 전환 (KDE)',
                             badgeText: 'KDE Plasma',
@@ -228,7 +229,8 @@ class SteamosSteamMenu extends StatelessWidget {
   }
 
   Widget _buildMenuItem({
-    required IconData icon,
+    IconData? icon,
+    String? imageAsset,
     required String label,
     required VoidCallback onTap,
     String? badgeText,
@@ -241,7 +243,10 @@ class SteamosSteamMenu extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFF1A9FFF), size: 18),
+            if (imageAsset != null)
+              Image.asset(imageAsset, width: 20, height: 20, fit: BoxFit.contain)
+            else if (icon != null)
+              Icon(icon, color: const Color(0xFF1A9FFF), size: 18),
             const SizedBox(width: 14),
             Expanded(
               child: Text(
