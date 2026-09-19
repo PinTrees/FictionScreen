@@ -1,4 +1,4 @@
-/* FictionScreen Modern Web Initial Loading Screen Styles */
+/* FictionScreen Modern Web Initial Loading Screen Styles (ZERO OUTLINE) */
 
 #loading-container {
   position: fixed;
@@ -40,19 +40,18 @@
   }
 }
 
-/* Central Elevated Glass Card */
+/* Central Elevated Glass Card (ZERO OUTLINE) */
 .loading-card {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 38px 44px;
-  background: rgba(17, 20, 32, 0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  padding: 40px 46px;
+  background: rgba(17, 20, 32, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
   max-width: 360px;
   width: 90%;
   animation: cardFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -169,14 +168,13 @@
   }
 }
 
-/* Live Engine Status Badge */
+/* Live Engine Status Badge (ZERO OUTLINE) */
 .loading-status-badge {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 12px;
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  padding: 6px 14px;
+  background: rgba(56, 189, 248, 0.12);
   border-radius: 999px;
 }
 

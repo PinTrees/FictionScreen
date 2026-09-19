@@ -30,6 +30,7 @@ class AppEditorShell extends StatefulWidget {
   final ScreenTemplate template;
   final Widget Function(BuildContext context, bool isDarkMode) canvasBuilder;
   final Widget Function(BuildContext context, bool isDarkMode) inspectorBuilder;
+  final Widget Function(BuildContext context, bool isDarkMode)? layersBuilder;
   final Function(String osKey) onOpenInOs;
   final VoidCallback onBackToGallery;
   final List<Widget> extraTopBarActions;
@@ -40,6 +41,7 @@ class AppEditorShell extends StatefulWidget {
     required this.template,
     required this.canvasBuilder,
     required this.inspectorBuilder,
+    this.layersBuilder,
     required this.onOpenInOs,
     required this.onBackToGallery,
     this.extraTopBarActions = const [],
@@ -353,10 +355,27 @@ class _AppEditorShellState extends State<AppEditorShell> {
               ),
             ),
 
-            // 2. Editor Body: Center Infinite Canvas with Square Grid + Right Inspector
+            // 2. Editor Body: Left Layers + Center Canvas + Right Inspector (ZERO OUTLINE)
             Expanded(
               child: Row(
                 children: [
+                  // Left Figma Layers/Objects Panel (ZERO OUTLINE)
+                  if (widget.layersBuilder != null)
+                    Container(
+                      width: 260,
+                      decoration: BoxDecoration(
+                        color: _isDarkMode ? const Color(0xFF0F1219) : Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: _isDarkMode ? 0.25 : 0.03),
+                            blurRadius: 10,
+                            offset: const Offset(2, 0),
+                          ),
+                        ],
+                      ),
+                      child: widget.layersBuilder!(context, _isDarkMode),
+                    ),
+
                   // Center Figma-style Canvas (Square Grid, Ctrl + Wheel Zoom, NO SCROLLBAR)
                   Expanded(
                     child: ClipRect(

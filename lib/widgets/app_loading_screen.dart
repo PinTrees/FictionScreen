@@ -139,15 +139,9 @@ class _AppLoadingScreenState extends State<AppLoadingScreen>
               decoration: BoxDecoration(
                 color: cardBgColor,
                 borderRadius: BorderRadius.circular(28),
-                border: Border.all(
-                  color: isDarkMode
-                      ? Colors.white.withValues(alpha: 0.1)
-                      : const Color(0xFFE2E8F0),
-                  width: 1.2,
-                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: isDarkMode ? 0.5 : 0.08),
+                    color: Colors.black.withValues(alpha: isDarkMode ? 0.55 : 0.08),
                     blurRadius: 32,
                     offset: const Offset(0, 14),
                   ),
@@ -263,16 +257,12 @@ class _AppLoadingScreenState extends State<AppLoadingScreen>
 
                       const SizedBox(height: 20),
 
-                      // Real-time Status Pill
+                      // Real-time Status Pill (ZERO OUTLINE)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                         decoration: BoxDecoration(
-                          color: statusColor.withValues(alpha: 0.1),
+                          color: statusColor.withValues(alpha: isDarkMode ? 0.12 : 0.08),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: statusColor.withValues(alpha: 0.25),
-                            width: 1,
-                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,

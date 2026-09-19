@@ -13,12 +13,16 @@ class KakaoTalkScreen extends StatefulWidget {
   final KakaoRoomConfig config;
   final Function(KakaoFriend)? onTapFriend;
   final VoidCallback? onTapPay;
+  final String? selectedElementId;
+  final ValueChanged<String>? onSelectElement;
 
   const KakaoTalkScreen({
     super.key,
     required this.config,
     this.onTapFriend,
     this.onTapPay,
+    this.selectedElementId,
+    this.onSelectElement,
   });
 
   @override
@@ -34,6 +38,8 @@ class _KakaoTalkScreenState extends State<KakaoTalkScreen> {
     if (config.isInChatRoom) {
       return ChatRoomPage(
         config: config,
+        selectedElementId: widget.selectedElementId,
+        onSelectElement: widget.onSelectElement,
         onBackToChatList: () {
           setState(() {
             config.isInChatRoom = false;

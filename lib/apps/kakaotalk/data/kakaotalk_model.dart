@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'chat_list_item_model.dart';
 import 'friend_item_model.dart';
 
@@ -56,6 +57,10 @@ class KakaoRoomConfig {
   int batteryLevel;
   String networkType; // '5G', 'LTE', 'Wi-Fi'
   bool isDarkTheme;
+  Color? customBgColor;
+  bool showNotice;
+  String noticeText;
+  String inputText;
   String partnerProfileName;
   String? partnerProfileImage;
   List<KakaoMessage> messages;
@@ -74,6 +79,10 @@ class KakaoRoomConfig {
     this.batteryLevel = 85,
     this.networkType = '5G',
     this.isDarkTheme = false,
+    this.customBgColor,
+    this.showNotice = false,
+    this.noticeText = '공지사항: 이번 주 프로젝트 마감일은 금요일입니다.',
+    this.inputText = '',
     this.partnerProfileName = '김철수',
     this.partnerProfileImage,
     required this.messages,

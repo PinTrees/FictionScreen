@@ -1,0 +1,16 @@
+# FictionScreen AI Rules
+
+## 🚨 ZERO OUTLINE (아웃라인 / 테두리선 전면 금지)
+- Never use borders or outlines in UI components (cards, buttons, badges, modals, loading screens).
+- No `border: Border.all(...)` in Flutter.
+- No `border: ...` or `outline: ...` in CSS.
+- Use soft surface contrast, blur, and ambient shadows instead.
+
+## CupertinoIcons ONLY
+- Never use Material `Icons.*`. Always use `CupertinoIcons.*`.
+
+## ScaleButton Feedback
+- All buttons must use `ScaleButton` with scale-down feedback.
+
+## Theme Service
+- Global theme must follow `AppThemeService.instance`.
