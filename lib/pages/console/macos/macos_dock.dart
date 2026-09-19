@@ -204,6 +204,15 @@ class _MacosDockState extends State<MacosDock> {
                   imageAsset: 'assets/images/steam_icon.webp',
                   onTap: () => widget.onOpenApp?.call('steam'),
                 ),
+                _buildDockApp(
+                  index: 19,
+                  tooltip: '뉴스 속보 (TV 생중계)',
+                  icon: CupertinoIcons.tv_fill,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFD32F2F), Color(0xFFB71C1C)],
+                  ),
+                  onTap: () => widget.onOpenApp?.call('news'),
+                ),
 
                 // 구분선
                 _buildDockDivider(),

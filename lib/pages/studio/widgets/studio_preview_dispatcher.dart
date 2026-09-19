@@ -55,6 +55,8 @@ import '../../../apps/cctv/data/cctv_model.dart';
 import '../../../apps/cctv/cctv_screen.dart';
 import '../../../apps/steam/data/steam_model.dart';
 import '../../../apps/steam/steam_screen.dart';
+import '../../../apps/news/data/news_model.dart';
+import '../../../apps/news/news_screen.dart';
 
 /// 스튜디오 템플릿별 실시간 프리뷰 위젯 순수 디스패처
 class StudioPreviewDispatcher extends StatelessWidget {
@@ -81,12 +83,15 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final VisualStudioConfig visualStudioConfig;
   final ChromeConfig chromeConfig;
   final DavinciConfig davinciConfig;
-  final TelegramConfig? telegramConfig;
-  final ZigbangConfig? zigbangConfig;
-  final NaverConfig? naverConfig;
-  final EdgeConfig? edgeConfig;
-  final CctvConfig? cctvConfig;
+  final NewsConfig? newsConfig;
   final SteamConfig? steamConfig;
+  final CctvConfig? cctvConfig;
+  final EdgeConfig? edgeConfig;
+  final NaverConfig? naverConfig;
+  final ZigbangConfig? zigbangConfig;
+  final TelegramConfig? telegramConfig;
+
+  final ValueChanged<NewsConfig>? onNewsChanged;
 
   final ValueChanged<KakaoBankConfig>? onKakaoBankChanged;
   final ValueChanged<DaangnConfig>? onDaangnChanged;
@@ -140,6 +145,8 @@ class StudioPreviewDispatcher extends StatelessWidget {
     this.edgeConfig,
     this.cctvConfig,
     this.steamConfig,
+    this.newsConfig,
+    this.onNewsChanged,
     this.onKakaoBankChanged,
     this.onDaangnChanged,
     this.onYoutubeChanged,
@@ -165,6 +172,11 @@ class StudioPreviewDispatcher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     switch (templateId) {
+      case 'news':
+        return NewsScreen(
+          config: newsConfig ?? NewsConfig.defaultPreset(),
+          onConfigChanged: onNewsChanged,
+        );
       case 'steam':
         return SteamScreen(
           config: steamConfig ?? SteamConfig.defaultPreset(),

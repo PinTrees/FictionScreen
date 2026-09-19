@@ -9,6 +9,7 @@ import '../../../apps/zigbang/zigbang_window.dart';
 import '../../../apps/naver/naver_window.dart';
 import '../../../apps/cctv/cctv_window.dart';
 import '../../../apps/steam/steam_window.dart';
+import '../../../apps/news/news_window.dart';
 import '../common/os_window_frame.dart';
 import 'apps/cmd/cmd_window.dart';
 import 'apps/edge/edge_window.dart';
@@ -485,6 +486,16 @@ class _WindowsViewState extends State<WindowsView> {
         isSystemApp: true,
         onTap: () => _openWinApp('steam'),
       ),
+      DesktopIconItem(
+        id: 'news',
+        title: '뉴스 속보 (TV)',
+        icon: CupertinoIcons.tv_fill,
+        iconColor: const Color(0xFFD32F2F),
+        gridX: 6,
+        gridY: 5,
+        isSystemApp: true,
+        onTap: () => _openWinApp('news'),
+      ),
     ];
   }
 
@@ -515,6 +526,8 @@ class _WindowsViewState extends State<WindowsView> {
         defaultSize = const Size(960, 640);
       } else if (appId == 'steam') {
         defaultSize = const Size(980, 640);
+      } else if (appId == 'news') {
+        defaultSize = const Size(960, 620);
       } else if (widget.windowsVersion == '11') {
         if (appId == 'file_explorer' || appId == 'recycle_bin') {
           defaultSize = const Size(860, 560);
@@ -1471,6 +1484,19 @@ class _WindowsViewState extends State<WindowsView> {
         );
       case 'steam':
         return SteamWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'news':
+        return NewsWindow(
           width: win.size.width,
           height: win.size.height,
           isMaximized: win.isMaximized,

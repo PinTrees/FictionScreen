@@ -322,5 +322,15 @@ class ScreenTemplate {
       badge: '신규',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'news',
+      title: '뉴스 속보 (Breaking News)',
+      description: '주요 방송사 속보 데스크, 2단 헤드라인, 실시간 롤링 티커, 현장 연결 2분할, 수화 통역 연출',
+      category: TemplateCategory.os,
+      icon: CupertinoIcons.tv_fill,
+      themeColor: Color(0xFFD32F2F),
+      badge: '신규',
+      isDesktop: true,
+    ),
   ];
 }

@@ -17,6 +17,7 @@ import '../../../../../apps/zigbang/zigbang_window.dart';
 import '../../../../../apps/naver/naver_window.dart';
 import '../../../../../apps/cctv/cctv_window.dart';
 import '../../../../../apps/steam/steam_window.dart';
+import '../../../../../apps/news/news_window.dart';
 import '../../../../console/windows/apps/edge/edge_window.dart';
 import '../../../common/os_window_frame.dart';
 import 'apps/settings/macos27_settings_window.dart';
@@ -247,6 +248,8 @@ class _Macos27ViewState extends State<Macos27View> {
         defaultSize = const Size(960, 640);
       } else if (appId == 'steam') {
         defaultSize = const Size(980, 640);
+      } else if (appId == 'news') {
+        defaultSize = const Size(960, 620);
       } else if (appId == 'terminal') {
         defaultSize = const Size(680, 440);
       } else if (appId == 'settings') {
@@ -730,6 +733,15 @@ class _Macos27ViewState extends State<Macos27View> {
         );
       case 'steam':
         return SteamWindow(
+          width: win.size.width,
+          height: win.size.height,
+          style: WindowStyle.macos,
+          onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'news':
+        return NewsWindow(
           width: win.size.width,
           height: win.size.height,
           style: WindowStyle.macos,
