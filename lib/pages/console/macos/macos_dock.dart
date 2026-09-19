@@ -198,6 +198,12 @@ class _MacosDockState extends State<MacosDock> {
                   ),
                   onTap: () => widget.onOpenApp?.call('cctv'),
                 ),
+                _buildDockApp(
+                  index: 18,
+                  tooltip: 'Steam (게임 라이브러리)',
+                  imageAsset: 'assets/images/steam_icon.webp',
+                  onTap: () => widget.onOpenApp?.call('steam'),
+                ),
 
                 // 구분선
                 _buildDockDivider(),

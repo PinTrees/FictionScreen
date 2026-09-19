@@ -53,6 +53,8 @@ import '../../../apps/zigbang/data/zigbang_model.dart';
 import '../../../apps/zigbang/zigbang_screen.dart';
 import '../../../apps/cctv/data/cctv_model.dart';
 import '../../../apps/cctv/cctv_screen.dart';
+import '../../../apps/steam/data/steam_model.dart';
+import '../../../apps/steam/steam_screen.dart';
 
 /// 스튜디오 템플릿별 실시간 프리뷰 위젯 순수 디스패처
 class StudioPreviewDispatcher extends StatelessWidget {
@@ -84,6 +86,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final NaverConfig? naverConfig;
   final EdgeConfig? edgeConfig;
   final CctvConfig? cctvConfig;
+  final SteamConfig? steamConfig;
 
   final ValueChanged<KakaoBankConfig>? onKakaoBankChanged;
   final ValueChanged<DaangnConfig>? onDaangnChanged;
@@ -104,6 +107,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final ValueChanged<NaverConfig>? onNaverChanged;
   final ValueChanged<EdgeConfig>? onEdgeChanged;
   final ValueChanged<CctvConfig>? onCctvChanged;
+  final ValueChanged<SteamConfig>? onSteamChanged;
 
   const StudioPreviewDispatcher({
     super.key,
@@ -135,6 +139,7 @@ class StudioPreviewDispatcher extends StatelessWidget {
     this.naverConfig,
     this.edgeConfig,
     this.cctvConfig,
+    this.steamConfig,
     this.onKakaoBankChanged,
     this.onDaangnChanged,
     this.onYoutubeChanged,
@@ -154,11 +159,17 @@ class StudioPreviewDispatcher extends StatelessWidget {
     this.onNaverChanged,
     this.onEdgeChanged,
     this.onCctvChanged,
+    this.onSteamChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     switch (templateId) {
+      case 'steam':
+        return SteamScreen(
+          config: steamConfig ?? SteamConfig.defaultPreset(),
+          onConfigChanged: onSteamChanged,
+        );
       case 'cctv':
         return CctvScreen(
           config: cctvConfig ?? CctvConfig.defaultPreset(),

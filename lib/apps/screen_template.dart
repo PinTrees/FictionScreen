@@ -311,5 +311,16 @@ class ScreenTemplate {
       badge: 'HOT',
       isDesktop: true,
     ),
+    const ScreenTemplate(
+      id: 'steam',
+      title: '스팀 (Steam)',
+      description: '밸브 스팀 게임 라이브러리, 친구 접속 및 플레이 중 상태, 우측 하단 도전 과제 달성 팝업 연출',
+      category: TemplateCategory.os,
+      icon: CupertinoIcons.game_controller_solid,
+      imageAsset: 'assets/images/steam_icon.webp',
+      themeColor: Color(0xFF1B2838),
+      badge: '신규',
+      isDesktop: true,
+    ),
   ];
 }

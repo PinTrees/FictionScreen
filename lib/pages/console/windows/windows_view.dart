@@ -8,6 +8,7 @@ import '../../../apps/telegram/telegram_window.dart';
 import '../../../apps/zigbang/zigbang_window.dart';
 import '../../../apps/naver/naver_window.dart';
 import '../../../apps/cctv/cctv_window.dart';
+import '../../../apps/steam/steam_window.dart';
 import '../common/os_window_frame.dart';
 import 'apps/cmd/cmd_window.dart';
 import 'apps/edge/edge_window.dart';
@@ -475,6 +476,15 @@ class _WindowsViewState extends State<WindowsView> {
         isSystemApp: true,
         onTap: () => _openWinApp('cctv'),
       ),
+      DesktopIconItem(
+        id: 'steam',
+        title: 'Steam',
+        imageAsset: 'assets/images/steam_icon.webp',
+        gridX: 5,
+        gridY: 6,
+        isSystemApp: true,
+        onTap: () => _openWinApp('steam'),
+      ),
     ];
   }
 
@@ -503,6 +513,8 @@ class _WindowsViewState extends State<WindowsView> {
         defaultSize = const Size(1000, 660);
       } else if (appId == 'cctv') {
         defaultSize = const Size(960, 640);
+      } else if (appId == 'steam') {
+        defaultSize = const Size(980, 640);
       } else if (widget.windowsVersion == '11') {
         if (appId == 'file_explorer' || appId == 'recycle_bin') {
           defaultSize = const Size(860, 560);
@@ -1446,6 +1458,19 @@ class _WindowsViewState extends State<WindowsView> {
         );
       case 'cctv':
         return CctvWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'steam':
+        return SteamWindow(
           width: win.size.width,
           height: win.size.height,
           isMaximized: win.isMaximized,
