@@ -402,8 +402,7 @@ class _WindowsViewState extends State<WindowsView> {
       DesktopIconItem(
         id: 'zigbang',
         title: '직방',
-        icon: CupertinoIcons.house_alt_fill,
-        iconColor: const Color(0xFFFF7800),
+        imageAsset: 'assets/images/zigbang_icon.webp',
         gridX: 4,
         gridY: 5,
         isSystemApp: true,
@@ -412,8 +411,7 @@ class _WindowsViewState extends State<WindowsView> {
       DesktopIconItem(
         id: 'naver',
         title: '네이버',
-        icon: CupertinoIcons.search_circle_fill,
-        iconColor: const Color(0xFF03C75A),
+        imageAsset: 'assets/images/naver_icon.webp',
         gridX: 4,
         gridY: 6,
         isSystemApp: true,

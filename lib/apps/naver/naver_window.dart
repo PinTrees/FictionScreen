@@ -47,7 +47,7 @@ class _NaverWindowState extends State<NaverWindow> {
   Widget build(BuildContext context) {
     return OsWindowFrame(
       title: 'NAVER - 대한민국 종합 포털 & 뉴스스탠드',
-      icon: CupertinoIcons.search_circle_fill,
+      iconAsset: 'assets/images/naver_icon.webp',
       style: widget.style,
       width: widget.width,
       height: widget.height,

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../data/naver_model.dart';
 import 'naver_edit_dialog.dart';
 
@@ -118,14 +119,9 @@ class _NaverMobileViewState extends State<NaverMobileView> {
         children: [
           Row(
             children: [
-              const Text(
-                'NAVER',
-                style: TextStyle(
-                  color: Color(0xFF03C75A),
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.5,
-                ),
+              SvgPicture.asset(
+                'assets/images/naver_logo.svg',
+                height: 20,
               ),
               const Spacer(),
               // 네이버페이 아이콘

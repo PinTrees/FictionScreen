@@ -47,7 +47,7 @@ class _ZigbangWindowState extends State<ZigbangWindow> {
   Widget build(BuildContext context) {
     return OsWindowFrame(
       title: '직방 (Zigbang) - 부동산 포털 & 아파트 실거래가',
-      icon: CupertinoIcons.house_alt_fill,
+      iconAsset: 'assets/images/zigbang_icon.webp',
       style: widget.style,
       width: widget.width,
       height: widget.height,

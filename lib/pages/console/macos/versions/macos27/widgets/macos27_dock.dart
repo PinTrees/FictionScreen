@@ -99,8 +99,8 @@ class _Macos27DockState extends State<Macos27Dock> {
                     _buildDockItem(12, 'Calculator', 'assets/images/macos/calculator.webp', appId: 'calculator'),
                     _buildDockItem(13, 'PDF 서식 스튜디오', 'assets/images/windows/docs.png', appId: 'pdf_viewer'),
                     _buildDockItem(14, 'Telegram Desktop', 'assets/images/windows/desk.png', appId: 'telegram'),
-                    _buildDockItem(15, '직방 (부동산)', null, icon: CupertinoIcons.house_alt_fill, appId: 'zigbang'),
-                    _buildDockItem(16, '네이버 (NAVER)', null, icon: CupertinoIcons.search_circle_fill, appId: 'naver'),
+                    _buildDockItem(15, '직방 (부동산)', 'assets/images/zigbang_icon.webp', appId: 'zigbang'),
+                    _buildDockItem(16, '네이버 (NAVER)', 'assets/images/naver_icon.webp', appId: 'naver'),
 
                     _buildDockDivider(),
 

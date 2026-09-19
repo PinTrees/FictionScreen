@@ -147,13 +147,13 @@ class _EdgeScreenState extends State<EdgeScreen> {
                         spacing: 12,
                         runSpacing: 12,
                         children: [
-                          _buildQuickTile('FictionScreen', CupertinoIcons.sparkles, const Color(0xFF6366F1), () => _loadUrl('https://fiction-screen.web.app')),
-                          _buildQuickTile('네이버', CupertinoIcons.search_circle_fill, const Color(0xFF03C75A), () => widget.onOpenTemplate?.call('naver')),
-                          _buildQuickTile('직방', CupertinoIcons.house_alt_fill, const Color(0xFFFF7800), () => widget.onOpenTemplate?.call('zigbang')),
-                          _buildQuickTile('카카오톡', CupertinoIcons.chat_bubble_2_fill, const Color(0xFFFEE500), () => widget.onOpenTemplate?.call('kakaotalk')),
-                          _buildQuickTile('인스타그램', CupertinoIcons.camera_fill, const Color(0xFFE1306C), () => widget.onOpenTemplate?.call('instagram')),
-                          _buildQuickTile('Flutter Dev', CupertinoIcons.globe, const Color(0xFF02569B), () => _loadUrl('https://flutter.dev')),
-                          _buildQuickTile('블루스크린', CupertinoIcons.device_desktop, const Color(0xFF0078D7), () => widget.onOpenTemplate?.call('windows_bsod')),
+                          _buildQuickTile('FictionScreen', icon: CupertinoIcons.sparkles, color: const Color(0xFF6366F1), onTap: () => _loadUrl('https://fiction-screen.web.app')),
+                          _buildQuickTile('네이버', imageAsset: 'assets/images/naver_icon.webp', onTap: () => widget.onOpenTemplate?.call('naver')),
+                          _buildQuickTile('직방', imageAsset: 'assets/images/zigbang_icon.webp', onTap: () => widget.onOpenTemplate?.call('zigbang')),
+                          _buildQuickTile('카카오톡', icon: CupertinoIcons.chat_bubble_2_fill, color: const Color(0xFFFEE500), onTap: () => widget.onOpenTemplate?.call('kakaotalk')),
+                          _buildQuickTile('인스타그램', icon: CupertinoIcons.camera_fill, color: const Color(0xFFE1306C), onTap: () => widget.onOpenTemplate?.call('instagram')),
+                          _buildQuickTile('Flutter Dev', icon: CupertinoIcons.globe, color: const Color(0xFF02569B), onTap: () => _loadUrl('https://flutter.dev')),
+                          _buildQuickTile('블루스크린', icon: CupertinoIcons.device_desktop, color: const Color(0xFF0078D7), onTap: () => widget.onOpenTemplate?.call('windows_bsod')),
                         ],
                       ),
                     ],
@@ -164,7 +164,7 @@ class _EdgeScreenState extends State<EdgeScreen> {
     );
   }
 
-  Widget _buildQuickTile(String title, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildQuickTile(String title, {IconData? icon, String? imageAsset, Color? color, required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
@@ -174,7 +174,13 @@ class _EdgeScreenState extends State<EdgeScreen> {
         decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(8)),
         child: Column(
           children: [
-            Icon(icon, color: color, size: 28),
+            if (imageAsset != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.asset(imageAsset, width: 28, height: 28, fit: BoxFit.cover),
+              )
+            else
+              Icon(icon ?? CupertinoIcons.globe, color: color ?? Colors.white, size: 28),
             const SizedBox(height: 8),
             Text(title, style: const TextStyle(color: Colors.white, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis),
           ],

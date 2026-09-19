@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../data/zigbang_model.dart';
 import 'zigbang_edit_dialog.dart';
 
@@ -90,28 +91,10 @@ class _ZigbangDesktopViewState extends State<ZigbangDesktopView> {
       ),
       child: Row(
         children: [
-          // 직방 로고
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF7800),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(CupertinoIcons.house_alt_fill, color: Colors.white, size: 16),
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                '직방',
-                style: TextStyle(
-                  color: Color(0xFFFF7800),
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.5,
-                ),
-              ),
-            ],
+          // 직방 공식 이미지 로고
+          SvgPicture.asset(
+            'assets/images/zigbang_logo.svg',
+            height: 36,
           ),
           const SizedBox(width: 32),
 

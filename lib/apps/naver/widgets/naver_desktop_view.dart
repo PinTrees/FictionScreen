@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../data/naver_model.dart';
 import 'naver_edit_dialog.dart';
 
@@ -90,15 +91,10 @@ class _NaverDesktopViewState extends State<NaverDesktopView> {
           constraints: const BoxConstraints(maxWidth: 1040),
           child: Row(
             children: [
-              // NAVER 대형 녹색 로고
-              const Text(
-                'NAVER',
-                style: TextStyle(
-                  color: Color(0xFF03C75A),
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -1.0,
-                ),
+              // NAVER 공식 벡터 로고
+              SvgPicture.asset(
+                'assets/images/naver_logo.svg',
+                height: 26,
               ),
               const SizedBox(width: 24),
 

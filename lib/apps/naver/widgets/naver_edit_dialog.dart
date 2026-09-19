@@ -111,13 +111,9 @@ class _NaverEditDialogState extends State<NaverEditDialog> {
             // 헤더
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF03C75A).withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(CupertinoIcons.search_circle_fill, color: Color(0xFF03C75A), size: 20),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.asset('assets/images/naver_icon.webp', width: 28, height: 28),
                 ),
                 const SizedBox(width: 12),
                 const Text(

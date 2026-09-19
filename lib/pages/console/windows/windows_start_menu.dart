@@ -182,8 +182,8 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                         _buildListTile('배달의민족', CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), () => widget.onOpenTemplate('delivery')),
                         _buildListTile('PDF 서식 스튜디오', CupertinoIcons.doc_text_fill, const Color(0xFFEF4444), () => widget.onOpenWinApp?.call('pdf_viewer')),
                         _buildListTile('Telegram (텔레그램)', CupertinoIcons.paperplane_fill, const Color(0xFF5288C1), () => widget.onOpenWinApp?.call('telegram')),
-                        _buildListTile('직방 (부동산 플랫폼)', CupertinoIcons.house_alt_fill, const Color(0xFFFF7800), () => widget.onOpenWinApp?.call('zigbang')),
-                        _buildListTile('네이버 (NAVER 포털)', CupertinoIcons.search_circle_fill, const Color(0xFF03C75A), () => widget.onOpenWinApp?.call('naver')),
+                        _buildListTile('직방 (부동산 플랫폼)', null, const Color(0xFFFF7800), () => widget.onOpenWinApp?.call('zigbang'), imageAsset: 'assets/images/zigbang_icon.webp'),
+                        _buildListTile('네이버 (NAVER 포털)', null, const Color(0xFF03C75A), () => widget.onOpenWinApp?.call('naver'), imageAsset: 'assets/images/naver_icon.webp'),
                         _buildListTile('Chrome (크롬 브라우저)', null, const Color(0xFF4285F4), () => widget.onOpenWinApp?.call('chrome'), imageAsset: 'assets/images/windows/chrome.png'),
                         _buildListTile('Microsoft Edge', null, const Color(0xFF0078D7), () => widget.onOpenWinApp?.call('edge'), imageAsset: 'assets/images/windows/edge.png'),
                         _buildListTile('시스템 설정', CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), () => (widget.onOpenWinApp != null ? widget.onOpenWinApp!('settings') : widget.onOpenSettings())),
@@ -351,8 +351,8 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                               _buildXpProgramTile('PDF 서식 스튜디오', '공문서 & 계약서 폼', 'assets/images/windows/docs.png', () => widget.onOpenWinApp?.call('pdf_viewer')),
                               _buildXpProgramTile('Telegram', '메신저 & 채널', 'assets/images/windows/desk.png', () => widget.onOpenWinApp?.call('telegram')),
                               _buildXpProgramTile('Chrome', '웹 브라우저', 'assets/images/windows/chrome.png', () => widget.onOpenWinApp?.call('chrome')),
-                              _buildXpProgramTile('직방 (Zigbang)', '부동산 & 원룸', 'assets/images/windows/desk.png', () => widget.onOpenWinApp?.call('zigbang')),
-                              _buildXpProgramTile('네이버 (NAVER)', '포털 & 뉴스', 'assets/images/windows/desk.png', () => widget.onOpenWinApp?.call('naver')),
+                              _buildXpProgramTile('직방 (Zigbang)', '부동산 & 원룸', 'assets/images/zigbang_icon.webp', () => widget.onOpenWinApp?.call('zigbang')),
+                              _buildXpProgramTile('네이버 (NAVER)', '포털 & 뉴스', 'assets/images/naver_icon.webp', () => widget.onOpenWinApp?.call('naver')),
                               _buildXpProgramTile('DaVinci Resolve', '', 'assets/images/davinci_resolve_icon.webp', () => widget.onOpenTemplate('davinci_resolve')),
                               _buildXpProgramTile('카카오톡', '', 'assets/images/kakaotalk_icon.webp', () => widget.onOpenTemplate('kakaotalk')),
                             ],
@@ -633,8 +633,8 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                                   _buildWin7ProgramItem('PDF 서식 스튜디오', CupertinoIcons.doc_text_fill, const Color(0xFFEF4444), () => widget.onOpenWinApp?.call('pdf_viewer')),
                                   _buildWin7ProgramItem('Telegram (텔레그램)', CupertinoIcons.paperplane_fill, const Color(0xFF5288C1), () => widget.onOpenWinApp?.call('telegram')),
                                   _buildWin7ProgramItem('Google Chrome', null, const Color(0xFF4285F4), () => widget.onOpenWinApp?.call('chrome'), imageAsset: 'assets/images/windows/chrome.png'),
-                                  _buildWin7ProgramItem('직방 (부동산)', CupertinoIcons.house_alt_fill, const Color(0xFFFF7800), () => widget.onOpenWinApp?.call('zigbang')),
-                                  _buildWin7ProgramItem('네이버 (NAVER)', CupertinoIcons.search_circle_fill, const Color(0xFF03C75A), () => widget.onOpenWinApp?.call('naver')),
+                                  _buildWin7ProgramItem('직방 (부동산)', null, const Color(0xFFFF7800), () => widget.onOpenWinApp?.call('zigbang'), imageAsset: 'assets/images/zigbang_icon.webp'),
+                                  _buildWin7ProgramItem('네이버 (NAVER)', null, const Color(0xFF03C75A), () => widget.onOpenWinApp?.call('naver'), imageAsset: 'assets/images/naver_icon.webp'),
                                   const Padding(
                                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                     child: Divider(height: 1, color: Color(0xFFE2E8F0)),
@@ -1090,28 +1090,8 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
         Row(
           children: [
             _buildWin11AppItem('Chrome', 'assets/images/windows/chrome.png', () => widget.onOpenWinApp?.call('chrome')),
-            _buildWin11AppItem(
-              '직방',
-              null,
-              () => widget.onOpenWinApp?.call('zigbang'),
-              customIcon: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(color: const Color(0xFFFF7800), borderRadius: BorderRadius.circular(6)),
-                child: const Icon(CupertinoIcons.house_alt_fill, color: Colors.white, size: 18),
-              ),
-            ),
-            _buildWin11AppItem(
-              '네이버',
-              null,
-              () => widget.onOpenWinApp?.call('naver'),
-              customIcon: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(color: const Color(0xFF03C75A), borderRadius: BorderRadius.circular(6)),
-                child: const Icon(CupertinoIcons.search_circle_fill, color: Colors.white, size: 18),
-              ),
-            ),
+            _buildWin11AppItem('직방', 'assets/images/zigbang_icon.webp', () => widget.onOpenWinApp?.call('zigbang')),
+            _buildWin11AppItem('네이버', 'assets/images/naver_icon.webp', () => widget.onOpenWinApp?.call('naver')),
             _buildWin11AppItem('명령 프롬프트', 'assets/images/windows/cmd.png', () => widget.onOpenWinApp?.call('cmd')),
             _buildWin11AppItem(
               'YouTube',

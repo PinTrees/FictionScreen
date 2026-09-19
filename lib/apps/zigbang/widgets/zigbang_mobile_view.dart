@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../data/zigbang_model.dart';
 import 'zigbang_edit_dialog.dart';
 
@@ -97,9 +98,9 @@ class _ZigbangMobileViewState extends State<ZigbangMobileView> {
         children: [
           Row(
             children: [
-              const Text(
-                '직방',
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+              SvgPicture.asset(
+                'assets/images/zigbang_logo_white.svg',
+                height: 26,
               ),
               const SizedBox(width: 12),
               Expanded(
