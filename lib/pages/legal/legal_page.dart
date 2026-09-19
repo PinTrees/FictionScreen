@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../widgets/scale_button.dart';
 
 class LegalPage extends StatefulWidget {
   final String initialTab; // 'terms' or 'privacy'
@@ -49,7 +50,6 @@ class _LegalPageState extends State<LegalPage> {
     final cardBgColor = isDarkMode ? const Color(0xFF0F111A) : Colors.white;
     final textColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
     final textSubColor = isDarkMode ? Colors.white.withValues(alpha: 0.7) : const Color(0xFF475569);
-    final borderColor = isDarkMode ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.08);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -83,7 +83,7 @@ class _LegalPageState extends State<LegalPage> {
             child: Column(
               children: [
                 // 1. Top Navigation Bar
-                _buildTopBar(context, isDarkMode, textColor, borderColor, isMobile),
+                _buildTopBar(context, isDarkMode, textColor, isMobile),
 
                 // 2. Main Scrollable Document Area
                 Expanded(
@@ -103,13 +103,12 @@ class _LegalPageState extends State<LegalPage> {
 
                             const SizedBox(height: 28),
 
-                            // Document Card
+                            // Document Card (NO OUTLINE BORDER)
                             Container(
                               padding: EdgeInsets.all(isMobile ? 22 : 44),
                               decoration: BoxDecoration(
                                 color: cardBgColor,
                                 borderRadius: BorderRadius.circular(24),
-                                border: Border.all(color: borderColor),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withValues(alpha: isDarkMode ? 0.4 : 0.04),
@@ -123,20 +122,33 @@ class _LegalPageState extends State<LegalPage> {
                                   : _buildPrivacyContent(textColor, textSubColor, isDarkMode),
                             ),
 
-                            const SizedBox(height: 60),
+                            const SizedBox(height: 50),
 
-                            // Bottom Navigation Return
+                            // Bottom Navigation Return (Zero outline, tactile scale)
                             Center(
-                              child: TextButton.icon(
-                                onPressed: () => context.go('/'),
-                                icon: const Icon(CupertinoIcons.arrow_left, size: 16),
-                                label: Text(
-                                  _isEnglish ? 'Back to FictionScreen Home' : 'FictionScreen 홈으로 돌아가기',
-                                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                                ),
-                                style: TextButton.styleFrom(
-                                  foregroundColor: const Color(0xFF6366F1),
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                              child: ScaleButton(
+                                onTap: () => context.go('/'),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF6366F1).withValues(alpha: isDarkMode ? 0.15 : 0.08),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(CupertinoIcons.arrow_left, size: 16, color: Color(0xFF6366F1)),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        _isEnglish ? 'Back to FictionScreen Home' : 'FictionScreen 홈으로 돌아가기',
+                                        style: const TextStyle(
+                                          color: Color(0xFF6366F1),
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -160,7 +172,6 @@ class _LegalPageState extends State<LegalPage> {
     BuildContext context,
     bool isDarkMode,
     Color textColor,
-    Color borderColor,
     bool isMobile,
   ) {
     return Container(
@@ -168,7 +179,13 @@ class _LegalPageState extends State<LegalPage> {
       padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 32),
       decoration: BoxDecoration(
         color: isDarkMode ? const Color(0xFF07090E).withValues(alpha: 0.9) : Colors.white.withValues(alpha: 0.95),
-        border: Border(bottom: BorderSide(color: borderColor)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDarkMode ? 0.3 : 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: ClipRect(
         child: BackdropFilter(
@@ -247,15 +264,29 @@ class _LegalPageState extends State<LegalPage> {
 
               if (!isMobile) ...[
                 const SizedBox(width: 10),
-                OutlinedButton.icon(
-                  onPressed: () => context.go('/'),
-                  icon: const Icon(CupertinoIcons.arrow_left, size: 14),
-                  label: Text(_isEnglish ? 'Home' : '홈으로'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: textColor,
-                    side: BorderSide(color: borderColor),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ScaleButton(
+                  onTap: () => context.go('/'),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isDarkMode ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(CupertinoIcons.arrow_left, size: 14, color: textColor),
+                        const SizedBox(width: 6),
+                        Text(
+                          _isEnglish ? 'Home' : '홈으로',
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -306,7 +337,7 @@ class _LegalPageState extends State<LegalPage> {
     required Color activeBg,
     required Color inactiveText,
   }) {
-    return InkWell(
+    return ScaleButton(
       onTap: () {
         if (_activeTab != id) {
           setState(() {
@@ -314,7 +345,6 @@ class _LegalPageState extends State<LegalPage> {
           });
         }
       },
-      borderRadius: BorderRadius.circular(10),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -362,10 +392,10 @@ class _LegalPageState extends State<LegalPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Effective Date: January 1, 2026 | Last Updated: January 1, 2026',
+            'Effective Date: September 19, 2026 | Last Updated: September 19, 2026',
             style: TextStyle(color: textSubColor, fontSize: 13),
           ),
-          const Divider(height: 36),
+          const SizedBox(height: 24),
           _buildNoticeBox(
             title: 'Welcome to FictionScreen',
             desc:
@@ -439,10 +469,10 @@ class _LegalPageState extends State<LegalPage> {
         ),
         const SizedBox(height: 8),
         Text(
-          '시행일자: 2026년 1월 1일 | 최종 개정일: 2026년 1월 1일',
+          '시행일자: 2026년 9월 19일 | 최종 개정일: 2026년 9월 19일',
           style: TextStyle(color: textSubColor, fontSize: 13),
         ),
-        const Divider(height: 36),
+        const SizedBox(height: 24),
         _buildNoticeBox(
           title: 'FictionScreen을 이용해 주셔서 감사합니다',
           desc:
@@ -529,10 +559,10 @@ class _LegalPageState extends State<LegalPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Effective Date: January 1, 2026 | Last Updated: January 1, 2026',
+            'Effective Date: September 19, 2026 | Last Updated: September 19, 2026',
             style: TextStyle(color: textSubColor, fontSize: 13),
           ),
-          const Divider(height: 36),
+          const SizedBox(height: 24),
           _buildNoticeBox(
             title: 'Your Privacy Matters',
             desc:
@@ -598,10 +628,10 @@ class _LegalPageState extends State<LegalPage> {
         ),
         const SizedBox(height: 8),
         Text(
-          '시행일자: 2026년 1월 1일 | 최종 개정일: 2026년 1월 1일',
+          '시행일자: 2026년 9월 19일 | 최종 개정일: 2026년 9월 19일',
           style: TextStyle(color: textSubColor, fontSize: 13),
         ),
-        const Divider(height: 36),
+        const SizedBox(height: 24),
         _buildNoticeBox(
           title: '개인정보 보호에 대한 약속',
           desc:
@@ -680,9 +710,6 @@ class _LegalPageState extends State<LegalPage> {
       decoration: BoxDecoration(
         color: const Color(0xFF6366F1).withValues(alpha: isDarkMode ? 0.12 : 0.08),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: const Color(0xFF6366F1).withValues(alpha: isDarkMode ? 0.3 : 0.25),
-        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
