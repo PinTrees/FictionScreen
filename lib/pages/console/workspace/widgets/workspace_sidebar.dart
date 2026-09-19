@@ -6,12 +6,18 @@ class WorkspaceSidebar extends StatefulWidget {
   final List<ScreenTemplate> templates;
   final String selectedTemplateId;
   final ValueChanged<String> onSelectTemplate;
+  final bool isCollapsed;
+  final VoidCallback onToggleCollapse;
+  final bool isDarkMode;
 
   const WorkspaceSidebar({
     super.key,
     required this.templates,
     required this.selectedTemplateId,
     required this.onSelectTemplate,
+    required this.isCollapsed,
+    required this.onToggleCollapse,
+    required this.isDarkMode,
   });
 
   @override
@@ -48,150 +54,353 @@ class _WorkspaceSidebarState extends State<WorkspaceSidebar> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = widget.isDarkMode;
+    final isCollapsed = widget.isCollapsed;
+
+    // Rescene FlutterWebEmbedding style widths
+    final sidebarWidth = isCollapsed ? 74.0 : 268.0;
+
+    final bgColor = isDark ? const Color(0xFF0D1017) : const Color(0xFFF8FAFC);
+    final textColor = isDark ? Colors.white : const Color(0xFF0F172A);
+    final textSubColor = isDark ? Colors.white54 : const Color(0xFF64748B);
+    final searchBgColor = isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFEDEFEF);
+
     final filtered = _filteredTemplates;
 
-    return Container(
-      width: 290,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 230),
+      curve: Curves.easeOutCubic,
+      width: sidebarWidth,
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1017),
-        border: Border(right: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+        color: bgColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.03),
+            blurRadius: 10,
+            offset: const Offset(2, 0),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          // 1. Search Bar
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
-            child: Container(
-              height: 38,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-              ),
-              child: TextField(
-                controller: _searchCtrl,
-                style: const TextStyle(color: Colors.white, fontSize: 13),
-                decoration: InputDecoration(
-                  hintText: '어플 검색 (이름, 카테고리)...',
-                  hintStyle: const TextStyle(color: Colors.white38, fontSize: 12.5),
-                  prefixIcon: const Icon(CupertinoIcons.search, size: 16, color: Colors.white38),
-                  suffixIcon: _searchQuery.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(CupertinoIcons.xmark_circle_fill, size: 14, color: Colors.white38),
-                          onPressed: () {
-                            _searchCtrl.clear();
-                            setState(() => _searchQuery = '');
-                          },
-                        )
-                      : null,
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 9),
+          // 1. Search Bar & Category Pills (Only when Expanded)
+          if (!isCollapsed) ...[
+            // Search Bar (Border-free filled container)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 14, 12, 8),
+              child: Container(
+                height: 38,
+                decoration: BoxDecoration(
+                  color: searchBgColor,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                onChanged: (val) => setState(() => _searchQuery = val.trim()),
+                child: TextField(
+                  controller: _searchCtrl,
+                  style: TextStyle(color: textColor, fontSize: 13),
+                  decoration: InputDecoration(
+                    hintText: '어플 검색...',
+                    hintStyle: TextStyle(color: textSubColor.withValues(alpha: 0.6), fontSize: 12.5),
+                    prefixIcon: Icon(CupertinoIcons.search, size: 16, color: textSubColor),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(CupertinoIcons.xmark_circle_fill, size: 14, color: textSubColor),
+                            onPressed: () {
+                              _searchCtrl.clear();
+                              setState(() => _searchQuery = '');
+                            },
+                          )
+                        : null,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 9),
+                  ),
+                  onChanged: (val) => setState(() => _searchQuery = val.trim()),
+                ),
               ),
             ),
-          ),
 
-          // 2. Category Filter Pills (Horizontal Scroll)
-          SizedBox(
-            height: 34,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              children: [
-                _buildCategoryPill(null, '전체 (${widget.templates.length})'),
-                ...TemplateCategory.values.map((cat) {
-                  final count = widget.templates.where((t) => t.category == cat).length;
-                  return _buildCategoryPill(cat, '${cat.label.split(' / ').first} ($count)');
-                }),
-              ],
+            // Category Filter Pills (Horizontal Scroll, NO OUTLINE)
+            SizedBox(
+              height: 32,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                children: [
+                  _buildCategoryPill(null, '전체 (${widget.templates.length})', isDark),
+                  ...TemplateCategory.values.map((cat) {
+                    final count = widget.templates.where((t) => t.category == cat).length;
+                    return _buildCategoryPill(cat, '${cat.label.split(' / ').first} ($count)', isDark);
+                  }),
+                ],
+              ),
             ),
-          ),
+            const SizedBox(height: 8),
+          ] else ...[
+            // Collapsed Top Quick Toggle
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Center(
+                child: IconButton(
+                  tooltip: '사이드바 펼치기',
+                  icon: const Icon(CupertinoIcons.chevron_right, size: 16),
+                  color: textSubColor,
+                  onPressed: widget.onToggleCollapse,
+                  style: IconButton.styleFrom(
+                    backgroundColor: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFE2E8F0),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+              ),
+            ),
+          ],
 
-          const SizedBox(height: 10),
-          const Divider(color: Colors.white10, height: 1),
-
-          // 3. Applications List
+          // 2. Applications List (Rescene-inspired scale feedback & borderless)
           Expanded(
             child: filtered.isEmpty
-                ? const Center(
+                ? Center(
                     child: Padding(
-                      padding: EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(20),
                       child: Text(
-                        '검색 결과가 없습니다',
-                        style: TextStyle(color: Colors.white38, fontSize: 12.5),
+                        '검색 결과 없음',
+                        style: TextStyle(color: textSubColor, fontSize: 12.5),
                       ),
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 6,
+                      horizontal: isCollapsed ? 8 : 10,
+                    ),
                     itemCount: filtered.length,
                     itemBuilder: (context, index) {
                       final item = filtered[index];
                       final isSelected = item.id == widget.selectedTemplateId;
-                      return _buildAppItem(item, isSelected);
+                      return _SidebarAppItem(
+                        item: item,
+                        isSelected: isSelected,
+                        isCollapsed: isCollapsed,
+                        isDark: isDark,
+                        textColor: textColor,
+                        textSubColor: textSubColor,
+                        onTap: () => widget.onSelectTemplate(item.id),
+                      );
                     },
                   ),
           ),
 
-          // 4. Bottom Footer Info
+          // 3. Bottom Footer Status & Collapse Toggle
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            padding: EdgeInsets.symmetric(
+              horizontal: isCollapsed ? 6 : 14,
+              vertical: 10,
+            ),
             decoration: BoxDecoration(
-              color: const Color(0xFF090B10),
-              border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.06))),
+              color: isDark ? const Color(0xFF090B10) : const Color(0xFFEFF2F6),
             ),
-            child: Row(
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF22C55E),
-                    shape: BoxShape.circle,
+            child: isCollapsed
+                ? Center(
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF22C55E),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  )
+                : Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF22C55E),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${widget.templates.length}개 가상 스크린',
+                        style: TextStyle(
+                          color: textSubColor,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const Spacer(),
+                      InkWell(
+                        onTap: widget.onToggleCollapse,
+                        borderRadius: BorderRadius.circular(6),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                          child: Icon(
+                            CupertinoIcons.chevron_left,
+                            size: 14,
+                            color: textSubColor,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '${widget.templates.length}개 가상 앱 편집 가능',
-                  style: const TextStyle(color: Colors.white54, fontSize: 11.5, fontWeight: FontWeight.w500),
-                ),
-                const Spacer(),
-                const Text(
-                  'v3.5',
-                  style: TextStyle(color: Colors.white24, fontSize: 11),
-                ),
-              ],
-            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCategoryPill(TemplateCategory? cat, String label) {
+  Widget _buildCategoryPill(TemplateCategory? cat, String label, bool isDark) {
     final isSelected = _selectedCategory == cat;
+    final activeBg = const Color(0xFF6366F1);
+    final inactiveBg = isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFE2E8F0);
+
     return Padding(
-      padding: const EdgeInsets.only(right: 6),
+      padding: const EdgeInsets.only(right: 5),
       child: InkWell(
         onTap: () => setState(() => _selectedCategory = cat),
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
+        borderRadius: BorderRadius.circular(14),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF6366F1) : Colors.white.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isSelected ? const Color(0xFF818CF8) : Colors.white.withValues(alpha: 0.1),
-            ),
+            color: isSelected ? activeBg : inactiveBg,
+            borderRadius: BorderRadius.circular(14),
           ),
           child: Center(
             child: Text(
               label,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white60,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? Colors.white70 : const Color(0xFF475569)),
                 fontSize: 11,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Rescene GameSidebar inspired menu item with scale and smooth press feedback
+class _SidebarAppItem extends StatefulWidget {
+  final ScreenTemplate item;
+  final bool isSelected;
+  final bool isCollapsed;
+  final bool isDark;
+  final Color textColor;
+  final Color textSubColor;
+  final VoidCallback onTap;
+
+  const _SidebarAppItem({
+    required this.item,
+    required this.isSelected,
+    required this.isCollapsed,
+    required this.isDark,
+    required this.textColor,
+    required this.textSubColor,
+    required this.onTap,
+  });
+
+  @override
+  State<_SidebarAppItem> createState() => _SidebarAppItemState();
+}
+
+class _SidebarAppItemState extends State<_SidebarAppItem> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isSelected = widget.isSelected;
+    final isCollapsed = widget.isCollapsed;
+    final isDark = widget.isDark;
+    final item = widget.item;
+
+    final activeBgColor = isDark
+        ? const Color(0xFF6366F1).withValues(alpha: 0.22)
+        : const Color(0xFFEEF2FF);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Tooltip(
+        message: isCollapsed ? item.title : '',
+        child: AnimatedScale(
+          scale: _isPressed ? 0.94 : 1.0,
+          duration: const Duration(milliseconds: 115),
+          curve: Curves.easeOutCubic,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: widget.onTap,
+              onTapDown: (_) => setState(() => _isPressed = true),
+              onTapUp: (_) => setState(() => _isPressed = false),
+              onTapCancel: () => setState(() => _isPressed = false),
+              borderRadius: BorderRadius.circular(12),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOutCubic,
+                padding: isCollapsed
+                    ? const EdgeInsets.symmetric(vertical: 10)
+                    : const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isSelected ? activeBgColor : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: isCollapsed
+                    ? Center(
+                        child: _buildAppIcon(item, size: 28),
+                      )
+                    : Row(
+                        children: [
+                          _buildAppIcon(item, size: 30),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        item.title,
+                                        style: TextStyle(
+                                          color: isSelected
+                                              ? (isDark ? Colors.white : const Color(0xFF4338CA))
+                                              : widget.textColor,
+                                          fontSize: 12.5,
+                                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    if (item.badge.isNotEmpty) ...[
+                                      const SizedBox(width: 5),
+                                      _buildBadge(item.badge),
+                                    ],
+                                  ],
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  item.category.label,
+                                  style: TextStyle(
+                                    color: widget.textSubColor.withValues(alpha: 0.8),
+                                    fontSize: 10.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (isSelected)
+                            Icon(
+                              CupertinoIcons.chevron_right,
+                              color: isDark ? const Color(0xFF818CF8) : const Color(0xFF6366F1),
+                              size: 13,
+                            ),
+                        ],
+                      ),
               ),
             ),
           ),
@@ -200,95 +409,39 @@ class _WorkspaceSidebarState extends State<WorkspaceSidebar> {
     );
   }
 
-  Widget _buildAppItem(ScreenTemplate item, bool isSelected) {
+  Widget _buildAppIcon(ScreenTemplate item, {required double size}) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 2.5),
-      child: InkWell(
-        onTap: () => widget.onSelectTemplate(item.id),
+      width: size,
+      height: size,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: item.themeColor.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF6366F1).withValues(alpha: 0.18) : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-            border: isSelected ? Border.all(color: const Color(0xFF6366F1).withValues(alpha: 0.5)) : null,
-          ),
-          child: Row(
-            children: [
-              // Icon / Image
-              Container(
-                width: 32,
-                height: 32,
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  color: item.themeColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(7),
-                  border: Border.all(color: item.themeColor.withValues(alpha: 0.3)),
-                ),
-                child: Center(
-                  child: item.imageAsset != null
-                      ? Image.asset(item.imageAsset!, fit: BoxFit.contain)
-                      : Icon(item.icon, color: item.themeColor, size: 17),
-                ),
-              ),
-              const SizedBox(width: 10),
+      ),
+      child: Center(
+        child: item.imageAsset != null
+            ? Image.asset(item.imageAsset!, fit: BoxFit.contain)
+            : Icon(item.icon, color: item.themeColor, size: size * 0.55),
+      ),
+    );
+  }
 
-              // Title & Category
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            item.title,
-                            style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.88),
-                              fontSize: 12.5,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (item.badge.isNotEmpty) ...[
-                          const SizedBox(width: 5),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                            decoration: BoxDecoration(
-                              color: item.badge == 'HOT' || item.badge == '인기'
-                                  ? const Color(0xFFEF4444).withValues(alpha: 0.2)
-                                  : const Color(0xFF10B981).withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              item.badge,
-                              style: TextStyle(
-                                color: item.badge == 'HOT' || item.badge == '인기'
-                                    ? const Color(0xFFF87171)
-                                    : const Color(0xFF34D399),
-                                fontSize: 8.5,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      item.category.label,
-                      style: const TextStyle(color: Colors.white38, fontSize: 10.5),
-                    ),
-                  ],
-                ),
-              ),
+  Widget _buildBadge(String badge) {
+    final isHot = badge == 'HOT' || badge == '인기';
+    final badgeColor = isHot ? const Color(0xFFEF4444) : const Color(0xFF10B981);
 
-              if (isSelected)
-                const Icon(CupertinoIcons.chevron_right, color: Color(0xFF818CF8), size: 14),
-            ],
-          ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+      decoration: BoxDecoration(
+        color: badgeColor.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Text(
+        badge,
+        style: TextStyle(
+          color: badgeColor,
+          fontSize: 8.5,
+          fontWeight: FontWeight.w800,
         ),
       ),
     );

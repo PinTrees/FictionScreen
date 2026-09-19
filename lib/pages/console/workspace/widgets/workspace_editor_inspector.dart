@@ -70,11 +70,13 @@ class WorkspaceEditorInspector extends StatefulWidget {
 
   final WindowsUpdateConfig winUpdateConfig;
   final ValueChanged<WindowsUpdateConfig> onWinUpdateChanged;
+  final bool isDarkMode;
 
   const WorkspaceEditorInspector({
     super.key,
     required this.template,
     required this.onOpenInOs,
+    required this.isDarkMode,
     required this.kakaoConfig,
     required this.onKakaoChanged,
     required this.tossConfig,
@@ -113,6 +115,10 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
   final TextEditingController _newKakaoMsgCtrl = TextEditingController();
   bool _newKakaoIsMe = true;
 
+  bool get isDark => widget.isDarkMode;
+  Color get textColor => isDark ? Colors.white : const Color(0xFF0F172A);
+  Color get textSubColor => isDark ? Colors.white54 : const Color(0xFF64748B);
+
   @override
   void dispose() {
     _newKakaoMsgCtrl.dispose();
@@ -122,12 +128,21 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
   @override
   Widget build(BuildContext context) {
     final t = widget.template;
+    final bgColor = isDark ? const Color(0xFF0F1219) : Colors.white;
+    final headerBgColor = isDark ? const Color(0xFF141822) : const Color(0xFFF8FAFC);
+    final textSubColor = isDark ? Colors.white54 : const Color(0xFF64748B);
 
     return Container(
-      width: 340,
+      width: 330,
       decoration: BoxDecoration(
-        color: const Color(0xFF0F1219),
-        border: Border(left: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+        color: bgColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.03),
+            blurRadius: 10,
+            offset: const Offset(-2, 0),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -135,8 +150,7 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: const Color(0xFF141822),
-              border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+              color: headerBgColor,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,19 +172,23 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
                     Expanded(
                       child: Text(
                         t.title,
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                        style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 14),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.08),
+                        color: isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         t.isDesktop ? 'DESKTOP' : 'MOBILE',
-                        style: const TextStyle(color: Colors.white70, fontSize: 9, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                          color: isDark ? Colors.white70 : const Color(0xFF475569),
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
@@ -178,23 +196,24 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
                 const SizedBox(height: 6),
                 Text(
                   t.description,
-                  style: const TextStyle(color: Colors.white54, fontSize: 11),
+                  style: TextStyle(color: textSubColor, fontSize: 11),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 10),
 
-                // Quick Action: Open in OS Window
+                // Quick Action: Open in OS Window (NO OUTLINE)
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1E293B),
-                      foregroundColor: const Color(0xFF38BDF8),
+                      backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFE0F2FE),
+                      foregroundColor: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0284C7),
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: const Color(0xFF38BDF8).withValues(alpha: 0.4)),
+                        borderRadius: BorderRadius.circular(9),
                       ),
                     ),
                     icon: const Icon(CupertinoIcons.macwindow, size: 14),
@@ -300,6 +319,14 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
               child: ChoiceChip(
                 label: const Center(child: Text('내가 보냄')),
                 selected: _newKakaoIsMe,
+                side: BorderSide.none,
+                selectedColor: const Color(0xFF6366F1),
+                backgroundColor: isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFF1F5F9),
+                labelStyle: TextStyle(
+                  color: _newKakaoIsMe ? Colors.white : (isDark ? Colors.white70 : const Color(0xFF475569)),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
                 onSelected: (val) => setState(() => _newKakaoIsMe = true),
               ),
             ),
@@ -308,6 +335,14 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
               child: ChoiceChip(
                 label: const Center(child: Text('상대방이 보냄')),
                 selected: !_newKakaoIsMe,
+                side: BorderSide.none,
+                selectedColor: const Color(0xFF6366F1),
+                backgroundColor: isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFF1F5F9),
+                labelStyle: TextStyle(
+                  color: !_newKakaoIsMe ? Colors.white : (isDark ? Colors.white70 : const Color(0xFF475569)),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
                 onSelected: (val) => setState(() => _newKakaoIsMe = false),
               ),
             ),
@@ -319,12 +354,12 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
             Expanded(
               child: TextField(
                 controller: _newKakaoMsgCtrl,
-                style: const TextStyle(color: Colors.white, fontSize: 12.5),
+                style: TextStyle(color: textColor, fontSize: 12.5),
                 decoration: InputDecoration(
                   hintText: '메시지 내용 입력...',
-                  hintStyle: const TextStyle(color: Colors.white38, fontSize: 12),
+                  hintStyle: TextStyle(color: textSubColor.withValues(alpha: 0.6), fontSize: 12),
                   filled: true,
-                  fillColor: Colors.white.withValues(alpha: 0.06),
+                  fillColor: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
                 ),
@@ -335,6 +370,8 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFEE500),
                 foregroundColor: Colors.black,
+                elevation: 0,
+                shadowColor: Colors.transparent,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
@@ -815,35 +852,50 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
   // ============================================================
   Widget _buildModalEditorButton() {
     final id = widget.template.id;
+    final isDark = widget.isDarkMode;
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.04),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        color: isDark ? Colors.white.withValues(alpha: 0.04) : const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(CupertinoIcons.slider_horizontal_3, size: 14, color: Color(0xFF818CF8)),
-              SizedBox(width: 6),
-              Text('세부 모달 편집기', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+              const Icon(CupertinoIcons.slider_horizontal_3, size: 14, color: Color(0xFF6366F1)),
+              const SizedBox(width: 6),
+              Text(
+                '세부 모달 편집기',
+                style: TextStyle(
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             '더 많은 옵션과 세부 스타일을 풀스크린 모달 다이얼로그로 정밀하게 조정할 수 있습니다.',
-            style: TextStyle(color: Colors.white38, fontSize: 11),
+            style: TextStyle(
+              color: isDark ? Colors.white54 : const Color(0xFF64748B),
+              fontSize: 11,
+              height: 1.4,
+            ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            child: OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFFA5B4FC),
-                side: BorderSide(color: const Color(0xFF6366F1).withValues(alpha: 0.4)),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isDark ? const Color(0xFF6366F1).withValues(alpha: 0.2) : const Color(0xFF6366F1),
+                foregroundColor: isDark ? const Color(0xFFA5B4FC) : Colors.white,
+                elevation: 0,
+                shadowColor: Colors.transparent,
+                padding: const EdgeInsets.symmetric(vertical: 9),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
               onPressed: () => _openSpecificEditDialog(id),
@@ -964,27 +1016,40 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
       padding: const EdgeInsets.only(bottom: 10, top: 4),
       child: Text(
         title,
-        style: const TextStyle(color: Color(0xFFA5B4FC), fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.3),
+        style: const TextStyle(
+          color: Color(0xFF6366F1),
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.3,
+        ),
       ),
     );
   }
 
   Widget _buildTextField(String label, String initialVal, ValueChanged<String> onChanged, {bool isNumber = false, int maxLines = 1}) {
+    final isDark = widget.isDarkMode;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 11.5)),
+          Text(
+            label,
+            style: TextStyle(
+              color: isDark ? Colors.white70 : const Color(0xFF475569),
+              fontSize: 11.5,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           const SizedBox(height: 5),
           TextFormField(
             initialValue: initialVal,
             maxLines: maxLines,
             keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-            style: const TextStyle(color: Colors.white, fontSize: 12.5),
+            style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A), fontSize: 12.5),
             decoration: InputDecoration(
               filled: true,
-              fillColor: Colors.white.withValues(alpha: 0.06),
+              fillColor: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9),
               contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
             ),
@@ -996,6 +1061,7 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
   }
 
   Widget _buildSliderField(String label, double value, double min, double max, ValueChanged<double> onChanged) {
+    final isDark = widget.isDarkMode;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(
@@ -1004,8 +1070,18 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(label, style: const TextStyle(color: Colors.white70, fontSize: 11.5)),
-              Text('${value.toInt()}', style: const TextStyle(color: Color(0xFF818CF8), fontSize: 12, fontWeight: FontWeight.bold)),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isDark ? Colors.white70 : const Color(0xFF475569),
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                '${value.toInt()}',
+                style: const TextStyle(color: Color(0xFF6366F1), fontSize: 12, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
           SliderTheme(
@@ -1019,7 +1095,7 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
               min: min,
               max: max,
               activeColor: const Color(0xFF6366F1),
-              inactiveColor: Colors.white12,
+              inactiveColor: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
               onChanged: onChanged,
             ),
           ),
@@ -1029,12 +1105,20 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
   }
 
   Widget _buildSwitchField(String label, bool value, ValueChanged<bool> onChanged) {
+    final isDark = widget.isDarkMode;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+          Text(
+            label,
+            style: TextStyle(
+              color: isDark ? Colors.white70 : const Color(0xFF475569),
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           CupertinoSwitch(
             value: value,
             activeTrackColor: const Color(0xFF6366F1),
@@ -1046,25 +1130,33 @@ class _WorkspaceEditorInspectorState extends State<WorkspaceEditorInspector> {
   }
 
   Widget _buildDropdownField(String label, String value, List<String> items, ValueChanged<String?> onChanged) {
+    final isDark = widget.isDarkMode;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 11.5)),
+          Text(
+            label,
+            style: TextStyle(
+              color: isDark ? Colors.white70 : const Color(0xFF475569),
+              fontSize: 11.5,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           const SizedBox(height: 5),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.06),
+              color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9),
               borderRadius: BorderRadius.circular(8),
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: value,
                 isExpanded: true,
-                dropdownColor: const Color(0xFF1B202D),
-                style: const TextStyle(color: Colors.white, fontSize: 12.5),
+                dropdownColor: isDark ? const Color(0xFF1B202D) : Colors.white,
+                style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A), fontSize: 12.5),
                 items: items.map((it) => DropdownMenuItem(value: it, child: Text(it))).toList(),
                 onChanged: onChanged,
               ),

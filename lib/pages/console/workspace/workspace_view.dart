@@ -36,7 +36,6 @@ import '../../../../apps/yanolja/data/yanolja_model.dart';
 import '../../../../apps/zigbang/data/zigbang_model.dart';
 import '../../../../apps/youtube/data/youtube_model.dart';
 import '../../../../managers/export_manager.dart';
-import '../../../../widgets/common/device_frame_preview.dart';
 import '../../studio/widgets/studio_preview_dispatcher.dart';
 import 'widgets/workspace_editor_inspector.dart';
 import 'widgets/workspace_sidebar.dart';
@@ -63,7 +62,8 @@ class WorkspaceView extends StatefulWidget {
 class _WorkspaceViewState extends State<WorkspaceView> {
   final ScreenshotController _screenshotController = ScreenshotController();
   late String _currentTemplateId;
-  bool _showFrame = true;
+  bool? _userThemeOverride;
+  bool _isSidebarCollapsed = false;
   bool _isExporting = false;
 
   // App Configurations
@@ -168,18 +168,22 @@ class _WorkspaceViewState extends State<WorkspaceView> {
 
   @override
   Widget build(BuildContext context) {
+    final systemIsDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    final isDarkMode = _userThemeOverride ?? systemIsDark;
     final template = _currentTemplate;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF090B10),
+      backgroundColor: isDarkMode ? const Color(0xFF090B10) : const Color(0xFFF1F5F9),
       body: Column(
         children: [
-          // 1. Top Header Bar
+          // 1. Top Header Bar (NO OUTLINE, Dark/Light Mode, Sidebar Toggle)
           WorkspaceTopBar(
             template: template,
-            showFrame: _showFrame,
+            isDarkMode: isDarkMode,
+            isSidebarCollapsed: _isSidebarCollapsed,
             isExporting: _isExporting,
-            onToggleFrame: () => setState(() => _showFrame = !_showFrame),
+            onToggleTheme: () => setState(() => _userThemeOverride = !isDarkMode),
+            onToggleSidebar: () => setState(() => _isSidebarCollapsed = !_isSidebarCollapsed),
             onExport: _exportScreen,
             onOpenInOs: () => widget.onOpenInOs(template.id),
             onSelectOs: widget.onSelectOs,
@@ -190,45 +194,43 @@ class _WorkspaceViewState extends State<WorkspaceView> {
           Expanded(
             child: Row(
               children: [
-                // Left Navigation Sidebar
+                // Left Navigation Sidebar (Rescene-inspired Collapsible & Border-free)
                 WorkspaceSidebar(
                   templates: ScreenTemplate.allTemplates,
                   selectedTemplateId: _currentTemplateId,
                   onSelectTemplate: (id) => setState(() => _currentTemplateId = id),
+                  isCollapsed: _isSidebarCollapsed,
+                  onToggleCollapse: () => setState(() => _isSidebarCollapsed = !_isSidebarCollapsed),
+                  isDarkMode: isDarkMode,
                 ),
 
-                // Center Preview Canvas
+                // Center Preview Canvas (Authentic Full Screen, NO DEVICE FRAME MOCKUP)
                 Expanded(
                   child: Container(
-                    color: const Color(0xFF07090E),
+                    color: isDarkMode ? const Color(0xFF06080D) : const Color(0xFFE2E8F0),
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(20),
                         child: Screenshot(
                           controller: _screenshotController,
-                          child: _showFrame
-                              ? DeviceFramePreview(
-                                  isDesktop: template.isDesktop,
-                                  child: _buildPreviewContent(),
-                                )
-                              : Container(
-                                  constraints: BoxConstraints(
-                                    maxWidth: template.isDesktop ? 1020 : 410,
-                                    maxHeight: template.isDesktop ? 660 : 790,
-                                  ),
-                                  clipBehavior: Clip.antiAlias,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(template.isDesktop ? 12 : 32),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.6),
-                                        blurRadius: 32,
-                                        offset: const Offset(0, 10),
-                                      ),
-                                    ],
-                                  ),
-                                  child: _buildPreviewContent(),
+                          child: Container(
+                            constraints: BoxConstraints(
+                              maxWidth: template.isDesktop ? 1040 : 400,
+                              maxHeight: template.isDesktop ? 660 : 820,
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(template.isDesktop ? 12 : 24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: isDarkMode ? 0.5 : 0.12),
+                                  blurRadius: 36,
+                                  offset: const Offset(0, 12),
                                 ),
+                              ],
+                            ),
+                            child: _buildPreviewContent(),
+                          ),
                         ),
                       ),
                     ),
@@ -238,6 +240,7 @@ class _WorkspaceViewState extends State<WorkspaceView> {
                 // Right Property & Data Inspector Panel
                 WorkspaceEditorInspector(
                   template: template,
+                  isDarkMode: isDarkMode,
                   onOpenInOs: () => widget.onOpenInOs(template.id),
                   kakaoConfig: _kakaoConfig,
                   onKakaoChanged: (cfg) => setState(() => _kakaoConfig = cfg),

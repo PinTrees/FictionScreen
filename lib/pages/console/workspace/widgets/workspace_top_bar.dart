@@ -5,9 +5,11 @@ import '../../../../apps/screen_template.dart';
 
 class WorkspaceTopBar extends StatelessWidget {
   final ScreenTemplate template;
-  final bool showFrame;
+  final bool isDarkMode;
+  final bool isSidebarCollapsed;
   final bool isExporting;
-  final VoidCallback onToggleFrame;
+  final VoidCallback onToggleTheme;
+  final VoidCallback onToggleSidebar;
   final VoidCallback onExport;
   final VoidCallback onOpenInOs;
   final Function(String osKey) onSelectOs;
@@ -16,9 +18,11 @@ class WorkspaceTopBar extends StatelessWidget {
   const WorkspaceTopBar({
     super.key,
     required this.template,
-    required this.showFrame,
+    required this.isDarkMode,
+    required this.isSidebarCollapsed,
     required this.isExporting,
-    required this.onToggleFrame,
+    required this.onToggleTheme,
+    required this.onToggleSidebar,
     required this.onExport,
     required this.onOpenInOs,
     required this.onSelectOs,
@@ -27,15 +31,44 @@ class WorkspaceTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = isDarkMode ? const Color(0xFF0E121B) : Colors.white;
+    final textColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final textSubColor = isDarkMode ? Colors.white54 : const Color(0xFF64748B);
+    final buttonBgColor = isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFF1F5F9);
+    final shadowColor = isDarkMode ? Colors.black.withValues(alpha: 0.25) : Colors.black.withValues(alpha: 0.04);
+
     return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      height: 58,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFF10131A),
-        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+        color: bgColor,
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
+          // Sidebar Toggle Button
+          IconButton(
+            tooltip: isSidebarCollapsed ? '사이드바 펼치기' : '사이드바 접기',
+            icon: Icon(
+              isSidebarCollapsed ? CupertinoIcons.sidebar_left : CupertinoIcons.sidebar_left,
+              color: isSidebarCollapsed ? const Color(0xFF6366F1) : textColor.withValues(alpha: 0.8),
+              size: 19,
+            ),
+            onPressed: onToggleSidebar,
+            style: IconButton.styleFrom(
+              backgroundColor: isSidebarCollapsed ? const Color(0xFF6366F1).withValues(alpha: 0.12) : Colors.transparent,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
+
+          const SizedBox(width: 6),
+
           // Logo & Brand
           InkWell(
             onTap: () => context.go('/'),
@@ -51,28 +84,37 @@ class WorkspaceTopBar extends StatelessWidget {
                       gradient: const LinearGradient(
                         colors: [Color(0xFF6366F1), Color(0xFF38BDF8)],
                       ),
-                      borderRadius: BorderRadius.circular(7),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Center(
-                      child: Icon(CupertinoIcons.sparkles, color: Colors.white, size: 16),
+                      child: Icon(CupertinoIcons.sparkles, color: Colors.white, size: 15),
                     ),
                   ),
                   const SizedBox(width: 10),
-                  const Text(
+                  Text(
                     'FictionScreen',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15, letterSpacing: -0.3),
+                    style: TextStyle(
+                      color: textColor,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      letterSpacing: -0.3,
+                    ),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(left: 6),
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    margin: const EdgeInsets.only(left: 7),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF6366F1).withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: const Color(0xFF6366F1).withValues(alpha: 0.5)),
+                      color: const Color(0xFF6366F1).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(5),
                     ),
                     child: const Text(
                       'CONSOLE',
-                      style: TextStyle(color: Color(0xFFA5B4FC), fontSize: 9.5, fontWeight: FontWeight.w800, letterSpacing: 0.8),
+                      style: TextStyle(
+                        color: Color(0xFF6366F1),
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.8,
+                      ),
                     ),
                   ),
                 ],
@@ -81,7 +123,7 @@ class WorkspaceTopBar extends StatelessWidget {
           ),
 
           const SizedBox(width: 14),
-          const Text('/', style: TextStyle(color: Colors.white24, fontSize: 16)),
+          Text('/', style: TextStyle(color: textSubColor.withValues(alpha: 0.4), fontSize: 16)),
           const SizedBox(width: 14),
 
           // Breadcrumbs
@@ -93,16 +135,16 @@ class WorkspaceTopBar extends StatelessWidget {
               children: [
                 Text(
                   template.category.label,
-                  style: const TextStyle(color: Colors.white54, fontSize: 13),
+                  style: TextStyle(color: textSubColor, fontSize: 13),
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(width: 6),
-                const Text('›', style: TextStyle(color: Colors.white30, fontSize: 14)),
+                Text('›', style: TextStyle(color: textSubColor.withValues(alpha: 0.5), fontSize: 14)),
                 const SizedBox(width: 6),
                 Flexible(
                   child: Text(
                     template.title,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13.5),
+                    style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 13.5),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -112,26 +154,33 @@ class WorkspaceTopBar extends StatelessWidget {
 
           const Spacer(),
 
-          // 1. Open in Virtual OS Window Button
+          // 1. Open in Virtual OS Window Button (NO OUTLINE, Smooth Surface Fill)
           Tooltip(
-            message: '선택한 가상 OS 화면으로 이동하여 이 앱을 플로팅 창으로 엽니다',
+            message: '가상 OS 화면으로 이동하여 이 앱을 플로팅 창으로 실행합니다',
             child: InkWell(
               onTap: onOpenInOs,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFF38BDF8).withValues(alpha: 0.4)),
+                  color: isDarkMode ? const Color(0xFF1E293B) : const Color(0xFFE0F2FE),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(CupertinoIcons.macwindow, size: 14, color: Color(0xFF38BDF8)),
-                    SizedBox(width: 6),
+                    Icon(
+                      CupertinoIcons.macwindow,
+                      size: 14,
+                      color: isDarkMode ? const Color(0xFF38BDF8) : const Color(0xFF0284C7),
+                    ),
+                    const SizedBox(width: 7),
                     Text(
                       'OS 창으로 실행',
-                      style: TextStyle(color: Color(0xFF38BDF8), fontSize: 12, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: isDarkMode ? const Color(0xFF38BDF8) : const Color(0xFF0284C7),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -141,34 +190,40 @@ class WorkspaceTopBar extends StatelessWidget {
 
           const SizedBox(width: 10),
 
-          // 2. Launch Virtual OS Dropdown / Menu
-          _buildOsLauncherMenu(context),
+          // 2. Launch Virtual OS Dropdown (NO OUTLINE)
+          _buildOsLauncherMenu(context, textColor, buttonBgColor, isDarkMode),
 
           const SizedBox(width: 10),
 
-          // 3. Frame Toggle
+          // 3. Theme Toggle (Light / Dark mode, NO OUTLINE)
           IconButton(
-            tooltip: showFrame ? '디바이스 프레임 숨기기' : '디바이스 프레임 씌우기',
+            tooltip: isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환',
             icon: Icon(
-              showFrame ? CupertinoIcons.device_phone_portrait : CupertinoIcons.square,
-              color: showFrame ? const Color(0xFF6366F1) : Colors.white70,
-              size: 19,
+              isDarkMode ? CupertinoIcons.sun_max_fill : CupertinoIcons.moon_fill,
+              color: isDarkMode ? const Color(0xFFFBBF24) : const Color(0xFF475569),
+              size: 18,
             ),
-            onPressed: onToggleFrame,
+            style: IconButton.styleFrom(
+              backgroundColor: buttonBgColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            onPressed: onToggleTheme,
           ),
 
-          const SizedBox(width: 6),
+          const SizedBox(width: 8),
 
-          // 4. Export PNG Button
+          // 4. Export PNG Button (Gradient / Solid without outline)
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF6366F1),
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              elevation: 0,
+              shadowColor: Colors.transparent,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
             ),
             icon: isExporting
-                ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                ? const SizedBox(width: 13, height: 13, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                 : const Icon(CupertinoIcons.arrow_down_doc_fill, size: 14),
             label: Text(
               isExporting ? '저장 중...' : '캡처 저장',
@@ -177,16 +232,16 @@ class WorkspaceTopBar extends StatelessWidget {
             onPressed: isExporting ? null : onExport,
           ),
 
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
 
-          // 5. Sign Out / Profile
+          // 5. More Actions (No Outline Menu)
           PopupMenuButton<String>(
             tooltip: '계정 및 이동',
-            icon: const Icon(CupertinoIcons.ellipsis_vertical, color: Colors.white70, size: 18),
-            color: const Color(0xFF1E222D),
+            icon: Icon(CupertinoIcons.ellipsis_vertical, color: textSubColor, size: 18),
+            color: isDarkMode ? const Color(0xFF191F2D) : Colors.white,
+            elevation: 8,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+              borderRadius: BorderRadius.circular(12),
             ),
             onSelected: (val) {
               if (val == 'home') {
@@ -196,24 +251,24 @@ class WorkspaceTopBar extends StatelessWidget {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'home',
                 child: Row(
                   children: [
-                    Icon(CupertinoIcons.house_fill, size: 16, color: Colors.white70),
-                    SizedBox(width: 8),
-                    Text('메인 홈페이지로', style: TextStyle(color: Colors.white, fontSize: 13)),
+                    Icon(CupertinoIcons.house_fill, size: 16, color: textColor.withValues(alpha: 0.7)),
+                    const SizedBox(width: 10),
+                    Text('메인 홈페이지로', style: TextStyle(color: textColor, fontSize: 13, fontWeight: FontWeight.w500)),
                   ],
                 ),
               ),
-              const PopupMenuDivider(),
+              const PopupMenuDivider(height: 1),
               const PopupMenuItem(
                 value: 'signout',
                 child: Row(
                   children: [
                     Icon(CupertinoIcons.square_arrow_left, size: 16, color: Colors.redAccent),
-                    SizedBox(width: 8),
-                    Text('로그아웃', style: TextStyle(color: Colors.redAccent, fontSize: 13)),
+                    SizedBox(width: 10),
+                    Text('로그아웃', style: TextStyle(color: Colors.redAccent, fontSize: 13, fontWeight: FontWeight.w500)),
                   ],
                 ),
               ),
@@ -224,44 +279,51 @@ class WorkspaceTopBar extends StatelessWidget {
     );
   }
 
-  Widget _buildOsLauncherMenu(BuildContext context) {
+  Widget _buildOsLauncherMenu(
+    BuildContext context,
+    Color textColor,
+    Color buttonBgColor,
+    bool isDarkMode,
+  ) {
     return PopupMenuButton<String>(
       tooltip: '원하는 가상 OS로 즉시 전환합니다',
       offset: const Offset(0, 44),
-      color: const Color(0xFF141924),
+      elevation: 8,
+      color: isDarkMode ? const Color(0xFF141924) : Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+        borderRadius: BorderRadius.circular(14),
       ),
       onSelected: onSelectOs,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF252A36),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+          color: buttonBgColor,
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(CupertinoIcons.device_desktop, size: 15, color: Color(0xFF67C1F5)),
-            SizedBox(width: 6),
-            Text('가상 OS로 진입', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-            SizedBox(width: 4),
-            Icon(CupertinoIcons.chevron_down, size: 12, color: Colors.white54),
+            const Icon(CupertinoIcons.device_desktop, size: 15, color: Color(0xFF6366F1)),
+            const SizedBox(width: 7),
+            Text(
+              '가상 OS로 진입',
+              style: TextStyle(color: textColor, fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(width: 5),
+            Icon(CupertinoIcons.chevron_down, size: 11, color: textColor.withValues(alpha: 0.5)),
           ],
         ),
       ),
       itemBuilder: (context) => [
-        _buildPopupItem('windows_11', 'Windows 11', 'assets/images/win11_logo.png', 'Fluent Modern'),
-        _buildPopupItem('windows_10', 'Windows 10', 'assets/images/win10_logo.png', 'Metro Desktop'),
-        _buildPopupItem('windows_7', 'Windows 7', 'assets/images/win7_logo.png', 'Aero Glass'),
-        _buildPopupItem('windows_xp', 'Windows XP', 'assets/images/winxp_logo.png', 'Luna Classic'),
-        const PopupMenuDivider(),
-        _buildPopupItem('macos_27', 'macOS Sequoia (Golden Gate)', 'assets/images/apple_logo.png', 'Liquid Glass', tintWhite: true),
-        _buildPopupItem('steamos', 'SteamOS (Steam Deck)', 'assets/images/steamdeck_icon.png', 'Gaming & Desktop'),
-        const PopupMenuDivider(),
-        _buildPopupItem('galaxy', 'Samsung Galaxy (One UI 9)', null, 'Android 16', icon: Icons.android_rounded, iconColor: const Color(0xFF3DDC84)),
-        _buildPopupItem('ios', 'Apple iPhone 18 (iOS 18)', null, 'Dynamic Island', icon: CupertinoIcons.device_phone_portrait, iconColor: Colors.white70),
+        _buildPopupItem('windows_11', 'Windows 11', 'assets/images/win11_logo.png', 'Fluent Modern', isDarkMode),
+        _buildPopupItem('windows_10', 'Windows 10', 'assets/images/win10_logo.png', 'Metro Desktop', isDarkMode),
+        _buildPopupItem('windows_7', 'Windows 7', 'assets/images/win7_logo.png', 'Aero Glass', isDarkMode),
+        _buildPopupItem('windows_xp', 'Windows XP', 'assets/images/winxp_logo.png', 'Luna Classic', isDarkMode),
+        const PopupMenuDivider(height: 1),
+        _buildPopupItem('macos_27', 'macOS Sequoia (Golden Gate)', 'assets/images/apple_logo.png', 'Liquid Glass', isDarkMode, tintWhite: isDarkMode),
+        _buildPopupItem('steamos', 'SteamOS (Steam Deck)', 'assets/images/steamdeck_icon.png', 'Gaming & Desktop', isDarkMode),
+        const PopupMenuDivider(height: 1),
+        _buildPopupItem('galaxy', 'Samsung Galaxy (One UI 9)', null, 'Android 16', isDarkMode, icon: Icons.android_rounded, iconColor: const Color(0xFF3DDC84)),
+        _buildPopupItem('ios', 'Apple iPhone 18 (iOS 18)', null, 'Dynamic Island', isDarkMode, icon: CupertinoIcons.device_phone_portrait, iconColor: isDarkMode ? Colors.white70 : Colors.black87),
       ],
     );
   }
@@ -270,19 +332,29 @@ class WorkspaceTopBar extends StatelessWidget {
     String value,
     String title,
     String? asset,
-    String subtitle, {
+    String subtitle,
+    bool isDarkMode, {
     bool tintWhite = false,
     IconData? icon,
     Color? iconColor,
   }) {
+    final titleColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final subtitleColor = isDarkMode ? Colors.white54 : const Color(0xFF64748B);
+
     return PopupMenuItem<String>(
       value: value,
       child: Row(
         children: [
           if (asset != null)
-            Image.asset(asset, width: 18, height: 18, color: tintWhite ? Colors.white : null, fit: BoxFit.contain)
+            Image.asset(
+              asset,
+              width: 18,
+              height: 18,
+              color: tintWhite ? (isDarkMode ? Colors.white : Colors.black) : null,
+              fit: BoxFit.contain,
+            )
           else if (icon != null)
-            Icon(icon, size: 18, color: iconColor ?? Colors.white70)
+            Icon(icon, size: 18, color: iconColor ?? (isDarkMode ? Colors.white70 : Colors.black54))
           else
             const SizedBox(width: 18),
           const SizedBox(width: 10),
@@ -290,8 +362,8 @@ class WorkspaceTopBar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(title, style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.bold)),
-              Text(subtitle, style: const TextStyle(color: Colors.white54, fontSize: 10)),
+              Text(title, style: TextStyle(color: titleColor, fontSize: 12.5, fontWeight: FontWeight.bold)),
+              Text(subtitle, style: TextStyle(color: subtitleColor, fontSize: 10.5)),
             ],
           ),
         ],
