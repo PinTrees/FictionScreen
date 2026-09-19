@@ -385,6 +385,7 @@ class WindowsTaskbar extends StatelessWidget {
                   _buildXpTaskbarTab('메모장', 'assets/images/windows/notepad.png', () => onOpenWinApp?.call('notepad')),
                   _buildXpTaskbarTab('계산기', 'assets/images/windows/calc.png', () => onOpenWinApp?.call('calculator')),
                   _buildXpTaskbarTab('PDF 서식 스튜디오', 'assets/images/windows/docs.png', () => onOpenWinApp?.call('pdf_viewer')),
+                  _buildXpTaskbarTab('Telegram', 'assets/images/windows/desk.png', () => onOpenWinApp?.call('telegram')),
                   _buildXpTaskbarTab('카카오톡', 'assets/images/kakaotalk_icon.webp', () => onOpenTemplate('kakaotalk')),
                   _buildXpTaskbarTab('DaVinci Resolve', 'assets/images/davinci_resolve_icon.webp', () => onOpenTemplate('davinci_resolve')),
                 ],

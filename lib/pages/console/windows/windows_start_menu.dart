@@ -181,6 +181,7 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                         _buildListTile('동행복권 (로또 6/45)', null, const Color(0xFF0066B3), () => widget.onOpenTemplate('lottery'), imageAsset: 'assets/images/lottery_icon.webp'),
                         _buildListTile('배달의민족', CupertinoIcons.bag_fill, const Color(0xFF2AC1BC), () => widget.onOpenTemplate('delivery')),
                         _buildListTile('PDF 서식 스튜디오', CupertinoIcons.doc_text_fill, const Color(0xFFEF4444), () => widget.onOpenWinApp?.call('pdf_viewer')),
+                        _buildListTile('Telegram (텔레그램)', CupertinoIcons.paperplane_fill, const Color(0xFF5288C1), () => widget.onOpenWinApp?.call('telegram')),
                         _buildListTile('시스템 설정', CupertinoIcons.gear_alt_fill, const Color(0xFF94A3B8), () => (widget.onOpenWinApp != null ? widget.onOpenWinApp!('settings') : widget.onOpenSettings())),
                       ],
                     ),
@@ -344,6 +345,7 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                               _buildXpProgramTile('메모장', '', 'assets/images/windows/notepad.png', () => widget.onOpenWinApp?.call('notepad')),
                               _buildXpProgramTile('계산기', '', 'assets/images/windows/calc.png', () => widget.onOpenWinApp?.call('calculator')),
                               _buildXpProgramTile('PDF 서식 스튜디오', '공문서 & 계약서 폼', 'assets/images/windows/docs.png', () => widget.onOpenWinApp?.call('pdf_viewer')),
+                              _buildXpProgramTile('Telegram', '메신저 & 채널', 'assets/images/windows/desk.png', () => widget.onOpenWinApp?.call('telegram')),
                               _buildXpProgramTile('DaVinci Resolve', '', 'assets/images/davinci_resolve_icon.webp', () => widget.onOpenTemplate('davinci_resolve')),
                               _buildXpProgramTile('카카오톡', '', 'assets/images/kakaotalk_icon.webp', () => widget.onOpenTemplate('kakaotalk')),
                             ],
@@ -622,6 +624,7 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
                                   _buildWin7ProgramItem('계산기 (Calculator)', null, const Color(0xFF0063B1), () => widget.onOpenWinApp?.call('calculator'), imageAsset: 'assets/images/windows/calc.png'),
                                   _buildWin7ProgramItem('캡처 도구 (Snipping)', null, const Color(0xFFD83B01), () => widget.onOpenWinApp?.call('snip'), imageAsset: 'assets/images/windows/snip.png'),
                                   _buildWin7ProgramItem('PDF 서식 스튜디오', CupertinoIcons.doc_text_fill, const Color(0xFFEF4444), () => widget.onOpenWinApp?.call('pdf_viewer')),
+                                  _buildWin7ProgramItem('Telegram (텔레그램)', CupertinoIcons.paperplane_fill, const Color(0xFF5288C1), () => widget.onOpenWinApp?.call('telegram')),
                                   const Padding(
                                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                     child: Divider(height: 1, color: Color(0xFFE2E8F0)),
@@ -1041,7 +1044,17 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
         // Row 2 (6 apps + 2 empty placeholders for exact 8-column alignment)
         Row(
           children: [
-            _buildWin11AppItem('LinkedIn', null, () {}, customIcon: _buildLinkedInIcon()),
+            _buildWin11AppItem(
+              'Telegram',
+              null,
+              () => widget.onOpenWinApp?.call('telegram'),
+              customIcon: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(color: const Color(0xFF5288C1), borderRadius: BorderRadius.circular(6)),
+                child: const Icon(CupertinoIcons.paperplane_fill, color: Colors.white, size: 18),
+              ),
+            ),
             _buildWin11AppItem('계산기', 'assets/images/windows/calculator.png', () => widget.onOpenWinApp?.call('calculator')),
             _buildWin11AppItem('시계', 'assets/images/windows/alarm.png', () => widget.onOpenWinApp?.call('alarm')),
             _buildWin11AppItem('메모장', 'assets/images/windows/notepad.png', () => widget.onOpenWinApp?.call('notepad')),
@@ -1420,27 +1433,6 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
     );
   }
 
-  // LinkedIn 아이콘 (파란 배경 + 흰색 "in")
-  Widget _buildLinkedInIcon() {
-    return Container(
-      width: 30,
-      height: 30,
-      decoration: BoxDecoration(
-        color: const Color(0xFF0077B5),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      alignment: Alignment.center,
-      child: const Text(
-        'in',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 17,
-          fontWeight: FontWeight.w900,
-          fontFamily: 'sans-serif',
-        ),
-      ),
-    );
-  }
 
   // 범주 폴더 카드 (2x2 미니 아이콘 클러스터 + 이름)
   Widget _buildCategoryFolderCard(String title, List<String> iconAssets, VoidCallback onTap, {bool isSingleIcon = false}) {

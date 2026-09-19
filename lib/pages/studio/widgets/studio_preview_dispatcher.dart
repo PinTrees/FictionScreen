@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../apps/telegram/data/telegram_model.dart';
+import '../../../apps/telegram/telegram_screen.dart';
 import '../../../apps/blind/blind_screen.dart';
 import '../../../apps/blind/data/blind_model.dart';
 import '../../../apps/discord/discord_screen.dart';
@@ -115,6 +117,8 @@ class StudioPreviewDispatcher extends StatelessWidget {
     this.onVisualStudioChanged,
     this.onChromeChanged,
     this.onDavinciChanged,
+    this.telegramConfig,
+    this.onTelegramChanged,
   });
 
   final PhotoshopConfig photoshopConfig;
@@ -125,10 +129,13 @@ class StudioPreviewDispatcher extends StatelessWidget {
   final ValueChanged<ChromeConfig>? onChromeChanged;
   final DavinciConfig davinciConfig;
   final ValueChanged<DavinciConfig>? onDavinciChanged;
+  final TelegramConfig? telegramConfig;
+  final ValueChanged<TelegramConfig>? onTelegramChanged;
 
   @override
   Widget build(BuildContext context) {
     switch (templateId) {
+      case 'telegram': return TelegramScreen(config: telegramConfig ?? TelegramConfig.defaultPreset(), onConfigChanged: onTelegramChanged);
       case 'toss': return TossScreen(config: tossConfig);
       case 'kakaobank': return KakaoBankScreen(config: kakaobankConfig, onConfigChanged: onKakaoBankChanged);
       case 'x_twitter': return XTwitterScreen(config: twitterConfig);

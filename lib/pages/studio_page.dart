@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
 import '../apps/blind/data/blind_model.dart';
+import '../apps/telegram/data/telegram_model.dart';
 import '../apps/discord/data/discord_model.dart';
 import '../apps/photoshop/data/photoshop_model.dart';
 import '../apps/visual_studio/data/visual_studio_model.dart';
@@ -66,6 +67,7 @@ class _StudioPageState extends State<StudioPage> {
   late VisualStudioConfig _visualStudioConfig;
   late ChromeConfig _chromeConfig;
   late DavinciConfig _davinciConfig;
+  late TelegramConfig _telegramConfig;
 
   @override
   void initState() {
@@ -93,6 +95,7 @@ class _StudioPageState extends State<StudioPage> {
     _visualStudioConfig = VisualStudioConfig.defaultPreset();
     _chromeConfig = ChromeConfig.defaultPreset();
     _davinciConfig = DavinciConfig.defaultPreset();
+    _telegramConfig = TelegramConfig.defaultPreset();
   }
 
   Future<void> _exportScreen() async {
@@ -192,6 +195,8 @@ class _StudioPageState extends State<StudioPage> {
       onVisualStudioChanged: (cfg) => setState(() => _visualStudioConfig = cfg),
       onChromeChanged: (cfg) => setState(() => _chromeConfig = cfg),
       onDavinciChanged: (cfg) => setState(() => _davinciConfig = cfg),
+      telegramConfig: _telegramConfig,
+      onTelegramChanged: (cfg) => setState(() => _telegramConfig = cfg),
     );
   }
 }

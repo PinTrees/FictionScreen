@@ -12,6 +12,7 @@ import '../../apps/photos/photos_window.dart';
 import '../../apps/safari/safari_window.dart';
 import '../../apps/terminal/terminal_window.dart';
 import '../../../../../apps/pdf_viewer/pdf_viewer_window.dart';
+import '../../../../../apps/telegram/telegram_window.dart';
 import 'apps/settings/macos27_settings_window.dart';
 import 'widgets/macos27_context_menu.dart';
 import 'widgets/macos27_dock.dart';
@@ -228,6 +229,8 @@ class _Macos27ViewState extends State<Macos27View> {
 
       if (appId == 'pdf_viewer') {
         defaultSize = const Size(960, 680);
+      } else if (appId == 'telegram') {
+        defaultSize = const Size(920, 620);
       } else if (appId == 'terminal') {
         defaultSize = const Size(680, 440);
       } else if (appId == 'settings') {
@@ -656,6 +659,14 @@ class _Macos27ViewState extends State<Macos27View> {
         );
       case 'pdf_viewer':
         return PdfViewerWindow(
+          width: win.size.width,
+          height: win.size.height,
+          onClose: () => _closeWindow(win.id),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'telegram':
+        return TelegramWindow(
           width: win.size.width,
           height: win.size.height,
           onClose: () => _closeWindow(win.id),

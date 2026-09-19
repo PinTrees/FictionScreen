@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'apps/calculator/calculator_window.dart';
 import 'apps/chrome/chrome_window.dart';
 import '../../../apps/pdf_viewer/pdf_viewer_window.dart';
+import '../../../apps/telegram/telegram_window.dart';
 import 'apps/cmd/cmd_window.dart';
 import 'apps/edge/edge_window.dart';
 import 'apps/file_explorer/file_explorer_window.dart';
@@ -296,6 +297,16 @@ class _WindowsViewState extends State<WindowsView> {
         onTap: () => _openWinApp('pdf_viewer'),
       ),
       DesktopIconItem(
+        id: 'telegram',
+        title: 'Telegram',
+        icon: CupertinoIcons.paperplane_fill,
+        iconColor: const Color(0xFF5288C1),
+        gridX: 3,
+        gridY: 6,
+        isSystemApp: true,
+        onTap: () => _openWinApp('telegram'),
+      ),
+      DesktopIconItem(
         id: 'trash',
         title: '휴지통',
         imageAsset: 'assets/images/windows/recycle_bin.png',
@@ -448,6 +459,8 @@ class _WindowsViewState extends State<WindowsView> {
 
       if (appId == 'pdf_viewer') {
         defaultSize = const Size(960, 680);
+      } else if (appId == 'telegram') {
+        defaultSize = const Size(920, 620);
       } else if (widget.windowsVersion == '11') {
         if (appId == 'file_explorer' || appId == 'recycle_bin') {
           defaultSize = const Size(860, 560);
@@ -1288,6 +1301,17 @@ class _WindowsViewState extends State<WindowsView> {
         );
       case 'pdf_viewer':
         return PdfViewerWindow(
+          width: win.size.width,
+          height: win.size.height,
+          isMaximized: win.isMaximized,
+          onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onTitleDragStart: onDragStart,
+          onTitleDragUpdate: onDragUpdate,
+        );
+      case 'telegram':
+        return TelegramWindow(
           width: win.size.width,
           height: win.size.height,
           isMaximized: win.isMaximized,

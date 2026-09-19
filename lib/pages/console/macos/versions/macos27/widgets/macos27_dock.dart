@@ -97,6 +97,7 @@ class _Macos27DockState extends State<Macos27Dock> {
                   _buildDockItem(10, 'Terminal', 'assets/images/macos/terminal.png', appId: 'terminal'),
                   _buildDockItem(11, 'Calculator', 'assets/images/macos/calculator.webp', appId: 'calculator'),
                   _buildDockItem(12, 'PDF 서식 스튜디오', 'assets/images/windows/docs.png', appId: 'pdf_viewer'),
+                  _buildDockItem(13, 'Telegram Desktop', 'assets/images/windows/desk.png', appId: 'telegram'),
 
                   _buildDockDivider(),
 

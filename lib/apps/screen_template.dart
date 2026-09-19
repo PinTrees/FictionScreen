@@ -46,6 +46,16 @@ class ScreenTemplate {
       badge: '인기',
     ),
     const ScreenTemplate(
+      id: 'telegram',
+      title: '텔레그램 (Telegram)',
+      description: 'Telegram Desktop 2단 뷰, VIP 코인 리딩방, 비밀 첩보 채널, 리액션 & 조회수 조작',
+      category: TemplateCategory.messenger,
+      icon: CupertinoIcons.paperplane_fill,
+      themeColor: Color(0xFF2B5278),
+      badge: '신규',
+      isDesktop: true,
+    ),
+    const ScreenTemplate(
       id: 'toss',
       title: '토스(Toss) 송금 완료 & 계좌',
       description: '토스 송금 완료 화면, 계좌 통장 잔액 및 거래 내역 커스텀',
