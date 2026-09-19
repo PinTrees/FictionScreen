@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'home/widgets/home_editorial_hero.dart';
 import 'home/widgets/home_featured_trio.dart';
 import 'home/widgets/home_footer.dart';
-import 'home/widgets/home_hero_section.dart';
 import 'home/widgets/home_icon_cloud.dart';
 import 'home/widgets/home_top_app_bar.dart';
 
@@ -14,10 +14,31 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _isDarkMode = true;
+  double _scrollProgress = 0.0;
 
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _featuredKey = GlobalKey();
   final GlobalKey _iconCloudKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final current = _scrollController.offset;
+    if (maxScroll > 0) {
+      final progress = (current / maxScroll).clamp(0.0, 1.0);
+      if ((progress - _scrollProgress).abs() > 0.008) {
+        setState(() {
+          _scrollProgress = progress;
+        });
+      }
+    }
+  }
 
   void _scrollToKey(GlobalKey key) {
     if (key.currentContext != null) {
@@ -37,6 +58,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
@@ -47,7 +69,7 @@ class _HomePageState extends State<HomePage> {
     final isMobile = screenWidth < 768;
 
     return Scaffold(
-      backgroundColor: _isDarkMode ? const Color(0xFF07080D) : const Color(0xFFF8FAFC),
+      backgroundColor: _isDarkMode ? const Color(0xFF040508) : const Color(0xFFFAFAFA),
       body: Stack(
         children: [
           // 1. Ambient Aurora & Background
@@ -57,14 +79,14 @@ class _HomePageState extends State<HomePage> {
           CustomScrollView(
             controller: _scrollController,
             slivers: [
-              const SliverToBoxAdapter(child: SizedBox(height: 64)),
-
-              // Hero Section
+              // Editorial Hero Section with Windows 11 Official Bloom
               SliverToBoxAdapter(
-                child: HomeHeroSection(
+                child: HomeEditorialHero(
                   isMobile: isMobile,
                   isDarkMode: _isDarkMode,
                   onExploreFeatured: () => _scrollToKey(_featuredKey),
+                  onToggleTheme: _toggleTheme,
+                  scrollProgress: _scrollProgress,
                 ),
               ),
 
