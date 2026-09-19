@@ -33,7 +33,7 @@ class AppPlatformIcons {
     AppPlatformInfo(id: 'windows_7', name: 'Windows 7', assetPath: 'assets/images/win7_logo.png', isConsole: true),
     AppPlatformInfo(id: 'windows_xp', name: 'Windows XP', assetPath: 'assets/images/winxp_logo.png', isConsole: true),
     AppPlatformInfo(id: 'macos', name: 'macOS Sonoma', assetPath: 'assets/images/macos/finder.webp', isConsole: true),
-    AppPlatformInfo(id: 'steamos', name: 'SteamOS (Steam Deck)', assetPath: 'assets/images/steamos_logo.png'),
+    AppPlatformInfo(id: 'steamos', name: 'SteamOS (Steam Deck)', assetPath: 'assets/images/steamos_logo.png', isConsole: true),
     AppPlatformInfo(id: 'windows_bsod', name: '블루스크린 (BSOD)', assetPath: 'assets/images/win11_logo.png'),
     AppPlatformInfo(id: 'windows_update', name: '가짜 윈도우 업데이트', assetPath: 'assets/images/windows/settings.png'),
   ];

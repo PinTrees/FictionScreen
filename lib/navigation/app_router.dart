@@ -27,7 +27,10 @@ class AppRouter {
       GoRoute(
         path: '/console',
         name: 'console',
-        builder: (context, state) => const ConsolePage(),
+        builder: (context, state) {
+          final initialOs = state.uri.queryParameters['os'];
+          return ConsolePage(initialOs: initialOs);
+        },
       ),
       GoRoute(
         path: '/studio/:templateId',

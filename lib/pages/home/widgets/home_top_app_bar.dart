@@ -36,7 +36,9 @@ class HomeTopAppBar extends StatelessWidget {
         : Colors.black.withValues(alpha: 0.08);
     final textColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
 
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeInOut,
       width: double.infinity,
       height: 64,
       decoration: BoxDecoration(

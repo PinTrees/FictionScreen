@@ -21,7 +21,9 @@ class HomeFooter extends StatelessWidget {
     return Column(
       children: [
         // Final CTA Full-Width Section (Edge-to-Edge, NO CARD BOX, Seamless Ambient Gradient)
-        Container(
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 450),
+          curve: Curves.easeInOut,
           width: double.infinity,
           decoration: BoxDecoration(
             border: Border(
@@ -168,7 +170,9 @@ class HomeFooter extends StatelessWidget {
       ),
 
         // Clean Minimal Footer
-        Container(
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
           decoration: BoxDecoration(

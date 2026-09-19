@@ -262,6 +262,20 @@ class _OsSettingsWindowState extends State<OsSettingsWindow> {
               widget.onWallpaperChanged('macos_golden_gate');
             },
           ),
+          const SizedBox(height: 12),
+
+          // SteamOS (Steam Deck) 카드
+          _buildOsCard(
+            id: 'steamos',
+            title: 'SteamOS (Steam Deck)',
+            subtitle: '게이밍 모드 (Big Picture) & KDE Plasma 데스크톱 전환 지원',
+            icon: CupertinoIcons.gamecontroller_fill,
+            color: const Color(0xFF1A9FFF),
+            isSelected: widget.currentPcTheme == 'steamos',
+            onTap: () {
+              widget.onPcThemeChanged('steamos');
+            },
+          ),
 
           const SizedBox(height: 24),
           const Text(

@@ -161,13 +161,15 @@ class HomeIconCloud extends StatelessWidget {
         return InkWell(
           onTap: () {
             if (item.isConsole) {
-              context.go('/console');
+              context.go('/console?os=${item.id}');
             } else {
               context.go('/studio/${item.id}');
             }
           },
           borderRadius: BorderRadius.circular(14),
-          child: Container(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeInOut,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: tileBg,

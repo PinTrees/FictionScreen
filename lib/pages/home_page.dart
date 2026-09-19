@@ -80,14 +80,18 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: isDarkMode ? const Color(0xFF040508) : const Color(0xFFFAFAFA),
-      body: Stack(
-        children: [
-          // 1. Ambient Aurora & Background
-          _buildBackgroundAura(isDarkMode),
+      body: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+        color: isDarkMode ? const Color(0xFF040508) : const Color(0xFFFAFAFA),
+        child: Stack(
+          children: [
+            // 1. Ambient Aurora & Background
+            _buildBackgroundAura(isDarkMode),
 
-          // 2. Main Scrollable Content
-          CustomScrollView(
-            controller: _scrollController,
+            // 2. Main Scrollable Content
+            CustomScrollView(
+              controller: _scrollController,
             slivers: [
               // Editorial Hero Section with Windows 11 Official Bloom
               SliverToBoxAdapter(
@@ -154,6 +158,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -171,7 +176,9 @@ class _HomePageState extends State<HomePage> {
               left: 0,
               right: 0,
               child: Center(
-                child: Container(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 450),
+                  curve: Curves.easeInOut,
                   width: 900,
                   height: 500,
                   decoration: BoxDecoration(
@@ -200,7 +207,9 @@ class _HomePageState extends State<HomePage> {
             Positioned(
               top: 400,
               left: -200,
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 450),
+                curve: Curves.easeInOut,
                 width: 500,
                 height: 500,
                 decoration: BoxDecoration(
@@ -219,7 +228,9 @@ class _HomePageState extends State<HomePage> {
             Positioned(
               top: 900,
               right: -200,
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 450),
+                curve: Curves.easeInOut,
                 width: 600,
                 height: 600,
                 decoration: BoxDecoration(

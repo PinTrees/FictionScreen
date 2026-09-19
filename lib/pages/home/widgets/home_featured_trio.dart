@@ -304,7 +304,9 @@ class HomeFeaturedTrio extends StatelessWidget {
 
     // PURE UI ONLY Container - Accurate Smartphone Aspect Ratio (~9:17 to 9:19)
     final pureUiBox = Center(
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOut,
         width: previewWidth,
         height: previewHeight,
         decoration: BoxDecoration(

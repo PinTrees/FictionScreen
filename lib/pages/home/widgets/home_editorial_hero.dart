@@ -35,17 +35,15 @@ class HomeEditorialHero extends StatelessWidget {
         ? const Color(0xFFFFFFFF).withValues(alpha: 0.40)
         : const Color(0xFF000000).withValues(alpha: 0.45);
 
-    final bloomAsset = isDarkMode
-        ? 'assets/images/win11_bloom_dark.jpg'
-        : 'assets/images/win11_bloom_light.jpg';
-
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.easeInOut,
       width: double.infinity,
       height: heroHeight,
       color: bgCanvas,
       child: Stack(
         children: [
-          // 1. Right-side Windows 11 Official 4K Bloom Artwork Layer
+          // 1. Right-side Windows 11 Official 4K Bloom Artwork Layer (Smooth Cross-Fade)
           Positioned(
             top: 0,
             bottom: 0,
@@ -57,14 +55,33 @@ class HomeEditorialHero extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(
-                    bloomAsset,
-                    fit: BoxFit.cover,
-                    alignment: isMobile ? const Alignment(0.4, 0.0) : const Alignment(0.15, 0.0),
+                  // Light Mode Bloom Artwork
+                  AnimatedOpacity(
+                    opacity: isDarkMode ? 0.0 : 1.0,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                    child: Image.asset(
+                      'assets/images/win11_bloom_light.jpg',
+                      fit: BoxFit.cover,
+                      alignment: isMobile ? const Alignment(0.4, 0.0) : const Alignment(0.15, 0.0),
+                    ),
+                  ),
+                  // Dark Mode Bloom Artwork
+                  AnimatedOpacity(
+                    opacity: isDarkMode ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                    child: Image.asset(
+                      'assets/images/win11_bloom_dark.jpg',
+                      fit: BoxFit.cover,
+                      alignment: isMobile ? const Alignment(0.4, 0.0) : const Alignment(0.15, 0.0),
+                    ),
                   ),
                   // Left-to-Right seamless fade gradient into canvas background
                   Positioned.fill(
-                    child: Container(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 450),
+                      curve: Curves.easeInOut,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.centerLeft,
@@ -85,7 +102,9 @@ class HomeEditorialHero extends StatelessWidget {
                     left: 0,
                     right: 0,
                     height: 90,
-                    child: Container(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 450),
+                      curve: Curves.easeInOut,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
@@ -104,7 +123,9 @@ class HomeEditorialHero extends StatelessWidget {
                     left: 0,
                     right: 0,
                     height: 100,
-                    child: Container(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 450),
+                      curve: Curves.easeInOut,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.bottomCenter,
@@ -175,14 +196,18 @@ class HomeEditorialHero extends StatelessWidget {
                       const SizedBox(height: 18),
 
                       // Giant Bold Lowercase Heading (Sofi reference style)
-                      Text(
-                        HomeI18n.t('heroHeadline', isEnglish: isEnglish),
+                      AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 350),
+                        curve: Curves.easeInOut,
                         style: TextStyle(
                           color: textPrimary,
                           fontSize: isMobile ? 64 : 108,
                           fontWeight: FontWeight.w900,
                           height: 0.92,
                           letterSpacing: -4.0,
+                        ),
+                        child: Text(
+                          HomeI18n.t('heroHeadline', isEnglish: isEnglish),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -201,13 +226,17 @@ class HomeEditorialHero extends StatelessWidget {
                       const SizedBox(height: 22),
 
                       // Refined Editorial Description
-                      Text(
-                        HomeI18n.t('heroDesc', isEnglish: isEnglish),
+                      AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 350),
+                        curve: Curves.easeInOut,
                         style: TextStyle(
                           color: textSecondary,
                           fontSize: isMobile ? 14 : 16.5,
                           height: 1.65,
                           letterSpacing: -0.3,
+                        ),
+                        child: Text(
+                          HomeI18n.t('heroDesc', isEnglish: isEnglish),
                         ),
                       ),
                       const SizedBox(height: 36),

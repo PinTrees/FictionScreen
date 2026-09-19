@@ -35,6 +35,7 @@ import 'console/common/floating_app_window.dart';
 import 'console/ios/ios_view.dart';
 import 'console/macos/macos_view.dart';
 import 'console/settings/os_settings_window.dart';
+import 'console/steamos/steamos_view.dart';
 import 'console/windows/windows_view.dart';
 
 class FloatingWindowData {
@@ -66,7 +67,8 @@ class FloatingWindowData {
 
 /// 가상 OS 콘솔 메인 페이지 (오케스트레이터 & MDI 창 관리자 & Firestore 연동)
 class ConsolePage extends StatefulWidget {
-  const ConsolePage({super.key});
+  final String? initialOs;
+  const ConsolePage({super.key, this.initialOs});
 
   @override
   State<ConsolePage> createState() => _ConsolePageState();
@@ -98,7 +100,10 @@ class _ConsolePageState extends State<ConsolePage> {
 
   void _handleSelectOs(String osKey) {
     setState(() {
-      if (osKey == 'windows_xp') {
+      if (osKey == 'steamos') {
+        _pcTheme = 'steamos';
+        _activeOs = 'steamos';
+      } else if (osKey == 'windows_xp') {
         _windowsVersion = 'xp';
         _pcTheme = 'windows';
         _activeOs = 'windows';
@@ -152,6 +157,23 @@ class _ConsolePageState extends State<ConsolePage> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialOs != null) {
+      final init = widget.initialOs!;
+      if (init == 'steamos') {
+        _pcTheme = 'steamos';
+        _activeOs = 'steamos';
+      } else if (init == 'windows_11' || init == 'windows_10' || init == 'windows_7' || init == 'windows_xp') {
+        _pcTheme = 'windows';
+        _activeOs = 'windows';
+        _windowsVersion = init.replaceFirst('windows_', '');
+      } else if (init == 'macos') {
+        _pcTheme = 'macos';
+        _activeOs = 'macos';
+      } else if (init == 'windows_bsod' || init == 'windows_update') {
+        _activeFullScreenTemplateId = init;
+      }
+    }
+
     _clockTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
         setState(() {
@@ -167,7 +189,9 @@ class _ConsolePageState extends State<ConsolePage> {
       }
     });
 
-    _loadUserOsSettings();
+    if (widget.initialOs == null) {
+      _loadUserOsSettings();
+    }
   }
 
   @override
@@ -306,8 +330,21 @@ class _ConsolePageState extends State<ConsolePage> {
 
           return Stack(
             children: [
-              // 1. 선택된 가상 OS 메인 뷰 (Windows / macOS / Galaxy / iOS)
-              if (activeOs == 'macos') ...[
+              // 1. 선택된 가상 OS 메인 뷰 (SteamOS / Windows / macOS / Galaxy / iOS)
+              if (activeOs == 'steamos') ...[
+                SteamOsView(
+                  user: user,
+                  timeString: _formatDate('a h:mm', 'ko_KR'),
+                  dateString: _formatDate('yyyy-MM-dd'),
+                  currentWallpaper: _wallpaper,
+                  onOpenTemplate: _openTemplate,
+                  onOpenSettings: () => setState(() => _isSettingsOpen = true),
+                  onSignOut: _handleSignOut,
+                  onGoHome: () => context.go('/'),
+                  onSelectOs: _handleSelectOs,
+                ),
+                ..._buildDesktopWindowsLayer(isMacStyle: false),
+              ] else if (activeOs == 'macos') ...[
                 MacosView(
                   macosVersion: _macosVersion,
                   user: user,
@@ -763,6 +800,8 @@ class _ConsolePageState extends State<ConsolePage> {
                     Container(width: 1, height: 16, color: Colors.white24),
                     const SizedBox(width: 10),
                     _buildPhoneTopButton(label: '전체화면', icon: CupertinoIcons.arrow_up_left_arrow_down_right, onTap: () => setState(() => _isDesktopMobileFullScreen = true)),
+                    const SizedBox(width: 6),
+                    _buildPhoneTopButton(label: 'SteamOS', icon: CupertinoIcons.gamecontroller_fill, onTap: () => _handleSelectOs('steamos')),
                     const SizedBox(width: 6),
                     _buildPhoneTopButton(label: 'Windows 11', icon: CupertinoIcons.device_desktop, onTap: () => _handleSelectOs('windows')),
                     const SizedBox(width: 6),
