@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../pages/console_page.dart';
+import '../pages/editor/app_editor_page.dart';
 import '../pages/home_page.dart';
 import '../pages/legal/legal_page.dart';
 import '../pages/login_page.dart';
@@ -31,6 +32,22 @@ class AppRouter {
         builder: (context, state) {
           final initialOs = state.uri.queryParameters['os'];
           return ConsolePage(initialOs: initialOs);
+        },
+      ),
+      GoRoute(
+        path: '/console/editor/:templateId',
+        name: 'console-editor',
+        builder: (context, state) {
+          final templateId = state.pathParameters['templateId'] ?? 'kakaotalk';
+          return AppEditorPage(templateId: templateId);
+        },
+      ),
+      GoRoute(
+        path: '/editor/:templateId',
+        name: 'editor',
+        builder: (context, state) {
+          final templateId = state.pathParameters['templateId'] ?? 'kakaotalk';
+          return AppEditorPage(templateId: templateId);
         },
       ),
       GoRoute(

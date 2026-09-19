@@ -155,8 +155,28 @@ class _WorkspaceSidebarState extends State<WorkspaceSidebar> {
 
           // 2. Applications List (Rescene-inspired scale feedback & borderless)
           Expanded(
-            child: filtered.isEmpty
-                ? Center(
+            child: ListView(
+              padding: EdgeInsets.symmetric(
+                vertical: 6,
+                horizontal: isCollapsed ? 8 : 10,
+              ),
+              children: [
+                // Top Gallery View Item
+                if (_searchQuery.isEmpty && _selectedCategory == null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: _SidebarGalleryItem(
+                      isSelected: widget.selectedTemplateId == 'gallery',
+                      isCollapsed: isCollapsed,
+                      isDark: isDark,
+                      textColor: textColor,
+                      textSubColor: textSubColor,
+                      onTap: () => widget.onSelectTemplate('gallery'),
+                    ),
+                  ),
+
+                if (filtered.isEmpty)
+                  Center(
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: Text(
@@ -165,26 +185,21 @@ class _WorkspaceSidebarState extends State<WorkspaceSidebar> {
                       ),
                     ),
                   )
-                : ListView.builder(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 6,
-                      horizontal: isCollapsed ? 8 : 10,
-                    ),
-                    itemCount: filtered.length,
-                    itemBuilder: (context, index) {
-                      final item = filtered[index];
-                      final isSelected = item.id == widget.selectedTemplateId;
-                      return _SidebarAppItem(
-                        item: item,
-                        isSelected: isSelected,
-                        isCollapsed: isCollapsed,
-                        isDark: isDark,
-                        textColor: textColor,
-                        textSubColor: textSubColor,
-                        onTap: () => widget.onSelectTemplate(item.id),
-                      );
-                    },
-                  ),
+                else
+                  ...filtered.map((item) {
+                    final isSelected = item.id == widget.selectedTemplateId;
+                    return _SidebarAppItem(
+                      item: item,
+                      isSelected: isSelected,
+                      isCollapsed: isCollapsed,
+                      isDark: isDark,
+                      textColor: textColor,
+                      textSubColor: textSubColor,
+                      onTap: () => widget.onSelectTemplate(item.id),
+                    );
+                  }),
+              ],
+            ),
           ),
 
           // 3. Bottom Footer Status & Collapse Toggle
@@ -447,3 +462,124 @@ class _SidebarAppItemState extends State<_SidebarAppItem> {
     );
   }
 }
+
+class _SidebarGalleryItem extends StatefulWidget {
+  final bool isSelected;
+  final bool isCollapsed;
+  final bool isDark;
+  final Color textColor;
+  final Color textSubColor;
+  final VoidCallback onTap;
+
+  const _SidebarGalleryItem({
+    required this.isSelected,
+    required this.isCollapsed,
+    required this.isDark,
+    required this.textColor,
+    required this.textSubColor,
+    required this.onTap,
+  });
+
+  @override
+  State<_SidebarGalleryItem> createState() => _SidebarGalleryItemState();
+}
+
+class _SidebarGalleryItemState extends State<_SidebarGalleryItem> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isSelected = widget.isSelected;
+    final isCollapsed = widget.isCollapsed;
+    final isDark = widget.isDark;
+
+    final activeBgColor = isDark
+        ? const Color(0xFF6366F1).withValues(alpha: 0.22)
+        : const Color(0xFFEEF2FF);
+
+    return Tooltip(
+      message: isCollapsed ? '어플 갤러리 (전체보기)' : '',
+      child: AnimatedScale(
+        scale: _isPressed ? 0.94 : 1.0,
+        duration: const Duration(milliseconds: 115),
+        curve: Curves.easeOutCubic,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: widget.onTap,
+            onTapDown: (_) => setState(() => _isPressed = true),
+            onTapUp: (_) => setState(() => _isPressed = false),
+            onTapCancel: () => setState(() => _isPressed = false),
+            borderRadius: BorderRadius.circular(12),
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOutCubic,
+              padding: isCollapsed
+                  ? const EdgeInsets.symmetric(vertical: 10)
+                  : const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+              decoration: BoxDecoration(
+                color: isSelected ? activeBgColor : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: isCollapsed
+                  ? const Center(
+                      child: Icon(CupertinoIcons.square_grid_2x2_fill, color: Color(0xFF6366F1), size: 20),
+                    )
+                  : Row(
+                      children: [
+                        Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF6366F1).withValues(alpha: 0.16),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Center(
+                            child: Icon(CupertinoIcons.square_grid_2x2_fill, color: Color(0xFF6366F1), size: 16),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '어플 탐색 갤러리',
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? (isDark ? Colors.white : const Color(0xFF4338CA))
+                                      : widget.textColor,
+                                  fontSize: 13,
+                                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '전체 가상 앱 둘러보기',
+                                style: TextStyle(
+                                  color: widget.textSubColor.withValues(alpha: 0.8),
+                                  fontSize: 10.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (isSelected)
+                          Icon(
+                            CupertinoIcons.chevron_right,
+                            color: isDark ? const Color(0xFF818CF8) : const Color(0xFF6366F1),
+                            size: 13,
+                          ),
+                      ],
+                    ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
