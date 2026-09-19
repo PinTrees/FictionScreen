@@ -3,23 +3,33 @@ import '../../../../../../apps/chrome/chrome_screen.dart';
 import '../../../../../../apps/chrome/data/chrome_model.dart';
 import '../../../common/os_window_frame.dart';
 
-/// Windows용 Google Chrome 브라우저 창 (고도화 멀티탭 & 프레임 인터셉트 지원)
+/// Windows용 Google Chrome 브라우저 창 (각 Windows 버전별 순정 헤드 디자인 자동 적용)
 class WindowsChromeWindow extends StatefulWidget {
   final VoidCallback onClose;
+  final VoidCallback? onMinimize;
+  final VoidCallback? onMaximize;
+  final Function(int layoutType, int zoneIndex)? onSnapLayout;
   final Function(String templateId)? onOpenTemplate;
   final Function(DragStartDetails)? onTitleDragStart;
   final Function(DragUpdateDetails)? onTitleDragUpdate;
   final double width;
   final double height;
+  final bool isMaximized;
+  final WindowStyle style;
 
   const WindowsChromeWindow({
     super.key,
     required this.onClose,
+    this.onMinimize,
+    this.onMaximize,
+    this.onSnapLayout,
     this.onOpenTemplate,
     this.onTitleDragStart,
     this.onTitleDragUpdate,
     this.width = 860,
     this.height = 560,
+    this.isMaximized = false,
+    this.style = WindowStyle.windows10,
   });
 
   @override
@@ -41,11 +51,16 @@ class _WindowsChromeWindowState extends State<WindowsChromeWindow> {
 
     return OsWindowFrame(
       title: 'Google Chrome - $activeTabTitle',
+      iconAsset: 'assets/images/windows/chrome.png',
       icon: CupertinoIcons.globe,
-      style: WindowStyle.windows,
+      style: widget.style,
       width: widget.width,
       height: widget.height,
+      isMaximized: widget.isMaximized,
       onClose: widget.onClose,
+      onMinimize: widget.onMinimize,
+      onMaximize: widget.onMaximize,
+      onSnapLayout: widget.onSnapLayout,
       onTitleDragStart: widget.onTitleDragStart,
       onTitleDragUpdate: widget.onTitleDragUpdate,
       child: ChromeScreen(

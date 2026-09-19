@@ -5,31 +5,46 @@ import '../../../common/os_window_frame.dart';
 /// Windows 11 설정 (Settings) 창
 class WindowsSettingsWindow extends StatelessWidget {
   final VoidCallback onClose;
+  final VoidCallback? onMinimize;
+  final VoidCallback? onMaximize;
+  final Function(int layoutType, int zoneIndex)? onSnapLayout;
   final VoidCallback? onOpenSystemSettings;
   final Function(DragStartDetails)? onTitleDragStart;
   final Function(DragUpdateDetails)? onTitleDragUpdate;
   final double width;
   final double height;
+  final bool isMaximized;
+  final WindowStyle style;
 
   const WindowsSettingsWindow({
     super.key,
     required this.onClose,
+    this.onMinimize,
+    this.onMaximize,
+    this.onSnapLayout,
     this.onOpenSystemSettings,
     this.onTitleDragStart,
     this.onTitleDragUpdate,
     this.width = 760,
     this.height = 530,
+    this.isMaximized = false,
+    this.style = WindowStyle.windows10,
   });
 
   @override
   Widget build(BuildContext context) {
     return OsWindowFrame(
       title: '설정',
+      iconAsset: 'assets/images/windows/settings.png',
       icon: CupertinoIcons.gear_alt_fill,
-      style: WindowStyle.windows,
+      style: style,
       width: width,
       height: height,
+      isMaximized: isMaximized,
       onClose: onClose,
+      onMinimize: onMinimize,
+      onMaximize: onMaximize,
+      onSnapLayout: onSnapLayout,
       onTitleDragStart: onTitleDragStart,
       onTitleDragUpdate: onTitleDragUpdate,
       child: Row(

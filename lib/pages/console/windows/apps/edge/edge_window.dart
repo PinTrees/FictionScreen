@@ -3,23 +3,35 @@ import 'package:flutter/material.dart';
 import '../../../../../widgets/common/live_web_view.dart';
 import '../../../common/os_window_frame.dart';
 
-/// Microsoft Edge 브라우저 창 (실시간 라이브 웹뷰 탑재)
+/// Microsoft Edge / Internet Explorer 브라우저 창 (각 Windows 버전별 순정 헤드 디자인 자동 적용)
 class WindowsEdgeWindow extends StatefulWidget {
   final VoidCallback onClose;
+  final VoidCallback? onMinimize;
+  final VoidCallback? onMaximize;
+  final Function(int layoutType, int zoneIndex)? onSnapLayout;
   final Function(String templateId)? onOpenTemplate;
   final Function(DragStartDetails)? onTitleDragStart;
   final Function(DragUpdateDetails)? onTitleDragUpdate;
   final double width;
   final double height;
+  final bool isMaximized;
+  final WindowStyle style;
+  final String windowsVersion;
 
   const WindowsEdgeWindow({
     super.key,
     required this.onClose,
+    this.onMinimize,
+    this.onMaximize,
+    this.onSnapLayout,
     this.onOpenTemplate,
     this.onTitleDragStart,
     this.onTitleDragUpdate,
     this.width = 820,
     this.height = 540,
+    this.isMaximized = false,
+    this.style = WindowStyle.windows10,
+    this.windowsVersion = '11',
   });
 
   @override
@@ -59,13 +71,21 @@ class _WindowsEdgeWindowState extends State<WindowsEdgeWindow> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isLegacyIe = widget.windowsVersion == 'xp' || widget.windowsVersion == '7';
+    final String titleText = isLegacyIe ? 'Internet Explorer' : 'Microsoft Edge';
+
     return OsWindowFrame(
-      title: 'Microsoft Edge',
+      title: titleText,
+      iconAsset: 'assets/images/windows/edge.png',
       icon: CupertinoIcons.globe,
-      style: WindowStyle.windows,
+      style: widget.style,
       width: widget.width,
       height: widget.height,
+      isMaximized: widget.isMaximized,
       onClose: widget.onClose,
+      onMinimize: widget.onMinimize,
+      onMaximize: widget.onMaximize,
+      onSnapLayout: widget.onSnapLayout,
       onTitleDragStart: widget.onTitleDragStart,
       onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Column(
@@ -129,7 +149,7 @@ class _WindowsEdgeWindowState extends State<WindowsEdgeWindow> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Microsoft Edge 시작 페이지', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                        Text('$titleText 시작 페이지', style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 20),
                         const Text('자주 방문한 사이트', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 12),

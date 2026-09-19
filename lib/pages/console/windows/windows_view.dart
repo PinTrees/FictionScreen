@@ -5,6 +5,7 @@ import 'apps/calculator/calculator_window.dart';
 import 'apps/chrome/chrome_window.dart';
 import '../../../apps/pdf_viewer/pdf_viewer_window.dart';
 import '../../../apps/telegram/telegram_window.dart';
+import '../common/os_window_frame.dart';
 import 'apps/cmd/cmd_window.dart';
 import 'apps/edge/edge_window.dart';
 import 'apps/file_explorer/file_explorer_window.dart';
@@ -1001,6 +1002,20 @@ class _WindowsViewState extends State<WindowsView> {
     );
   }
 
+  WindowStyle get _currentWindowStyle {
+    switch (widget.windowsVersion) {
+      case '11':
+        return WindowStyle.windows;
+      case '7':
+        return WindowStyle.windows7;
+      case 'xp':
+        return WindowStyle.windowsXp;
+      case '10':
+      default:
+        return WindowStyle.windows10;
+    }
+  }
+
   Widget _buildWinAppContent(
     WindowsWindowData win,
     Function(DragStartDetails) onDragStart,
@@ -1120,7 +1135,13 @@ class _WindowsViewState extends State<WindowsView> {
         return WindowsEdgeWindow(
           width: win.size.width,
           height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
+          windowsVersion: widget.windowsVersion,
           onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
           onOpenTemplate: widget.onOpenTemplate,
           onTitleDragStart: onDragStart,
           onTitleDragUpdate: onDragUpdate,
@@ -1129,7 +1150,12 @@ class _WindowsViewState extends State<WindowsView> {
         return WindowsChromeWindow(
           width: win.size.width,
           height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
           onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
           onOpenTemplate: widget.onOpenTemplate,
           onTitleDragStart: onDragStart,
           onTitleDragUpdate: onDragUpdate,
@@ -1168,7 +1194,12 @@ class _WindowsViewState extends State<WindowsView> {
         return WindowsSettingsWindow(
           width: win.size.width,
           height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
           onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
           onOpenSystemSettings: widget.onOpenSettings,
           onTitleDragStart: onDragStart,
           onTitleDragUpdate: onDragUpdate,
@@ -1201,7 +1232,12 @@ class _WindowsViewState extends State<WindowsView> {
         return WindowsCalculatorWindow(
           width: win.size.width,
           height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
           onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
           onTitleDragStart: onDragStart,
           onTitleDragUpdate: onDragUpdate,
         );
@@ -1233,7 +1269,12 @@ class _WindowsViewState extends State<WindowsView> {
         return WindowsNotepadWindow(
           width: win.size.width,
           height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
           onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
           onTitleDragStart: onDragStart,
           onTitleDragUpdate: onDragUpdate,
         );
@@ -1241,7 +1282,13 @@ class _WindowsViewState extends State<WindowsView> {
         return WindowsCmdWindow(
           width: win.size.width,
           height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
+          windowsVersion: widget.windowsVersion,
           onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
           onTitleDragStart: onDragStart,
           onTitleDragUpdate: onDragUpdate,
         );
@@ -1249,7 +1296,12 @@ class _WindowsViewState extends State<WindowsView> {
         return WindowsPaintWindow(
           width: win.size.width,
           height: win.size.height,
+          isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
           onClose: () => _closeWindow(win.id),
+          onMinimize: () => _minimizeWindow(win.id),
+          onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
           onTitleDragStart: onDragStart,
           onTitleDragUpdate: onDragUpdate,
         );
@@ -1304,9 +1356,11 @@ class _WindowsViewState extends State<WindowsView> {
           width: win.size.width,
           height: win.size.height,
           isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
           onClose: () => _closeWindow(win.id),
           onMinimize: () => _minimizeWindow(win.id),
           onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
           onTitleDragStart: onDragStart,
           onTitleDragUpdate: onDragUpdate,
         );
@@ -1315,9 +1369,11 @@ class _WindowsViewState extends State<WindowsView> {
           width: win.size.width,
           height: win.size.height,
           isMaximized: win.isMaximized,
+          style: _currentWindowStyle,
           onClose: () => _closeWindow(win.id),
           onMinimize: () => _minimizeWindow(win.id),
           onMaximize: () => _toggleMaximizeWindow(win),
+          onSnapLayout: (layout, zone) => _snapWindow(win, layout, zone),
           onTitleDragStart: onDragStart,
           onTitleDragUpdate: onDragUpdate,
         );

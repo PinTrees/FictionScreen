@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
+import '../../pages/console/common/os_window_frame.dart';
 import '../../managers/pdf_export_manager.dart';
 import 'data/pdf_templates_data.dart';
 import 'models/pdf_document_model.dart';
@@ -14,20 +15,24 @@ class PdfViewerWindow extends StatefulWidget {
   final VoidCallback? onMaximize;
   final Function(DragStartDetails)? onTitleDragStart;
   final Function(DragUpdateDetails)? onTitleDragUpdate;
+  final Function(int layoutType, int zoneIndex)? onSnapLayout;
   final double width;
   final double height;
   final bool isMaximized;
+  final WindowStyle style;
 
   const PdfViewerWindow({
     super.key,
     required this.onClose,
     this.onMinimize,
     this.onMaximize,
+    this.onSnapLayout,
     this.onTitleDragStart,
     this.onTitleDragUpdate,
     this.width = 960,
     this.height = 680,
     this.isMaximized = false,
+    this.style = WindowStyle.windows10,
   });
 
   @override
@@ -210,30 +215,28 @@ class _PdfViewerWindowState extends State<PdfViewerWindow> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return OsWindowFrame(
+      title: '${_currentDoc.title} - Fiction PDF Studio',
+      icon: CupertinoIcons.doc_text_fill,
+      style: widget.style,
       width: widget.width,
       height: widget.height,
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E212B),
-        borderRadius: widget.isMaximized ? BorderRadius.zero : BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12), width: 1),
-        boxShadow: const [
-          BoxShadow(color: Colors.black54, blurRadius: 24, offset: Offset(0, 10)),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
+      isMaximized: widget.isMaximized,
+      onClose: widget.onClose,
+      onMinimize: widget.onMinimize,
+      onMaximize: widget.onMaximize,
+      onSnapLayout: widget.onSnapLayout,
+      onTitleDragStart: widget.onTitleDragStart,
+      onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Column(
         children: [
-          // 1. 윈도우 타이틀바
-          _buildTitleBar(),
-
-          // 2. 전문 PDF 툴바
+          // 1. 전문 PDF 툴바
           _buildPdfToolbar(),
 
-          // 3. 상태 알림 바 (생성 중/완료)
+          // 2. 상태 알림 바 (생성 중/완료)
           if (_statusMessage != null) _buildStatusBar(),
 
-          // 4. 메인 뷰포트 & 인스펙터 서랍
+          // 3. 메인 뷰포트 & 인스펙터 서랍
           Expanded(
             child: Row(
               children: [
@@ -273,61 +276,6 @@ class _PdfViewerWindowState extends State<PdfViewerWindow> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildTitleBar() {
-    return GestureDetector(
-      onPanStart: widget.onTitleDragStart,
-      onPanUpdate: widget.onTitleDragUpdate,
-      child: Container(
-        height: 38,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: const BoxDecoration(
-          color: Color(0xFF1E222D),
-          border: Border(bottom: BorderSide(color: Color(0xFF2E3444))),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: const Color(0xFFDC2626),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Icon(CupertinoIcons.doc_text_fill, size: 12, color: Colors.white),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                '${_currentDoc.title} - Fiction PDF Studio',
-                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            // 최소화 / 최대화 / 닫기
-            IconButton(
-              icon: const Icon(CupertinoIcons.minus, size: 12, color: Colors.white70),
-              onPressed: widget.onMinimize,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-            ),
-            IconButton(
-              icon: Icon(widget.isMaximized ? CupertinoIcons.square_on_square : CupertinoIcons.square, size: 11, color: Colors.white70),
-              onPressed: widget.onMaximize,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-            ),
-            IconButton(
-              icon: const Icon(CupertinoIcons.xmark, size: 12, color: Colors.white70),
-              onPressed: widget.onClose,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-              hoverColor: Colors.red.withValues(alpha: 0.8),
-            ),
-          ],
-        ),
       ),
     );
   }

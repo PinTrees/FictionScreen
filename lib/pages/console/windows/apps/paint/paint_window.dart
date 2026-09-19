@@ -5,18 +5,28 @@ import '../../../common/os_window_frame.dart';
 /// Windows 11 그림판 (Paint)
 class WindowsPaintWindow extends StatefulWidget {
   final VoidCallback onClose;
+  final VoidCallback? onMinimize;
+  final VoidCallback? onMaximize;
+  final Function(int layoutType, int zoneIndex)? onSnapLayout;
   final Function(DragStartDetails)? onTitleDragStart;
   final Function(DragUpdateDetails)? onTitleDragUpdate;
   final double width;
   final double height;
+  final bool isMaximized;
+  final WindowStyle style;
 
   const WindowsPaintWindow({
     super.key,
     required this.onClose,
+    this.onMinimize,
+    this.onMaximize,
+    this.onSnapLayout,
     this.onTitleDragStart,
     this.onTitleDragUpdate,
     this.width = 720,
     this.height = 480,
+    this.isMaximized = false,
+    this.style = WindowStyle.windows10,
   });
 
   @override
@@ -31,11 +41,16 @@ class _WindowsPaintWindowState extends State<WindowsPaintWindow> {
   Widget build(BuildContext context) {
     return OsWindowFrame(
       title: '제목 없음 - 그림판',
+      iconAsset: 'assets/images/windows/mspaint.png',
       icon: CupertinoIcons.paintbrush_fill,
-      style: WindowStyle.windows,
+      style: widget.style,
       width: widget.width,
       height: widget.height,
+      isMaximized: widget.isMaximized,
       onClose: widget.onClose,
+      onMinimize: widget.onMinimize,
+      onMaximize: widget.onMaximize,
+      onSnapLayout: widget.onSnapLayout,
       onTitleDragStart: widget.onTitleDragStart,
       onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Column(

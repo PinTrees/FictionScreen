@@ -5,18 +5,28 @@ import '../../../common/os_window_frame.dart';
 /// Windows 11 계산기
 class WindowsCalculatorWindow extends StatefulWidget {
   final VoidCallback onClose;
+  final VoidCallback? onMinimize;
+  final VoidCallback? onMaximize;
+  final Function(int layoutType, int zoneIndex)? onSnapLayout;
   final Function(DragStartDetails)? onTitleDragStart;
   final Function(DragUpdateDetails)? onTitleDragUpdate;
   final double width;
   final double height;
+  final bool isMaximized;
+  final WindowStyle style;
 
   const WindowsCalculatorWindow({
     super.key,
     required this.onClose,
+    this.onMinimize,
+    this.onMaximize,
+    this.onSnapLayout,
     this.onTitleDragStart,
     this.onTitleDragUpdate,
     this.width = 340,
     this.height = 480,
+    this.isMaximized = false,
+    this.style = WindowStyle.windows10,
   });
 
   @override
@@ -46,11 +56,16 @@ class _WindowsCalculatorWindowState extends State<WindowsCalculatorWindow> {
   Widget build(BuildContext context) {
     return OsWindowFrame(
       title: '계산기',
+      iconAsset: 'assets/images/windows/calc.png',
       icon: CupertinoIcons.number,
-      style: WindowStyle.windows,
+      style: widget.style,
       width: widget.width,
       height: widget.height,
+      isMaximized: widget.isMaximized,
       onClose: widget.onClose,
+      onMinimize: widget.onMinimize,
+      onMaximize: widget.onMaximize,
+      onSnapLayout: widget.onSnapLayout,
       onTitleDragStart: widget.onTitleDragStart,
       onTitleDragUpdate: widget.onTitleDragUpdate,
       child: Container(
