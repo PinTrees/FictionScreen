@@ -170,16 +170,15 @@ class _WorkspaceViewState extends State<WorkspaceView> {
                 child: Container(
                   color: isDarkMode ? const Color(0xFF06080D) : const Color(0xFFF8FAFC),
                   child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 500),
-                    switchInCurve: Curves.easeOutQuart,
-                    switchOutCurve: Curves.easeInQuart,
+                    duration: const Duration(milliseconds: 400),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
                     transitionBuilder: (child, animation) {
+                      final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
                       return FadeTransition(
                         opacity: animation,
                         child: ScaleTransition(
-                          scale: Tween<double>(begin: 0.965, end: 1.0).animate(
-                            CurvedAnimation(parent: animation, curve: Curves.easeOutQuart),
-                          ),
+                          scale: Tween<double>(begin: 0.95, end: 1.0).animate(curved),
                           child: child,
                         ),
                       );

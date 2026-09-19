@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../constants/app_platform_icons.dart';
-import '../../../../widgets/pop_entrance.dart';
 import '../../../../widgets/scale_button.dart';
 
 class OsGalleryView extends StatelessWidget {
@@ -27,11 +26,9 @@ class OsGalleryView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Banner (ZERO OUTLINE, Pop Entrance)
-          PopEntrance(
-            delay: const Duration(milliseconds: 60),
-            child: Container(
-              padding: const EdgeInsets.all(28),
+          // Header Banner (ZERO OUTLINE)
+          Container(
+            padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: isDarkMode
@@ -113,21 +110,17 @@ class OsGalleryView extends StatelessWidget {
               ],
             ),
           ),
-          ),
 
           const SizedBox(height: 32),
 
           // Section Title
-          PopEntrance(
-            delay: const Duration(milliseconds: 100),
-            child: Text(
-              '사용 가능한 가상 데스크톱 목록',
-              style: TextStyle(
-                color: textColor,
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.3,
-              ),
+          Text(
+            '사용 가능한 가상 데스크톱 목록',
+            style: TextStyle(
+              color: textColor,
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.3,
             ),
           ),
           const SizedBox(height: 16),
@@ -145,11 +138,8 @@ class OsGalleryView extends StatelessWidget {
               itemBuilder: (context, index) {
                 final os = osList[index];
 
-                return PopEntrance(
-                  delay: Duration(milliseconds: 100 + (index.clamp(0, 8) * 45)),
-                  startScale: 0.88,
-                  child: ScaleButton(
-                    onTap: () => onSelectOs(os.id),
+                return ScaleButton(
+                  onTap: () => onSelectOs(os.id),
                   child: Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -245,7 +235,6 @@ class OsGalleryView extends StatelessWidget {
                       ],
                     ),
                   ),
-                ),
                 );
               },
             ),

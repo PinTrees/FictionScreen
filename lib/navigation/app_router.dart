@@ -174,8 +174,8 @@ class AppRouter {
     return CustomTransitionPage(
       key: key,
       child: child,
-      transitionDuration: const Duration(milliseconds: 320),
-      reverseTransitionDuration: const Duration(milliseconds: 250),
+      transitionDuration: const Duration(milliseconds: 400),
+      reverseTransitionDuration: const Duration(milliseconds: 280),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         final curved = CurvedAnimation(
           parent: animation,
@@ -185,7 +185,7 @@ class AppRouter {
         return FadeTransition(
           opacity: Tween<double>(begin: 0.0, end: 1.0).animate(curved),
           child: ScaleTransition(
-            scale: Tween<double>(begin: 0.97, end: 1.0).animate(curved),
+            scale: Tween<double>(begin: 0.95, end: 1.0).animate(curved),
             child: child,
           ),
         );

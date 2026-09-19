@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../apps/screen_template.dart';
-import '../../../../widgets/pop_entrance.dart';
 import '../../../../widgets/scale_button.dart';
 
 /// 콘솔 메인 페이지에서 어플을 고를 수 있는 갤러리/카탈로그 뷰
@@ -72,19 +71,14 @@ class _AppGalleryViewState extends State<AppGalleryView> {
           crossAxisCount = 4;
         }
 
-        return PopEntrance(
-          duration: const Duration(milliseconds: 650),
-          startScale: 0.96,
-          curve: Curves.easeOutQuart,
-          fadeCurve: Curves.easeOutQuart,
-          child: ScrollConfiguration(
-            behavior: const ScrollBehavior().copyWith(scrollbars: false),
-            child: CustomScrollView(
-              slivers: [
-                // Top spacing so initial content sits gracefully below the 56px floating app bar
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 72),
-                ),
+        return ScrollConfiguration(
+          behavior: const ScrollBehavior().copyWith(scrollbars: false),
+          child: CustomScrollView(
+            slivers: [
+              // Top spacing so initial content sits gracefully below the 56px floating app bar
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 72),
+              ),
 
                 // 1. Header Banner
                 SliverPadding(
@@ -235,10 +229,9 @@ class _AppGalleryViewState extends State<AppGalleryView> {
                 ),
               ],
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
   }
 
   Widget _buildCategoryPill(TemplateCategory? cat, String label, bool isDark) {
