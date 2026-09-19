@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 enum WindowStyle {
   macos,
   windows,
+  windows10,
 }
 
 /// 현실적인 가상 OS 윈도우 창 프레임
@@ -42,20 +43,26 @@ class OsWindowFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final bool isMaximized = width >= screenSize.width - 5 && height >= screenSize.height - 55;
-    final borderRadius = isMaximized ? BorderRadius.zero : BorderRadius.circular(style == WindowStyle.macos ? 12 : 8);
+    final borderRadius = isMaximized || style == WindowStyle.windows10
+        ? BorderRadius.zero
+        : BorderRadius.circular(style == WindowStyle.macos ? 12 : 8);
+
+    final borderColor = style == WindowStyle.windows10
+        ? const Color(0xFF0078D7)
+        : Colors.white.withValues(alpha: 0.15);
 
     return Center(
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: const Color(0xFF1E212B).withValues(alpha: 0.94),
+          color: style == WindowStyle.windows10 ? const Color(0xFF1F1F1F) : const Color(0xFF1E212B).withValues(alpha: 0.94),
           borderRadius: borderRadius,
           border: isMaximized
               ? null
               : Border.all(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  width: 1,
+                  color: borderColor,
+                  width: 1.0,
                 ),
           boxShadow: isMaximized
               ? const []
@@ -91,7 +98,11 @@ class OsWindowFrame extends StatelessWidget {
       onPanStart: onTitleDragStart,
       onPanUpdate: onTitleDragUpdate,
       onPanEnd: onTitleDragEnd,
-      child: style == WindowStyle.macos ? _buildMacTitleBar() : _buildWindowsTitleBar(),
+      child: style == WindowStyle.macos
+          ? _buildMacTitleBar()
+          : (style == WindowStyle.windows10
+              ? _buildWindows10TitleBar()
+              : _buildWindowsTitleBar()),
     );
   }
 
@@ -139,6 +150,55 @@ class OsWindowFrame extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 54), // 좌측 신호등과 밸런스 유지용
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWindows10TitleBar() {
+    return Container(
+      height: 31,
+      color: const Color(0xFF2B2B2B),
+      child: Row(
+        children: [
+          const SizedBox(width: 8),
+          if (icon != null) ...[
+            Icon(icon, size: 14, color: const Color(0xFF60A5FA)),
+            const SizedBox(width: 8),
+          ],
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                fontFamily: 'Segoe UI',
+              ),
+            ),
+          ),
+          _Win10TitleBarButton(
+            iconWidget: Container(width: 10, height: 1, color: Colors.white),
+            onTap: onMinimize ?? onClose,
+          ),
+          _Win10TitleBarButton(
+            iconWidget: Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white, width: 1.0),
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+            onTap: onMaximize ?? () {},
+          ),
+          _Win10TitleBarButton(
+            iconWidget: const Icon(CupertinoIcons.xmark, size: 10.5, color: Colors.white),
+            onTap: onClose,
+            isClose: true,
+          ),
         ],
       ),
     );
@@ -211,6 +271,44 @@ class OsWindowFrame extends StatelessWidget {
             size: 12,
             color: Colors.white70,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Win10TitleBarButton extends StatefulWidget {
+  final Widget iconWidget;
+  final VoidCallback onTap;
+  final bool isClose;
+
+  const _Win10TitleBarButton({
+    required this.iconWidget,
+    required this.onTap,
+    this.isClose = false,
+  });
+
+  @override
+  State<_Win10TitleBarButton> createState() => _Win10TitleBarButtonState();
+}
+
+class _Win10TitleBarButtonState extends State<_Win10TitleBarButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final hoverBg = widget.isClose ? const Color(0xFFE81123) : const Color(0xFF3F3F41);
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          width: 46,
+          height: 31,
+          color: _isHovered ? hoverBg : Colors.transparent,
+          alignment: Alignment.center,
+          child: widget.iconWidget,
         ),
       ),
     );

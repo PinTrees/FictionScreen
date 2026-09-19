@@ -500,7 +500,7 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
         ),
         const SizedBox(height: 8),
 
-        // Row 2 (8 apps)
+        // Row 2 (6 apps + 2 empty placeholders for exact 8-column alignment)
         Row(
           children: [
             _buildWin11AppItem('LinkedIn', null, () {}, customIcon: _buildLinkedInIcon()),
@@ -509,78 +509,8 @@ class _WindowsStartMenuState extends State<WindowsStartMenu> {
             _buildWin11AppItem('메모장', 'assets/images/windows/notepad.png', () => widget.onOpenWinApp?.call('notepad')),
             _buildWin11AppItem('캡처 도구', 'assets/images/windows/snip.png', () => widget.onOpenWinApp?.call('snip')),
             _buildWin11AppItem('파일 탐색기', 'assets/images/windows/explorer.png', () => widget.onOpenWinApp?.call('file_explorer')),
-            _buildWin11AppItem('DaVinci Resolve', 'assets/images/davinci_resolve_icon.webp', () => widget.onOpenTemplate('davinci_resolve')),
-            _buildWin11AppItem('VS 2026', 'assets/images/visual_studio_icon.webp', () => widget.onOpenTemplate('visual_studio')),
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        // Row 3 (8 apps)
-        Row(
-          children: [
-            _buildWin11AppItem('Photoshop', 'assets/images/photoshop_icon.webp', () => widget.onOpenTemplate('photoshop')),
-            _buildWin11AppItem('Discord', 'assets/images/discord_icon.webp', () => widget.onOpenTemplate('discord')),
-            _buildWin11AppItem('블라인드', 'assets/images/blind_icon.webp', () => widget.onOpenTemplate('blind')),
-            _buildWin11AppItem('업비트', 'assets/images/upbit_icon.webp', () => widget.onOpenTemplate('upbit')),
-            _buildWin11AppItem('야놀자', 'assets/images/yanolja_icon.webp', () => widget.onOpenTemplate('yanolja')),
-            _buildWin11AppItem('카카오뱅크', 'assets/images/kakaobank_icon.webp', () => widget.onOpenTemplate('kakaobank')),
-            _buildWin11AppItem('당근마켓', 'assets/images/daangn_icon.webp', () => widget.onOpenTemplate('daangn')),
-            _buildWin11AppItem('카카오톡', 'assets/images/kakaotalk_icon.webp', () => widget.onOpenTemplate('kakaotalk')),
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        // Row 4 (8 apps)
-        Row(
-          children: [
-            _buildWin11AppItem('쿠팡', 'assets/images/coupang_icon.webp', () => widget.onOpenTemplate('coupang')),
-            _buildWin11AppItem('Netflix', 'assets/images/netflix_icon.webp', () => widget.onOpenTemplate('netflix')),
-            _buildWin11AppItem(
-              'YouTube',
-              null,
-              () => widget.onOpenTemplate('youtube'),
-              customIcon: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(color: const Color(0xFFFF0000), borderRadius: BorderRadius.circular(6)),
-                child: const Icon(CupertinoIcons.play_arrow_solid, color: Colors.white, size: 18),
-              ),
-            ),
-            _buildWin11AppItem('Instagram', 'assets/images/instagram_icon.webp', () => widget.onOpenTemplate('instagram')),
-            _buildWin11AppItem('동행복권', 'assets/images/lottery_icon.webp', () => widget.onOpenTemplate('lottery')),
-            _buildWin11AppItem(
-              '토스',
-              null,
-              () => widget.onOpenTemplate('toss'),
-              customIcon: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(color: const Color(0xFF0050FF), borderRadius: BorderRadius.circular(6)),
-                child: const Icon(CupertinoIcons.money_dollar_circle_fill, color: Colors.white, size: 20),
-              ),
-            ),
-            _buildWin11AppItem(
-              'X (트위터)',
-              null,
-              () => widget.onOpenTemplate('x_twitter'),
-              customIcon: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(6), border: Border.all(color: Colors.white24)),
-                child: const Center(child: Text('𝕏', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
-              ),
-            ),
-            _buildWin11AppItem(
-              '배달의민족',
-              null,
-              () => widget.onOpenTemplate('delivery'),
-              customIcon: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(color: const Color(0xFF2AC1BC), borderRadius: BorderRadius.circular(6)),
-                child: const Icon(CupertinoIcons.bag_fill, color: Colors.white, size: 18),
-              ),
-            ),
+            const Expanded(child: SizedBox()),
+            const Expanded(child: SizedBox()),
           ],
         ),
       ],

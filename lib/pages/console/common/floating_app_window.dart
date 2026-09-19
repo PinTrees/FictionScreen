@@ -52,6 +52,7 @@ class FloatingAppWindow extends StatefulWidget {
   final Size size;
   final bool isFocused;
   final bool isMacStyle;
+  final String windowsVersion;
   final VoidCallback onFocus;
   final Function(Offset) onPositionChanged;
   final Function(Size) onSizeChanged;
@@ -65,6 +66,7 @@ class FloatingAppWindow extends StatefulWidget {
     required this.size,
     required this.isFocused,
     this.isMacStyle = false,
+    this.windowsVersion = '11',
     required this.onFocus,
     required this.onPositionChanged,
     required this.onSizeChanged,
@@ -136,6 +138,21 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
   @override
   Widget build(BuildContext context) {
     final isDesktopApp = widget.template.isDesktop;
+    final isWin10 = !widget.isMacStyle && widget.windowsVersion == '10';
+    final borderRadius = isWin10 ? BorderRadius.zero : BorderRadius.circular(12);
+    final borderColor = isWin10
+        ? (widget.isFocused ? const Color(0xFF0078D7) : const Color(0xFF3E3E42))
+        : (widget.isFocused ? const Color(0xFF6366F1) : Colors.white.withValues(alpha: 0.12));
+    final titleBarHeight = isWin10 ? 31.0 : 38.0;
+    final titleBarColor = isWin10
+        ? (widget.isFocused ? const Color(0xFF2B2B2B) : const Color(0xFF1F1F1F))
+        : (widget.isFocused ? const Color(0xFF141622) : const Color(0xFF0D0E15));
+    final titleBarBorderRadius = isWin10
+        ? BorderRadius.zero
+        : const BorderRadius.only(
+            topLeft: Radius.circular(11),
+            topRight: Radius.circular(11),
+          );
 
     return Positioned(
       left: widget.position.dx,
@@ -148,18 +165,18 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
             width: widget.size.width,
             height: widget.size.height,
             decoration: BoxDecoration(
-              color: const Color(0xFF181A24),
-              borderRadius: BorderRadius.circular(12),
+              color: isWin10 ? const Color(0xFF191919) : const Color(0xFF181A24),
+              borderRadius: borderRadius,
               border: Border.all(
-                color: widget.isFocused ? const Color(0xFF6366F1) : Colors.white.withValues(alpha: 0.12),
-                width: widget.isFocused ? 1.5 : 1.0,
+                color: borderColor,
+                width: 1.0,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: widget.isFocused ? 0.6 : 0.35),
-                  blurRadius: widget.isFocused ? 32 : 16,
-                  spreadRadius: widget.isFocused ? 2 : 0,
-                  offset: const Offset(0, 10),
+                  color: Colors.black.withValues(alpha: widget.isFocused ? 0.55 : 0.30),
+                  blurRadius: isWin10 ? (widget.isFocused ? 20 : 10) : (widget.isFocused ? 32 : 16),
+                  spreadRadius: isWin10 ? 0 : (widget.isFocused ? 2 : 0),
+                  offset: isWin10 ? const Offset(0, 5) : const Offset(0, 10),
                 ),
               ],
             ),
@@ -183,15 +200,12 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
                         _dragStartOffset = null;
                       },
                       child: Container(
-                        height: 38,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        height: titleBarHeight,
+                        padding: EdgeInsets.symmetric(horizontal: isWin10 ? 0 : 12),
                         decoration: BoxDecoration(
-                          color: widget.isFocused ? const Color(0xFF141622) : const Color(0xFF0D0E15),
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(11),
-                            topRight: Radius.circular(11),
-                          ),
-                          border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+                          color: titleBarColor,
+                          borderRadius: titleBarBorderRadius,
+                          border: Border(bottom: BorderSide(color: isWin10 ? const Color(0xFF333333) : Colors.white.withValues(alpha: 0.08))),
                         ),
                         child: Row(
                           children: [
@@ -207,6 +221,7 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
                               const SizedBox(width: 12),
                             ],
 
+                            if (isWin10) const SizedBox(width: 10),
                             Icon(widget.template.icon, size: 15, color: widget.template.themeColor),
                             const SizedBox(width: 8),
                             Expanded(
@@ -216,36 +231,54 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
                                 style: TextStyle(
                                   color: widget.isFocused ? Colors.white : Colors.white60,
                                   fontSize: 12,
-                                  fontWeight: widget.isFocused ? FontWeight.bold : FontWeight.normal,
+                                  fontWeight: widget.isFocused ? (isWin10 ? FontWeight.w500 : FontWeight.bold) : FontWeight.normal,
+                                  fontFamily: isWin10 ? 'Segoe UI' : null,
                                 ),
                               ),
                             ),
 
                             if (!widget.isMacStyle) ...[
-                              // Windows MDI 우측 버튼
-                              InkWell(
-                                onTap: () => context.push('/studio/${widget.template.id}'),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(4),
-                                  child: Icon(CupertinoIcons.arrow_up_left_arrow_down_right, size: 13, color: Colors.white70),
+                              if (isWin10) ...[
+                                // Windows 10 직각 풀-하이트 캡션 버튼
+                                _buildWin10HeaderBtn(
+                                  const Icon(CupertinoIcons.arrow_up_left_arrow_down_right, size: 12, color: Colors.white70),
+                                  () => context.push('/studio/${widget.template.id}'),
                                 ),
-                              ),
-                              const SizedBox(width: 6),
-                              InkWell(
-                                onTap: widget.onMinimize,
-                                child: const Padding(
-                                  padding: EdgeInsets.all(4),
-                                  child: Icon(CupertinoIcons.minus, size: 13, color: Colors.white70),
+                                _buildWin10HeaderBtn(
+                                  Container(width: 10, height: 1, color: Colors.white70),
+                                  widget.onMinimize,
                                 ),
-                              ),
-                              const SizedBox(width: 6),
-                              InkWell(
-                                onTap: widget.onClose,
-                                child: const Padding(
-                                  padding: EdgeInsets.all(4),
-                                  child: Icon(CupertinoIcons.xmark, size: 13, color: Colors.redAccent),
+                                _buildWin10HeaderBtn(
+                                  const Icon(CupertinoIcons.xmark, size: 11, color: Colors.white),
+                                  widget.onClose,
+                                  isClose: true,
                                 ),
-                              ),
+                              ] else ...[
+                                // Windows 11 MDI 우측 버튼
+                                InkWell(
+                                  onTap: () => context.push('/studio/${widget.template.id}'),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(4),
+                                    child: Icon(CupertinoIcons.arrow_up_left_arrow_down_right, size: 13, color: Colors.white70),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                InkWell(
+                                  onTap: widget.onMinimize,
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(4),
+                                    child: Icon(CupertinoIcons.minus, size: 13, color: Colors.white70),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                InkWell(
+                                  onTap: widget.onClose,
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(4),
+                                    child: Icon(CupertinoIcons.xmark, size: 13, color: Colors.redAccent),
+                                  ),
+                                ),
+                              ],
                             ],
                           ],
                         ),
@@ -255,10 +288,12 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
                     // 2. 창 내부 앱 실행 뷰 영역
                     Expanded(
                       child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(11),
-                          bottomRight: Radius.circular(11),
-                        ),
+                        borderRadius: isWin10
+                            ? BorderRadius.zero
+                            : const BorderRadius.only(
+                                bottomLeft: Radius.circular(11),
+                                bottomRight: Radius.circular(11),
+                              ),
                         child: DeviceFramePreview(
                           showFrame: false,
                           isDesktop: isDesktopApp,
@@ -416,6 +451,62 @@ class _FloatingAppWindowState extends State<FloatingAppWindow> {
       default:
         return TossScreen(config: _tossConfig);
     }
+  }
+
+  Widget _buildWin10HeaderBtn(Widget icon, VoidCallback? onTap, {bool isClose = false}) {
+    return _Win10TitleHeaderButton(icon: icon, onTap: onTap, isClose: isClose);
+  }
+}
+
+class _Win10TitleHeaderButton extends StatefulWidget {
+  final Widget icon;
+  final VoidCallback? onTap;
+  final bool isClose;
+
+  const _Win10TitleHeaderButton({
+    required this.icon,
+    required this.onTap,
+    this.isClose = false,
+  });
+
+  @override
+  State<_Win10TitleHeaderButton> createState() => _Win10TitleHeaderButtonState();
+}
+
+class _Win10TitleHeaderButtonState extends State<_Win10TitleHeaderButton> {
+  bool _isHovered = false;
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    Color bg = Colors.transparent;
+    if (_isPressed) {
+      bg = widget.isClose ? const Color(0xFFF1707A) : const Color(0xFF4C4C50);
+    } else if (_isHovered) {
+      bg = widget.isClose ? const Color(0xFFE81123) : const Color(0xFF3F3F41);
+    }
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() {
+        _isHovered = false;
+        _isPressed = false;
+      }),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) => setState(() => _isPressed = false),
+        onTapCancel: () => setState(() => _isPressed = false),
+        onTap: widget.onTap,
+        child: Container(
+          width: 46,
+          height: 31,
+          color: bg,
+          alignment: Alignment.center,
+          child: widget.icon,
+        ),
+      ),
+    );
   }
 }
 

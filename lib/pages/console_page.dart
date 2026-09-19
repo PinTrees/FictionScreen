@@ -332,7 +332,7 @@ class _ConsolePageState extends State<ConsolePage> {
                   onGoHome: () => context.go('/'),
                   onSelectOs: _handleSelectOs,
                 ),
-                ..._buildDesktopWindowsLayer(isMacStyle: false),
+                ..._buildDesktopWindowsLayer(isMacStyle: false, windowsVersion: _windowsVersion),
               ] else if (activeOs == 'galaxy') ...[
                 if (isDesktop && !_isDesktopMobileFullScreen)
                   _buildDesktopPhoneContainer(
@@ -657,7 +657,7 @@ class _ConsolePageState extends State<ConsolePage> {
     }
   }
 
-  List<Widget> _buildDesktopWindowsLayer({required bool isMacStyle}) {
+  List<Widget> _buildDesktopWindowsLayer({required bool isMacStyle, String windowsVersion = '11'}) {
     return _activeFloatingWindows.where((w) => !w.isMinimized).map((win) {
       final isFocused = _activeFloatingWindows.isNotEmpty && _activeFloatingWindows.last.id == win.id;
       return ValueListenableBuilder<Offset>(
@@ -670,6 +670,7 @@ class _ConsolePageState extends State<ConsolePage> {
             size: win.size,
             isFocused: isFocused,
             isMacStyle: isMacStyle,
+            windowsVersion: windowsVersion,
             onFocus: () => _bringToFront(win.id),
             onPositionChanged: (newPos) => win.position = newPos,
             onSizeChanged: (newSize) => setState(() => win.size = newSize),
